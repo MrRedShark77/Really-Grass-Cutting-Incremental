@@ -1,0 +1,116 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Really Grass Cutting Incremental</title>
+
+    <script src="js/break_eternity.js"></script>
+    <script src="js/elements.js"></script>
+    <script src="js/saves.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/format.js"></script>
+
+    <script src="js/map.js"></script>
+
+    <script src="js/canvas.js"></script>
+    <script src="js/temp.js"></script>
+
+    <script src="js/upgrades.js"></script>
+    <script src="js/reset.js"></script>
+
+    <script src="js/calc.js"></script>
+    <script src="js/main.js"></script>
+
+    <script src="js/features/grass.js"></script>
+    <script src="js/features/pp.js"></script>
+    <script src="js/features/crystal.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onload="loadGame()">
+    <div id="app">
+        <div class="table_space">
+            <div id="grass_div" style="margin: 10px;">
+                <div class="table_between">
+                    <img src="images/grass.png">
+                    <div>
+                        <span id="grassAmt"></span> <span id="grassGain"></span>
+                    </div>
+                </div>
+            </div>
+        </div><div class="table_space">
+            <div id="level" style="margin: 10px;"></div>
+            <div id="tier" style="margin: 10px;"></div>
+        </div>
+        <div id="main_app">
+            <div id="map_div_g" class="table_center">
+                <div style="width: 50%; height: 100%;">
+                    <canvas id="grass_canvas"></canvas>
+                    <div id="grass_cap_div">
+                        <div class="table_between">
+                            <div id="grass_cap" style="width: 50%;"></div>
+                            <div id="grass_cut" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 50%; height: 100%;">
+                    <div style="height: 50%;">
+                        <div id="level_div">
+                            <div id="level_bar">
+    
+                            </div><div id="level_info">
+                                Level <b id="level_amt" class="cyan">0</b><br>
+                                <span id="level_progress" style="font-size: 18px;">0 / 0</span><br>
+                                <span id="level_cut" style="font-size: 18px;"></span>
+                            </div>
+                        </div><div id="tier_div">
+                            <div id="tier_bar"></div><div id="tier_info">
+                                Tier <b id="tier_amt" class="yellow">0</b><br>
+                                <span id="tier_progress" style="font-size: 18px;">0 / 0</span><br>
+                                <span id="tier_cut" style="font-size: 18px;"></span><br>
+                                <span id="tier_mult" style="font-size: 18px;"></span>
+                            </div>
+                        </div>
+                    </div><div style="height: 50%;">
+                        <div class="upgs_div" id="upgs_div_grass"></div>
+                    </div>
+                </div>
+            </div><div id="map_div_opt">
+                <button onclick="if (confirm('Are you sure you want to wipe your save?')) {wipe(true)}">Hard Reset</button>
+                <button onclick="save()">Save</button>
+                <button onclick="importy()">Import</button>
+                <button onclick="exporty()">Export</button><br>
+                <button onclick="hideUpgOption()">Hide upgrades which is maxed/purchased: <span id="hideUpgOption">OFF</span></button><br><br>
+                Really Grass Cutting Incremental - Prototype v0.1 - Made by MrRedShark77<br>
+                The game inspired by <a href="https://www.roblox.com/games/9292879820">Grass Cutting Incremental</a><br>
+                <b class="red">Warning! Recommended size is 1920x1080! You may change zoom!</b>
+            </div><div id="map_div_p">
+                <div style="width: 100%; height: 50%;">
+                    <div class="upgs_div" id="upgs_div_perk"></div>
+                </div><div style="width: 100%; height: 50%;">
+                    <div class="upgs_div" id="upgs_div_plat"></div>
+                </div>
+            </div><div id="map_div_auto">
+                <div style="width: 100%; height: 50%;">
+                    <div class="upgs_div" id="upgs_div_auto"></div>
+                </div>
+            </div><div id="map_div_pc">
+                <div style="width: 100%; height: 50%;" class="table_center">
+                    <div style="width: 33%; height: 100%;"><div class="reset_div" id="reset_div_pp"></div></div>
+                    <div style="width: 67%; height: 100%;"><div class="upgs_div" id="upgs_div_pp"></div></div>
+                </div><div style="width: 100%; height: 50%;" class="table_center">
+                    <div style="width: 33%; height: 100%;"><div class="reset_div" id="reset_div_crystal"></div></div>
+                    <div style="width: 67%; height: 100%;"><div class="upgs_div" id="upgs_div_crystal"></div></div>
+                </div>
+            </div>
+        </div>
+        <div style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);">
+            <button id="lMap" onclick="switchMap(-1,0)" class="locked">◀</button>
+            <button id="rMap" onclick="switchMap(1,0)" class="locked">▶</button>
+            <button id="uMap" onclick="switchMap(0,-1)" class="locked">▲</button>
+            <button id="dMap" onclick="switchMap(0,1)" class="locked">▼</button>
+        </div>
+    </div>
+</body>
+</html>
