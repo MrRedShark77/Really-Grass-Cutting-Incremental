@@ -544,11 +544,11 @@ function buyMaxUpgrade(id,x,auto=false) {
 
             if (costOnce ? true : bulk > amt2) {
                 let [p,q] = UPG_RES[resDis][1]()
-                let cost = costOnce ? tu.cost[x]*bulk : upg.cost(bulk-1)
+                let cost = costOnce ? tu.cost[x]*(Math.min(amt2+bulk,tu.max[x])-amt2) : upg.cost(bulk-1)
 
                 amt[x] = Math.min(amt[x] ? costOnce ? amt[x]+bulk : Math.max(amt[x],bulk) : bulk,tu.max[x])
                 if (resDis == 'perk') {
-                    player.spentPerk += costOnce ? tu.cost[x]*(Math.min(amt2+bulk,tu.max[x])-amt2) : upg.cost(bulk-1)
+                    player.spentPerk += cost
                     tmp.perkUnspent = Math.max(player.maxPerk-player.spentPerk,0)
                 }
                 else if (!tu.noSpend) p[q] = numInc ? Math.max(p[q]-cost,0) : p[q].sub(cost).max(0)
