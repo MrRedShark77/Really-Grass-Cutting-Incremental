@@ -4,6 +4,7 @@ MAIN.pp = {
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestGrass.div(1e9).max(1).root(3))
 
         x = x.mul(upgEffect('crystal',3))
+        x = x.mul(upgEffect('plat',3))
 
         return x.floor()
     },

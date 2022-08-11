@@ -27,5 +27,7 @@ function calc(dt) {
     player.bestPP = player.bestPP.max(player.pp)
     player.bestCrystal = player.bestCrystal.max(player.crystal)
 
+    if (player.level >= 200 && !player.chalUnl) player.chalUnl = true
+
     MAIN.checkCutting()
 }

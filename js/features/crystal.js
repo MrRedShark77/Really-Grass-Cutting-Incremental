@@ -3,6 +3,8 @@ MAIN.crystal = {
         let l = player.tier+1
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestPP.div(1e7).max(1).root(3))
 
+        x = x.mul(upgEffect('plat',4))
+
         return x.floor()
     },
 }

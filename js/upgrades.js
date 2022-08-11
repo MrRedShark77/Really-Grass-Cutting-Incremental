@@ -472,6 +472,50 @@ const UPGS = {
                     return x
                 },
                 effDesc: x => format(x)+"x",
+            },{
+                max: 100,
+
+                unl: _=>player.cTimes>0,
+
+                costOnce: true,
+
+                title: "Plat PP",
+                desc: `Increase PP gain by <b class="green">+20%</b> per level.`,
+
+                res: "plat",
+                icon: ['Curr/Prestige'],
+                
+                cost: i => 100,
+                bulk: i => Math.floor(i/100),
+
+                effect(i) {
+                    let x = E(i*0.2+1)
+
+                    return x
+                },
+                effDesc: x => format(x)+"x",
+            },{
+                max: 100,
+
+                unl: _=>player.cTimes>0,
+
+                costOnce: true,
+
+                title: "Plat Crystal",
+                desc: `Increase Crystal gain by <b class="green">+20%</b> per level.`,
+
+                res: "plat",
+                icon: ['Curr/Crystal'],
+                
+                cost: i => 100,
+                bulk: i => Math.floor(i/100),
+
+                effect(i) {
+                    let x = E(i*0.2+1)
+
+                    return x
+                },
+                effDesc: x => format(x)+"x",
             },
         ],
     },
@@ -680,7 +724,7 @@ function updateUpgradesHTML(id) {
                 if (upg.effDesc) h += '<br>Effect: <span class="cyan">'+upg.effDesc(tu.eff[ch])+"</span>"
 
                 if (amt < tu.max[ch]) {
-                    let cost2 = upg.costOne?Decimal.mul(tu.cost[ch],25):upg.cost((Math.floor(amt/25)+1)*25)
+                    let cost2 = upg.costOnce?Decimal.mul(tu.cost[ch],25):upg.cost((Math.floor(amt/25)+1)*25)
                     
                     h += `
                     <br><span class="${Decimal.gte(tmp.upg_res[upg.res],cost2)?"green":"red"}">Cost to next 25: ${format(cost2,0)} ${dis}</span>

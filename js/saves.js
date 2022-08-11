@@ -92,6 +92,8 @@ function getPlayerData() {
             hideUpgOption: false
         },
 
+        chalUnl: false,
+
         time: 0,
     }
     for (let x in UPGS) {
