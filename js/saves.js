@@ -73,6 +73,7 @@ function getPlayerData() {
         tp: E(0),
 
         upgs: {},
+        autoUpg: {},
 
         maxPerk: 0,
         spentPerk: 0,
@@ -93,7 +94,10 @@ function getPlayerData() {
 
         time: 0,
     }
-    for (let x in UPGS) s.upgs[x] = []
+    for (let x in UPGS) {
+        s.upgs[x] = []
+        s.autoUpg[x] = false
+    }
     return s
 }
 
@@ -192,6 +196,7 @@ function export_copy() {
     copyText.select();
     document.execCommand("copy");
     copyText.style.visibility = "hidden"
+    console.log("Exported to clipboard")
 }
 
 function importy() {

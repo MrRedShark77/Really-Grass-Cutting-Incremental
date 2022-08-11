@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body onload="loadGame()">
+    <input id="copy" style="position: absolute; top: 0; left: 0; user-select: all; visibility: hidden;">
     <div id="app">
         <div class="table_space">
             <div id="grass_div" style="margin: 10px;">
@@ -80,6 +81,7 @@
                 <button onclick="if (confirm('Are you sure you want to wipe your save?')) {wipe(true)}">Hard Reset</button>
                 <button onclick="save()">Save</button>
                 <button onclick="importy()">Import</button>
+                <button onclick="export_copy()">Export to clipboard</button>
                 <button onclick="exporty()">Export</button><br>
                 <button onclick="hideUpgOption()">Hide upgrades which is maxed/purchased: <span id="hideUpgOption">OFF</span></button><br><br>
                 Really Grass Cutting Incremental - Prototype v0.1 - Made by MrRedShark77<br>

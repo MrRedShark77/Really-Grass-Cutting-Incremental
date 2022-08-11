@@ -13,7 +13,7 @@ RESET.pp = {
     req: _=>player.level>=30,
     reqDesc: _=>`Reach Level 30 to Prestige.`,
 
-    resetDesc: `Presting resets your grass, grass upgrades, level and perks for Prestige Points (PP).<br>Gain more PP based on your level and grass.`,
+    resetDesc: `Prestiging resets your grass, grass upgrades, level and perks for Prestige Points (PP).<br>Gain more PP based on your level and grass.`,
     resetGain: _=> `Gain <b>${tmp.ppGain.format(0)}</b> Prestige Points`,
 
     title: `Prestige`,
@@ -52,6 +52,8 @@ RESET.pp = {
 
 UPGS.pp = {
     title: "Prestige Upgrades",
+
+    autoUnl: _=>hasUpgrade('auto',5),
 
     req: _=>player.pTimes > 0,
     reqDesc: _=>`Prestige once to unlock.`,

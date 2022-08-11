@@ -12,6 +12,8 @@ const isResNumber = ['perk','plat']
 
 const UPGS = {
     grass: {
+        autoUnl: _=>hasUpgrade('auto',3),
+
         noSpend: _=>hasUpgrade('auto',6),
 
         title: "Grass Upgrades",
@@ -561,6 +563,10 @@ function buyMaxUpgrade(id,x,auto=false) {
     }
 }
 
+function switchAutoUpg(id) {
+    player.autoUpg[id] = !player.autoUpg[id]
+}
+
 function updateUpgTemp(id) {
     let upgs = UPGS[id]
     let uc = upgs.ctn
@@ -581,6 +587,7 @@ function updateUpgTemp(id) {
         if (upg.effect) tu.eff[x] = upg.effect(amt)
     }
     if (upgs.noSpend) tu.noSpend = upgs.noSpend()
+    if (upgs.autoUnl) tu.autoUnl = upgs.autoUnl()
     tu.unlLength = ul
 }
 
@@ -595,7 +602,7 @@ function setupUpgradesHTML(id) {
 
         html += `
         <div style="height: 40px;">
-            ${upgs.title} <button class="buyAllUpg" onclick="buyMaxUpgrades('${id}')">Buy All</button>
+            ${upgs.title} <button class="buyAllUpg" onclick="buyMaxUpgrades('${id}')">Buy All</button><button class="buyAllUpg" id="upg_auto_${id}" onclick="switchAutoUpg('${id}')">Auto: OFF</button>
         </div><div id="upgs_ctn_${id}" class="upgs_ctn">
         </div><div style="height: 40px;" id="upg_under_${id}">
             
@@ -672,35 +679,45 @@ function updateUpgradesHTML(id) {
 
                 if (upg.effDesc) h += '<br>Effect: <span class="cyan">'+upg.effDesc(tu.eff[ch])+"</span>"
 
-                if (amt < tu.max[ch]) h += `
-                <br><span class="${Decimal.gte(tmp.upg_res[upg.res],tu.cost[ch])?"green":"red"}">Cost: ${format(tu.cost[ch],0)} ${dis}</span>
-                <br>You have ${format(res,0)} ${dis}
-                `
+                if (amt < tu.max[ch]) {
+                    let cost2 = upg.costOne?Decimal.mul(tu.cost[ch],25):upg.cost((Math.floor(amt/25)+1)*25)
+                    
+                    h += `
+                    <br><span class="${Decimal.gte(tmp.upg_res[upg.res],cost2)?"green":"red"}">Cost to next 25: ${format(cost2,0)} ${dis}</span>
+                    <br><span class="${Decimal.gte(tmp.upg_res[upg.res],tu.cost[ch])?"green":"red"}">Cost: ${format(tu.cost[ch],0)} ${dis}</span>
+                    <br>You have ${format(res,0)} ${dis}
+                    `
+                }
 
                 tmp.el["upg_desc_"+id].setHTML(h)
             }
 
-            if (ch < 0) for (let x = 0; x < upgs.ctn.length; x++) {
-                let upg = upgs.ctn[x]
-                let div_id = "upg_ctn_"+id+x
-                let amt = player.upgs[id][x]||0
+            if (ch < 0) {
+                tmp.el["upg_auto_"+id].setDisplay(tu.autoUnl)
+                if (tu.autoUnl) tmp.el["upg_auto_"+id].setTxt("Auto: "+(player.autoUpg[id]?"ON":"OFF"))
 
-                let unlc = (upg.unl?upg.unl():true) && (player.options.hideUpgOption?amt < tu.max[x]:true)
-                tmp.el[div_id].setDisplay(unlc)
+                for (let x = 0; x < upgs.ctn.length; x++) {
+                    let upg = upgs.ctn[x]
+                    let div_id = "upg_ctn_"+id+x
+                    let amt = player.upgs[id][x]||0
 
-                if (!unlc) continue
+                    let unlc = (upg.unl?upg.unl():true) && (player.options.hideUpgOption?amt < tu.max[x]:true)
+                    tmp.el[div_id].setDisplay(unlc)
 
-                let res = tmp.upg_res[upg.res]
+                    if (!unlc) continue
 
-                tmp.el[div_id].changeStyle("width",height+"px")
-                tmp.el[div_id].changeStyle("height",height+"px")
+                    let res = tmp.upg_res[upg.res]
 
-                tmp.el[div_id+"_cost"].setTxt(amt < tu.max[x] ? format(tu.cost[x],0,6)+" "+UPG_RES[upg.res][0] : "Maxed")
-                tmp.el[div_id+"_cost"].setClasses({upg_cost: true, locked: Decimal.lt(res,tu.cost[x]) && amt < tu.max[x]})
-                //tmp.el[div_id+"_cost"].changeStyle("font-size",(tmp.el[div_id+"_cost"].el.offsetHeight-4)+"px")
+                    tmp.el[div_id].changeStyle("width",height+"px")
+                    tmp.el[div_id].changeStyle("height",height+"px")
 
-                tmp.el[div_id+"_amt"].setTxt(format(amt,0))
-                //tmp.el[div_id+"_amt"].changeStyle("font-size",(tmp.el[div_id+"_amt"].el.offsetHeight-4)+"px")
+                    tmp.el[div_id+"_cost"].setTxt(amt < tu.max[x] ? format(tu.cost[x],0,6)+" "+UPG_RES[upg.res][0] : "Maxed")
+                    tmp.el[div_id+"_cost"].setClasses({upg_cost: true, locked: Decimal.lt(res,tu.cost[x]) && amt < tu.max[x]})
+                    //tmp.el[div_id+"_cost"].changeStyle("font-size",(tmp.el[div_id+"_cost"].el.offsetHeight-4)+"px")
+
+                    tmp.el[div_id+"_amt"].setTxt(format(amt,0))
+                    //tmp.el[div_id+"_amt"].changeStyle("font-size",(tmp.el[div_id+"_amt"].el.offsetHeight-4)+"px")
+                }
             }
         } else if (upgs.reqDesc) tmp.el["upg_req_desc_"+id].setHTML(upgs.reqDesc())
     }

@@ -21,8 +21,7 @@ function calc(dt) {
 
     player.maxPerk = Math.max(player.maxPerk, tmp.perks)
 
-    if (hasUpgrade('auto',3)) buyMaxUpgrades('grass')
-    if (hasUpgrade('auto',5)) buyMaxUpgrades('pp')
+    for (let x in UPGS) if (tmp.upgs[x].autoUnl) if (player.autoUpg[x]) buyMaxUpgrades(x,true)
 
     player.bestGrass = player.bestGrass.max(player.grass)
     player.bestPP = player.bestPP.max(player.pp)
