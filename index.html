@@ -25,6 +25,8 @@
     <script src="js/features/grass.js"></script>
     <script src="js/features/pp.js"></script>
     <script src="js/features/crystal.js"></script>
+    <script src="js/features/challenges.js"></script>
+    <script src="js/features/gh.js"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -82,12 +84,13 @@
                 <button onclick="save()">Save</button>
                 <button onclick="importy()">Import</button>
                 <button onclick="export_copy()">Export to clipboard</button>
-                <button onclick="exporty()">Export</button><br>
+                <button onclick="exporty()">Export</button>
+                <button onclick="window.open('https://discord.gg/Ekp8FsSwzR')">Join Discord Server</button><br>
                 <button onclick="hideUpgOption()">Hide upgrades which is maxed/purchased: <span id="hideUpgOption">OFF</span></button><br><br>
-                Really Grass Cutting Incremental - Prototype v0.1 - Made by MrRedShark77<br>
+                Really Grass Cutting Incremental - Prototype v0.2 - Made by MrRedShark77<br>
                 The game inspired by <a href="https://www.roblox.com/games/9292879820">Grass Cutting Incremental</a><br>
                 <b class="red">Warning! Recommended size is 1920x1080! You may change zoom!</b><br><br>
-                Endgame: Level 230, Tier 14
+                Endgame: Level 300, Tier 18
             </div><div id="map_div_p">
                 <div style="width: 100%; height: 50%;">
                     <div class="upgs_div" id="upgs_div_perk"></div>
@@ -106,11 +109,20 @@
                     <div style="width: 33%; height: 100%;"><div class="reset_div" id="reset_div_crystal"></div></div>
                     <div style="width: 67%; height: 100%;"><div class="upgs_div" id="upgs_div_crystal"></div></div>
                 </div>
-            </div><div id="map_div_chal">
+            </div><div id="map_div_chal" style="overflow-y: auto;">
                 <div id="chal_unl">
-                    Reach Level 200 to unlock (coming soon)
-                </div><div id="chal_desc">
-
+                    Reach Level 200 to unlock
+                </div><div id="chal_div">
+                    Click any challenge to start! Click again to exit.<br>
+                    <div id="chal_table" class="table_center"></div>
+                </div>
+            </div><div id="map_div_gh">
+                <div style="width: 100%; height: 50%;" class="table_center">
+                    <div style="width: 33%; height: 100%;"><div class="reset_div" id="reset_div_gh"></div></div>
+                    <div style="width: 67%; height: 100%;"></div>
+                </div><div style="width: 100%; height: 50%;" class="table_center">
+                    <div style="width: 33%; height: 100%;"></div>
+                    <div style="width: 67%; height: 100%;"></div>
                 </div>
             </div>
         </div>

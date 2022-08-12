@@ -5,7 +5,7 @@ const MAP = [
     [null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null],
     [null,null,null,'opt',null,null,null],
-    [null,null,'auto','g','pc',null,null],
+    [null,null,'auto','g','pc','gh',null],
     [null,null,null,'p','chal',null,null],
     [null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null],

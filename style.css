@@ -39,6 +39,11 @@ h2 {
     font-size: 30px;
 }
 
+h3 {
+	display: inline;
+    font-size: 25px;
+}
+
 button {
     margin: 2px;
     font-size: 20px;
@@ -256,15 +261,17 @@ button:not(.locked):hover {
 .reset_div.pp,
 .reset_req.pp,
 .upg_desc.pp,
-.upgs_div.pp {
+.upgs_div.pp,
+.chal_div.pp {
     background-color: #159edd;
 }
 
 .reset_div.crystal,
 .reset_req.crystal,
 .upg_desc.crystal,
-.upgs_div.crystal {
-    background-color: #ee4292;
+.upgs_div.crystal,
+.chal_div.crystal {
+    background-color: #97245a;
 }
 
 .upgs_ctn {
@@ -283,14 +290,17 @@ button:not(.locked):hover {
     flex-wrap: nowrap;
 }
 
+#main_app > div::-webkit-scrollbar,
 .upgs_ctn::-webkit-scrollbar {
     width: 10px;
 }
 
+#main_app > div::-webkit-scrollbar-track,
 .upgs_ctn::-webkit-scrollbar-track {
     background-color: #0000;
 }
 
+#main_app > div::-webkit-scrollbar-thumb,
 .upgs_ctn::-webkit-scrollbar-thumb {
     background-color: #b6b6b6;
     border-radius: 10px;
@@ -393,4 +403,16 @@ button:not(.locked):hover {
 
 #map_div_opt {
     font-size: 16px;
+}
+
+.chal_div {
+    position: relative;
+    width: 450px;
+    height: 240px;
+    padding: 5px;
+    margin: 5px;
+    border: solid 2px black;
+    background-color: #222;
+    font-size: 16px;
+    cursor: pointer;
 }

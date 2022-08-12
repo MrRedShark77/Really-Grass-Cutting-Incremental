@@ -5,6 +5,11 @@ MAIN.pp = {
 
         x = x.mul(upgEffect('crystal',3))
         x = x.mul(upgEffect('plat',3))
+        x = x.mul(upgEffect('perk',7))
+
+        x = x.mul(chalEff(4))
+
+        if (inChal(3)) x = x.root(2)
 
         return x.floor()
     },
@@ -20,10 +25,12 @@ RESET.pp = {
     title: `Prestige`,
     resetBtn: `Prestige`,
 
-    reset() {
-        if (this.req()) {
-            player.pp = player.pp.add(tmp.ppGain)
-            player.pTimes++
+    reset(force=false) {
+        if (this.req()||force) {
+            if (!force) {
+                player.pp = player.pp.add(tmp.ppGain)
+                player.pTimes++
+            }
 
             this.doReset()
         }
@@ -53,6 +60,8 @@ RESET.pp = {
 
 UPGS.pp = {
     title: "Prestige Upgrades",
+
+    cannotBuy: _=>inChal(4),
 
     autoUnl: _=>hasUpgrade('auto',5),
 

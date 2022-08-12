@@ -94,6 +94,11 @@ function getPlayerData() {
 
         chalUnl: false,
 
+        chal: {
+            progress: -1,
+            comp: [],
+        },
+
         time: 0,
     }
     for (let x in UPGS) {

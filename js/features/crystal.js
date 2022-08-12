@@ -4,6 +4,7 @@ MAIN.crystal = {
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestPP.div(1e7).max(1).root(3))
 
         x = x.mul(upgEffect('plat',4))
+        x = x.mul(upgEffect('perk',8))
 
         return x.floor()
     },
@@ -21,10 +22,12 @@ RESET.crystal = {
     title: `Crystallize`,
     resetBtn: `Crystallize`,
 
-    reset() {
-        if (this.req()) {
-            player.crystal = player.crystal.add(tmp.crystalGain)
-            player.cTimes++
+    reset(force=false) {
+        if (this.req()||force) {
+            if (!force) {
+                player.crystal = player.crystal.add(tmp.crystalGain)
+                player.cTimes++
+            }
 
             this.doReset()
         }
@@ -146,7 +149,7 @@ UPGS.crystal = {
             },
             effDesc: x => "+"+format(x,0),
         },{
-            max: 3,
+            max: 8,
 
             title: "Tier Base",
             desc: `Increase multiplier's base from Tier by <b class="green">1</b> per level. Starting base is <b class="green">2</b>.`,

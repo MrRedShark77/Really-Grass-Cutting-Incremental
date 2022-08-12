@@ -22,6 +22,13 @@ function resetTemp() {
         upg_res: {},
         upg_ch: {},
 
+        chal: {
+            bulk: 0,
+            amt: 0,
+            goal: [],
+            eff: [],
+        },
+
         perkUnspent: 0,
         perks: 0,
     }

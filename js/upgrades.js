@@ -12,6 +12,8 @@ const isResNumber = ['perk','plat']
 
 const UPGS = {
     grass: {
+        cannotBuy: _=>inChal(1),
+
         autoUnl: _=>hasUpgrade('auto',3),
 
         noSpend: _=>hasUpgrade('auto',6),
@@ -259,6 +261,50 @@ const UPGS = {
 
                 effect(i) {
                     let x = Decimal.mul(player.level*i,0.05).add(1)
+
+                    return x
+                },
+                effDesc: x => x.format()+"x",
+            },{
+                max: 25,
+
+                unl: _=>player.cTimes>0,
+
+                costOnce: true,
+
+                title: "PP Perk",
+                desc: `Increase PP gain by <b class="green">20%</b> per level.`,
+
+                res: "perk",
+                icon: ['Curr/Prestige'],
+                
+                cost: i => 2,
+                bulk: i => Math.floor(i/2),
+
+                effect(i) {
+                    let x = Decimal.mul(i,0.2).add(1)
+
+                    return x
+                },
+                effDesc: x => x.format()+"x",
+            },{
+                max: 25,
+
+                unl: _=>player.cTimes>0,
+
+                costOnce: true,
+
+                title: "Crystal Perk",
+                desc: `Increase Crystal gain by <b class="green">20%</b> per level.`,
+
+                res: "perk",
+                icon: ['Curr/Crystal'],
+                
+                cost: i => 4,
+                bulk: i => Math.floor(i/4),
+
+                effect(i) {
+                    let x = Decimal.mul(i,0.2).add(1)
 
                     return x
                 },
@@ -547,6 +593,9 @@ const UPGS_SCOST = {}
 
 function buyUpgrade(id,x) {
     let tu = tmp.upgs[id]
+
+    if (tu.cannotBuy) return
+
     let upg = UPGS[id].ctn[x]
     let resDis = upg.res
     let res = tmp.upg_res[resDis]
@@ -570,6 +619,9 @@ function buyUpgrade(id,x) {
 
 function buyMaxUpgrade(id,x,auto=false) {
     let tu = tmp.upgs[id]
+
+    if (tu.cannotBuy) return
+
     let upg = UPGS[id].ctn[x]
     let resDis = upg.res
     let res = tmp.upg_res[resDis]
@@ -630,6 +682,7 @@ function updateUpgTemp(id) {
 
         if (upg.effect) tu.eff[x] = upg.effect(amt)
     }
+    if (upgs.cannotBuy) tu.cannotBuy = upgs.cannotBuy()
     if (upgs.noSpend) tu.noSpend = upgs.noSpend()
     if (upgs.autoUnl) tu.autoUnl = upgs.autoUnl()
     tu.unlLength = ul
@@ -724,7 +777,7 @@ function updateUpgradesHTML(id) {
                 if (upg.effDesc) h += '<br>Effect: <span class="cyan">'+upg.effDesc(tu.eff[ch])+"</span>"
 
                 if (amt < tu.max[ch]) {
-                    let cost2 = upg.costOnce?Decimal.mul(tu.cost[ch],25):upg.cost((Math.floor(amt/25)+1)*25)
+                    let cost2 = upg.costOnce?Decimal.mul(tu.cost[ch],25):upg.cost((Math.floor(amt/25)+1)*25)//upg.cost(amt+25)
                     
                     h += `
                     <br><span class="${Decimal.gte(tmp.upg_res[upg.res],cost2)?"green":"red"}">Cost to next 25: ${format(cost2,0)} ${dis}</span>

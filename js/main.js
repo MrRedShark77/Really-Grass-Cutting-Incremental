@@ -17,6 +17,11 @@ const MAIN = {
         x = x.mul(upgEffect('crystal',0))
         x = x.mul(upgEffect('plat',2))
 
+        x = x.mul(chalEff(1))
+
+        x = x.pow(chalEff(3))
+        if (inChal(3)) x = x.root(2)
+
         return x
     },
     grassCap() {
@@ -38,13 +43,21 @@ const MAIN = {
         x = x.mul(upgEffect('crystal',1))
         x = x.mul(upgEffect('plat',1))
 
+        x = x.mul(chalEff(0))
+
+        if (inChal(3)) x = x.root(2)
+
         return x
     },
     tpGain() {
+        if (inChal(2)) return E(0)
+
         let x = upgEffect('pp',2)
 
         x = x.mul(upgEffect('crystal',2))
         x = x.mul(upgEffect('perk',6))
+
+        x = x.mul(chalEff(2))
 
         return x
     },
@@ -52,18 +65,22 @@ const MAIN = {
     autoCut: _=>5-upgEffect('auto',0,0)-upgEffect('plat',0,0),
     level: {
         req(i) {
-            i = E(i)
+            i = E(i).scale(200,2,0)
+
+            if (inChal(0)) i = i.mul(3)
             
-            let x = Decimal.pow(2.7,i.scale(200,2,0).pow(0.75)).mul(50)
+            let x = Decimal.pow(2.7,i.pow(0.75)).mul(50)
 
             return x.ceil()
         },
         bulk(i) {
             let x = i.div(50)
             if (x.lt(1)) return 0
-            x = x.log(2.7).root(0.75).scale(200,2,0,true)
+            x = x.log(2.7).root(0.75)
 
-            return Math.floor(x.toNumber()+1)
+            if (inChal(0)) x = x.div(3)
+
+            return Math.floor(x.scale(200,2,0,true).toNumber()+1)
         },
         cur(i) {
             return i > 0 ? this.req(i-1) : E(0) 

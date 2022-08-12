@@ -29,5 +29,10 @@ function calc(dt) {
 
     if (player.level >= 200 && !player.chalUnl) player.chalUnl = true
 
+    if (!inChal(-1)) {
+        let p = player.chal.progress
+        player.chal.comp[p] = Math.min(Math.max(player.chal.comp[p]||0,tmp.chal.bulk),CHALS[p].max)
+    }
+
     MAIN.checkCutting()
 }
