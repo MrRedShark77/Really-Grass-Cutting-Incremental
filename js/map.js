@@ -1,6 +1,13 @@
 var mapID = 'g'
 var mapPos = [3,3]
 
+window.addEventListener('keydown', e=>{
+    if (e.keyCode == 65 || e.keyCode == 37) switchMap(-1,0)
+    if (e.keyCode == 68 || e.keyCode == 39) switchMap(1,0)
+    if (e.keyCode == 87 || e.keyCode == 38) switchMap(0,-1)
+    if (e.keyCode == 83 || e.keyCode == 40) switchMap(0,1)
+})
+
 const MAP = [
     [null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null],

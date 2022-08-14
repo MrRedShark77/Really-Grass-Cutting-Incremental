@@ -2,7 +2,7 @@ const CHALS = [
     {
         unl: _=>true,
 
-        max: 12,
+        max: 20,
         id: 'pp',
 
         title: `Less Level`,

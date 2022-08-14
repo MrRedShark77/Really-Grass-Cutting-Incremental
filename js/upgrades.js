@@ -122,6 +122,8 @@ const UPGS = {
 
         underDesc: _=>`You have ${format(tmp.perkUnspent,0)} Perk`,
 
+        autoUnl: _=>hasUpgrade('auto',13),
+
         ctn: [
             {
                 max: 50,
@@ -430,10 +432,79 @@ const UPGS = {
                             
                 cost: i => E(500),
                 bulk: i => 1,
-            },
-            /*
-            {
-                unl: _=>player.cTimes>0,
+            },{
+                unl: _=>player.grasshop>0,
+
+                title: "Crystal Upgrade Autobuy",
+                desc: `You can now automatically buy Crystal Upgrades.`,
+            
+                res: "crystal",
+                icon: ['Curr/Crystal','Icons/Automation'],
+                            
+                cost: i => E(1e11),
+                bulk: i => 1,
+            },{
+                unl: _=>player.grasshop>0,
+
+                title: "Prestige Upgrades EL",
+                desc: `Prestige Upgrades no longer spend PP.`,
+            
+                res: "crystal",
+                icon: ['Curr/Prestige','Icons/Infinite'],
+                            
+                cost: i => E(1e12),
+                bulk: i => 1,
+            },{
+                unl: _=>player.grasshop>=4,
+
+                title: "Crystal Upgrades EL",
+                desc: `Crystal Upgrades no longer spend crystal.`,
+            
+                res: "crystal",
+                icon: ['Curr/Crystal','Icons/Infinite'],
+                            
+                cost: i => E(1e15),
+                bulk: i => 1,
+            },{
+                unl: _=>player.grasshop>=4,
+
+                max: 10,
+
+                title: "PP Generation",
+                desc: `Passively generate <b class="green">1%</b> of PP you would earn on prestige per second.`,
+            
+                res: "pp",
+                icon: ['Curr/Prestige','Icons/Automation'],
+                            
+                cost: i => Decimal.pow(2,i).mul(1e40).ceil(),
+                bulk: i => i.div(1e40).max(1).log(2).floor().toNumber()+1,
+                effect(i) {
+                    let x = i/100
+            
+                    return x
+                },
+                effDesc: x => "+"+formatPercent(x,0)+"/s",
+            },{
+                unl: _=>player.grasshop>=4,
+
+                max: 10,
+
+                title: "Crystal Generation",
+                desc: `Passively generate <b class="green">1%</b> of crystal you would earn on crystallize per second.`,
+            
+                res: "pp",
+                icon: ['Curr/Crystal','Icons/Automation'],
+                            
+                cost: i => Decimal.pow(2,i).mul(1e42).ceil(),
+                bulk: i => i.div(1e42).max(1).log(2).floor().toNumber()+1,
+                effect(i) {
+                    let x = i/100
+            
+                    return x
+                },
+                effDesc: x => "+"+formatPercent(x,0)+"/s",
+            },{
+                unl: _=>player.grasshop>=6,
 
                 title: "Perk Autobuy",
                 desc: `You can now automatically buy Perk Upgrades.`,
@@ -441,10 +512,9 @@ const UPGS = {
                 res: "crystal",
                 icon: ['Curr/Perks','Icons/Automation'],
                             
-                cost: i => E(20),
+                cost: i => E(1e16),
                 bulk: i => 1,
             },
-            */
         ],
     },
     plat: {
@@ -769,7 +839,7 @@ function updateUpgradesHTML(id) {
                 let dis = UPG_RES[upg.res][0]
 
                 let h = `
-                <h2>${upg.title}</h2><br>
+                [#${ch}] <h2>${upg.title}</h2><br>
                 Level <b class="yellow">${format(amt,0)} / ${format(tu.max[ch],0)}</b><br>
                 ${upg.desc}
                 `
@@ -777,7 +847,7 @@ function updateUpgradesHTML(id) {
                 if (upg.effDesc) h += '<br>Effect: <span class="cyan">'+upg.effDesc(tu.eff[ch])+"</span>"
 
                 if (amt < tu.max[ch]) {
-                    let cost2 = upg.costOnce?Decimal.mul(tu.cost[ch],25):upg.cost((Math.floor(amt/25)+1)*25)//upg.cost(amt+25)
+                    let cost2 = upg.costOnce?Decimal.mul(tu.cost[ch],25):upg.cost((Math.floor(amt/25)+1)*25-1)//upg.cost(amt+25)
                     
                     h += `
                     <br><span class="${Decimal.gte(tmp.upg_res[upg.res],cost2)?"green":"red"}">Cost to next 25: ${format(cost2,0)} ${dis}</span>

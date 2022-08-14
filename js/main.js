@@ -19,6 +19,10 @@ const MAIN = {
 
         x = x.mul(chalEff(1))
 
+        if (player.grasshop >= 1) {
+            x = x.mul(5).mul(getGHEffect(0))
+        }
+
         x = x.pow(chalEff(3))
         if (inChal(3)) x = x.root(2)
 
@@ -45,6 +49,10 @@ const MAIN = {
 
         x = x.mul(chalEff(0))
 
+        if (player.grasshop >= 2) {
+            x = x.mul(5).mul(getGHEffect(1))
+        }
+
         if (inChal(3)) x = x.root(2)
 
         return x
@@ -58,6 +66,10 @@ const MAIN = {
         x = x.mul(upgEffect('perk',6))
 
         x = x.mul(chalEff(2))
+
+        if (player.grasshop >= 3) {
+            x = x.mul(5).mul(getGHEffect(2))
+        }
 
         return x
     },
@@ -127,7 +139,7 @@ const MAIN = {
 el.update.main = _=>{
 
     tmp.el.grassAmt.setHTML(player.grass.format(0))
-    tmp.el.grassGain.setHTML(tmp.autoCutUnlocked ? "(+"+tmp.grassGain.div(tmp.autocut).mul(tmp.autocutBonus).mul(tmp.autocutAmt).format(0)+"/s)" : "")
+    tmp.el.grassGain.setHTML(tmp.autoCutUnlocked ? formatGain(player.grass,tmp.grassGain.div(tmp.autocut).mul(tmp.autocutBonus).mul(tmp.autocutAmt)) : "")
 
     let tier_unl = player.pTimes > 0
 
@@ -189,4 +201,10 @@ tmp_update.push(_=>{
     tmp.tier.progress = player.tp.sub(tmp.tier.cur).max(0).min(tmp.tier.next)
     tmp.tier.percent = tmp.tier.progress.div(tmp.tier.next.sub(tmp.tier.cur)).max(0).min(1).toNumber()
     tmp.tier.mult = MAIN.tier.mult(t)
+
+    tmp.platGain = 1
+    if (player.grasshop >= 4) tmp.platGain += getGHEffect(3)
+
+    tmp.platChance = 0.005
+    if (player.grasshop >= 6) tmp.platChance *= 2
 })

@@ -32,6 +32,8 @@ RESET.pp = {
                 player.pTimes++
             }
 
+            updateTemp()
+
             this.doReset()
         }
     },
@@ -64,11 +66,12 @@ UPGS.pp = {
     cannotBuy: _=>inChal(4),
 
     autoUnl: _=>hasUpgrade('auto',5),
+    noSpend: _=>hasUpgrade('auto',9),
 
     req: _=>player.pTimes > 0,
     reqDesc: _=>`Prestige once to unlock.`,
 
-    underDesc: _=>`You have ${format(player.pp,0)} Prestige Points (PP)`,
+    underDesc: _=>`You have ${format(player.pp,0)} Prestige Points`+(tmp.ppGainP > 0 ? " <span class='smallAmt'>"+formatGain(player.pp,tmp.ppGain.mul(tmp.ppGainP))+"</span>" : ""),
 
     ctn: [
         {
@@ -131,4 +134,5 @@ UPGS.pp = {
 
 tmp_update.push(_=>{
     tmp.ppGain = MAIN.pp.gain()
+    tmp.ppGainP = upgEffect('auto',11,0)
 })

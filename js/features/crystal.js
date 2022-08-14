@@ -29,6 +29,8 @@ RESET.crystal = {
                 player.cTimes++
             }
 
+            updateTemp()
+
             this.doReset()
         }
     },
@@ -42,8 +44,6 @@ RESET.crystal = {
         resetUpgrades('pp')
 
         RESET.pp.doReset(order)
-
-        updateTemp()
     },
 }
 
@@ -55,7 +55,10 @@ UPGS.crystal = {
     req: _=>player.cTimes > 0,
     reqDesc: _=>`Crystallize once to unlock.`,
 
-    underDesc: _=>`You have ${format(player.crystal,0)} Crystal`,
+    underDesc: _=>`You have ${format(player.crystal,0)} Crystal`+(tmp.crystalGainP > 0 ? " <span class='smallAmt'>"+formatGain(player.crystal,tmp.crystalGain.mul(tmp.crystalGainP))+"</span>" : ""),
+
+    autoUnl: _=>hasUpgrade('auto',8),
+    noSpend: _=>hasUpgrade('auto',10),
 
     ctn: [
         {
@@ -172,4 +175,5 @@ UPGS.crystal = {
 
 tmp_update.push(_=>{
     tmp.crystalGain = MAIN.crystal.gain()
+    tmp.crystalGainP = upgEffect('auto',12,0)
 })

@@ -31,6 +31,9 @@ function resetTemp() {
 
         perkUnspent: 0,
         perks: 0,
+
+        ghRunning: false,
+        ghEffect: [],
     }
 
     for (let x in UPG_RES) tmp.upg_res[x] = E(0)

@@ -99,6 +99,8 @@ function getPlayerData() {
             comp: [],
         },
 
+        grasshop: 0,
+
         time: 0,
     }
     for (let x in UPGS) {
