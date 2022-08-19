@@ -6,13 +6,14 @@ const UPG_RES = {
     pp: ["PP",_=>[player,"pp"],'PrestigeBase'],
     plat: ["Platinum",_=>[player,"plat"],"PlatBase"],
     crystal: ["Crystal",_=>[player,"crystal"],"CrystalBase"],
+    steel: ["Steel",_=>[player,"steel"],"GrasshopBase"],
 }
 
 const isResNumber = ['perk','plat']
 
 const UPGS = {
     grass: {
-        cannotBuy: _=>inChal(1),
+        cannotBuy: _=>inChal(1) || inChal(7),
 
         autoUnl: _=>hasUpgrade('auto',3),
 
@@ -632,6 +633,72 @@ const UPGS = {
                     return x
                 },
                 effDesc: x => format(x)+"x",
+            },{
+                max: 100,
+
+                unl: _=>player.sTimes>0,
+
+                costOnce: true,
+
+                title: "Platinum Steel",
+                desc: `Increase steel gain by <b class="green">+10%</b> per level.`,
+
+                res: "plat",
+                icon: ['Curr/Steel2'],
+                
+                cost: i => 1000,
+                bulk: i => Math.floor(i/1000),
+
+                effect(i) {
+                    let x = E(i*0.1+1)
+
+                    return x
+                },
+                effDesc: x => format(x)+"x",
+            },{
+                max: 25,
+
+                unl: _=>player.sTimes>0,
+
+                costOnce: true,
+
+                title: "Plat-Exponential PP",
+                desc: `Increase PP multiplier's exponent by <b class="green">+1%</b> per level.`,
+
+                res: "plat",
+                icon: ['Curr/Prestige','Icons/Exponent'],
+                
+                cost: i => 2000,
+                bulk: i => Math.floor(i/2000),
+
+                effect(i) {
+                    let x = E(i*0.01+1)
+
+                    return x
+                },
+                effDesc: x => "^"+format(x),
+            },{
+                max: 25,
+
+                unl: _=>player.sTimes>0,
+
+                costOnce: true,
+
+                title: "Plat-Exponential Crystal",
+                desc: `Increase Crystal multiplier's exponent by <b class="green">+1%</b> per level.`,
+
+                res: "plat",
+                icon: ['Curr/Crystal','Icons/Exponent'],
+                
+                cost: i => 3000,
+                bulk: i => Math.floor(i/3000),
+
+                effect(i) {
+                    let x = E(i*0.01+1)
+
+                    return x
+                },
+                effDesc: x => "^"+format(x),
             },
         ],
     },
@@ -744,6 +811,12 @@ function updateUpgTemp(id) {
         let res = tmp.upg_res[upg.res]
         
         tu.max[x] = upg.max||1
+        if (id == "grass") {
+            if (hasUpgrade('assembler',0) && x == 0) tu.max[x] = Infinity
+            else if (hasUpgrade('assembler',1) && x == 3) tu.max[x] = Infinity
+        } else if (id == "pp") {
+            if (hasUpgrade('assembler',2)) tu.max[x] = Infinity
+        }
 
         if (upg.unl?upg.unl():true) if (amt < tu.max[x]) ul++
 
@@ -840,7 +913,7 @@ function updateUpgradesHTML(id) {
 
                 let h = `
                 [#${ch}] <h2>${upg.title}</h2><br>
-                Level <b class="yellow">${format(amt,0)} / ${format(tu.max[ch],0)}</b><br>
+                Level <b class="yellow">${format(amt,0)}${tu.max[ch] < Infinity ? ` / ${format(tu.max[ch],0)}` : ""}</b><br>
                 ${upg.desc}
                 `
 
@@ -933,6 +1006,12 @@ el.update.upgs = _=>{
         updateUpgradesHTML('pp')
         updateUpgradesHTML('crystal')
     }
+    if (mapID == 'gh') updateUpgradesHTML('factory')
+    if (mapID == 'fd') {
+        updateUpgradesHTML('foundry')
+        updateUpgradesHTML('gen')
+    }
+    if (mapID == 'as') updateUpgradesHTML('assembler')
 
     if (mapID == 'opt') tmp.el.hideUpgOption.setTxt(player.options.hideUpgOption?"ON":"OFF")
 }

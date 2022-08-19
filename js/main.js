@@ -24,7 +24,7 @@ const MAIN = {
         }
 
         x = x.pow(chalEff(3))
-        if (inChal(3)) x = x.root(2)
+        if (inChal(3) || inChal(5)) x = x.root(2)
 
         return x
     },
@@ -49,16 +49,18 @@ const MAIN = {
 
         x = x.mul(chalEff(0))
 
+        x = x.mul(tmp.chargeEff[1]||1)
+
         if (player.grasshop >= 2) {
             x = x.mul(5).mul(getGHEffect(1))
         }
 
-        if (inChal(3)) x = x.root(2)
+        if (inChal(3) || inChal(5)) x = x.root(2)
 
         return x
     },
     tpGain() {
-        if (inChal(2)) return E(0)
+        if (inChal(2) || inChal(7)) return E(0)
 
         let x = upgEffect('pp',2)
 
@@ -67,9 +69,15 @@ const MAIN = {
 
         x = x.mul(chalEff(2))
 
+        x = x.mul(tmp.chargeEff[3]||1)
+
         if (player.grasshop >= 3) {
             x = x.mul(5).mul(getGHEffect(2))
         }
+
+        if (player.grasshop >= 7) x = x.pow(1.25)
+
+        if (inChal(5)) x = x.root(2)
 
         return x
     },
@@ -77,9 +85,9 @@ const MAIN = {
     autoCut: _=>5-upgEffect('auto',0,0)-upgEffect('plat',0,0),
     level: {
         req(i) {
-            i = E(i).scale(200,2,0)
+            i = E(i).scale(700,2,0).scale(200*(tmp.chargeEff[2]||1),2,0)
 
-            if (inChal(0)) i = i.mul(3)
+            if (inChal(0) || inChal(7)) i = i.mul(3)
             
             let x = Decimal.pow(2.7,i.pow(0.75)).mul(50)
 
@@ -90,9 +98,9 @@ const MAIN = {
             if (x.lt(1)) return 0
             x = x.log(2.7).root(0.75)
 
-            if (inChal(0)) x = x.div(3)
+            if (inChal(0) || inChal(7)) x = x.div(3)
 
-            return Math.floor(x.scale(200,2,0,true).toNumber()+1)
+            return Math.floor(x.scale(200*(tmp.chargeEff[2]||1),2,0,true).scale(700,2,0,true).toNumber()+1)
         },
         cur(i) {
             return i > 0 ? this.req(i-1) : E(0) 
@@ -120,7 +128,7 @@ const MAIN = {
             return i > 0 ? this.req(i-1) : E(0) 
         },
         mult(i) {
-            let base = 2 + upgEffect('crystal',5,0)
+            let base = 2 + upgEffect('crystal',5,0) + (tmp.chargeEff[5]||0)
             let x = Decimal.pow(base,i)
 
             return x

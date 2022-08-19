@@ -1,5 +1,5 @@
 MAIN.gh = {
-    req: _=> 300+player.grasshop*10,
+    req: _=> Math.ceil(300+E(player.grasshop).scale(20,2,0).toNumber()*10),
 
     milestone: [
         {
@@ -20,7 +20,7 @@ MAIN.gh = {
         },{
             r: 4,
             desc: `Platinum worth <b class="green">+1</b> per grasshop (start at 3). Unlock more automation upgrades.`,
-            effect: _=>player.grasshop-3,
+            effect: _=>Math.max(0,player.grasshop-3),
             effDesc: x=> "+"+format(x,0),
         },{
             r: 5,
@@ -28,6 +28,31 @@ MAIN.gh = {
         },{
             r: 6,
             desc: `Platinum Chance <b class="green">2x</b>. Unlock perk autobuyer upgrade.`,
+        },{
+            r: 7,
+            desc: `Tier multiplier's exponent is increased by <b class="green">25%</b>.`,
+        },{
+            r: 10,
+            desc: `Unlock Steelie reset. Grasshop does not reset perks.`,
+        },{
+            r: 14,
+            desc: `Unlock two more generator upgrades related to charge.`,
+        },{
+            r: 15,
+            desc: `Charge rate is increased by <b class="green">25%</b> every grasshop.`,
+            effect: _=>Decimal.pow(1.25,player.grasshop),
+            effDesc: x=> format(x)+"x",
+        },{
+            r: 18,
+            desc: `Charger charge bonuses increase <b class="green">1</b> OoM (order of magnitude) sooner.`,
+        },{
+            r: 20,
+            desc: `Charger charge bonuses increase another <b class="green">1</b> OoM sooner. Grasshop animation will no longer play.`,
+        },{
+            r: 24,
+            desc: `Charger charge bonuses increase another <b class="green">1</b> OoM sooner per grasshop starting at 24.`,
+            effect: _=>Math.max(player.grasshop-23,0),
+            effDesc: x=> "+"+format(x,0)+" later",
         },
     ],
 }
@@ -47,13 +72,19 @@ RESET.gh = {
 
     reset(force=false) {
         if ((this.req()&&player.level>=tmp.gh_req)||force) {
-            if (!tmp.ghRunning) {
+            if (force) {
+                this.doReset()
+            } else if (player.grasshop >= 20) {
+                player.grasshop++
+
+                updateTemp()
+        
+                this.doReset()
+            } else if (!tmp.ghRunning) {
                 tmp.ghRunning = true
                 document.body.style.animation = "implode 2s 1"
                 setTimeout(_=>{
-                    if (!force) {
-                        player.grasshop++
-                    }
+                    player.grasshop++
 
                     updateTemp()
         
@@ -70,12 +101,11 @@ RESET.gh = {
     doReset(order="gh") {
         player.crystal = E(0)
         player.bestCrystal = E(0)
-        player.chal.progress = -1
 
         let keep = []
         if (player.grasshop >= 3) keep.push(0,1)
         if (player.grasshop >= 4) keep.push(2,3,4)
-        for (let i = 0; i < CHALS.length; i++) if (!keep.includes(i)) player.chal.comp[i] = 0
+        for (let i = 0; i < 5; i++) if (!keep.includes(i)) player.chal.comp[i] = 0
 
         resetUpgrades('crystal')
 

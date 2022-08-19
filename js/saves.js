@@ -101,6 +101,13 @@ function getPlayerData() {
 
         grasshop: 0,
 
+        steel: E(0),
+        sTimes: 0,
+        sTime: 0,
+
+        chargeRate: E(0),
+        bestCharge: E(0),
+
         time: 0,
     }
     for (let x in UPGS) {

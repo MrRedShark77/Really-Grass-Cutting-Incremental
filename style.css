@@ -87,6 +87,13 @@ button:not(.locked):hover {
     flex-flow: row wrap;
 }
 
+.soft {
+	color: hsl(237, 15%, 47%);
+	font-weight: bold;
+	text-shadow: 0px 1px 0px hsl(252, 19%, 57%);
+	pointer-events: none;
+}
+
 #main_app {
     position: absolute;
     top: 50%;
@@ -230,6 +237,7 @@ button:not(.locked):hover {
     color: skyblue;
 }
 
+#charger_div,
 .upgs_div {
     position: relative;
     width: calc(100% - 24px);
@@ -237,6 +245,10 @@ button:not(.locked):hover {
     border: solid 2px black;
     background-color: #c5c5c5;
     margin: 10px;
+}
+
+#charger_div {
+    background-color: #ffd900;
 }
 
 .buyAllUpg {
@@ -254,7 +266,9 @@ button:not(.locked):hover {
 }
 
 .upg_desc.auto,
-.upgs_div.auto {
+.upgs_div.auto,
+.upg_desc.assembler,
+.upgs_div.assembler {
     background-color: #811919;
 }
 
@@ -409,7 +423,7 @@ button:not(.locked):hover {
     padding: 5px;
     margin: 5px;
     border: solid 2px black;
-    background-color: #222;
+    background-color: #c5c5c5;
     font-size: 16px;
     cursor: pointer;
 }
@@ -450,3 +464,23 @@ button:not(.locked):hover {
 .milestone_ctns > div.bought {
     background-color: limegreen;
 }
+
+#charge_mil {
+    width: calc(100% - 24px);
+    height: calc(100% - 84px);
+    border: solid 2px black;
+    background-color: #272727;
+    overflow-y: auto;
+    margin: 0 10px;
+    font-size: 16px;
+}
+
+#charge_mil > div {
+    width: 100%;
+    color: grey;
+}
+
+#charge_mil > div.green {
+    color: lime;
+}
+

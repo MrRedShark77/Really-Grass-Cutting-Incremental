@@ -9,7 +9,9 @@ MAIN.pp = {
 
         x = x.mul(chalEff(4))
 
-        if (inChal(3)) x = x.root(2)
+        x = x.pow(upgEffect('plat',6))
+
+        if (inChal(3) || inChal(5)) x = x.root(2)
 
         return x.floor()
     },
@@ -44,7 +46,7 @@ RESET.pp = {
         player.xp = E(0)
         player.level = 0
 
-        let keep_perk = order == "p" && hasUpgrade('auto',4) || order == "c" && hasUpgrade('auto',7)
+        let keep_perk = order == "p" && hasUpgrade('auto',4) || order == "c" && hasUpgrade('auto',7) || order == "gh" && player.grasshop >= 10
 
         if (!keep_perk) {
             player.maxPerk = 0
@@ -63,7 +65,7 @@ RESET.pp = {
 UPGS.pp = {
     title: "Prestige Upgrades",
 
-    cannotBuy: _=>inChal(4),
+    cannotBuy: _=>inChal(4) || inChal(7),
 
     autoUnl: _=>hasUpgrade('auto',5),
     noSpend: _=>hasUpgrade('auto',9),
@@ -78,7 +80,7 @@ UPGS.pp = {
             max: 1000,
 
             title: "Grass Value II",
-            desc: `Increase grass gain by <b class="green">+50%</b> per level. This effect is increased by <b class="green">50%</b> for every <b class="yellow">25</b> levels`,
+            desc: `Increase grass gain by <b class="green">+50%</b> per level. This effect is increased by <b class="green">50%</b> for every <b class="yellow">25</b> levels.`,
         
             res: "pp",
             icon: ["Curr/Grass"],
@@ -134,5 +136,5 @@ UPGS.pp = {
 
 tmp_update.push(_=>{
     tmp.ppGain = MAIN.pp.gain()
-    tmp.ppGainP = upgEffect('auto',11,0)
+    tmp.ppGainP = (upgEffect('auto',11,0)+upgEffect('gen',0,0))*upgEffect('factory',1,1)
 })

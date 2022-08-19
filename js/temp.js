@@ -29,6 +29,8 @@ function resetTemp() {
             eff: [],
         },
 
+        chargeEff: [],
+
         perkUnspent: 0,
         perks: 0,
 

@@ -61,7 +61,7 @@ const CHALS = [
 
         title: `Reduced Resources`,
         desc: `^0.5 to Grass, XP & PP gain.`,
-        reward: `Grass multiplier's exponent is increased by <b class="green">+2%</b> per completion.`,
+        reward: `Grass effect's exponent is increased by <b class="green">+2%</b> per completion.`,
 
         goal: i=>50+20*i,
         bulk: i=>Math.floor((i-50)/20+1),
@@ -89,6 +89,60 @@ const CHALS = [
 
         eff: i=>Decimal.pow(2,i),
         effDesc: x=>format(x)+"x",
+    },{
+        unl: _=>player.sTimes > 0,
+
+        max: 10,
+        id: 'steel',
+
+        title: `Reduced Resources II`,
+        desc: `^0.5 to Grass, XP, TP, PP & Crystal gain.`,
+        reward: `Steel gain is increased by <b class="green">50%</b> every completions.`,
+
+        goal: i=>100+i*20,
+        bulk: i=>Math.floor((i-100)/20+1),
+
+        goalDesc: x=>"Level "+format(x,0),
+        goalAmt: _=>player.level,
+
+        eff: i=>Decimal.pow(1.5,i),
+        effDesc: x=>format(x)+"x",
+    },{
+        unl: _=>player.sTimes > 0,
+
+        max: 10,
+        id: 'steel',
+
+        title: `Crystalless`,
+        desc: `You cannot buy any Crystal Upgrades.`,
+        reward: `Crystal gain is increased by <b class="green">100%</b> every completions.`,
+
+        goal: i=>20+i,
+        bulk: i=>i-19,
+
+        goalDesc: x=>"Tier "+format(x,0),
+        goalAmt: _=>player.tier,
+
+        eff: i=>Decimal.pow(2,i),
+        effDesc: x=>format(x)+"x",
+    },{
+        unl: _=>hasUpgrade('factory',2),
+
+        max: 10,
+        id: 'steel',
+
+        title: `Challengerism`,
+        desc: `You are trapped in Prestige & Crystal Challenges (except Reduced Resources).`,
+        reward: `Charge rate is increased by <b class="green">10x</b> every completions.`,
+
+        goal: i=>40+i*10,
+        bulk: i=>Math.floor((i-40)/10+1),
+
+        goalDesc: x=>"Level "+format(x,0),
+        goalAmt: _=>player.level,
+
+        eff: i=>Decimal.pow(10,i),
+        effDesc: x=>format(x)+"x",
     },
 ]
 
@@ -99,7 +153,8 @@ const chalSGoal = (_=>{
 })()
 
 function inChal(x) {
-    return player.chal.progress == x
+    let p = player.chal.progress
+    return p == x
 }
 
 function enterChal(x) {

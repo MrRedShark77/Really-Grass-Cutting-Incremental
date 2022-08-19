@@ -2,6 +2,7 @@ function calc(dt) {
     tmp.spawn_time += dt
     tmp.autocutTime += dt
     player.time += dt
+    player.sTime += dt
 
     if (tmp.spawn_time >= tmp.grassSpawn) {
         while (tmp.spawn_time >= tmp.grassSpawn) {
@@ -23,12 +24,15 @@ function calc(dt) {
 
     for (let x in UPGS) if (tmp.upgs[x].autoUnl) if (player.autoUpg[x]) buyMaxUpgrades(x,true)
 
-    if (tmp.ppGainP > 0) player.pp = player.pp.add(tmp.ppGain.mul(dt*tmp.ppGainP))
-    if (tmp.crystalGainP > 0) player.crystal = player.crystal.add(tmp.crystalGain.mul(dt*tmp.crystalGainP))
+    if (tmp.ppGainP > 0 && player.level >= 30) player.pp = player.pp.add(tmp.ppGain.mul(dt*tmp.ppGainP))
+    if (tmp.crystalGainP > 0 && player.level >= 100) player.crystal = player.crystal.add(tmp.crystalGain.mul(dt*tmp.crystalGainP))
+
+    if (hasUpgrade('factory',2)) player.chargeRate = player.chargeRate.add(tmp.chargeGain.mul(dt))
 
     player.bestGrass = player.bestGrass.max(player.grass)
     player.bestPP = player.bestPP.max(player.pp)
     player.bestCrystal = player.bestCrystal.max(player.crystal)
+    player.bestCharge = player.bestCharge.max(player.chargeRate)
 
     if (player.level >= 200 && !player.chalUnl) player.chalUnl = true
 

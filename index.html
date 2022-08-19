@@ -27,6 +27,7 @@
     <script src="js/features/crystal.js"></script>
     <script src="js/features/challenges.js"></script>
     <script src="js/features/gh.js"></script>
+    <script src="js/features/steelie.js"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -87,10 +88,10 @@
                 <button onclick="exporty()">Export</button>
                 <button onclick="window.open('https://discord.gg/Ekp8FsSwzR')">Join Discord Server</button><br>
                 <button onclick="hideUpgOption()">Hide upgrades which is maxed/purchased: <span id="hideUpgOption">OFF</span></button><br><br>
-                Really Grass Cutting Incremental - Prototype v0.3 - Made by MrRedShark77<br>
+                Really Grass Cutting Incremental - Prototype v0.3.1 - Made by MrRedShark77<br>
                 The game inspired by <a href="https://www.roblox.com/games/9292879820">Grass Cutting Incremental</a><br>
                 <b class="red">Warning! Recommended size is 1920x1080! You may change zoom!</b><br><br>
-                Endgame: Level 370, Tier 24, 7 Grasshop
+                Endgame: Level 750, Tier 52, 31 Grasshop
             </div><div id="map_div_p">
                 <div style="width: 100%; height: 50%;">
                     <div class="upgs_div" id="upgs_div_perk"></div>
@@ -121,8 +122,28 @@
                     <div style="width: 33%; height: 100%;"><div class="reset_div" id="reset_div_gh"></div></div>
                     <div style="width: 67%; height: 100%;"><div class="milestone_div" id="milestone_div_gh"></div></div>
                 </div><div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 33%; height: 100%;"></div>
-                    <div style="width: 67%; height: 100%;"></div>
+                    <div style="width: 33%; height: 100%;"><div class="reset_div" id="reset_div_steel"></div></div>
+                    <div style="width: 67%; height: 100%;"><div class="upgs_div" id="upgs_div_factory"></div></div>
+                </div>
+            </div><div id="map_div_fd">
+                <div style="width: 100%; height: 50%;" class="table_center">
+                    <div style="width: 100%; height: 100%;"><div class="upgs_div" id="upgs_div_foundry"></div></div>
+                </div><div style="width: 100%; height: 50%;" class="table_center">
+                    <div style="width: 50%; height: 100%;"><div class="upgs_div" id="upgs_div_gen"></div></div>
+                    <div style="width: 50%; height: 100%;"><div id="charger_div">
+                        <div style="height: 40px;" id="charge_upper">
+                            
+                        </div><div id="charge_mil">
+                        </div><div style="height: 40px;" id="charge_under">
+                            
+                        </div>
+                    </div></div>
+                </div>
+            </div><div id="map_div_as">
+                <div style="width: 100%; height: 50%;" class="table_center">
+                    <div style="width: 100%; height: 100%;"><div class="upgs_div" id="upgs_div_assembler"></div></div>
+                </div><div style="width: 100%; height: 50%;" class="table_center">
+                    <div style="width: 100%; height: 100%;"></div>
                 </div>
             </div>
         </div>
