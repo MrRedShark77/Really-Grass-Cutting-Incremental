@@ -8,6 +8,8 @@ MAIN.crystal = {
 
         x = x.mul(chalEff(6))
 
+        x = x.mul(tmp.chargeEff[0]||7)
+
         x = x.pow(upgEffect('plat',7))
 
         if (inChal(5)) x = x.root(2)

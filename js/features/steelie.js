@@ -98,6 +98,30 @@ MAIN.steel = {
                     return x.toNumber()
                 },
                 effDesc: x => "Increase Tier's effect base by +"+format(x),
+            },{
+                req: E(1e16),
+                eff(c) {
+                    if (player.bestCharge.lt(this.req)) return E(1)
+
+                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+
+                    let x = s.root(3)
+
+                    return x.toNumber()
+                },
+                effDesc: x => "Boost PP gain by "+format(x)+"x",
+            },{
+                req: E(1e19),
+                eff(c) {
+                    if (player.bestCharge.lt(this.req)) return E(1)
+
+                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+
+                    let x = s.root(3)
+
+                    return x.toNumber()
+                },
+                effDesc: x => "Boost Crystal gain by "+format(x)+"x",
             },
         ],
     },

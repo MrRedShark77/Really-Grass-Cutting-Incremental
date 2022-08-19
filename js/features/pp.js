@@ -9,6 +9,8 @@ MAIN.pp = {
 
         x = x.mul(chalEff(4))
 
+        x = x.mul(tmp.chargeEff[0]||6)
+
         x = x.pow(upgEffect('plat',6))
 
         if (inChal(3) || inChal(5)) x = x.root(2)
