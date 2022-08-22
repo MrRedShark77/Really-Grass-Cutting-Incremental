@@ -9,6 +9,8 @@ MAIN.steel = {
 
         x = x.mul(tmp.chargeEff[0]||1)
 
+        x = x.mul(upgEffect('aGrass',2))
+
         return x.floor()
     },
     foundryEff() {
@@ -19,9 +21,13 @@ MAIN.steel = {
     },
     charger: {
         gain() {
-            let x = E(upgEffect('factory',2)).mul(getGHEffect(9)).mul(upgEffect('factory',3))
+            let x = E(upgEffect('factory',2)).mul(getGHEffect(9)).mul(upgEffect('factory',3)).mul(upgEffect('factory',4))
 
             x = x.mul(upgEffect('gen',2)).mul(upgEffect('gen',3)).mul(chalEff(7))
+
+            x = x.mul(upgEffect('aGrass',0))
+
+            if (player.decel) x = x.div(1e18)
 
             return x
         },
@@ -57,7 +63,7 @@ MAIN.steel = {
 
                     let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
 
-                    let x = s.log10().div(10).add(1).root(2).softcap(1.25,1/3,0)
+                    let x = s.log10().div(10).add(1).root(2).softcap(1.25,1/2,0)
 
                     return x.toNumber()
                 },
@@ -233,6 +239,24 @@ UPGS.factory = {
                         
             cost: i => Decimal.pow(1.2,i).mul(1e15).ceil(),
             bulk: i => i.div(1e15).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 100,
+
+            title: "Decelerator",
+            desc: `Unlock a building (on bottom of Factory) where you can slow down time. Each level increases charge rate by <b class="green">+10%</b>.`,
+        
+            res: "steel",
+            icon: ["Icons/Decelerate Badge"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(1e38).ceil(),
+            bulk: i => i.div(1e38).max(1).log(1.2).floor().toNumber()+1,
         
             effect(i) {
                 let x = i/10+1

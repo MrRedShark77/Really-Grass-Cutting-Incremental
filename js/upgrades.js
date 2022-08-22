@@ -7,12 +7,15 @@ const UPG_RES = {
     plat: ["Platinum",_=>[player,"plat"],"PlatBase"],
     crystal: ["Crystal",_=>[player,"crystal"],"CrystalBase"],
     steel: ["Steel",_=>[player,"steel"],"GrasshopBase"],
+    aGrass: ["Anti-Grass",_=>[player,"aGrass"],'AntiGrassBase'],
 }
 
 const isResNumber = ['perk','plat']
 
 const UPGS = {
     grass: {
+        unl: _=> !player.decel,
+
         cannotBuy: _=>inChal(1) || inChal(7),
 
         autoUnl: _=>hasUpgrade('auto',3),
@@ -98,7 +101,7 @@ const UPGS = {
                 max: 5,
 
                 title: "Range",
-                desc: `Increase grass cut range by <b class="green">5</b> per level. Base is 50.`,
+                desc: `Increase grass cut range by <b class="green">10</b> per level. Base is 50.`,
 
                 res: "grass",
                 icon: ['Icons/Range'],
@@ -107,7 +110,7 @@ const UPGS = {
                 bulk: i => i.div(1e4).max(1).log(2).floor().toNumber()+1,
 
                 effect(i) {
-                    let x = i*5
+                    let x = i*10
 
                     return x
                 },
@@ -201,6 +204,8 @@ const UPGS = {
                 bulk: i => i,
 
                 effect(i) {
+                    // if (player.decel) return 1
+
                     let x = Decimal.mul(player.level*i,0.2).add(1)
 
                     return x
@@ -212,7 +217,7 @@ const UPGS = {
                 costOnce: true,
 
                 title: "Range Perk",
-                desc: `Increase grass cut range by <b class="green">5</b> per level.`,
+                desc: `Increase grass cut range by <b class="green">10</b> per level.`,
 
                 res: "perk",
                 icon: ['Icons/Range'],
@@ -221,7 +226,7 @@ const UPGS = {
                 bulk: i => i,
 
                 effect(i) {
-                    let x = i*5
+                    let x = i*10
 
                     return x
                 },
@@ -996,7 +1001,10 @@ el.setup.upgs = _=>{
 }
 
 el.update.upgs = _=>{
-    if (mapID == 'g') updateUpgradesHTML('grass')
+    if (mapID == 'g') {
+        updateUpgradesHTML('grass')
+        updateUpgradesHTML('aGrass')
+    }
     if (mapID == 'p') {
         updateUpgradesHTML('perk')
         updateUpgradesHTML('plat')

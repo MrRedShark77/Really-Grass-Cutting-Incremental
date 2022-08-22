@@ -52,4 +52,7 @@ el.update.reset = _=> {
         updateResetHTML('gh')
         updateResetHTML('steel')
     }
+    if (mapID == 'as') {
+        updateResetHTML('decel')
+    }
 }

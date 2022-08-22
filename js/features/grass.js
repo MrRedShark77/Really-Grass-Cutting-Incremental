@@ -21,7 +21,8 @@ function removeGrass(i,auto=false) {
     let y = E(1)
     if (auto) y = y.mul(tmp.autocutBonus)
 
-    player.grass = player.grass.add(tmp.grassGain.mul(y))
+    if (player.decel) player.aGrass = player.aGrass.add(tmp.grassGain.mul(y))
+    else player.grass = player.grass.add(tmp.grassGain.mul(y))
     player.xp = player.xp.add(tmp.XPGain.mul(y))
     if (player.pTimes > 0) player.tp = player.tp.add(tmp.TPGain.mul(y))
 
@@ -36,7 +37,7 @@ el.update.grassCanvas = _=>{
         drawGrass()
 
         tmp.el.grass_cap.setHTML(`${format(tmp.grasses.length,0)} / ${format(tmp.grassCap,0)} <span class="smallAmt">(+${format(1/tmp.grassSpawn*tmp.spawnAmt)}/s)</span>`)
-        tmp.el.grass_cut.setHTML("+"+format(tmp.grassGain,0)+'<span class="smallAmt">/cut</span>')
+        tmp.el.grass_cut.setHTML("+"+format(tmp.grassGain,1)+'<span class="smallAmt">/cut</span>')
     }
 }
 

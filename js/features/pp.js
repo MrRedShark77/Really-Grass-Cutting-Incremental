@@ -20,6 +20,8 @@ MAIN.pp = {
 }
 
 RESET.pp = {
+    unl: _=> !player.decel,
+
     req: _=>player.level>=30,
     reqDesc: _=>`Reach Level 30 to Prestige.`,
 
@@ -65,6 +67,8 @@ RESET.pp = {
 }
 
 UPGS.pp = {
+    unl: _=> !player.decel,
+
     title: "Prestige Upgrades",
 
     cannotBuy: _=>inChal(4) || inChal(7),

@@ -28,11 +28,13 @@
     <script src="js/features/challenges.js"></script>
     <script src="js/features/gh.js"></script>
     <script src="js/features/steelie.js"></script>
+    <script src="js/features/decel.js"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
 <body onload="loadGame()">
     <input id="copy" style="position: absolute; top: 0; left: 0; user-select: all; visibility: hidden;">
+    <div id="fog"></div>
     <div id="app">
         <div class="table_space">
             <div id="grass_div" style="margin: 10px;">
@@ -78,6 +80,7 @@
                         </div>
                     </div><div style="height: 50%;">
                         <div class="upgs_div" id="upgs_div_grass"></div>
+                        <div class="upgs_div" id="upgs_div_aGrass"></div>
                     </div>
                 </div>
             </div><div id="map_div_opt">
@@ -88,10 +91,10 @@
                 <button onclick="exporty()">Export</button>
                 <button onclick="window.open('https://discord.gg/Ekp8FsSwzR')">Join Discord Server</button><br>
                 <button onclick="hideUpgOption()">Hide upgrades which is maxed/purchased: <span id="hideUpgOption">OFF</span></button><br><br>
-                Really Grass Cutting Incremental - Prototype v0.3.1 - Made by MrRedShark77<br>
+                Really Grass Cutting Incremental - Prototype v0.3.2 - Made by MrRedShark77<br>
                 The game inspired by <a href="https://www.roblox.com/games/9292879820">Grass Cutting Incremental</a><br>
                 <b class="red">Warning! Recommended size is 1920x1080! You may change zoom!</b><br><br>
-                Endgame: Level 750, Tier 52, 31 Grasshop
+                Endgame: Level 850, Tier 64, 34 Grasshop; Level 30 in Anti-Realm
             </div><div id="map_div_p">
                 <div style="width: 100%; height: 50%;">
                     <div class="upgs_div" id="upgs_div_perk"></div>
@@ -141,7 +144,8 @@
                 </div>
             </div><div id="map_div_as">
                 <div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 100%; height: 100%;"><div class="upgs_div" id="upgs_div_assembler"></div></div>
+                    <div style="width: 50%; height: 100%;"><div class="upgs_div" id="upgs_div_assembler"></div></div>
+                    <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_decel"></div></div>
                 </div><div style="width: 100%; height: 50%;" class="table_center">
                     <div style="width: 100%; height: 100%;"></div>
                 </div>

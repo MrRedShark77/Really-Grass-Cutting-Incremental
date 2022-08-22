@@ -19,7 +19,7 @@ MAIN.crystal = {
 }
 
 RESET.crystal = {
-    unl: _=>player.pTimes>0,
+    unl: _=>player.pTimes>0 && !player.decel,
 
     req: _=>player.level>=100,
     reqDesc: _=>`Reach Level 100 to Crystallize.`,
@@ -58,7 +58,7 @@ RESET.crystal = {
 UPGS.crystal = {
     title: "Crystal Upgrades",
 
-    unl: _=>player.pTimes > 0,
+    unl: _=>player.pTimes > 0 && !player.decel,
 
     req: _=>player.cTimes > 0,
     reqDesc: _=>`Crystallize once to unlock.`,
