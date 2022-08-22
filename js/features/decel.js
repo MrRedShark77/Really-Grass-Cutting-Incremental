@@ -109,7 +109,7 @@ UPGS.aGrass = {
             max: 1000,
 
             title: "Anti-Grass Value",
-            desc: `Increase grass gain by <b class="green">+25%</b> per level.<br>This effect is increased by <b class="green">25%</b> every <b class="yellow">25</b> levels.`,
+            desc: `Increase grass gain by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">50%</b> every <b class="yellow">25</b> levels.`,
 
             res: "aGrass",
             icon: ['Curr/Grass'],
@@ -118,7 +118,7 @@ UPGS.aGrass = {
             bulk: i => i.div(1e6).max(1).log(1.2).floor().toNumber()+1,
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
 
                 return x
             },
@@ -127,7 +127,7 @@ UPGS.aGrass = {
             max: 1000,
 
             title: "Anti-Grass XP",
-            desc: `Increase XP gain by <b class="green">+25%</b> per level.<br>This effect is increased by <b class="green">25%</b> every <b class="yellow">25</b> levels.`,
+            desc: `Increase XP gain by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">50%</b> every <b class="yellow">25</b> levels.`,
 
             res: "aGrass",
             icon: ['Icons/XP'],
@@ -136,7 +136,7 @@ UPGS.aGrass = {
             bulk: i => i.div(1e7).max(1).log(1.2).floor().toNumber()+1,
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
 
                 return x
             },
@@ -150,8 +150,8 @@ UPGS.aGrass = {
             res: "aGrass",
             icon: ['Icons/XP','Icons/Plus'],
             
-            cost: i => Decimal.pow(2,i**1.5).mul(1e12).ceil(),
-            bulk: i => i.div(1e12).max(1).log(2).root(1.5).floor().toNumber()+1,
+            cost: i => Decimal.pow(3,i**1.5).mul(1e12).ceil(),
+            bulk: i => i.div(1e12).max(1).log(3).root(1.5).floor().toNumber()+1,
 
             effect(i) {
                 let x = i

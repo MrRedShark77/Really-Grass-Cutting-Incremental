@@ -27,7 +27,7 @@ MAIN.steel = {
 
             x = x.mul(upgEffect('aGrass',0))
 
-            if (player.decel) x = x.div(1e18)
+            if (player.decel) x = x.div(1e24)
 
             return x
         },
