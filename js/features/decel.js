@@ -50,6 +50,8 @@ UPGS.aGrass = {
 
     title: "Anti-Grass Upgrades",
 
+    autoUnl: _=>hasUpgrade('auto',14),
+
     ctn: [
         {
             max: 1000,

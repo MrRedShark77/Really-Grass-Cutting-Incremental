@@ -36,6 +36,8 @@ function calc(dt) {
     player.bestCrystal = player.bestCrystal.max(player.crystal)
     player.bestCharge = player.bestCharge.max(player.chargeRate)
 
+    player.aBestGrass = player.aBestGrass.max(player.aGrass)
+
     if (player.level >= 200 && !player.chalUnl) player.chalUnl = true
 
     if (!inChal(-1)) {

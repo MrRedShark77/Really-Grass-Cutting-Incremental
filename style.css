@@ -291,7 +291,11 @@ button:not(.locked):hover {
 .reset_div.decel,
 .reset_req.decel,
 .upg_desc.aGrass,
-.upgs_div.aGrass {
+.upgs_div.aGrass,
+.reset_div.ap,
+.reset_req.ap,
+.upg_desc.ap,
+.upgs_div.ap {
     background-color: #242697;
 }
 

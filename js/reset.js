@@ -47,6 +47,8 @@ el.update.reset = _=> {
     if (mapID == 'pc') {
         updateResetHTML('pp')
         updateResetHTML('crystal')
+
+        updateResetHTML('ap')
     }
     if (mapID == 'gh') {
         updateResetHTML('gh')

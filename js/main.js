@@ -25,6 +25,8 @@ const MAIN = {
 
         x = x.mul(upgEffect('aGrass',3))
 
+        x = x.mul(upgEffect('ap',0))
+
         if (player.decel) x = x.div(1e15)
 
         if (x.lt(1)) return x
@@ -35,7 +37,7 @@ const MAIN = {
         return x
     },
     grassCap() {
-        let x = 10+upgEffect('grass',1,0)+upgEffect('perk',1,0)
+        let x = 10+upgEffect('grass',1,0)+upgEffect('perk',1,0)+upgEffect('ap',4,0)
 
         return x
     },
@@ -63,6 +65,7 @@ const MAIN = {
         }
 
         x = x.mul(upgEffect('aGrass',4))
+        x = x.mul(upgEffect('ap',2))
 
         if (player.decel) x = x.div(1e16)
 
@@ -87,6 +90,8 @@ const MAIN = {
         if (player.grasshop >= 3) {
             x = x.mul(5).mul(getGHEffect(2))
         }
+
+        x = x.mul(upgEffect('ap',3))
 
         if (player.decel) x = x.div(1e16)
 
@@ -214,7 +219,7 @@ tmp_update.push(_=>{
     let lvl = player.level
 
     tmp.level.scale1 = player.decel?2:200
-    tmp.level.scale1 += upgEffect('aGrass',5,0)
+    tmp.level.scale1 += upgEffect('aGrass',5,0)+upgEffect('ap',5,0)
     tmp.level.scale1 *= tmp.chargeEff[2]||1
 
     tmp.level.next = MAIN.level.req(lvl)

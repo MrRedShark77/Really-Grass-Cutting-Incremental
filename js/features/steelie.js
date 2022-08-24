@@ -26,10 +26,11 @@ MAIN.steel = {
             x = x.mul(upgEffect('gen',2)).mul(upgEffect('gen',3)).mul(chalEff(7))
 
             x = x.mul(upgEffect('aGrass',0))
+            x = x.mul(upgEffect('ap',1))
 
             if (player.decel) x = x.div(1e24)
 
-            return x
+            return x.max(1)
         },
         effs: [
             {
@@ -128,6 +129,19 @@ MAIN.steel = {
                     return x.toNumber()
                 },
                 effDesc: x => "Boost Crystal gain by "+format(x)+"x",
+            },{
+                unl: _=>player.aTimes>0,
+                req: E(1e21),
+                eff(c) {
+                    if (player.bestCharge.lt(this.req)) return E(1)
+
+                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+
+                    let x = s.root(4)
+
+                    return x.toNumber()
+                },
+                effDesc: x => "Boost AP gain by "+format(x)+"x",
             },
         ],
     },
@@ -455,6 +469,28 @@ UPGS.assembler = {
                         
             cost: i => E(1e26),
             bulk: i => 1,
+        },{
+            unl: _=>player.aTimes>0,
+
+            title: "Limitless Crystal Upgrades",
+            desc: `<b class="green">Tier Base</b> will no longer have maximum limit.`,
+        
+            res: "steel",
+            icon: ["Curr/Crystal","Icons/Automation2"],
+                        
+            cost: i => E(1e45),
+            bulk: i => 1,
+        },{
+            unl: _=>player.aTimes>0,
+
+            title: "Limitless Crystal Upgrades II",
+            desc: `<b class="green">Grass Value III, XP III, TP II & PP</b> will no longer have maximum limit.`,
+        
+            res: "steel",
+            icon: ["Curr/Crystal","Icons/Automation2"],
+                        
+            cost: i => E(1e50),
+            bulk: i => 1,
         },
     ],
 }
@@ -475,7 +511,9 @@ tmp_update.push(_=>{
     tmp.chargeOoMMul = Decimal.pow(10,tmp.chargeOoM)
 
     for (let x = 0; x < ms.charger.effs.length; x++) {
-        tmp.chargeEff[x] = ms.charger.effs[x].eff(player.chargeRate)
+        let ce = ms.charger.effs[x]
+        let unl = ce.unl ? ce.unl() : true
+        tmp.chargeEff[x] = ce.eff(unl?player.chargeRate:E(0))
     }
 })
 
@@ -504,10 +542,14 @@ el.update.factory = _=>{
 
             for (x in MAIN.steel.charger.effs) {
                 let ce = MAIN.steel.charger.effs[x]
+                let unl = ce.unl ? ce.unl() : true
 
-                tmp.el['charge_mil'+x].setClasses({green: player.bestCharge.gte(ce.req)})
+                tmp.el['charge_mil'+x].setDisplay(unl)
+                if (unl) {
+                    tmp.el['charge_mil'+x].setClasses({green: player.bestCharge.gte(ce.req)})
 
-                tmp.el['charge_mil_eff'+x].setHTML(ce.effDesc(tmp.chargeEff[x]))
+                    tmp.el['charge_mil_eff'+x].setHTML(ce.effDesc(tmp.chargeEff[x]))
+                }
             }
         }
     }

@@ -8,6 +8,7 @@ const UPG_RES = {
     crystal: ["Crystal",_=>[player,"crystal"],"CrystalBase"],
     steel: ["Steel",_=>[player,"steel"],"GrasshopBase"],
     aGrass: ["Anti-Grass",_=>[player,"aGrass"],'AntiGrassBase'],
+    ap: ["AP",_=>[player,"ap"],'AnonymityBase'],
 }
 
 const isResNumber = ['perk','plat']
@@ -520,6 +521,17 @@ const UPGS = {
                             
                 cost: i => E(1e16),
                 bulk: i => 1,
+            },{
+                unl: _=>player.aTimes>0,
+
+                title: "Anti-Grass Upgrades Autobuy",
+                desc: `You can now automatically buy Anti-Grass Upgrades.`,
+            
+                res: "ap",
+                icon: ['Curr/Grass','Icons/Automation'],
+                            
+                cost: i => E(100),
+                bulk: i => 1,
             },
         ],
     },
@@ -704,6 +716,28 @@ const UPGS = {
                     return x
                 },
                 effDesc: x => "^"+format(x),
+            },{
+                max: 100,
+
+                unl: _=>player.aTimes>0,
+
+                costOnce: true,
+
+                title: "Plat Anonymity",
+                desc: `Increase AP gain by <b class="green">+20%</b> per level.`,
+
+                res: "plat",
+                icon: ['Curr/Anonymity'],
+                
+                cost: i => 10000,
+                bulk: i => Math.floor(i/10000),
+
+                effect(i) {
+                    let x = E(i*0.2+1)
+
+                    return x
+                },
+                effDesc: x => format(x)+"x",
             },
         ],
     },
@@ -757,6 +791,87 @@ function buyUpgrade(id,x) {
 
         updateUpgTemp(id)
     }
+}
+
+/*
+function buyMaxUpgrade(id,x,auto=false) {
+    let tu = tmp.upgs[id]
+
+    if (tu.cannotBuy) return
+
+    let upg = UPGS[id].ctn[x]
+    let resDis = upg.res
+    let res = tmp.upg_res[resDis]
+
+    if (!auto || (tu.unlLength > 0 && Decimal.gte(res,tu.unlLength))) {
+        let numInc = isResNumber.includes(resDis)
+
+        let costOnce = upg.costOnce
+        
+        let res2 = res
+        if (auto) res = numInc ? Math.ceil(res / tu.unlLength) : res.div(tu.unlLength).ceil()
+        let amt = player.upgs[id]
+        let amt2 = amt[x]||0
+
+        if (amt2 < tu.max[x]) if (Decimal.gte(res2,tu.cost[x])) {
+            if (auto) res = numInc ? Math.max(res,tu.cost[x]*1.01) : res.max(tu.cost[x]*1.01)
+            let bulk = auto ? upg.bulk(res) : tu.bulk[x]
+
+            if (costOnce ? true : bulk > amt2) {
+                let [p,q] = UPG_RES[resDis][1]()
+                let cost = costOnce ? tu.cost[x]*(Math.min(amt2+bulk,tu.max[x])-amt2) : upg.cost(bulk-1)
+
+                amt[x] = Math.min(amt[x] ? costOnce ? amt[x]+bulk : Math.max(amt[x],bulk) : bulk,tu.max[x])
+                if (resDis == 'perk') {
+                    player.spentPerk += cost
+                    tmp.perkUnspent = Math.max(player.maxPerk-player.spentPerk,0)
+                }
+                else if (!tu.noSpend) p[q] = numInc ? Math.max(p[q]-cost,0) : p[q].sub(cost).max(0)
+
+                updateUpgResource(resDis)
+
+                updateUpgTemp(id)
+            }
+        }
+    }
+}
+*/
+
+function buyNextUpgrade(id,x) {
+	let tu = tmp.upgs[id]
+
+	if (tu.cannotBuy) return
+
+	let upg = UPGS[id].ctn[x]
+	let resDis = upg.res
+	let res = tmp.upg_res[resDis]
+
+	let numInc = isResNumber.includes(resDis)
+
+	let costOnce = upg.costOnce
+
+	let res2 = res
+	let amt = player.upgs[id]
+	let amt2 = amt[x]||0
+
+	if (amt2 < tu.max[x] && Decimal.gte(res2,tu.cost[x])) {
+		let bulk = Math.min(tu.bulk[x], Math.ceil((amt2 + 1) / 25) * 25)
+
+		if (costOnce ? true : bulk > amt2) {
+			let [p,q] = UPG_RES[resDis][1]()
+			let cost = costOnce ? tu.cost[x]*(Math.min(amt2+bulk,tu.max[x])-amt2) : upg.cost(bulk-1)
+
+			amt[x] = Math.min(amt[x] ? costOnce ? amt[x]+bulk : Math.max(amt[x],bulk) : bulk,tu.max[x])
+			if (resDis == 'perk') {
+				player.spentPerk += cost
+				tmp.perkUnspent = Math.max(player.maxPerk-player.spentPerk,0)
+			}
+			else if (!tu.noSpend) p[q] = numInc ? Math.max(p[q]-cost,0) : p[q].sub(cost).max(0)
+
+			updateUpgResource(resDis)
+			updateUpgTemp(id)
+		}
+	}
 }
 
 function buyMaxUpgrade(id,x,auto=false) {
@@ -821,6 +936,9 @@ function updateUpgTemp(id) {
             else if (hasUpgrade('assembler',1) && x == 3) tu.max[x] = Infinity
         } else if (id == "pp") {
             if (hasUpgrade('assembler',2)) tu.max[x] = Infinity
+        } else if (id == "crystal") {
+            if (hasUpgrade('assembler',3) && x == 5) tu.max[x] = Infinity
+            else if (hasUpgrade('assembler',4) && x < 4) tu.max[x] = Infinity
         }
 
         if (upg.unl?upg.unl():true) if (amt < tu.max[x]) ul++
@@ -857,6 +975,7 @@ function setupUpgradesHTML(id) {
             <div style="position: absolute; bottom: 0; width: 100%;">
                 <button onclick="tmp.upg_ch.${id} = -1">Cancel</button>
                 <button onclick="buyUpgrade('${id}',tmp.upg_ch.${id})">Buy 1</button>
+                <button onclick="buyNextUpgrade('${id}',tmp.upg_ch.${id})">Buy Next</button>
                 <button onclick="buyMaxUpgrade('${id}',tmp.upg_ch.${id})">Buy Max</button>
             </div>
         </div>
@@ -1013,6 +1132,8 @@ el.update.upgs = _=>{
     if (mapID == 'pc') {
         updateUpgradesHTML('pp')
         updateUpgradesHTML('crystal')
+
+        updateUpgradesHTML('ap')
     }
     if (mapID == 'gh') updateUpgradesHTML('factory')
     if (mapID == 'fd') {
