@@ -52,6 +52,8 @@ UPGS.aGrass = {
 
     autoUnl: _=>hasUpgrade('auto',14),
 
+    noSpend: _=>hasUpgrade('auto',16),
+
     ctn: [
         {
             max: 1000,
@@ -144,7 +146,7 @@ UPGS.aGrass = {
             },
             effDesc: x => x.format()+"x",
         },{
-            max: 48,
+            max: 50,
 
             title: "Scaled Level",
             desc: `Level scales <b class="green">+1</b> later per level (before multiplication).`,
@@ -152,8 +154,8 @@ UPGS.aGrass = {
             res: "aGrass",
             icon: ['Icons/XP','Icons/Plus'],
             
-            cost: i => Decimal.pow(3,i**1.5).mul(1e12).ceil(),
-            bulk: i => i.div(1e12).max(1).log(3).root(1.5).floor().toNumber()+1,
+            cost: i => Decimal.pow(3,i**1.4).mul(1e12).ceil(),
+            bulk: i => i.div(1e12).max(1).log(3).root(1.4).floor().toNumber()+1,
 
             effect(i) {
                 let x = i

@@ -10,6 +10,7 @@ MAIN.steel = {
         x = x.mul(tmp.chargeEff[0]||1)
 
         x = x.mul(upgEffect('aGrass',2))
+        x = x.mul(upgEffect('oil',5))
 
         return x.floor()
     },
@@ -64,11 +65,12 @@ MAIN.steel = {
 
                     let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
 
-                    let x = s.log10().div(10).add(1).root(2).softcap(1.25,1/2,0)
+                    let x = s.log10().div(10).add(1).root(2)
+                    if (!hasUpgrade('assembler',5)) x = x.softcap(1.25,1/2,0)
 
                     return x.toNumber()
                 },
-                effDesc: x => "Scaled level starts x"+format(x,4)+" later"+softcapHTML(x,1.25),
+                effDesc: x => "Scaled level starts x"+format(x,4)+" later"+(hasUpgrade('assembler',5)?"":softcapHTML(x,1.25)),
             },{
                 req: E(1e7),
                 eff(c) {
@@ -142,6 +144,19 @@ MAIN.steel = {
                     return x.toNumber()
                 },
                 effDesc: x => "Boost AP gain by "+format(x)+"x",
+            },{
+                unl: _=>player.lTimes>0,
+                req: E(1e26),
+                eff(c) {
+                    if (player.bestCharge.lt(this.req)) return E(1)
+
+                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+
+                    let x = s.root(4)
+
+                    return x.toNumber()
+                },
+                effDesc: x => "Boost Oil gain by "+format(x)+"x",
             },
         ],
     },
@@ -490,6 +505,17 @@ UPGS.assembler = {
             icon: ["Curr/Crystal","Icons/Automation2"],
                         
             cost: i => E(1e50),
+            bulk: i => 1,
+        },{
+            unl: _=>player.lTimes>0,
+
+            title: "Charge Milestone Effect",
+            desc: `Unsoftcap the effect of 3rd charge milestone.`,
+        
+            res: "steel",
+            icon: ["Curr/Charge","Icons/Plus"],
+                        
+            cost: i => E(1e53),
             bulk: i => 1,
         },
     ],

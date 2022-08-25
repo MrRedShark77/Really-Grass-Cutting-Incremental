@@ -150,6 +150,8 @@ MAIN.ap = {
         x = x.mul(upgEffect('plat',8))
         x = x.mul(tmp.chargeEff[8]||0)
 
+        x = x.mul(upgEffect('oil',3))
+
         return x.floor()
     },
 }
@@ -202,6 +204,8 @@ UPGS.ap = {
     reqDesc: _=>`Anonymity once to unlock.`,
 
     underDesc: _=>`You have ${format(player.ap,0)} Anonymity Points`,
+
+    autoUnl: _=>hasUpgrade('auto',15),
 
     ctn: [
         {
@@ -303,8 +307,8 @@ UPGS.ap = {
             res: "ap",
             icon: ['Icons/XP','Icons/Plus'],
             
-            cost: i => Decimal.pow(3,i**1.25).mul(1e5).ceil(),
-            bulk: i => i.div(1e5).max(1).log(3).root(1.25).floor().toNumber()+1,
+            cost: i => Decimal.pow(3,i**1.2).mul(1e5).ceil(),
+            bulk: i => i.div(1e5).max(1).log(3).root(1.2).floor().toNumber()+1,
 
             effect(i) {
                 let x = i

@@ -299,6 +299,13 @@ button:not(.locked):hover {
     background-color: #242697;
 }
 
+.reset_div.oil,
+.reset_req.oil,
+.upg_desc.oil,
+.upgs_div.oil {
+    background-color: #2b2b2b;
+}
+
 .upgs_ctn {
     height: calc(100% - 84px);
     width: calc(100% - 24px);
@@ -474,6 +481,10 @@ button:not(.locked):hover {
 
 .milestone_ctns > div.bought {
     background-color: limegreen;
+}
+
+#gh_mil_ctns {
+    height: 100%;
 }
 
 #charge_mil {

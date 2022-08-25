@@ -9,6 +9,7 @@ const UPG_RES = {
     steel: ["Steel",_=>[player,"steel"],"GrasshopBase"],
     aGrass: ["Anti-Grass",_=>[player,"aGrass"],'AntiGrassBase'],
     ap: ["AP",_=>[player,"ap"],'AnonymityBase'],
+    oil: ["Oil",_=>[player,"oil"],'LiquefyBase'],
 }
 
 const isResNumber = ['perk','plat']
@@ -532,6 +533,28 @@ const UPGS = {
                             
                 cost: i => E(100),
                 bulk: i => 1,
+            },{
+                unl: _=>player.lTimes>0,
+
+                title: "Anonymity Upgrades Autobuy",
+                desc: `You can now automatically buy Anonymity Upgrades.`,
+            
+                res: "oil",
+                icon: ['Curr/Anonymity','Icons/Automation'],
+                            
+                cost: i => E(100),
+                bulk: i => 1,
+            },{
+                unl: _=>player.lTimes>0,
+
+                title: "Anti-Grass Upgrades EL",
+                desc: `Anti-Grass Upgrades no longer spend AP.`,
+            
+                res: "oil",
+                icon: ['Curr/Grass','Icons/Infinite'],
+                            
+                cost: i => E(1000),
+                bulk: i => 1,
             },
         ],
     },
@@ -738,6 +761,28 @@ const UPGS = {
                     return x
                 },
                 effDesc: x => format(x)+"x",
+            },{
+                max: 100,
+
+                unl: _=>player.lTimes>0,
+
+                costOnce: true,
+
+                title: "Platinum Oil",
+                desc: `Increase Oil gain by <b class="green">+20%</b> per level.`,
+
+                res: "plat",
+                icon: ['Curr/Oil'],
+                
+                cost: i => 25000,
+                bulk: i => Math.floor(i/25000),
+
+                effect(i) {
+                    let x = E(i*0.2+1)
+
+                    return x
+                },
+                effDesc: x => format(x)+"x",
             },
         ],
     },
@@ -894,7 +939,7 @@ function buyMaxUpgrade(id,x,auto=false) {
         let amt2 = amt[x]||0
 
         if (amt2 < tu.max[x]) if (Decimal.gte(res2,tu.cost[x])) {
-            if (auto) res = numInc ? Math.max(res,tu.cost[x]*1.01) : res.max(tu.cost[x]*1.01)
+            if (auto) res = numInc ? Math.max(res,tu.cost[x]*1.01) : res.max(tu.cost[x].mul(1.01))
             let bulk = auto ? upg.bulk(res) : tu.bulk[x]
 
             if (costOnce ? true : bulk > amt2) {
@@ -1134,6 +1179,7 @@ el.update.upgs = _=>{
         updateUpgradesHTML('crystal')
 
         updateUpgradesHTML('ap')
+        updateUpgradesHTML('oil')
     }
     if (mapID == 'gh') updateUpgradesHTML('factory')
     if (mapID == 'fd') {
