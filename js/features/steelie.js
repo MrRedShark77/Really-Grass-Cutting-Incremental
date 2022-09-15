@@ -12,6 +12,8 @@ MAIN.steel = {
         x = x.mul(upgEffect('aGrass',2))
         x = x.mul(upgEffect('oil',5))
 
+        x = x.mul(upgEffect('rocket',5))
+
         return x.floor()
     },
     foundryEff() {
@@ -22,12 +24,14 @@ MAIN.steel = {
     },
     charger: {
         gain() {
-            let x = E(upgEffect('factory',2)).mul(getGHEffect(9)).mul(upgEffect('factory',3)).mul(upgEffect('factory',4))
+            let x = E(upgEffect('factory',2)).mul(getGHEffect(9)).mul(upgEffect('factory',3)).mul(upgEffect('factory',4)).mul(upgEffect('factory',5))
 
             x = x.mul(upgEffect('gen',2)).mul(upgEffect('gen',3)).mul(chalEff(7))
 
             x = x.mul(upgEffect('aGrass',0))
             x = x.mul(upgEffect('ap',1))
+
+            x = x.mul(upgEffect('rocket',6))
 
             if (player.decel) x = x.div(1e24)
 
@@ -261,7 +265,7 @@ UPGS.factory = {
             max: 100,
 
             title: "Assembler",
-            desc: `Unlock a building (on bottom of Factory) where you can unscale anything. Each level increases charge rate by <b class="green">+10%</b>.`,
+            desc: `Unlock a building (on right of Factory) where you can unscale anything. Each level increases charge rate by <b class="green">+10%</b>.`,
         
             res: "steel",
             icon: ["Icons/Assemblerv2"],
@@ -286,6 +290,24 @@ UPGS.factory = {
                         
             cost: i => Decimal.pow(1.2,i).mul(1e38).ceil(),
             bulk: i => i.div(1e38).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 100,
+
+            title: "Refinery",
+            desc: `Unlock a building (on bottom of Factory) where you can convert charge and oil into rocket fuel. Each level increases charge rate by <b class="green">+10%</b>.`,
+        
+            res: "steel",
+            icon: ["Icons/Refinery"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(1e57).ceil(),
+            bulk: i => i.div(1e57).max(1).log(1.2).floor().toNumber()+1,
         
             effect(i) {
                 let x = i/10+1

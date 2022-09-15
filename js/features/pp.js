@@ -11,6 +11,8 @@ MAIN.pp = {
 
         x = x.mul(tmp.chargeEff[0]||6)
 
+        x = x.mul(upgEffect('rocket',3))
+
         x = x.pow(upgEffect('plat',6))
 
         if (inChal(3) || inChal(5)) x = x.root(2)
@@ -152,6 +154,8 @@ MAIN.ap = {
 
         x = x.mul(upgEffect('oil',3))
 
+        x = x.mul(upgEffect('rocket',7))
+
         return x.floor()
     },
 }
@@ -206,6 +210,7 @@ UPGS.ap = {
     underDesc: _=>`You have ${format(player.ap,0)} Anonymity Points`,
 
     autoUnl: _=>hasUpgrade('auto',15),
+    noSpend: _=>hasUpgrade('auto',19),
 
     ctn: [
         {

@@ -10,9 +10,10 @@ const UPG_RES = {
     aGrass: ["Anti-Grass",_=>[player,"aGrass"],'AntiGrassBase'],
     ap: ["AP",_=>[player,"ap"],'AnonymityBase'],
     oil: ["Oil",_=>[player,"oil"],'LiquefyBase'],
+    rf: ["Rocket Fuel",_=>[player.rocket,"amount"],'RocketBase'],
 }
 
-const isResNumber = ['perk','plat']
+const isResNumber = ['perk','plat','rf']
 
 const UPGS = {
     grass: {
@@ -548,12 +549,45 @@ const UPGS = {
                 unl: _=>player.lTimes>0,
 
                 title: "Anti-Grass Upgrades EL",
-                desc: `Anti-Grass Upgrades no longer spend AP.`,
+                desc: `Anti-Grass Upgrades no longer spend anti-grass.`,
             
                 res: "oil",
                 icon: ['Curr/Grass','Icons/Infinite'],
                             
                 cost: i => E(1000),
+                bulk: i => 1,
+            },{
+                unl: _=>hasUpgrade('factory',5),
+
+                title: "Oil Upgrades Autobuy",
+                desc: `You can now automatically buy Oil Upgrades.`,
+            
+                res: "rf",
+                icon: ['Curr/Oil','Icons/Automation'],
+                            
+                cost: i => 50,
+                bulk: i => 1,
+            },{
+                unl: _=>false,
+
+                title: "Anti Grass Save",
+                desc: `No longer reset anti-grass and anti-grass upgrades on anonymity/liquefy/rocket part.`,
+            
+                res: "rf",
+                icon: ['Curr/Grass','Icons/Automation'],
+                            
+                cost: i => 100,
+                bulk: i => 1,
+            },{
+                unl: _=>hasUpgrade('factory',5),
+
+                title: "Anonymity Upgrades EL",
+                desc: `Anonymity Upgrades no longer spend AP.`,
+            
+                res: "oil",
+                icon: ['Curr/Anonymity','Icons/Infinite'],
+                            
+                cost: i => E(1e12),
                 bulk: i => 1,
             },
         ],
@@ -900,7 +934,7 @@ function buyNextUpgrade(id,x) {
 	let amt2 = amt[x]||0
 
 	if (amt2 < tu.max[x] && Decimal.gte(res2,tu.cost[x])) {
-		let bulk = Math.min(tu.bulk[x], Math.ceil((amt2 + 1) / 25) * 25)
+		let bulk = costOnce ? Math.min(tu.bulk[x],25-amt2%25) : Math.min(tu.bulk[x], Math.ceil((amt2 + 1) / 25) * 25)
 
 		if (costOnce ? true : bulk > amt2) {
 			let [p,q] = UPG_RES[resDis][1]()
@@ -928,13 +962,13 @@ function buyMaxUpgrade(id,x,auto=false) {
     let resDis = upg.res
     let res = tmp.upg_res[resDis]
 
-    if (!auto || (tu.unlLength > 0 && Decimal.gte(res,tu.unlLength))) {
+    if (!auto || (tu.unlLength > 0 && (Decimal.gte(res,tu.unlLength) || !tu.noSpend))) {
         let numInc = isResNumber.includes(resDis)
 
         let costOnce = upg.costOnce
         
         let res2 = res
-        if (auto) res = numInc ? Math.ceil(res / tu.unlLength) : res.div(tu.unlLength).ceil()
+        if (auto && !tu.noSpend) res = numInc ? Math.ceil(res / tu.unlLength) : res.div(tu.unlLength).ceil()
         let amt = player.upgs[id]
         let amt2 = amt[x]||0
 
@@ -1089,7 +1123,7 @@ function updateUpgradesHTML(id) {
                 if (upg.effDesc) h += '<br>Effect: <span class="cyan">'+upg.effDesc(tu.eff[ch])+"</span>"
 
                 if (amt < tu.max[ch]) {
-                    let cost2 = upg.costOnce?Decimal.mul(tu.cost[ch],25):upg.cost((Math.floor(amt/25)+1)*25-1)//upg.cost(amt+25)
+                    let cost2 = upg.costOnce?Decimal.mul(tu.cost[ch],25-amt%25):upg.cost((Math.floor(amt/25)+1)*25-1)//upg.cost(amt+25)
                     
                     h += `
                     <br><span class="${Decimal.gte(tmp.upg_res[upg.res],cost2)?"green":"red"}">Cost to next 25: ${format(cost2,0)} ${dis}</span>
@@ -1186,7 +1220,10 @@ el.update.upgs = _=>{
         updateUpgradesHTML('foundry')
         updateUpgradesHTML('gen')
     }
-    if (mapID == 'as') updateUpgradesHTML('assembler')
+    if (mapID == 'as') {
+        updateUpgradesHTML('assembler')
+        updateUpgradesHTML('rocket')
+    }
 
     if (mapID == 'opt') tmp.el.hideUpgOption.setTxt(player.options.hideUpgOption?"ON":"OFF")
 }

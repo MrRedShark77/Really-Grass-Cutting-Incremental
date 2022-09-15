@@ -306,6 +306,11 @@ button:not(.locked):hover {
     background-color: #2b2b2b;
 }
 
+.upg_desc.rocket,
+.upgs_div.rocket {
+    background-color: #2D5B62;
+}
+
 .upgs_ctn {
     height: calc(100% - 84px);
     width: calc(100% - 24px);
@@ -401,6 +406,10 @@ button:not(.locked):hover {
 
 .green {
     color: lime;
+}
+
+.black {
+    color: #222;
 }
 
 .reset_div {

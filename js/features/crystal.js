@@ -10,6 +10,8 @@ MAIN.crystal = {
 
         x = x.mul(tmp.chargeEff[0]||7)
 
+        x = x.mul(upgEffect('rocket',4))
+
         x = x.pow(upgEffect('plat',7))
 
         if (inChal(5)) x = x.root(2)
@@ -193,6 +195,8 @@ MAIN.oil = {
         x = x.mul(tmp.chargeEff[9]||0)
         x = x.mul(upgEffect('plat',9))
 
+        x = x.mul(upgEffect('rocket',8))
+
         return x.floor()
     },
 }
@@ -243,6 +247,8 @@ UPGS.oil = {
     reqDesc: _=>`Liquefy once to unlock.`,
 
     underDesc: _=>`You have ${format(player.oil,0)} Oil`,
+
+    autoUnl: _=>hasUpgrade('auto',17),
 
     ctn: [
         {
