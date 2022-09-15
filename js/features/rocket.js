@@ -13,8 +13,8 @@ const ROCKET = {
 
             let c = b*((b-1)/20+1)-rf*(1+(rf-1)/20)
 
-            player.chargeRate = player.chargeRate.sub(Decimal.mul(c,1e35)).max(0)
-            player.oil = player.oil.sub(Decimal.mul(c,1e8)).max(0)
+            player.chargeRate = player.chargeRate.sub(Decimal.mul(c,1e36)).max(0)
+            player.oil = player.oil.sub(Decimal.mul(c,1e9)).max(0)
         }
     },
 }
@@ -230,10 +230,10 @@ el.update.rocket = _=>{
 function updateRocketTemp() {
     let rf = player.rocket.total_fp
     let b = rf/10+1
-    tmp.rf_cost = [Decimal.mul(b,1e35),Decimal.mul(b,1e8)]
+    tmp.rf_cost = [Decimal.mul(b,1e36),Decimal.mul(b,1e9)]
 
     let bulk = 0
-    if (player.chargeRate.gte(tmp.rf_cost[0]) && player.oil.gte(tmp.rf_cost[1])) bulk = Math.min(ROCKET.bulk(player.chargeRate,rf,1e35),ROCKET.bulk(player.oil,rf,1e8))
+    if (player.chargeRate.gte(tmp.rf_cost[0]) && player.oil.gte(tmp.rf_cost[1])) bulk = Math.min(ROCKET.bulk(player.chargeRate,rf,1e36),ROCKET.bulk(player.oil,rf,1e9))
     tmp.rf_bulk = bulk
 }
 
