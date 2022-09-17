@@ -29,6 +29,11 @@ function calc(dt) {
     if (tmp.ppGainP > 0 && player.level >= 30 && !decel) player.pp = player.pp.add(tmp.ppGain.mul(dt*tmp.ppGainP))
     if (tmp.crystalGainP > 0 && player.level >= 100 && !decel) player.crystal = player.crystal.add(tmp.crystalGain.mul(dt*tmp.crystalGainP))
 
+    if (hasUpgrade('factory',7)) {
+        player.ap = player.ap.add(player.bestAP2.mul(dt*tmp.oilRigBase))
+        player.oil = player.oil.add(player.bestOil2.mul(dt*tmp.oilRigBase))
+    }
+
     if (hasUpgrade('factory',2)) player.chargeRate = player.chargeRate.add(tmp.chargeGain.mul(dt))
 
     player.bestGrass = player.bestGrass.max(player.grass)

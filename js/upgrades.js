@@ -11,9 +11,10 @@ const UPG_RES = {
     ap: ["AP",_=>[player,"ap"],'AnonymityBase'],
     oil: ["Oil",_=>[player,"oil"],'LiquefyBase'],
     rf: ["Rocket Fuel",_=>[player.rocket,"amount"],'RocketBase'],
+    momentum: ["Momentum",_=>[player,"momentum"],'RocketBase'],
 }
 
-const isResNumber = ['perk','plat','rf']
+const isResNumber = ['perk','plat','rf','momentum']
 
 const UPGS = {
     grass: {
@@ -565,10 +566,10 @@ const UPGS = {
                 res: "rf",
                 icon: ['Curr/Oil','Icons/Automation'],
                             
-                cost: i => 50,
+                cost: i => 25,
                 bulk: i => 1,
             },{
-                unl: _=>false,
+                unl: _=>player.rocket.part>0,
 
                 title: "Anti Grass Save",
                 desc: `No longer reset anti-grass and anti-grass upgrades on anonymity/liquefy/rocket part.`,
@@ -576,7 +577,7 @@ const UPGS = {
                 res: "rf",
                 icon: ['Curr/Grass','Icons/Automation'],
                             
-                cost: i => 100,
+                cost: i => 50,
                 bulk: i => 1,
             },{
                 unl: _=>hasUpgrade('factory',5),
@@ -588,6 +589,17 @@ const UPGS = {
                 icon: ['Curr/Anonymity','Icons/Infinite'],
                             
                 cost: i => E(1e12),
+                bulk: i => 1,
+            },{
+                unl: _=>player.rocket.part>0,
+
+                title: "Oil Upgrades EL",
+                desc: `Oil Upgrades no longer spend Oil.`,
+            
+                res: "oil",
+                icon: ['Curr/Oil','Icons/Infinite'],
+                            
+                cost: i => E(1e18),
                 bulk: i => 1,
             },
         ],
@@ -817,6 +829,28 @@ const UPGS = {
                     return x
                 },
                 effDesc: x => format(x)+"x",
+            },{
+                max: 25,
+
+                unl: _=>player.rocket.part>0,
+
+                costOnce: true,
+
+                title: "Plat-Exponential XP",
+                desc: `Increase XP multiplier's exponent by <b class="green">+1%</b> per level, but only in normal realm.`,
+
+                res: "plat",
+                icon: ['Icons/XP','Icons/Exponent'],
+                
+                cost: i => 1e6,
+                bulk: i => Math.floor(i/1e6),
+
+                effect(i) {
+                    let x = i*0.01+1
+
+                    return x
+                },
+                effDesc: x => "^"+format(x),
             },
         ],
     },
@@ -1223,6 +1257,9 @@ el.update.upgs = _=>{
     if (mapID == 'as') {
         updateUpgradesHTML('assembler')
         updateUpgradesHTML('rocket')
+    }
+    if (mapID == 'rp') {
+        updateUpgradesHTML('momentum')
     }
 
     if (mapID == 'opt') tmp.el.hideUpgOption.setTxt(player.options.hideUpgOption?"ON":"OFF")

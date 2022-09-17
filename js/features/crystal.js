@@ -11,6 +11,7 @@ MAIN.crystal = {
         x = x.mul(tmp.chargeEff[0]||7)
 
         x = x.mul(upgEffect('rocket',4))
+        x = x.mul(upgEffect('momentum',5))
 
         x = x.pow(upgEffect('plat',7))
 
@@ -196,6 +197,7 @@ MAIN.oil = {
         x = x.mul(upgEffect('plat',9))
 
         x = x.mul(upgEffect('rocket',8))
+        x = x.mul(upgEffect('momentum',9))
 
         return x.floor()
     },
@@ -218,6 +220,8 @@ RESET.oil = {
             if (!force) {
                 player.oil = player.oil.add(tmp.oilGain)
                 player.lTimes++
+
+                player.bestOil2 = player.bestOil2.max(tmp.oilGain)
             }
 
             updateTemp()
@@ -246,9 +250,10 @@ UPGS.oil = {
     req: _=>player.lTimes > 0,
     reqDesc: _=>`Liquefy once to unlock.`,
 
-    underDesc: _=>`You have ${format(player.oil,0)} Oil`,
+    underDesc: _=>`You have ${format(player.oil,0)} Oil`+(hasUpgrade('factory',7) ? " <span class='smallAmt'>"+formatGain(player.oil,player.bestOil2.mul(tmp.oilRigBase))+"</span>" : ""),
 
     autoUnl: _=>hasUpgrade('auto',17),
+    noSpend: _=>hasUpgrade('auto',20),
 
     ctn: [
         {

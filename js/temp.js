@@ -53,5 +53,6 @@ function resetTemp() {
 }
 
 function updateTemp() {
+    tmp.oilRigBase = (player.upgs.factory[7]||0)/100
     for (let x = 0; x < tmp_update.length; x++) tmp_update[x]()
 }

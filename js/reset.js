@@ -58,4 +58,7 @@ el.update.reset = _=> {
     if (mapID == 'as') {
         updateResetHTML('decel')
     }
+    if (mapID == 'rp') {
+        updateResetHTML('rocket_part')
+    }
 }

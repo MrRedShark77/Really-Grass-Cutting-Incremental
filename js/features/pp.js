@@ -12,6 +12,7 @@ MAIN.pp = {
         x = x.mul(tmp.chargeEff[0]||6)
 
         x = x.mul(upgEffect('rocket',3))
+        x = x.mul(upgEffect('momentum',4))
 
         x = x.pow(upgEffect('plat',6))
 
@@ -155,6 +156,7 @@ MAIN.ap = {
         x = x.mul(upgEffect('oil',3))
 
         x = x.mul(upgEffect('rocket',7))
+        x = x.mul(upgEffect('momentum',8))
 
         return x.floor()
     },
@@ -177,6 +179,8 @@ RESET.ap = {
             if (!force) {
                 player.ap = player.ap.add(tmp.apGain)
                 player.aTimes++
+
+                player.bestAP2 = player.bestAP2.max(tmp.apGain)
             }
 
             updateTemp()
@@ -191,7 +195,7 @@ RESET.ap = {
         player.xp = E(0)
         player.level = 0
 
-        resetUpgrades('aGrass')
+        if (!hasUpgrade('auto',18)) resetUpgrades('aGrass')
 
         resetGlasses()
 
@@ -207,7 +211,7 @@ UPGS.ap = {
     req: _=>player.aTimes > 0,
     reqDesc: _=>`Anonymity once to unlock.`,
 
-    underDesc: _=>`You have ${format(player.ap,0)} Anonymity Points`,
+    underDesc: _=>`You have ${format(player.ap,0)} Anonymity Points`+(hasUpgrade('factory',7) ? " <span class='smallAmt'>"+formatGain(player.ap,player.bestAP2.mul(tmp.oilRigBase))+"</span>" : ""),
 
     autoUnl: _=>hasUpgrade('auto',15),
     noSpend: _=>hasUpgrade('auto',19),

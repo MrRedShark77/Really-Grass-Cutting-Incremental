@@ -11,7 +11,7 @@ window.addEventListener('keydown', e=>{
 const MAP = [
     [null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null],
-    [null,null,null,'opt',null,null,null],
+    [null,null,null,'opt',null,'rp',null],
     [null,null,'auto','g','pc','gh','fd'],
     [null,null,null,'p','chal','as',null],
     [null,null,null,null,null,null,null],

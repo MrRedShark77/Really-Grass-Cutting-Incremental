@@ -223,6 +223,8 @@ el.update.chal = _=>{
 
                 let unl2 = c.unl()
 
+                tmp.el['chal_div_'+i].setDisplay(unl2)
+
                 if (unl2) {
                     let l = player.chal.comp[i]||0
                     let completed = l >= c.max

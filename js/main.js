@@ -28,6 +28,7 @@ const MAIN = {
         x = x.mul(upgEffect('oil',0))
 
         x = x.mul(upgEffect('rocket',0))
+        x = x.mul(upgEffect('momentum',0))
 
         if (player.decel) x = x.div(1e15)
 
@@ -48,6 +49,7 @@ const MAIN = {
         x /= upgEffect('grass',2,1)
         x /= upgEffect('perk',2,1)
         x /= upgEffect('aGrass',1,1)
+        x /= upgEffect('momentum',1)
         return x
     },
     xpGain() {
@@ -69,6 +71,7 @@ const MAIN = {
         x = x.mul(upgEffect('aGrass',4))
         x = x.mul(upgEffect('ap',2))
         x = x.mul(upgEffect('oil',1))
+        x = x.mul(upgEffect('momentum',2))
 
         x = x.mul(upgEffect('rocket',1))
 
@@ -77,6 +80,8 @@ const MAIN = {
         if (x.lt(1)) return x
 
         if (inChal(3) || inChal(5)) x = x.root(2)
+
+        if (!player.decel && hasUpgrade('plat',10)) x = x.pow(upgEffect('plat',10,1))
 
         return x
     },
@@ -100,6 +105,7 @@ const MAIN = {
         x = x.mul(upgEffect('oil',2))
 
         x = x.mul(upgEffect('rocket',2))
+        x = x.mul(upgEffect('momentum',3))
 
         if (player.decel) x = x.div(1e16)
 
@@ -115,7 +121,7 @@ const MAIN = {
     autoCut: _=>5-upgEffect('auto',0,0)-upgEffect('plat',0,0),
     level: {
         req(i) {
-            i = E(i).scale(700,2,0).scale(tmp.level.scale1,2,0)
+            i = E(i).scale(player.decel?300:700,2,0).scale(tmp.level.scale1,2,0)
 
             if (inChal(0) || inChal(7)) i = i.mul(3)
             
@@ -130,7 +136,7 @@ const MAIN = {
 
             if (inChal(0) || inChal(7)) x = x.div(3)
 
-            return Math.floor(x.scale(tmp.level.scale1,2,0,true).scale(700,2,0,true).toNumber()+1)
+            return Math.floor(x.scale(tmp.level.scale1,2,0,true).scale(player.decel?300:700,2,0,true).toNumber()+1)
         },
         cur(i) {
             return i > 0 ? this.req(i-1) : E(0) 

@@ -1,5 +1,6 @@
 function E(x){return new Decimal(x)};
 
+const VER = 0.0306
 const EINF = Decimal.dInf
 
 Math.lerp = function (value1, value2, amount) {
@@ -120,18 +121,24 @@ function getPlayerData() {
         
         ap: E(0),
         bestAP: E(0),
+        bestAP2: E(0),
         aTimes: 0,
 
         oil: E(0),
         bestOil: E(0),
+        bestOil2: E(0),
         lTimes: 0,
 
         rocket: {
             total_fp: 0,
             amount: 0,
+            part: 0,
         },
 
+        momentum: 0,
+
         time: 0,
+        version: VER,
     }
     for (let x in UPGS) {
         s.upgs[x] = []
@@ -153,8 +160,35 @@ function wipe(reload=false) {
 function loadPlayer(load) {
     const DATA = getPlayerData()
     player = deepNaN(load, DATA)
+    if (!player.version) player.version = 0
     player = deepUndefinedAndDecimal(player, DATA)
     convertStringToDecimal()
+
+    if (player.version < 0.0306 && player.rocket.total_fp > 0) {
+        player.rocket.total_fp = 0
+        player.rocket.amount = 0
+        player.oil = E(0)
+        player.bestOil = E(0)
+        player.ap = E(0)
+        player.bestAP = E(0)
+        player.aGrass = E(0)
+        player.aBestGrass = E(0)
+        player.aRes.level = 0
+        player.aRes.tier = 0
+        player.aRes.xp = E(0)
+        player.aRes.tp = E(0)
+
+        player.steel = E(0)
+        player.chargeRate = E(0)
+
+        resetUpgrades('ap')
+        resetUpgrades('oil')
+        resetUpgrades('rocket')
+
+        console.log('guh?')
+    }
+
+    player.version = VER
 }
 
 function deepNaN(obj, data) {

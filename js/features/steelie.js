@@ -13,6 +13,7 @@ MAIN.steel = {
         x = x.mul(upgEffect('oil',5))
 
         x = x.mul(upgEffect('rocket',5))
+        x = x.mul(upgEffect('momentum',6))
 
         return x.floor()
     },
@@ -24,7 +25,7 @@ MAIN.steel = {
     },
     charger: {
         gain() {
-            let x = E(upgEffect('factory',2)).mul(getGHEffect(9)).mul(upgEffect('factory',3)).mul(upgEffect('factory',4)).mul(upgEffect('factory',5))
+            let x = E(upgEffect('factory',2)).mul(getGHEffect(9)).mul(upgEffect('factory',3)).mul(upgEffect('factory',4)).mul(upgEffect('factory',5)).mul(upgEffect('factory',6)).mul(upgEffect('factory',7))
 
             x = x.mul(upgEffect('gen',2)).mul(upgEffect('gen',3)).mul(chalEff(7))
 
@@ -32,6 +33,7 @@ MAIN.steel = {
             x = x.mul(upgEffect('ap',1))
 
             x = x.mul(upgEffect('rocket',6))
+            x = x.mul(upgEffect('momentum',7))
 
             if (player.decel) x = x.div(1e24)
 
@@ -308,6 +310,42 @@ UPGS.factory = {
                         
             cost: i => Decimal.pow(1.2,i).mul(1e57).ceil(),
             bulk: i => i.div(1e57).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 100,
+
+            title: "Rocket Launch Pad",
+            desc: `Unlock a building (on top of Factory) where you can build a rocket. Each level increases charge rate by <b class="green">+10%</b>.`,
+        
+            res: "steel",
+            icon: ["Icons/LaunchPad"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(1e61).ceil(),
+            bulk: i => i.div(1e61).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 100,
+
+            title: "Oil Drilling Rig",
+            desc: `Unlock a building (on top of Factory) that passively generates oil and AP slowly based off your best Liquefy/Anonymity per level. Each level increases charge rate by <b class="green">+10%</b>.`,
+        
+            res: "steel",
+            icon: ["Icons/OilRigAlt"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(1e63).ceil(),
+            bulk: i => i.div(1e63).max(1).log(1.2).floor().toNumber()+1,
         
             effect(i) {
                 let x = i/10+1
