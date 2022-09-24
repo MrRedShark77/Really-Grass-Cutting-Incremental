@@ -339,7 +339,7 @@ UPGS.factory = {
             max: 100,
 
             title: "Oil Drilling Rig",
-            desc: `Unlock a building (on top of Factory) that passively generates oil and AP slowly based off your best Liquefy/Anonymity per level. Each level increases charge rate by <b class="green">+10%</b>.`,
+            desc: `Passively generate oil and AP slowly based off your best Liquefy/Anonymity per level. Each level increases charge rate by <b class="green">+10%</b>.`,
         
             res: "steel",
             icon: ["Icons/OilRigAlt"],
