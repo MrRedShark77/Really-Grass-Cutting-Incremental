@@ -7,26 +7,33 @@ var mouse_in = false
 
 function createGrass() {
     if (tmp.grasses.length < tmp.grassCap) {
+        let pl = Math.random()<tmp.platChance&&player.tier>=3
+        let ms = Math.random()<0.005&&pl&&player.gTimes>0
+
         tmp.grasses.push({
             x: Math.random(),
             y: Math.random(),
-            pl: Math.random()<tmp.platChance&&player.tier>=3,
+            pl: pl,
+            ms: ms,
         })
     }
 }
 
 function removeGrass(i,auto=false) {
-    if (!tmp.grasses[i]) return
+    let tg = tmp.grasses[i]
+    if (!tg) return
 
-    let y = E(1)
-    if (auto) y = y.mul(tmp.autocutBonus)
+    let y = 1
+    if (auto) y *= tmp.autocutBonus
 
     if (player.decel) player.aGrass = player.aGrass.add(tmp.grassGain.mul(y))
     else player.grass = player.grass.add(tmp.grassGain.mul(y))
     player.xp = player.xp.add(tmp.XPGain.mul(y))
     if (player.pTimes > 0) player.tp = player.tp.add(tmp.TPGain.mul(y))
+    if (player.gTimes > 0) player.sp = player.sp.add(tmp.SPGain)
 
-    if (tmp.grasses[i].pl) player.plat += tmp.platGain
+    if (tg.pl) player.plat += tmp.platGain * (tmp.platCutAmt ? y : 1)
+    if (tg.ms) player.moonstone += 1 * (tmp.moonstonesCutAmt ? y : 1)
 
     tmp.grasses.splice(i, 1)
 }
@@ -63,7 +70,7 @@ function drawGrass() {
         let g = gs[i]
 
         if (g) {
-            grass_ctx.fillStyle = g.pl?"#DDD":"#00AF00"
+            grass_ctx.fillStyle = g.pl?g.ms?'#008DFF':"#DDD":"#00AF00"
 
             let [x,y] = [Math.min(grass_canvas.width*g.x,grass_canvas.width-G_SIZE),Math.min(grass_canvas.height*g.y,grass_canvas.height-G_SIZE)]
 

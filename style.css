@@ -172,6 +172,16 @@ button:not(.locked):hover {
     padding: 0 10px;
 }
 
+#astral {
+    position: relative;
+    width: 400px;
+    border: solid 2px black;
+    background-color: #8a29b1;
+    height: 35px;
+    font-size: 25px;
+    padding: 0 10px;
+}
+
 #level_div {
     position: relative;
     width: calc(100% - 34px);
@@ -192,8 +202,19 @@ button:not(.locked):hover {
     margin: 5px 15px;
 }
 
+#astral_div {
+    position: relative;
+    width: calc(100% - 34px);
+    border: solid 2px black;
+    background-color: #3c1457;
+    font-size: 25px;
+    height: 85px;
+    margin: 5px 15px;
+}
+
 #tier_div > div,
-#level_div > div {
+#level_div > div,
+#astral_div > div {
     position: absolute;
 }
 
@@ -209,8 +230,15 @@ button:not(.locked):hover {
     transition: width 0.2s;
 }
 
+#astral_bar {
+    height: 100%;
+    background-color: #6f29b1;
+    transition: width 0.2s;
+}
+
 #tier_info,
-#level_info {
+#level_info,
+#astral_info {
     width: 100%;
 }
 
@@ -321,6 +349,16 @@ button:not(.locked):hover {
     background-color: #AA7C00;
 }
 
+.reset_div.gal,
+.reset_req.gal {
+    background-color: #505;
+}
+
+.upg_desc.moonstone,
+.upgs_div.moonstone {
+    background-color: #003380;
+}
+
 .upgs_ctn {
     height: calc(100% - 84px);
     width: calc(100% - 24px);
@@ -397,7 +435,8 @@ button:not(.locked):hover {
 }
 
 .red,
-.upg_cost.locked {
+.upg_cost.locked,
+.scu_cost.locked {
     color: red;
 }
 
@@ -428,6 +467,10 @@ button:not(.locked):hover {
 
 .black {
     color: #222;
+}
+
+.magenta {
+    color: magenta;
 }
 
 .reset_div {
@@ -489,6 +532,18 @@ button:not(.locked):hover {
     padding: 10px;
 }
 
+#milestone_div_agh,
+#milestone_div_agh .milestone_ctns > div {
+    background-color: #505;
+}
+
+#milestone_div_gs,
+#milestone_div_gs .milestone_ctns > div,
+.reset_div.gs,
+.reset_req.gs {
+    background-color: #ffff79;
+}
+
 .milestone_ctns {
     width: calc(100% - 4px);
     height: calc(100% - 37px);
@@ -507,7 +562,7 @@ button:not(.locked):hover {
 }
 
 .milestone_ctns > div.bought {
-    background-color: limegreen;
+    background-color: limegreen !important;
 }
 
 #gh_mil_ctns {
@@ -543,4 +598,84 @@ button:not(.locked):hover {
     background-color: #001c3b;
     opacity: 0.25;
     z-index: 1;
+}
+
+#star_chart_div {
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+}
+
+#star_chart_canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.sc_upg_div {
+    position: relative;
+    margin: 3px;
+    width: 140px;
+    height: 140px;
+}
+
+.sc_upg_ctn {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.sc_upg_div > div:not(.choosed):hover > img {
+    transform: translateX(-50%) scale(1.06);
+}
+
+.sc_upg_div > div.choosed > img {
+    transform: translateX(-50%) scale(1.2);
+}
+
+.sc_upg_div > div > img {
+    position: absolute;
+    top: 13%;
+    width: 80%;
+    height: 80%;
+    left: 50%;
+
+    transform: translateX(-50%);
+    transition: transform 0.2s;
+
+    pointer-events: none;
+}
+
+.scu_cost {
+    font-weight: bold;
+    position: absolute;
+    bottom: 0%;
+    left: 50%;
+    width: 100%;
+    font-size: 14px;
+    transform: translateX(-50%);
+    color: lime;
+    pointer-events: none;
+}
+
+.scu_amt {
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    width: 100%;
+    font-size: 20px;
+    transform: translateX(-50%);
+    color: yellow;
+    pointer-events: none;
+}
+
+#sc_desc_div {
+    width: 100%;
+    background-color: #fff1;
+    padding: 5px 0;
+    margin-bottom: 3px;
+    font-size: 16px;
 }

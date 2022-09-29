@@ -1,6 +1,6 @@
 function E(x){return new Decimal(x)};
 
-const VER = 0.0306
+const VER = 0.0400
 const EINF = Decimal.dInf
 
 Math.lerp = function (value1, value2, amount) {
@@ -136,6 +136,25 @@ function getPlayerData() {
         },
 
         momentum: 0,
+
+        gTimes: 0,
+        gTime: 0,
+        stars: E(0),
+        lowGH: 1e300,
+
+        astral: 0,
+        sp: E(0),
+
+        moonstone: 0,
+        grassskip: 0,
+
+        gsUnl: false,
+
+        star_chart: {
+            auto: [],
+            speed: [],
+            progress: [],
+        },
 
         time: 0,
         version: VER,
@@ -306,11 +325,17 @@ function loadGame(start=true, gotNaN=false) {
         UPGS_SCOST[x] = []
         for (let y in UPGS[x].ctn) UPGS_SCOST[x][y] = UPGS[x].ctn[y].cost(0)
     }
+
+    for (let x in STAR_CHART) {
+        SC_SCOST[x] = []
+        for (let y in STAR_CHART[x]) SC_SCOST[x][y] = STAR_CHART[x][y].cost(0)
+    }
     
     if (start) {
         for (let x = 0; x < 50; x++) updateTemp()
         //for (let x = 0; x < 10; x++) createGrass()
         grassCanvas()
+        treeCanvas()
         setInterval(save,60000)
         setInterval(loop, 100/3)
         setInterval(checkNaN,1000)

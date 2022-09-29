@@ -487,7 +487,7 @@ function updateRocketTemp() {
 }
 
 tmp_update.push(_=>{
-    tmp.rp_req = [Decimal.pow(4+player.rocket.part/2,player.rocket.part).mul(1e60),player.rocket.part>9?1/0:15*player.rocket.part+15]
+    tmp.rp_req = [Decimal.pow(4+player.rocket.part/2,player.rocket.part).mul(1e60),player.rocket.part>9&&player.gTimes==0?1/0:15*player.rocket.part+15]
     tmp.rf_base_mult = Decimal.pow(1.5,player.rocket.part)
 
     updateRocketTemp()

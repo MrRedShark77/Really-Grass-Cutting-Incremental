@@ -61,7 +61,7 @@ const CHALS = [
 
         title: `Reduced Resources`,
         desc: `^0.5 to Grass, XP & PP gain.`,
-        reward: `Grass effect's exponent is increased by <b class="green">+2%</b> per completion.`,
+        reward: `Grass multiplier's exponent is increased by <b class="green">+2%</b> per completion.`,
 
         goal: i=>50+20*i,
         bulk: i=>Math.floor((i-50)/20+1),

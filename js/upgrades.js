@@ -12,9 +12,10 @@ const UPG_RES = {
     oil: ["Oil",_=>[player,"oil"],'LiquefyBase'],
     rf: ["Rocket Fuel",_=>[player.rocket,"amount"],'RocketBase'],
     momentum: ["Momentum",_=>[player,"momentum"],'RocketBase'],
+    moonstone: ["Moonstone",_=>[player,"moonstone"],'MoonBase'],
 }
 
-const isResNumber = ['perk','plat','rf','momentum']
+const isResNumber = ['perk','plat','rf','momentum','moonstone']
 
 const UPGS = {
     grass: {
@@ -1157,7 +1158,8 @@ function updateUpgradesHTML(id) {
                 if (upg.effDesc) h += '<br>Effect: <span class="cyan">'+upg.effDesc(tu.eff[ch])+"</span>"
 
                 if (amt < tu.max[ch]) {
-                    let cost2 = upg.costOnce?Decimal.mul(tu.cost[ch],25-amt%25):upg.cost((Math.floor(amt/25)+1)*25-1)//upg.cost(amt+25)
+                    let m = Math.min(25,tu.max[ch]-Math.floor(amt/25)*25)
+                    let cost2 = upg.costOnce?Decimal.mul(tu.cost[ch],m-amt%m):upg.cost((Math.floor(amt/m)+1)*m-1)//upg.cost(amt+25)
                     
                     h += `
                     <br><span class="${Decimal.gte(tmp.upg_res[upg.res],cost2)?"green":"red"}">Cost to next 25: ${format(cost2,0)} ${dis}</span>
@@ -1201,7 +1203,7 @@ function updateUpgradesHTML(id) {
 }
 
 function hasUpgrade(id,x) { return player.upgs[id][x] > 0 }
-function upgEffect(id,x,def=E(1)) { return tmp.upgs[id].eff[x] || def }
+function upgEffect(id,x,def=1) { return tmp.upgs[id].eff[x] || def }
 
 function resetUpgrades(id) {
     for (let x in UPGS[id].ctn) player.upgs[id][x] = 0
@@ -1233,33 +1235,42 @@ el.setup.upgs = _=>{
 }
 
 el.update.upgs = _=>{
-    if (mapID == 'g') {
-        updateUpgradesHTML('grass')
-        updateUpgradesHTML('aGrass')
-    }
-    if (mapID == 'p') {
-        updateUpgradesHTML('perk')
-        updateUpgradesHTML('plat')
-    }
-    if (mapID == 'auto') updateUpgradesHTML('auto')
-    if (mapID == 'pc') {
-        updateUpgradesHTML('pp')
-        updateUpgradesHTML('crystal')
-
-        updateUpgradesHTML('ap')
-        updateUpgradesHTML('oil')
-    }
-    if (mapID == 'gh') updateUpgradesHTML('factory')
-    if (mapID == 'fd') {
-        updateUpgradesHTML('foundry')
-        updateUpgradesHTML('gen')
-    }
-    if (mapID == 'as') {
-        updateUpgradesHTML('assembler')
-        updateUpgradesHTML('rocket')
-    }
-    if (mapID == 'rp') {
-        updateUpgradesHTML('momentum')
+    if (tmp.space) {
+        if (mapID2 == 'at') {
+            updateUpgradesHTML('moonstone')
+        }
+    } else {
+        if (mapID == 'g') {
+            updateUpgradesHTML('grass')
+            updateUpgradesHTML('aGrass')
+        }
+        else if (mapID == 'p') {
+            updateUpgradesHTML('perk')
+            updateUpgradesHTML('plat')
+        }
+        else if (mapID == 'auto') updateUpgradesHTML('auto')
+        else if (mapID == 'pc') {
+            updateUpgradesHTML('pp')
+            updateUpgradesHTML('crystal')
+    
+            updateUpgradesHTML('ap')
+            updateUpgradesHTML('oil')
+        }
+        else if (mapID == 'gh') updateUpgradesHTML('factory')
+        else if (mapID == 'fd') {
+            updateUpgradesHTML('foundry')
+            updateUpgradesHTML('gen')
+        }
+        else if (mapID == 'as') {
+            updateUpgradesHTML('assembler')
+            updateUpgradesHTML('rocket')
+        }
+        else if (mapID == 'rp') {
+            updateUpgradesHTML('momentum')
+        }
+        else if (mapID == 'rp') {
+            updateUpgradesHTML('momentum')
+        }
     }
 
     if (mapID == 'opt') tmp.el.hideUpgOption.setTxt(player.options.hideUpgOption?"ON":"OFF")
