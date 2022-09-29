@@ -31,7 +31,7 @@ const STAR_CHART = {
             branch: [0],
 
             title: "Multi Grasshop",
-            desc: `Allow grasshopping multiple times. [not implemented]`,
+            desc: `Allow grasshopping multiple times. (change in options)`,
 
             icon: ['Icons/Grasshop2','Icons/StarAuto'],
                             
@@ -242,7 +242,7 @@ const STAR_CHART = {
             branch: [0],
 
             title: "Beyond Foundry",
-            desc: `Uncap the limit of Foundry effect, but softcap its effect at maxed effect. [not implemented]`,
+            desc: `Uncap the limit of Foundry effect, but softcap its effect at maxed effect.`,
 
             icon: ['Icons/Foundry','Icons/StarSpeed'],
                             

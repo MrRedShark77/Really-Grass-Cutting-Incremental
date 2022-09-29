@@ -1,6 +1,6 @@
 function E(x){return new Decimal(x)};
 
-const VER = 0.0400
+const VER = 0.040001
 const EINF = Decimal.dInf
 
 Math.lerp = function (value1, value2, amount) {
@@ -149,6 +149,9 @@ function getPlayerData() {
         grassskip: 0,
 
         gsUnl: false,
+
+        ghMult: false,
+        gsMult: false,
 
         star_chart: {
             auto: [],

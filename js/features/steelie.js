@@ -21,7 +21,10 @@ MAIN.steel = {
     },
     foundryEff() {
         let max = Decimal.mul(1000,upgEffect('factory',0))
-        let x = max.pow(Math.min(player.sTime/3600/starTreeEff('speed',0),1)).max(1)
+        let p = player.sTime/3600/starTreeEff('speed',0)
+        if (!hasStarTree('speed',8)) p = Math.min(p,1)
+        if (p >= 1) p = Math.log10(p)+1
+        let x = max.pow(p).max(1)
 
         return x
     },

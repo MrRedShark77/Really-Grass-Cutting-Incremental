@@ -1,5 +1,6 @@
 MAIN.gh = {
     req: _=> Math.ceil(300+E(player.grasshop).scale(20,2,0).toNumber()*10),
+    bulk: _=> player.level>=300?E((player.level-300)/10).scale(20,2,0,true).floor().toNumber()+1:0,
 
     milestone: [
         {
@@ -82,7 +83,7 @@ MAIN.agh_milestone = [
 ]
 
 MAIN.gs = {
-    req: _=> 360+player.grassskip*10,
+    req: _=> Math.ceil(400+E(player.grassskip).scale(10,2,0).toNumber()*10),
 
     milestone: [
         {
@@ -105,8 +106,8 @@ const GS_MIL_LEN = MAIN.gs.milestone.length
 
 RESET.gh = {
     unl: _=>player.cTimes>0 && !player.decel,
-    req: _=>player.level>=300,
-    reqDesc: _=>`Reach Level 300.`,
+    req: _=>player.level>=400,
+    reqDesc: _=>`Reach Level 400.`,
 
     resetDesc: `Grasshopping resets everything crystalize does as well as crystals, crystal upgrades, challenges.`,
     resetGain: _=> `Reach Level <b>${format(tmp.gh_req,0)}</b> to Grasshop`,
@@ -116,10 +117,12 @@ RESET.gh = {
 
     reset(force=false) {
         if ((this.req()&&player.level>=tmp.gh_req)||force) {
+            let res = Math.max(player.grasshop, MAIN.gh.bulk())
             if (force) {
                 this.doReset()
             } else if (player.grasshop >= 20 || player.gTimes>0) {
-                player.grasshop++
+                if (hasStarTree('auto',1) && player.ghMult) player.grasshop = res
+                else player.grasshop++
 
                 updateTemp()
         
@@ -128,7 +131,8 @@ RESET.gh = {
                 tmp.ghRunning = true
                 document.body.style.animation = "implode 2s 1"
                 setTimeout(_=>{
-                    player.grasshop++
+                    if (hasStarTree('auto',1) && player.ghMult) player.grasshop = res
+                else player.grasshop++
 
                     updateTemp()
         
@@ -347,4 +351,9 @@ el.update.milestones = _=>{
             if (m.effDesc) tmp.el[id+"_eff"].setHTML(m.effDesc(tmp.aghEffect[x]))
         }
     }
+    if (mapID == 'opt') {
+        tmp.el.multGHOption.setTxt(player.ghMult?"ON":"OFF")
+    }
 }
+
+function changeGHMult() { player.ghMult = !player.ghMult }

@@ -31,7 +31,7 @@ const MAIN = {
         x = x.mul(upgEffect('momentum',0))
 
         x = x.mul(starTreeEff('speed',3))
-        x = x.mul(starTreeEff('progress',6))
+        if (!player.decel) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',0))
 
@@ -83,7 +83,7 @@ const MAIN = {
         x = x.mul(upgEffect('rocket',1))
 
         x = x.mul(starTreeEff('speed',4))
-        x = x.mul(starTreeEff('progress',6))
+        if (!player.decel) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',1))
         
@@ -122,7 +122,7 @@ const MAIN = {
         x = x.mul(upgEffect('momentum',3))
 
         x = x.mul(starTreeEff('speed',5))
-        x = x.mul(starTreeEff('progress',6))
+        if (!player.decel) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',2))
 
@@ -211,9 +211,11 @@ const MAIN = {
         },
     },
     spGain() {
-        let x = E(starTreeEff('progress',2)*starTreeEff('progress',5))
+        let x = E(1)
 
         if (player.grassskip>=2) x = x.add(getGSEffect(1,0))
+
+        x = x.mul(starTreeEff('progress',2)*starTreeEff('progress',5))
 
         return x
     },
