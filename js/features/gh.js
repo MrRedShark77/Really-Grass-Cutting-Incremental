@@ -106,8 +106,8 @@ const GS_MIL_LEN = MAIN.gs.milestone.length
 
 RESET.gh = {
     unl: _=>player.cTimes>0 && !player.decel,
-    req: _=>player.level>=400,
-    reqDesc: _=>`Reach Level 400.`,
+    req: _=>player.level>=300,
+    reqDesc: _=>`Reach Level 300.`,
 
     resetDesc: `Grasshopping resets everything crystalize does as well as crystals, crystal upgrades, challenges.`,
     resetGain: _=> `Reach Level <b>${format(tmp.gh_req,0)}</b> to Grasshop`,
@@ -163,8 +163,8 @@ RESET.gh = {
 
 RESET.gs = {
     unl: _=>player.gTimes>0 && player.decel,
-    req: _=>player.level>=360,
-    reqDesc: _=>`Reach Level 360.`,
+    req: _=>player.level>=400,
+    reqDesc: _=>`Reach Level 400.`,
 
     resetDesc: `Grass-skipping resets everything liquefy does as well as oil except oil upgrades.`,
     resetGain: _=> `Reach Level <b>${format(tmp.gs_req,0)}</b> to Grass-skip`,
