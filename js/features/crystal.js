@@ -199,7 +199,7 @@ MAIN.oil = {
         x = x.mul(upgEffect('rocket',8))
         x = x.mul(upgEffect('momentum',9))
 
-        x = x.mul(starTreeEff('speed',6))
+        x = x.mul(starTreeEff('speed',6)*starTreeEff('speed',13))
 
         return x.floor()
     },

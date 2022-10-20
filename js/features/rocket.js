@@ -2,7 +2,7 @@ const RF_COST_POW = 1.1
 
 const ROCKET = {
     bulk(x,r,base) {
-        return x.mul(RF_COST_POW-1).div(base).div(tmp.rf_base_mult).add(Decimal.pow(RF_COST_POW,r)).log(RF_COST_POW).floor().toNumber()
+        return x.mul(tmp.rf_base-1).div(base).div(tmp.rf_base_mult).add(Decimal.pow(tmp.rf_base,r)).log(tmp.rf_base).floor().toNumber()
     },
     create() {
         let rf = player.rocket.total_fp
@@ -13,7 +13,7 @@ const ROCKET = {
 
             player.rocket.amount += b-rf
 
-            let c = Decimal.pow(RF_COST_POW, b).sub(Decimal.pow(RF_COST_POW, rf)).div(RF_COST_POW-1).mul(tmp.rf_base_mult)
+            let c = Decimal.pow(tmp.rf_base, b).sub(Decimal.pow(tmp.rf_base, rf)).div(tmp.rf_base-1).mul(tmp.rf_base_mult)
 
             player.chargeRate = player.chargeRate.sub(Decimal.mul(c,1e36)).max(0)
             player.oil = player.oil.sub(Decimal.mul(c,1e9)).max(0)
@@ -207,6 +207,28 @@ UPGS.rocket = {
 
             effect(i) {
                 let x = E(i*0.1+1)
+
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 10000,
+
+            unl: _=> player.bestGS>=10,
+
+            costOnce: true,
+
+            title: "The Funny Upgrade",
+            desc: `Increase fun gain by <b class="green">+1%</b> per level.`,
+
+            res: "rf",
+            icon: ['Curr/Fun'],
+            
+            cost: i => 5,
+            bulk: i => Math.floor(i/5),
+
+            effect(i) {
+                let x = E(i*0.01+1)
 
                 return x
             },
@@ -477,8 +499,11 @@ el.update.rocket = _=>{
 }
 
 function updateRocketTemp() {
+    let cheap = 1 * starTreeEff('progress',9,1)
+    
     let rf = player.rocket.total_fp
-    let b = Decimal.pow(RF_COST_POW,rf).mul(tmp.rf_base_mult)
+    tmp.rf_base = RF_COST_POW ** (1/cheap)
+    let b = Decimal.pow(tmp.rf_base,rf).mul(tmp.rf_base_mult)
     tmp.rf_cost = [b.mul(1e36),b.mul(1e9)]
 
     let bulk = 0

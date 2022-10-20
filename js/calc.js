@@ -57,5 +57,14 @@ function calc(dt) {
         player.chal.comp[p] = Math.min(Math.max(player.chal.comp[p]||0,tmp.chal.bulk),CHALS[p].max)
     }
 
+    if (player.lowGH <= 16 && player.decel) {
+        player.bestAP2 = player.bestAP2.max(tmp.apGain)
+        player.bestOil2 = player.bestOil2.max(tmp.oilGain)
+    }
+
+    if (hasUpgrade('funnyMachine',1)) {
+        player.SFRGT = player.SFRGT.add(tmp.SFRGTgain.mul(dt))
+    }
+
     MAIN.checkCutting()
 }

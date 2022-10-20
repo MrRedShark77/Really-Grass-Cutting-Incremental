@@ -33,7 +33,7 @@ function removeGrass(i,auto=false) {
     if (player.gTimes > 0) player.sp = player.sp.add(tmp.SPGain)
 
     if (tg.pl) player.plat += tmp.platGain * (tmp.platCutAmt ? y : 1)
-    if (tg.ms) player.moonstone += 1 * (tmp.moonstonesCutAmt ? y : 1)
+    if (tg.ms) player.moonstone += tmp.moonstoneGain * (tmp.moonstonesCutAmt ? y : 1)
 
     tmp.grasses.splice(i, 1)
 }

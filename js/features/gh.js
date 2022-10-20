@@ -65,20 +65,31 @@ MAIN.agh_milestone = [
         effect: _=>Decimal.pow(2,player.astral),
         effDesc: x=> format(x)+"x",
     },{
-        r: 32,
+        r: 28,
         desc: `XP gain is increased by <b class="green">100%</b> every astral.<br>Keep challenges on Grasshop, Galactic.`,
         effect: _=>Decimal.pow(2,player.astral),
         effDesc: x=> format(x)+"x",
     },{
-        r: 28,
+        r: 20,
         desc: `TP gain is increased by <b class="green">100%</b> every astral.`,
         effect: _=>Decimal.pow(2,player.astral),
         effDesc: x=> format(x)+"x",
     },{
-        r: 24,
+        r: 16,
+        desc: `Automatically update best anonymity/liquefy with current values if they are higher (while decelerated).`,
+    },{
+        r: 12,
         desc: `Star gain is increased by <b class="green">10%</b> per astral.<br>Tier requirement is sightly weaker.`,
         effect: _=>player.astral/10+1,
         effDesc: x=> format(x)+"x",
+    },{
+        r: 8,
+        desc: `SFRGT gain is increased by <b class="green">25%</b> every astral.`,
+        effect: _=>Decimal.pow(1.25,player.astral),
+        effDesc: x=> format(x)+"x",
+    },{
+        r: 4,
+        desc: `Gain <b class="green">x10</b> more platinum and SP. Active sixth 7 grasshop milestones if you haven't reached them.`,
     },
 ]
 
@@ -96,6 +107,14 @@ MAIN.gs = {
             desc: `Gain <b class="green">+2</b> more SP per grass-skip.`,
             effect: _=>player.grassskip*2,
             effDesc: x=> "+"+format(x,0),
+        },{
+            r: 8,
+            desc: `Gain <b class="green">+1</b> more moonstones per 2 grass-skips (starting at 8).`,
+            effect: _=>Math.floor((Math.max(player.grassskip-7,0)+1)/2),
+            effDesc: x=> "+"+format(x,0),
+        },{
+            r: 10,
+            desc: `Unlock Funify reset and The Funny Upgrade rocket fuel upgrade.`,
         },
     ],
 }
@@ -153,7 +172,7 @@ RESET.gh = {
         let keep = []
         if (player.grasshop >= 3) keep.push(0,1)
         if (player.grasshop >= 4) keep.push(2,3,4)
-        for (let i = 0; i < 5; i++) if (!keep.includes(i) && player.lowGH > 32) player.chal.comp[i] = 0
+        for (let i = 0; i < 5; i++) if (!keep.includes(i) && player.lowGH > 28) player.chal.comp[i] = 0
 
         resetUpgrades('crystal')
 
@@ -179,6 +198,7 @@ RESET.gs = {
             } else {
                 player.gsUnl = true
                 player.grassskip++
+                player.bestGS = Math.max(player.bestGS, player.grassskip)
 
                 updateTemp()
         
@@ -353,6 +373,7 @@ el.update.milestones = _=>{
     }
     if (mapID == 'opt') {
         tmp.el.multGHOption.setTxt(player.ghMult?"ON":"OFF")
+        tmp.el.multGHButton.setDisplay(hasStarTree('auto',1))
     }
 }
 

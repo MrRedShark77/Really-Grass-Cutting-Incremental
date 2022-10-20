@@ -1,6 +1,6 @@
 function E(x){return new Decimal(x)};
 
-const VER = 0.040001
+const VER = 0.0401
 const EINF = Decimal.dInf
 
 Math.lerp = function (value1, value2, amount) {
@@ -147,6 +147,7 @@ function getPlayerData() {
 
         moonstone: 0,
         grassskip: 0,
+        bestGS: 0,
 
         gsUnl: false,
 
@@ -158,6 +159,10 @@ function getPlayerData() {
             speed: [],
             progress: [],
         },
+
+        fTimes: 0,
+        fun: E(0),
+        SFRGT: E(0),
 
         time: 0,
         version: VER,
@@ -208,6 +213,10 @@ function loadPlayer(load) {
         resetUpgrades('rocket')
 
         console.log('guh?')
+    }
+
+    if (player.version < 0.401) {
+        player.bestGS = Math.max(player.bestGS, player.grassskip)
     }
 
     player.version = VER

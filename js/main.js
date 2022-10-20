@@ -30,7 +30,7 @@ const MAIN = {
         x = x.mul(upgEffect('rocket',0))
         x = x.mul(upgEffect('momentum',0))
 
-        x = x.mul(starTreeEff('speed',3))
+        x = x.mul(starTreeEff('speed',3)*starTreeEff('speed',10))
         if (!player.decel) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',0))
@@ -82,12 +82,12 @@ const MAIN = {
 
         x = x.mul(upgEffect('rocket',1))
 
-        x = x.mul(starTreeEff('speed',4))
+        x = x.mul(starTreeEff('speed',4)*starTreeEff('speed',11))
         if (!player.decel) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',1))
         
-        if (player.lowGH <= 32) x = x.mul(getAGHEffect(1))
+        if (player.lowGH <= 28) x = x.mul(getAGHEffect(1))
 
         if (player.decel) x = x.div(1e16)
 
@@ -121,18 +121,18 @@ const MAIN = {
         x = x.mul(upgEffect('rocket',2))
         x = x.mul(upgEffect('momentum',3))
 
-        x = x.mul(starTreeEff('speed',5))
+        x = x.mul(starTreeEff('speed',5)*starTreeEff('speed',12))
         if (!player.decel) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',2))
 
-        if (player.lowGH <= 28) x = x.mul(getAGHEffect(2))
+        if (player.lowGH <= 20) x = x.mul(getAGHEffect(2))
 
         if (player.decel) x = x.div(1e16)
 
         if (x.lt(1)) return x
 
-        if (player.grasshop >= 7) x = x.pow(1.25)
+        if (player.grasshop >= 7 || player.lowGH <= 4) x = x.pow(1.25)
 
         if (inChal(5)) x = x.root(2)
 
@@ -142,7 +142,7 @@ const MAIN = {
     autoCut: _=>5-upgEffect('auto',0,0)-upgEffect('plat',0,0)-starTreeEff('progress',3,0),
     level: {
         req(i) {
-            i = E(i).scale(player.decel?300:700,2,0).scale(tmp.level.scale1,2,0)
+            i = E(i).scale(tmp.level.scale2,2,0).scale(tmp.level.scale1,2,0)
 
             if (inChal(0) || inChal(7)) i = i.mul(3)
             
@@ -157,7 +157,7 @@ const MAIN = {
 
             if (inChal(0) || inChal(7)) x = x.div(3)
 
-            return Math.floor(x.scale(tmp.level.scale1,2,0,true).scale(player.decel?300:700,2,0,true).toNumber()+1)
+            return Math.floor(x.scale(tmp.level.scale1,2,0,true).scale(tmp.level.scale2,2,0,true).toNumber()+1)
         },
         cur(i) {
             return i > 0 ? this.req(i-1) : E(0) 
@@ -170,7 +170,7 @@ const MAIN = {
     },
     tier: {
         req(i) {
-            let pow = player.lowGH <= 24 ? 1.15 : 1.2
+            let pow = player.lowGH <= 12 ? 1.15 : 1.2
             let x = Decimal.pow(3,i**pow).mul(100)
 
             return x.ceil()
@@ -178,7 +178,7 @@ const MAIN = {
         bulk(i) {
             let x = i.div(100)
             if (x.lt(1)) return 0
-            let pow = player.lowGH <= 24 ? 1.15 : 1.2
+            let pow = player.lowGH <= 12 ? 1.15 : 1.2
             x = x.log(3).root(pow)
 
             return Math.floor(x.toNumber()+1)
@@ -215,7 +215,11 @@ const MAIN = {
 
         if (player.grassskip>=2) x = x.add(getGSEffect(1,0))
 
-        x = x.mul(starTreeEff('progress',2)*starTreeEff('progress',5))
+        x = x.mul(starTreeEff('progress',2)*starTreeEff('progress',5)*starTreeEff('progress',8))
+
+        x = x.mul(upgEffect('sfrgt',1))
+
+        if (player.lowGH <= 4) x = x.mul(10)
 
         return x
     },
@@ -306,6 +310,9 @@ tmp_update.push(_=>{
     tmp.level.scale1 += upgEffect('aGrass',5,0)+upgEffect('ap',5,0)
     tmp.level.scale1 *= (tmp.chargeEff[2]||1) * starTreeEff('progress',4)
 
+    tmp.level.scale2 = player.decel?300:700
+    tmp.level.scale2 *= starTreeEff('progress',7,1)
+
     tmp.level.next = MAIN.level.req(lvl)
     tmp.level.bulk = MAIN.level.bulk(player.xp)
     tmp.level.cur = MAIN.level.cur(lvl)
@@ -333,8 +340,13 @@ tmp_update.push(_=>{
     if (player.grasshop >= 4) tmp.platGain += getGHEffect(3)
 
     tmp.platGain *= upgEffect('oil',4,1) * getASEff('plat') * upgEffect('moonstone',3)
+    if (player.lowGH <= 4) tmp.platGain *= 10
+
     tmp.platGain = Math.ceil(tmp.platGain)
 
+    tmp.moonstoneGain = 1
+    if (player.grassskip >= 8) tmp.moonstoneGain += getGSEffect(2,0)
+
     tmp.platChance = 0.005
-    if (player.grasshop >= 6) tmp.platChance *= 2
+    if (player.grasshop >= 6 || player.lowGH <= 4) tmp.platChance *= 2
 })

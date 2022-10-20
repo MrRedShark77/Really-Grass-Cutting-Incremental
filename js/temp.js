@@ -19,6 +19,8 @@ function resetTemp() {
         platChance: 0.005,
         platGain: 1,
 
+        moonstoneGain: 1,
+
         grasses: [],
         level: {},
         tier: {},

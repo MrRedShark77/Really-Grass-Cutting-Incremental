@@ -40,7 +40,9 @@ MAIN.steel = {
             x = x.mul(upgEffect('rocket',6))
             x = x.mul(upgEffect('momentum',7))
 
-            x = x.mul(starTreeEff('speed',1)*starTreeEff('speed',2))
+            x = x.mul(starTreeEff('speed',1)*starTreeEff('speed',2)*starTreeEff('speed',9))
+
+            x = x.mul(upgEffect('funnyMachine',0))
 
             if (player.decel) x = x.div(1e24)
 
@@ -176,7 +178,7 @@ MAIN.steel = {
 }
 
 RESET.steel = {
-    unl: _=>player.grasshop>=10||player.gTimes>0,
+    unl: _=>(player.grasshop>=10||player.gTimes>0)&&!player.decel,
 
     req: _=>player.level>=400,
     reqDesc: _=>`Reach Level 400.`,
@@ -211,7 +213,7 @@ RESET.steel = {
 UPGS.factory = {
     title: "The Factory",
 
-    unl: _=>player.sTimes > 0,
+    unl: _=>player.sTimes > 0&&!player.decel,
 
     underDesc: _=>`You have ${format(player.steel,0)} Steel`+(tmp.steelPass>0?" <span class='smallAmt'>"+player.steel.formatGain(tmp.steelGain.mul(tmp.steelPass))+"</span>":""),
 
@@ -369,9 +371,11 @@ UPGS.factory = {
 UPGS.foundry = {
     title: "Foundry",
 
-    unl: _=>hasUpgrade('factory',0),
+    unl: _=>hasUpgrade('factory',0)&&!player.decel,
 
     underDesc: _=>`<b class="green">${tmp.foundryEff.format()}x</b> <span style="font-size:14px;">to Steel multiplier based on time since last steelie (max 1 hour)</span>`,
+
+    autoUnl: _=>hasStarTree('auto',6),
 
     ctn: [
         {
@@ -435,9 +439,11 @@ UPGS.foundry = {
 UPGS.gen = {
     title: "Generator",
 
-    unl: _=>hasUpgrade('factory',1),
+    unl: _=>hasUpgrade('factory',1)&&!player.decel,
 
     underDesc: _=>`<b class="green">${format(upgEffect('factory',1))}x</b> <span style="font-size:14px;">to PP/Crystal generator multiplier from factory upgrade</span>`,
+
+    autoUnl: _=>hasStarTree('auto',7),
 
     ctn: [
         {
@@ -525,6 +531,8 @@ UPGS.assembler = {
 
     unl: _=>hasUpgrade('factory',3),
 
+    autoUnl: _=>hasStarTree('auto',8),
+
     ctn: [
         {
             title: "Limitless Grass Upgrades",
@@ -603,6 +611,7 @@ tmp_update.push(_=>{
     if (player.grasshop >= 18) tmp.chargeOoM++
     if (player.grasshop >= 20) tmp.chargeOoM++
     if (player.grasshop >= 24) tmp.chargeOoM += getGHEffect(12,0)
+    tmp.chargeOoM += upgEffect('sfrgt',3,0)
 
     tmp.chargeOoMMul = Decimal.pow(10,tmp.chargeOoM)
 

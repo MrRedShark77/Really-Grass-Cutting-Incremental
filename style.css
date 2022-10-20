@@ -540,7 +540,15 @@ button:not(.locked):hover {
 #milestone_div_gs,
 #milestone_div_gs .milestone_ctns > div,
 .reset_div.gs,
-.reset_req.gs {
+.reset_req.gs,
+.reset_div.fun,
+.reset_req.fun,
+.upg_desc.funnyMachine,
+.upgs_div.funnyMachine,
+.upg_desc.fundry,
+.upgs_div.fundry,
+.upg_desc.sfrgt,
+.upgs_div.sfrgt {
     background-color: #ffff79;
 }
 

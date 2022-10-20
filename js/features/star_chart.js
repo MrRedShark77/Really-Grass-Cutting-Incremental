@@ -3,16 +3,19 @@ const SC_IDS = {
         [0],
         [4,1,'',3,''],
         ['',2,5],
+        [6,7,8],
     ],
     speed: [
         [0],
         [7,8,1,'',''],
         [3,4,2,5,6],
+        [10,11,9,12,13],
     ],
     progress: [
         [0],
         [1,2,3],
         [4,5,6],
+        [7,8,9],
     ],
 }
 
@@ -80,6 +83,39 @@ const STAR_CHART = {
             icon: ['Curr/Moonstone','Icons/StarAuto'],
                             
             cost: i => 5000,
+            bulk: i => 1,
+        },
+        {
+            branch: [2],
+
+            title: "Foundry Autobuy",
+            desc: `Automate Foundry upgrades.`,
+
+            icon: ['Icons/Foundry','Icons/StarAuto'],
+                            
+            cost: i => 2500,
+            bulk: i => 1,
+        },
+        {
+            branch: [2],
+
+            title: "Generator Autobuy",
+            desc: `Automate Generator upgrades.`,
+
+            icon: ['Icons/Generator','Icons/StarAuto'],
+                            
+            cost: i => 2500,
+            bulk: i => 1,
+        },
+        {
+            branch: [2],
+
+            title: "Assembler Autobuy",
+            desc: `Automate Assembler upgrades.`,
+
+            icon: ['Icons/Assemblerv2','Icons/StarAuto'],
+                            
+            cost: i => 2500,
             bulk: i => 1,
         },
     ],
@@ -249,6 +285,101 @@ const STAR_CHART = {
             cost: i => 1e3,
             bulk: i => 1,
         },
+        {
+            max: 10,
+            branch: [2],
+
+            title: "Stellar Charger III",
+            desc: `Increases charge rate by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/Charge','Icons/StarSpeed'],
+                            
+            cost: i => Math.ceil(1000*1.75**i),
+            bulk: i => i.div(1000).max(1).log(1.75).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 10,
+            branch: [2],
+
+            title: "Stellar Grass II",
+            desc: `Increases grass gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Grass','Icons/StarSpeed'],
+                            
+            cost: i => Math.ceil(500*1.75**i),
+            bulk: i => i.div(500).max(1).log(1.75).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 10,
+            branch: [2],
+
+            title: "Stellar XP II",
+            desc: `Increases XP gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/XP','Icons/StarSpeed'],
+                            
+            cost: i => Math.ceil(500*1.75**i),
+            bulk: i => i.div(500).max(1).log(1.75).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 10,
+            branch: [2],
+
+            title: "Stellar TP II",
+            desc: `Increases TP by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/TP','Icons/StarSpeed'],
+                            
+            cost: i => Math.ceil(500*1.75**i),
+            bulk: i => i.div(500).max(1).log(1.75).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 10,
+            branch: [2],
+
+            title: "Stellar Oil II",
+            desc: `Increases oil gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Oil','Icons/StarSpeed'],
+                            
+            cost: i => Math.ceil(500*1.75**i),
+            bulk: i => i.div(500).max(1).log(1.75).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
     ],
     progress: [
         {
@@ -350,7 +481,7 @@ const STAR_CHART = {
             branch: [2],
 
             title: "Space Power II",
-            desc: `Increase SP (Space Power) gained by <span class="green">+100%</span> per level.`,
+            desc: `Increase SP (Space Power) gained by <span class="green">+100%</span> per level. <span class="lightblue">Unlock more upgrades.</span>`,
 
             icon: ['Curr/SP','Icons/StarProgression'],
                             
@@ -378,6 +509,63 @@ const STAR_CHART = {
 
             effect(i) {
                 let x = Decimal.pow(2,player.aRes.tier).pow(i/20)
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 10,
+            branch: [4],
+
+            title: "Stellar Scaled Level II",
+            desc: `Increase second scaled level starting by <span class="green">+5%</span> per level.`,
+
+            icon: ['Icons/XP','Icons/StarProgression'],
+                            
+            cost: i => Math.ceil(10000*5**i**1.2),
+            bulk: i => i.div(10000).max(1).log(5).root(1.2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/20+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x)+" later",
+        },
+        {
+            max: 10,
+            branch: [5],
+
+            title: "Space Power III",
+            desc: `Increase SP (Space Power) gained by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/SP','Icons/StarProgression'],
+                            
+            cost: i => Math.ceil(3000*1.8**i),
+            bulk: i => i.div(3000).max(1).log(1.8).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 10,
+            branch: [5],
+
+            title: "More Rocket Fuels",
+            desc: `Increase rocket fuel's cheapness by <span class="green">+5%</span> per level.`,
+
+            icon: ['Curr/RocketFuel','Icons/StarProgression'],
+                            
+            cost: i => Math.ceil(5000*5**i),
+            bulk: i => i.div(5000).max(1).log(5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/20+1
         
                 return x
             },
@@ -472,7 +660,7 @@ el.setup.star_chart = _=>{
             h += `</div>`
         }
 
-        h += `</div>`
+        h += `<div style="height:200px"></div></div>`
     }
 
     nt.setHTML(h)

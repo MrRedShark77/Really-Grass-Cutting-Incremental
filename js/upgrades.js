@@ -13,6 +13,9 @@ const UPG_RES = {
     rf: ["Rocket Fuel",_=>[player.rocket,"amount"],'RocketBase'],
     momentum: ["Momentum",_=>[player,"momentum"],'RocketBase'],
     moonstone: ["Moonstone",_=>[player,"moonstone"],'MoonBase'],
+    fun: ["Fun",_=>[player,"fun"],'FunBase'],
+    star: ["Star",_=>[player,"stars"],'SpaceBase'],
+    SFRGT: ["SFRGT",_=>[player,"SFRGT"],'FunBase'],
 }
 
 const isResNumber = ['perk','plat','rf','momentum','moonstone']
@@ -833,7 +836,7 @@ const UPGS = {
             },{
                 max: 25,
 
-                unl: _=>player.rocket.part>0,
+                unl: _=>player.rocket.part>0||player.gTimes>0,
 
                 costOnce: true,
 
@@ -1256,10 +1259,16 @@ el.update.upgs = _=>{
             updateUpgradesHTML('ap')
             updateUpgradesHTML('oil')
         }
-        else if (mapID == 'gh') updateUpgradesHTML('factory')
+        else if (mapID == 'gh') {
+            updateUpgradesHTML('factory')
+            updateUpgradesHTML('funnyMachine')
+        }
         else if (mapID == 'fd') {
             updateUpgradesHTML('foundry')
             updateUpgradesHTML('gen')
+
+            updateUpgradesHTML('fundry')
+            updateUpgradesHTML('sfrgt')
         }
         else if (mapID == 'as') {
             updateUpgradesHTML('assembler')
