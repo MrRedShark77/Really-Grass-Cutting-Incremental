@@ -34,7 +34,7 @@ RESET.gal = {
                 player.stars = player.stars.add(tmp.starGain)
                 player.gTimes++
 
-                if (player.lowGH <= 0 || player.grasshop <= 0) player.lowGH = Math.min(player.lowGH,-player.grassskip)
+                if (player.lowGH <= 0 && player.grasshop <= 0) player.lowGH = Math.min(player.lowGH,-player.grassskip)
                 else player.lowGH = Math.min(player.lowGH,player.grasshop)
 
                 tmp.space = true
