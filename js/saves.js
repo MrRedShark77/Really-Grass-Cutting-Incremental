@@ -90,7 +90,8 @@ function getPlayerData() {
         cTimes: 0,
 
         options: {
-            hideUpgOption: false
+            hideUpgOption: false,
+            alwaysUseScientific: false
         },
 
         chalUnl: false,

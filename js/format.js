@@ -293,7 +293,7 @@ function toSuperscript(value) {
       .join("");
 }
 
-function format(ex, acc=2, max=9, type="mixed_sc") {
+function format(ex, acc=2, max=9, type=defaultFormat()) {
     ex = E(ex)
     neg = ex.lt(0)?"-":""
     if (ex.mag == Infinity) return neg + 'Infinity'
@@ -383,3 +383,11 @@ function formatPercent(ex) { ex = E(ex); return format(ex.mul(100))+"%" }
 function formatMult(ex,acc=2) { ex = E(ex); return ex.gte(1)?"×"+ex.format(acc):"/"+ex.pow(-1).format(acc)}
 
 function expMult(a,b,base=10) { return Decimal.gte(a,10) ? Decimal.pow(base,Decimal.log(a,base).pow(b)) : E(a) }
+
+function defaultFormat() { return player.options.alwaysUseScientificOption ? "sc" : "mixed_sc"}
+
+function changeDefaultFormat() { player.options.alwaysUseScientificOption = !player.options.alwaysUseScientificOption }
+
+el.update.format = _=>{
+    if (mapID == 'opt') tmp.el.alwaysUseScientificOption.setTxt(player.options.alwaysUseScientificOption?"ON":"OFF")
+}
