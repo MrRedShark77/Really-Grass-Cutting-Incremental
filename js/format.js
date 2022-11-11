@@ -221,7 +221,7 @@ const FORMATS = {
       format(ex, acc, max) {
         ex = E(ex)
         let e = ex.log10().floor()
-        if (e.lt(303) && e.gte(max)) return format(ex,acc,max,"st")
+        if (e.lt(63) && e.gte(max)) return format(ex,acc,max,"st")
         else return format(ex,acc,max,"sc")
       }
     },

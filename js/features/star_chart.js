@@ -1,7 +1,7 @@
 const SC_IDS = {
     auto: [
         [0],
-        [4,1,'',3,''],
+        [4,1,'',3,9],
         ['',2,5],
         [6,7,8],
     ],
@@ -10,6 +10,7 @@ const SC_IDS = {
         [7,8,1,'',''],
         [3,4,2,5,6],
         [10,11,9,12,13],
+        [15,16,14,17,18],
     ],
     progress: [
         [0],
@@ -67,7 +68,7 @@ const STAR_CHART = {
             branch: [1],
 
             title: "Multi Grass-Skip",
-            desc: `Allow grass-skipping multiple times. [not implemented]`,
+            desc: `Allow grass-skipping multiple times. (change in options)`,
 
             icon: ['Icons/GrassSkip','Icons/StarAuto'],
                             
@@ -116,6 +117,17 @@ const STAR_CHART = {
             icon: ['Icons/Assemblerv2','Icons/StarAuto'],
                             
             cost: i => 2500,
+            bulk: i => 1,
+        },
+        {
+            branch: [3],
+
+            title: "Platinum Upgrade Autobuy",
+            desc: `Automate Platinum upgrades.`,
+
+            icon: ['Curr/Platinum','Icons/StarAuto'],
+                            
+            cost: i => 10000,
             bulk: i => 1,
         },
     ],
@@ -380,6 +392,101 @@ const STAR_CHART = {
             },
             effDesc: x => formatMult(x),
         },
+        {
+            max: 10,
+            branch: [9],
+
+            title: "Stellar Charger IV",
+            desc: `Increases charge rate by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/Charge','Icons/StarSpeed'],
+                            
+            cost: i => Math.ceil(1e6*2**i),
+            bulk: i => i.div(1e6).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 10,
+            branch: [9],
+
+            title: "Stellar Grass II",
+            desc: `Increases grass gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Grass','Icons/StarSpeed'],
+                            
+            cost: i => Math.ceil(100000*2**i),
+            bulk: i => i.div(100000).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 10,
+            branch: [9],
+
+            title: "Stellar XP II",
+            desc: `Increases XP gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/XP','Icons/StarSpeed'],
+                            
+            cost: i => Math.ceil(100000*2**i),
+            bulk: i => i.div(100000).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 10,
+            branch: [9],
+
+            title: "Stellar TP II",
+            desc: `Increases TP by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/TP','Icons/StarSpeed'],
+                            
+            cost: i => Math.ceil(100000*2**i),
+            bulk: i => i.div(100000).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 10,
+            branch: [9],
+
+            title: "Stellar Oil II",
+            desc: `Increases oil gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Oil','Icons/StarSpeed'],
+                            
+            cost: i => Math.ceil(100000*2**i),
+            bulk: i => i.div(100000).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
     ],
     progress: [
         {
@@ -447,8 +554,8 @@ const STAR_CHART = {
 
             icon: ['Icons/Speed','Icons/StarProgression'],
                             
-            cost: i => Math.ceil(4000*1e3**i),
-            bulk: i => i.div(4000).max(1).log(1e3).floor().toNumber()+1,
+            cost: i => Math.ceil(4000*10**i),
+            bulk: i => i.div(4000).max(1).log(10).floor().toNumber()+1,
 
             effect(i) {
                 let x = i/100

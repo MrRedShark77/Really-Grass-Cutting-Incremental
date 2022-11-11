@@ -220,6 +220,7 @@ const MAIN = {
         x = x.mul(upgEffect('sfrgt',1))
 
         if (player.lowGH <= 4) x = x.mul(10)
+        if (player.lowGH <= -8) x = x.mul(getAGHEffect(9,1))
 
         return x
     },

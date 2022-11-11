@@ -7,6 +7,10 @@ MAIN.fun = {
 
         x = x.mul(upgEffect('fundry',0)).mul(upgEffect('fundry',1)).mul(upgEffect('fundry',2)).mul(upgEffect('fundry',3))
 
+        x = x.mul(tmp.chargeEff[10]||1)
+
+        if (player.lowGH <= -12) x = x.mul(getAGHEffect(10))
+
         return x.floor()
     },
     SFRGTgain() {
@@ -16,6 +20,9 @@ MAIN.fun = {
         x = x.mul(upgEffect('sfrgt',0))
 
         if (player.lowGH <= 8) x = x.mul(getAGHEffect(5))
+        if (player.grassskip >= 15) x = x.mul(getGSEffect(4,1))
+
+        x = x.mul(tmp.chargeEff[11]||1)
 
         return x
     },
@@ -99,6 +106,42 @@ UPGS.funnyMachine = {
                         
             cost: i => Decimal.pow(1.2,i).mul(1e6).ceil(),
             bulk: i => i.div(1e6).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 100,
+
+            title: "Charger Mk.II",
+            desc: `Unlock new charge milestones, which aren't affected by OoM charge starting. Each level increases charge rate by <b class="green">+10%</b>.`,
+        
+            res: "fun",
+            icon: ["Icons/Charger"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(1e11).ceil(),
+            bulk: i => i.div(1e11).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 100,
+
+            title: "Assembler Mk.II",
+            desc: `Unlock new assembler upgrades. Each level increases charge rate by <b class="green">+10%</b>.<br>Keep assembler upgrades on galactic.`,
+        
+            res: "fun",
+            icon: ["Icons/Assemblerv2"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(1e14).ceil(),
+            bulk: i => i.div(1e14).max(1).log(1.2).floor().toNumber()+1,
         
             effect(i) {
                 let x = i/10+1

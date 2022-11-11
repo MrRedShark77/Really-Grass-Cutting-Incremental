@@ -40,9 +40,9 @@ MAIN.steel = {
             x = x.mul(upgEffect('rocket',6))
             x = x.mul(upgEffect('momentum',7))
 
-            x = x.mul(starTreeEff('speed',1)*starTreeEff('speed',2)*starTreeEff('speed',9))
+            x = x.mul(starTreeEff('speed',1)*starTreeEff('speed',2)*starTreeEff('speed',9)*starTreeEff('speed',14))
 
-            x = x.mul(upgEffect('funnyMachine',0))
+            x = x.mul(upgEffect('funnyMachine',0)).mul(upgEffect('funnyMachine',2)).mul(upgEffect('funnyMachine',3))
 
             if (player.decel) x = x.div(1e24)
 
@@ -172,6 +172,32 @@ MAIN.steel = {
                     return x.toNumber()
                 },
                 effDesc: x => "Boost Oil gain by "+format(x)+"x",
+            },{
+                unl: _=>hasUpgrade('funnyMachine',2),
+                req: E(1e30),
+                eff(c) {
+                    if (player.bestCharge.lt(this.req)) return E(1)
+
+                    let s = c.div(this.req).max(1)
+
+                    let x = s.root(4)
+
+                    return x.toNumber()
+                },
+                effDesc: x => "Boost Fun gain by "+format(x)+"x",
+            },{
+                unl: _=>hasUpgrade('funnyMachine',2),
+                req: E(1e33),
+                eff(c) {
+                    if (player.bestCharge.lt(this.req) || !player.decel) return E(1)
+
+                    let s = c.div(this.req).max(1)
+
+                    let x = s.root(4)
+
+                    return x.toNumber()
+                },
+                effDesc: x => "Boost SFRGT gain by "+format(x)+"x",
             },
         ],
     },
@@ -203,7 +229,7 @@ RESET.steel = {
     },
 
     doReset(order="steel") {
-        player.sTime = 0
+        if (player.lowGH > -8) player.sTime = 0
         player.chargeRate = E(0)
 
         RESET.gh.reset(true)
@@ -594,6 +620,28 @@ UPGS.assembler = {
                         
             cost: i => E(1e53),
             bulk: i => 1,
+        },{
+            unl: _=>hasUpgrade('funnyMachine',3),
+
+            title: "Limitless Anti-Grass Upgrades",
+            desc: `<b class="green">Anti-Grass Steel, Anti-Grass Value & Anti-Grass XP</b> will no longer have maximum limit.`,
+        
+            res: "steel",
+            icon: ["Curr/AntiGrass","Icons/Automation2"],
+                        
+            cost: i => E(1e220),
+            bulk: i => 1,
+        },{
+            unl: _=>hasUpgrade('funnyMachine',3),
+
+            title: "Limitless Anonymity Upgrades",
+            desc: `<b class="green">AP Value, AP Charge, AP XP & AP TP</b> will no longer have maximum limit.`,
+        
+            res: "steel",
+            icon: ["Curr/Anonymity","Icons/Automation2"],
+                        
+            cost: i => E(1e235),
+            bulk: i => 1,
         },
     ],
 }
@@ -611,6 +659,7 @@ tmp_update.push(_=>{
     if (player.grasshop >= 18) tmp.chargeOoM++
     if (player.grasshop >= 20) tmp.chargeOoM++
     if (player.grasshop >= 24) tmp.chargeOoM += getGHEffect(12,0)
+    if (player.lowGH <= -4) tmp.chargeOoM += getAGHEffect(8,0)
     tmp.chargeOoM += upgEffect('sfrgt',3,0)
 
     tmp.chargeOoMMul = Decimal.pow(10,tmp.chargeOoM)

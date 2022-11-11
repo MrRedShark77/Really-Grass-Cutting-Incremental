@@ -11,6 +11,7 @@ MAIN.gal = {
         if (player.lowGH <= 12) x = x.mul(getAGHEffect(4))
 
         x = x.mul(upgEffect('sfrgt',2))
+        x = x.mul(upgEffect('rocket',10))
 
         return x.floor()
     },
@@ -53,7 +54,7 @@ RESET.gal = {
         resetUpgrades('factory')
         resetUpgrades('foundry')
         resetUpgrades('gen')
-        resetUpgrades('assembler')
+        if (!hasUpgrade('funnyMachine',3)) resetUpgrades('assembler')
         resetUpgrades('momentum')
         if (!hasStarTree('auto',0)) resetUpgrades('auto')
         resetUpgrades('plat')

@@ -1,6 +1,6 @@
 function E(x){return new Decimal(x)};
 
-const VER = 0.0401
+const VER = 0.040101
 const EINF = Decimal.dInf
 
 Math.lerp = function (value1, value2, amount) {

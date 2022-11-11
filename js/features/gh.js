@@ -89,12 +89,31 @@ MAIN.agh_milestone = [
         effDesc: x=> format(x)+"x",
     },{
         r: 4,
-        desc: `Gain <b class="green">x10</b> more platinum and SP. Active sixth 7 grasshop milestones if you haven't reached them.`,
+        desc: `Gain <b class="green">x10</b> more platinum and SP.<br>Active sixth 7 grasshop milestones if you haven't reached them.`,
+    },{
+        r: 0,
+        desc: `Unlock a new rocket fuel for stars.<br>Unlock milestones below grasshop 0.`,
+    },{
+        r: -4,
+        desc: `Charger charge bonuses increase <b class="green">1</b> OoM sooner per grassskip.`,
+        effect: _=>Math.max(player.grassskip,0),
+        effDesc: x=> "+"+format(x,0)+" later",
+    },{
+        r: -8,
+        desc: `Increase SP gained by <b class="green">25%</b> every zero grasshop grass-skips.<br>Steelie no longer reset its time.`,
+        effect: _=>Decimal.pow(1.25,Math.max(-player.lowGH,0)),
+        effDesc: x=> format(x)+"x",
+    },{
+        r: -12,
+        desc: `Increase Fun gained by <b class="green">10%</b> every astral.`,
+        effect: _=>Decimal.pow(1.1,player.astral),
+        effDesc: x=> format(x)+"x",
     },
 ]
 
 MAIN.gs = {
     req: _=> Math.ceil(400+E(player.grassskip).scale(10,2,0).toNumber()*10),
+    bulk: _=> player.level>=400?E((player.level-400)/10).scale(10,2,0,true).floor().toNumber()+1:0,
 
     milestone: [
         {
@@ -115,6 +134,11 @@ MAIN.gs = {
         },{
             r: 10,
             desc: `Unlock Funify reset and The Funny Upgrade rocket fuel upgrade.`,
+        },{
+            r: 15,
+            desc: `SFRGT is increased by <b class="green">50%</b> every grass-skip.`,
+            effect: _=>Decimal.pow(1.5,player.grassskip),
+            effDesc: x=> format(x)+"x",
         },
     ],
 }
@@ -193,11 +217,15 @@ RESET.gs = {
 
     reset(force=false) {
         if ((this.req()&&player.level>=tmp.gs_req)||force) {
+            let res = Math.max(player.grassskip, MAIN.gs.bulk())
             if (force) {
                 this.doReset()
             } else {
                 player.gsUnl = true
-                player.grassskip++
+
+                if (hasStarTree('auto',4) && player.gsMult) player.grassskip = res
+                else player.grassskip++
+
                 player.bestGS = Math.max(player.bestGS, player.grassskip)
 
                 updateTemp()
@@ -236,9 +264,9 @@ tmp_update.push(_=>{
     }
 })
 
-function getGHEffect(x,def=1) { return tmp.ghEffect[x]||def }
-function getGSEffect(x,def=1) { return tmp.gsEffect[x]||def }
-function getAGHEffect(x,def=1) { return tmp.aghEffect[x]||def }
+function getGHEffect(x,def=1) { return tmp.ghEffect[x]!==undefined?tmp.ghEffect[x]:def }
+function getGSEffect(x,def=1) { return tmp.gsEffect[x]!==undefined?tmp.gsEffect[x]:def }
+function getAGHEffect(x,def=1) { return tmp.aghEffect[x]!==undefined?tmp.aghEffect[x]:def }
 
 el.setup.milestones = _=>{
     let t = new Element("milestone_div_gh")
@@ -267,14 +295,14 @@ el.setup.milestones = _=>{
     t = new Element("milestone_div_agh")
     h = ""
 
-    h += `<div id="gh_mil_ctns">Your lowest grasshop is <b id="agh">0</b><div class="milestone_ctns">`
+    h += `<div id="gh_mil_ctns">Your <span id="aghgs_text">lowest grasshop</span> is <b id="agh">0</b><div class="milestone_ctns">`
 
     for (i in MAIN.agh_milestone) {
         let m = MAIN.agh_milestone[i]
 
         h += `
         <div id="agh_mil_ctn${i}_div">
-            <h3>${m.r} Grasshop</h3><br>
+            <h3>${Math.max(0,m.r)} Grasshop${m.r<0?' and '+(-m.r)+' Grass-skip':''}</h3><br>
             ${m.desc}
             ${m.effDesc?`<br>Effect: <b class="cyan" id="agh_mil_ctn${i}_eff"></b>`:""}
         </div>
@@ -361,12 +389,16 @@ el.update.milestones = _=>{
         }
     }
     if (mapID2 == 'at') {
-        tmp.el.agh.setHTML(format(player.lowGH,0))
+        tmp.el.aghgs_text.setTxt(player.lowGH<0?"AGH Grass-skip":"lowest grasshop")
+        tmp.el.agh.setHTML(format(Math.abs(player.lowGH),0))
+
+        let agh = player.lowGH<=0
 
         for (let x = 0; x < AGH_MIL_LEN; x++) {
             let m = MAIN.agh_milestone[x]
             let id = "agh_mil_ctn"+x
 
+            tmp.el[id+"_div"].setDisplay(x<=7 || agh)
             tmp.el[id+"_div"].setClasses({bought: player.lowGH <= m.r})
             if (m.effDesc) tmp.el[id+"_eff"].setHTML(m.effDesc(tmp.aghEffect[x]))
         }
@@ -374,7 +406,10 @@ el.update.milestones = _=>{
     if (mapID == 'opt') {
         tmp.el.multGHOption.setTxt(player.ghMult?"ON":"OFF")
         tmp.el.multGHButton.setDisplay(hasStarTree('auto',1))
+        tmp.el.multGSOption.setTxt(player.gsMult?"ON":"OFF")
+        tmp.el.multGSButton.setDisplay(hasStarTree('auto',4))
     }
 }
 
 function changeGHMult() { player.ghMult = !player.ghMult }
+function changeGSMult() { player.gsMult = !player.gsMult }

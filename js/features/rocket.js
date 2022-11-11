@@ -233,6 +233,28 @@ UPGS.rocket = {
                 return x
             },
             effDesc: x => format(x)+"x",
+        },{
+            max: 10000,
+
+            unl: _=> player.lowGH<=0,
+
+            costOnce: true,
+
+            title: "Rocket Fueled Celestal",
+            desc: `Increase star gain by <b class="green">+2.5%</b> per level.`,
+
+            res: "rf",
+            icon: ['Curr/Star'],
+            
+            cost: i => 100,
+            bulk: i => Math.floor(i/100),
+
+            effect(i) {
+                let x = E(i*0.025+1)
+
+                return x
+            },
+            effDesc: x => format(x)+"x",
         },
     ],
 }

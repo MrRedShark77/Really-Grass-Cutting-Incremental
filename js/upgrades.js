@@ -618,6 +618,8 @@ const UPGS = {
 
         underDesc: _=>`You have ${format(player.plat,0)} Platinum (${formatPercent(tmp.platChance)} grow chance)`,
 
+        autoUnl: _=>hasStarTree('auto',9),
+
         ctn: [
             {
                 max: 9,
@@ -1056,6 +1058,10 @@ function updateUpgTemp(id) {
         } else if (id == "crystal") {
             if (hasUpgrade('assembler',3) && x == 5) tu.max[x] = Infinity
             else if (hasUpgrade('assembler',4) && x < 4) tu.max[x] = Infinity
+        } else if (id == "aGrass") {
+            if (hasUpgrade('assembler',6) && (x == 4 || x == 3 || x == 2)) tu.max[x] = Infinity
+        } else if (id == "ap") {
+            if (hasUpgrade('assembler',7) && (x <= 3)) tu.max[x] = Infinity
         }
 
         if (upg.unl?upg.unl():true) if (amt < tu.max[x]) ul++
