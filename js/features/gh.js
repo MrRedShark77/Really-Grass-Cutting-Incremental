@@ -174,7 +174,7 @@ RESET.gh = {
                 tmp.ghRunning = true
                 document.body.style.animation = "implode 2s 1"
                 setTimeout(_=>{
-                    if (hasStarTree('auto',1) && player.ghMult) player.grasshop = res
+                    if (hasStarTree('auto',1) && player.ghMult && res > player.grasshop) player.grasshop = res
                 else player.grasshop++
 
                     updateTemp()
@@ -223,7 +223,7 @@ RESET.gs = {
             } else {
                 player.gsUnl = true
 
-                if (hasStarTree('auto',4) && player.gsMult) player.grassskip = res
+                if (hasStarTree('auto',4) && player.gsMult && res > player.grassskip) player.grassskip = res
                 else player.grassskip++
 
                 player.bestGS = Math.max(player.bestGS, player.grassskip)
