@@ -110,7 +110,7 @@ MAIN.agh_milestone = [
         effDesc: x=> format(x)+"x",
     },{
         r: -16,
-        desc: `Raise SP gain of the <b class="green">1.25</b>th power.<br>Galactic no longer reset its time.`,
+        desc: `Raise SP gain of the <b class="green">1.25</b>th power.<br>Galactic no longer reset Steelie time.`,
     },
 ]
 
