@@ -8,7 +8,7 @@ var mouse_in = false
 function createGrass() {
     if (tmp.grasses.length < tmp.grassCap) {
         let pl = Math.random()<tmp.platChance&&player.tier>=3
-        let ms = Math.random()<0.005&&pl&&player.gTimes>0
+        let ms = Math.random()<tmp.moonstoneChance&&pl&&player.gTimes>0
 
         tmp.grasses.push({
             x: Math.random(),

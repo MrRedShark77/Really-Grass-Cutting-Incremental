@@ -66,5 +66,7 @@ function calc(dt) {
         player.SFRGT = player.SFRGT.add(tmp.SFRGTgain.mul(dt))
     }
 
+    if (hasStarTree('auto',10)) ROCKET.create()
+
     MAIN.checkCutting()
 }

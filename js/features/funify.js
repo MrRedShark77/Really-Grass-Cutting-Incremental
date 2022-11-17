@@ -18,6 +18,7 @@ MAIN.fun = {
 
         x = x.mul(upgEffect('funnyMachine',1))
         x = x.mul(upgEffect('sfrgt',0))
+        x = x.mul(upgEffect('moonstone',5))
 
         if (player.lowGH <= 8) x = x.mul(getAGHEffect(5))
         if (player.grassskip >= 15) x = x.mul(getGSEffect(4,1))

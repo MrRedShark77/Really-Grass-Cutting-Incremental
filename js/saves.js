@@ -1,6 +1,6 @@
 function E(x){return new Decimal(x)};
 
-const VER = 0.040101
+const VER = 0.040102
 const EINF = Decimal.dInf
 
 Math.lerp = function (value1, value2, amount) {
@@ -27,6 +27,15 @@ Decimal.prototype.softcap = function (start, power, mode) {
         if ([0, "pow"].includes(mode)) x = x.div(start).pow(power).mul(start)
         if ([1, "mul"].includes(mode)) x = x.sub(start).div(power).add(start)
         if ([2, "exp"].includes(mode)) x = expMult(x.div(start), power).mul(start)
+    }
+    return x
+}
+
+function softcap(x,s,p,m) {
+    if (x >= s) {
+        if ([0, "pow"].includes(m)) x = (x/s)**p*s
+        if ([1, "mul"].includes(m)) x = (x-s)/p+s
+        if ([2, "pow2"].includes(m)) x = (x-s+1)**p+s-1
     }
     return x
 }

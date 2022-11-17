@@ -50,11 +50,11 @@ MAIN.steel = {
         },
         effs: [
             {
-                req: E(0),
+                req: E(1),
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
 
-                    let s = c.max(1)
+                    let s = calcChargeAmountFromOoM(c,this.req).max(1)
 
                     let x = s.root(6)
 
@@ -66,7 +66,7 @@ MAIN.steel = {
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
 
-                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+                    let s = calcChargeAmountFromOoM(c,this.req).max(1)
 
                     let x = s.root(3)
 
@@ -78,7 +78,7 @@ MAIN.steel = {
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
 
-                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+                    let s = calcChargeAmountFromOoM(c,this.req).max(1)
 
                     let x = s.log10().div(10).add(1).root(2)
                     if (!hasUpgrade('assembler',5)) x = x.softcap(1.25,1/2,0)
@@ -91,7 +91,7 @@ MAIN.steel = {
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
 
-                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+                    let s = calcChargeAmountFromOoM(c,this.req).max(1)
 
                     let x = s.root(2)
 
@@ -103,7 +103,7 @@ MAIN.steel = {
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
 
-                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+                    let s = calcChargeAmountFromOoM(c,this.req).max(1)
 
                     let x = s.root(2)
 
@@ -115,7 +115,7 @@ MAIN.steel = {
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return 0
 
-                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+                    let s = calcChargeAmountFromOoM(c,this.req).max(1)
 
                     let x = s.log10()
 
@@ -127,7 +127,7 @@ MAIN.steel = {
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
 
-                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+                    let s = calcChargeAmountFromOoM(c,this.req).max(1)
 
                     let x = s.root(3)
 
@@ -139,7 +139,7 @@ MAIN.steel = {
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
 
-                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+                    let s = calcChargeAmountFromOoM(c,this.req).max(1)
 
                     let x = s.root(3)
 
@@ -152,7 +152,7 @@ MAIN.steel = {
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
 
-                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+                    let s = calcChargeAmountFromOoM(c,this.req).max(1)
 
                     let x = s.root(4)
 
@@ -165,7 +165,7 @@ MAIN.steel = {
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
 
-                    let s = c.div(this.req.div(tmp.chargeOoMMul).max(1)).max(1)
+                    let s = calcChargeAmountFromOoM(c,this.req).max(1)
 
                     let x = s.root(4)
 
@@ -642,6 +642,28 @@ UPGS.assembler = {
                         
             cost: i => E(1e235),
             bulk: i => 1,
+        },{
+            unl: _=>hasUpgrade('funnyMachine',3),
+
+            title: "Beyond Charge OoM Reduction",
+            desc: `Make charge OoM reductions (softcapped) instead of (hardcapped). (charge OoM reductions can go below 0, but negative charge OoMs are softcapped).`,
+        
+            res: "steel",
+            icon: ["Curr/Charge","Icons/Infinite"],
+                        
+            cost: i => E(1e275),
+            bulk: i => 1,
+        },{
+            unl: _=>hasUpgrade('funnyMachine',3),
+
+            title: "Limitless Anti-Grass Upgrades II",
+            desc: `<b class="green">Anti-Grass Charge & Scaled Level</b> will no longer have maximum limit.<br>Remind: <b class="green">Anti-Grass Charge</b>'s effect softcaps at <b class="green">1 Bx</b>.`,
+        
+            res: "steel",
+            icon: ["Curr/AntiGrass","Icons/Automation2"],
+                        
+            cost: i => E('e330'),
+            bulk: i => 1,
         },
     ],
 }
@@ -655,6 +677,8 @@ tmp_update.push(_=>{
 
     tmp.chargeGain = ms.charger.gain()
 
+    tmp.beyondOoM = hasUpgrade('assembler',8)
+
     tmp.chargeOoM = 0
     if (player.grasshop >= 18) tmp.chargeOoM++
     if (player.grasshop >= 20) tmp.chargeOoM++
@@ -662,14 +686,29 @@ tmp_update.push(_=>{
     if (player.lowGH <= -4) tmp.chargeOoM += getAGHEffect(8,0)
     tmp.chargeOoM += upgEffect('sfrgt',3,0)
 
-    tmp.chargeOoMMul = Decimal.pow(10,tmp.chargeOoM)
-
     for (let x = 0; x < ms.charger.effs.length; x++) {
         let ce = ms.charger.effs[x]
         let unl = ce.unl ? ce.unl() : true
         tmp.chargeEff[x] = ce.eff(unl?player.chargeRate:E(0))
     }
 })
+
+function calcChargeAmountFromOoM(charge, req, oom=tmp.chargeOoM) {
+    let r
+
+    if (tmp.beyondOoM) {
+        let rl = Number(req.log10().round())
+        if (oom >= rl) oom = (oom-rl+1)**0.6+rl-1
+
+        r = req.div(Decimal.pow(10,oom))
+    } else {
+        r = req.div(Decimal.pow(10,oom)).max(1)
+    }
+
+    let x = charge.div(r).max(1)
+
+    return x
+}
 
 el.setup.factory = _=>{
     let table = new Element(charge_mil)

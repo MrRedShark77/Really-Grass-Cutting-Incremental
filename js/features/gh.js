@@ -105,9 +105,12 @@ MAIN.agh_milestone = [
         effDesc: x=> format(x)+"x",
     },{
         r: -12,
-        desc: `Increase Fun gained by <b class="green">10%</b> every astral.`,
+        desc: `Increase Fun gained by <b class="green">10%</b> every astral.<br>You don't lose platinum on galactic.`,
         effect: _=>Decimal.pow(1.1,player.astral),
         effDesc: x=> format(x)+"x",
+    },{
+        r: -16,
+        desc: `Raise SP gain of the <b class="green">1.25</b>th power.<br>Galactic no longer reset its time.`,
     },
 ]
 
@@ -139,6 +142,9 @@ MAIN.gs = {
             desc: `SFRGT is increased by <b class="green">50%</b> every grass-skip.`,
             effect: _=>Decimal.pow(1.5,player.grassskip),
             effDesc: x=> format(x)+"x",
+        },{
+            r: 21,
+            desc: `<b class="green">Double</b> moonstone earned and its chance.`,
         },
     ],
 }

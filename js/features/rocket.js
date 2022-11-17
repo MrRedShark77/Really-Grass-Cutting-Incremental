@@ -13,10 +13,12 @@ const ROCKET = {
 
             player.rocket.amount += b-rf
 
-            let c = Decimal.pow(tmp.rf_base, b).sub(Decimal.pow(tmp.rf_base, rf)).div(tmp.rf_base-1).mul(tmp.rf_base_mult)
+            if (!hasStarTree('auto',10)) {
+                let c = Decimal.pow(tmp.rf_base, b).sub(Decimal.pow(tmp.rf_base, rf)).div(tmp.rf_base-1).mul(tmp.rf_base_mult)
 
-            player.chargeRate = player.chargeRate.sub(Decimal.mul(c,1e36)).max(0)
-            player.oil = player.oil.sub(Decimal.mul(c,1e9)).max(0)
+                player.chargeRate = player.chargeRate.sub(Decimal.mul(c,1e36)).max(0)
+                player.oil = player.oil.sub(Decimal.mul(c,1e9)).max(0)
+            }
 
             updateRocketTemp()
         }
@@ -521,7 +523,7 @@ el.update.rocket = _=>{
 }
 
 function updateRocketTemp() {
-    let cheap = 1 * starTreeEff('progress',9,1)
+    let cheap = 1 * starTreeEff('progress',9,1) * starTreeEff('progress',11,1)
     
     let rf = player.rocket.total_fp
     tmp.rf_base = RF_COST_POW ** (1/cheap)
@@ -534,8 +536,11 @@ function updateRocketTemp() {
 }
 
 tmp_update.push(_=>{
-    tmp.rp_req = [Decimal.pow(4+player.rocket.part/2,player.rocket.part).mul(1e60),player.rocket.part>9&&player.gTimes==0?1/0:15*player.rocket.part+15]
-    tmp.rf_base_mult = Decimal.pow(1.5,player.rocket.part)
+    let rp = player.rocket.part
+    if (rp > 50) rp = (rp/50)**2.5*50
+
+    tmp.rp_req = [Decimal.pow(4+rp/2,rp).mul(1e60),player.rocket.part>9&&player.gTimes==0?1/0:Math.ceil(15*rp)+15]
+    tmp.rf_base_mult = Decimal.pow(1.5,rp)
 
     updateRocketTemp()
 })
