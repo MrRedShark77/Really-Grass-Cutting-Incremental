@@ -549,7 +549,7 @@ UPGS.momentum = {
             unl: _=>player.lowGH<=-20,
 
             title: "Giga Charge",
-            desc: `Increase XP gain by 50% every level.`,
+            desc: `Increase charge rate by 50% every level.`,
 
             res: "momentum",
             icon: ['Icons/Charge'],
