@@ -55,7 +55,7 @@ RESET.gal = {
         resetUpgrades('foundry')
         resetUpgrades('gen')
         if (!hasUpgrade('funnyMachine',3)) resetUpgrades('assembler')
-        resetUpgrades('momentum')
+        
         if (!hasStarTree('auto',0)) resetUpgrades('auto')
         resetUpgrades('plat')
 
@@ -63,7 +63,12 @@ RESET.gal = {
         player.rocket.total_fp = 0
         player.rocket.amount = 0
         player.rocket.part = 0
-        player.momentum = 0
+
+        if (player.lowGH > -20) {
+            resetUpgrades('momentum')
+            player.momentum = 0
+        }
+
         player.oil = E(0)
         player.bestOil = E(0)
         player.ap = E(0)
@@ -250,6 +255,28 @@ UPGS.moonstone = {
                 return x
             },
             effDesc: x => format(x)+"x",
+        },{
+            max: 10,
+
+            unl: _=>player.lowGH<=-20,
+
+            costOnce: true,
+
+            title: "Moon-Exponential XP",
+            desc: `Increase XP multiplier's exponent by <b class="green">+1%</b> per level.`,
+
+            res: "moonstone",
+            icon: ['Icons/XP','Icons/Exponent'],
+            
+            cost: i => 2500,
+            bulk: i => Math.floor(i/2500),
+
+            effect(i) {
+                let x = i*0.01+1
+
+                return x
+            },
+            effDesc: x => "^"+format(x),
         },
     ],
 }

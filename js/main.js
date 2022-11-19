@@ -28,7 +28,7 @@ const MAIN = {
         x = x.mul(upgEffect('oil',0))
 
         x = x.mul(upgEffect('rocket',0))
-        x = x.mul(upgEffect('momentum',0))
+        x = x.mul(upgEffect('momentum',0)).mul(upgEffect('momentum',10))
 
         x = x.mul(starTreeEff('speed',3)*starTreeEff('speed',10))
         if (!player.decel) x = x.mul(starTreeEff('progress',6))
@@ -78,7 +78,7 @@ const MAIN = {
         x = x.mul(upgEffect('aGrass',4))
         x = x.mul(upgEffect('ap',2))
         x = x.mul(upgEffect('oil',1))
-        x = x.mul(upgEffect('momentum',2))
+        x = x.mul(upgEffect('momentum',2)).mul(upgEffect('momentum',11))
 
         x = x.mul(upgEffect('rocket',1))
 
@@ -96,6 +96,7 @@ const MAIN = {
         if (inChal(3) || inChal(5)) x = x.root(2)
 
         if (!player.decel && hasUpgrade('plat',10)) x = x.pow(upgEffect('plat',10,1))
+        x = x.pow(upgEffect('moonstone',6))
 
         return x
     },
@@ -222,6 +223,8 @@ const MAIN = {
         if (player.lowGH <= 4) x = x.mul(10)
         if (player.lowGH <= -8) x = x.mul(getAGHEffect(9,1))
         if (player.lowGH <= -16) x = x.pow(1.25)
+
+        x = x.mul(starTreeEff('progress',12))
 
         return x
     },

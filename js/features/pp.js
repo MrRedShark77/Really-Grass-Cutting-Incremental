@@ -248,11 +248,11 @@ UPGS.ap = {
             bulk: i => i.div(3).max(1).log(1.2).floor().toNumber()+1,
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/10+1)
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/10+1).softcap(1e12,0.25,0)
 
                 return x
             },
-            effDesc: x => x.format()+"x",
+            effDesc: x => x.format()+"x"+x.softcapHTML(1e12),
         },{
             max: 1000,
 

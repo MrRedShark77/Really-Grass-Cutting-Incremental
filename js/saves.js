@@ -1,6 +1,6 @@
 function E(x){return new Decimal(x)};
 
-const VER = 0.040102
+const VER = 0.040103
 const EINF = Decimal.dInf
 
 Math.lerp = function (value1, value2, amount) {
@@ -8,6 +8,10 @@ Math.lerp = function (value1, value2, amount) {
 	amount = amount > 1 ? 1 : amount;
 	return value1 + (value2 - value1) * amount;
 };
+
+Math.logBase = function (value, base) {
+    return Math.log(value) / Math.log(base);
+}
 
 Decimal.prototype.clone = function() {
     return this

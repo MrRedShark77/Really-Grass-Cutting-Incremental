@@ -343,11 +343,11 @@ UPGS.oil = {
             bulk: i => i.div(1e3).max(1).log(10).floor().toNumber()+1,
 
             effect(i) {
-                let x = 1.5**i
+                let x = Decimal.pow(1.5,i).softcap(100,0.25,0)
 
                 return x
             },
-            effDesc: x => format(x)+"x",
+            effDesc: x => format(x)+"x"+x.softcapHTML(100),
         },{
             max: 1000,
 

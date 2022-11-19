@@ -319,6 +319,9 @@ UPGS.momentum = {
 
     underDesc: _=>`You have ${format(player.momentum,0)} Momentum`,
 
+    autoUnl: _=>hasStarTree('auto',11),
+    noSpend: _=>hasStarTree('auto',11),
+
     ctn: [
         {
             costOnce: true,
@@ -496,6 +499,66 @@ UPGS.momentum = {
 
             effect(i) {
                 let x = i*9+1
+
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 1000,
+
+            unl: _=>player.lowGH<=-20,
+
+            title: "Great Grass",
+            desc: `Increase grass gain by 100% every level.`,
+
+            res: "momentum",
+            icon: ['Curr/Grass'],
+            
+            cost: i => Math.ceil(1.1**i*10),
+            bulk: i => Math.floor(Math.logBase(Math.max(1,i/10),1.1))+1,
+
+            effect(i) {
+                let x = Decimal.pow(2,i)
+
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 1000,
+
+            unl: _=>player.lowGH<=-20,
+
+            title: "Great Level",
+            desc: `Increase XP gain by 100% every level.`,
+
+            res: "momentum",
+            icon: ['Icons/XP'],
+            
+            cost: i => Math.ceil(1.1**i*10),
+            bulk: i => Math.floor(Math.logBase(Math.max(1,i/10),1.1))+1,
+
+            effect(i) {
+                let x = Decimal.pow(2,i)
+
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 1000,
+
+            unl: _=>player.lowGH<=-20,
+
+            title: "Giga Charge",
+            desc: `Increase XP gain by 50% every level.`,
+
+            res: "momentum",
+            icon: ['Icons/Charge'],
+            
+            cost: i => Math.ceil(1.25**i*25),
+            bulk: i => Math.floor(Math.logBase(Math.max(1,i/25),1.25))+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.5,i)
 
                 return x
             },

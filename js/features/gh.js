@@ -111,6 +111,12 @@ MAIN.agh_milestone = [
     },{
         r: -16,
         desc: `Raise SP gain of the <b class="green">1.25</b>th power.<br>Galactic no longer reset Steelie time.`,
+    },{
+        r: -20,
+        desc: `Keep momentum and momentum upgrades on galactic.<br>Unlock more momentum upgrades, one moonstone upgrade.`,
+    },{
+        r: -24,
+        desc: `Unlock the <b class="green">Dark Matter Plant</b> (on left of Star Chart).`,
     },
 ]
 
@@ -145,6 +151,11 @@ MAIN.gs = {
         },{
             r: 21,
             desc: `<b class="green">Double</b> moonstone earned and its chance.`,
+        },{
+            r: 25,
+            desc: `Steel is increased by <b class="green">50%</b> every grass-skip.`,
+            effect: _=>Decimal.pow(1.5,player.grassskip),
+            effDesc: x=> format(x)+"x",
         },
     ],
 }

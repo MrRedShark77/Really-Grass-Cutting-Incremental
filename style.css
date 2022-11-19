@@ -359,6 +359,14 @@ button:not(.locked):hover {
     background-color: #003380;
 }
 
+.reset_div.sac,
+.reset_req.sac,
+.upg_desc.dm,
+.upgs_div.dm {
+    border-color: #ffa4d9;
+    background-color: #305;
+}
+
 .upgs_ctn {
     height: calc(100% - 84px);
     width: calc(100% - 24px);

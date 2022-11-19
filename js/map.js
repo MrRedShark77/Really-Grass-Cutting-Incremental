@@ -25,7 +25,7 @@ const SPACE_MAP = [
     [null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null],
-    [null,null,null,'sc','at',null,null],
+    [null,null,'sac','sc','at',null,null],
     [null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null],

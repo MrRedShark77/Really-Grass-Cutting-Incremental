@@ -17,6 +17,8 @@ MAIN.steel = {
 
         x = x.mul(getASEff('steel'))
 
+        if (player.grassskip >= 25) x = x.mul(getGSEffect(6,1))
+
         return x.floor()
     },
     foundryEff() {
@@ -37,7 +39,7 @@ MAIN.steel = {
             x = x.mul(upgEffect('aGrass',0))
             x = x.mul(upgEffect('ap',1))
 
-            x = x.mul(upgEffect('rocket',6))
+            x = x.mul(upgEffect('rocket',6)).mul(upgEffect('momentum',12))
             x = x.mul(upgEffect('momentum',7))
 
             x = x.mul(starTreeEff('speed',1)*starTreeEff('speed',2)*starTreeEff('speed',9)*starTreeEff('speed',14))
@@ -663,6 +665,28 @@ UPGS.assembler = {
             icon: ["Curr/AntiGrass","Icons/Automation2"],
                         
             cost: i => E('e330'),
+            bulk: i => 1,
+        },{
+            unl: _=>hasUpgrade('funnyMachine',3),
+
+            title: "Limitless Anonymity Upgrades II",
+            desc: `<b class="green">Scaled Level II</b> will no longer have maximum limit.`,
+        
+            res: "steel",
+            icon: ["Curr/Anonymity","Icons/Automation2"],
+                        
+            cost: i => E('e385'),
+            bulk: i => 1,
+        },{
+            unl: _=>hasUpgrade('funnyMachine',3),
+
+            title: "Limitless Oil Upgrades",
+            desc: `Oil upgrades will no longer have maximum limit.<br>Remind: <b class="green">Oily Platinum</b>'s effect softcaps at <b class="green">100x</b>.`,
+        
+            res: "steel",
+            icon: ["Curr/Oil","Icons/Automation2"],
+                        
+            cost: i => E('e435'),
             bulk: i => 1,
         },
     ],

@@ -1002,7 +1002,7 @@ function buyMaxUpgrade(id,x,auto=false) {
     let resDis = upg.res
     let res = tmp.upg_res[resDis]
 
-    if (!auto || (tu.unlLength > 0 && (Decimal.gte(res,tu.unlLength) || !tu.noSpend))) {
+    if (!auto || (tu.unlLength > 0 && (Decimal.gte(res,tu.unlLength) || tu.noSpend))) {
         let numInc = isResNumber.includes(resDis)
 
         let costOnce = upg.costOnce
@@ -1063,6 +1063,9 @@ function updateUpgTemp(id) {
             else if (hasUpgrade('assembler',9) && (x == 5 || x == 0)) tu.max[x] = Infinity
         } else if (id == "ap") {
             if (hasUpgrade('assembler',7) && (x <= 3)) tu.max[x] = Infinity
+            else if (hasUpgrade('assembler',10) && (x == 5)) tu.max[x] = Infinity
+        } else if (id == "oil") {
+            if (hasUpgrade('assembler',11)) tu.max[x] = Infinity
         }
 
         if (upg.unl?upg.unl():true) if (amt < tu.max[x]) ul++
