@@ -66,7 +66,7 @@ RESET.gal = {
         player.rocket.amount = 0
         player.rocket.part = 0
 
-        if (player.lowGH > -20 || order=='sac') {
+        if (player.lowGH > -20) {
             resetUpgrades('momentum')
             player.momentum = 0
         }
