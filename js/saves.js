@@ -1,6 +1,6 @@
 function E(x){return new Decimal(x)};
 
-const VER = 0.040103
+const VER = 0.0402
 const EINF = Decimal.dInf
 
 Math.lerp = function (value1, value2, amount) {
@@ -176,6 +176,9 @@ function getPlayerData() {
         fTimes: 0,
         fun: E(0),
         SFRGT: E(0),
+
+        sacTimes: 0,
+        dm: E(0),
 
         time: 0,
         version: VER,

@@ -16,6 +16,7 @@ const UPG_RES = {
     fun: ["Fun",_=>[player,"fun"],'FunBase'],
     star: ["Star",_=>[player,"stars"],'SpaceBase'],
     SFRGT: ["SFRGT",_=>[player,"SFRGT"],'FunBase'],
+    dm: ["Dark Matter",_=>[player,"dm"],'DarkMatterBase'],
 }
 
 const isResNumber = ['perk','plat','rf','momentum','moonstone']
@@ -1251,6 +1252,9 @@ el.update.upgs = _=>{
     if (tmp.space) {
         if (mapID2 == 'at') {
             updateUpgradesHTML('moonstone')
+        }
+        else if (mapID2 == 'sac') {
+            updateUpgradesHTML('dm')
         }
     } else {
         if (mapID == 'g') {

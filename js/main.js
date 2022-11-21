@@ -89,6 +89,8 @@ const MAIN = {
         
         if (player.lowGH <= 28) x = x.mul(getAGHEffect(1))
 
+        x = x.mul(upgEffect('dm',2))
+
         if (player.decel) x = x.div(1e16)
 
         if (x.lt(1)) return x
@@ -128,6 +130,8 @@ const MAIN = {
         x = x.mul(upgEffect('moonstone',2))
 
         if (player.lowGH <= 20) x = x.mul(getAGHEffect(2))
+
+        x = x.mul(upgEffect('dm',0))
 
         if (player.decel) x = x.div(1e16)
 
@@ -222,6 +226,8 @@ const MAIN = {
 
         if (player.lowGH <= 4) x = x.mul(10)
         if (player.lowGH <= -8) x = x.mul(getAGHEffect(9,1))
+        x = x.mul(upgEffect('dm',3))
+        
         if (player.lowGH <= -16) x = x.pow(1.25)
 
         x = x.mul(starTreeEff('progress',12))

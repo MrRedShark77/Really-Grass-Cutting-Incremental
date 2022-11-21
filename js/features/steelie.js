@@ -46,6 +46,8 @@ MAIN.steel = {
 
             x = x.mul(upgEffect('funnyMachine',0)).mul(upgEffect('funnyMachine',2)).mul(upgEffect('funnyMachine',3))
 
+            x = x.mul(upgEffect('dm',1))
+
             if (player.decel) x = x.div(1e24)
 
             return x.max(1)
