@@ -167,6 +167,9 @@ function getPlayerData() {
         ghMult: false,
         gsMult: false,
 
+        autoGH: false,
+        autoGS: false,
+
         star_chart: {
             auto: [],
             speed: [],
@@ -179,6 +182,21 @@ function getPlayerData() {
 
         sacTimes: 0,
         dm: E(0),
+
+        recel: false,
+        unGrass: E(0),
+        unBestGrass: E(0),
+        unRes: {
+            level: 0,
+            xp: E(0),
+            tier: 0,
+            tp: E(0),
+        },
+
+        np: E(0),
+        bestNP: E(0),
+        bestNP2: E(0),
+        nTimes: 0,
 
         time: 0,
         version: VER,

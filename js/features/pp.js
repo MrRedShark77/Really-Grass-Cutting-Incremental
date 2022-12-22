@@ -3,13 +3,15 @@ MAIN.pp = {
         let l = Math.max(player.level-29,0)
         let x = Decimal.pow(1.1+getASEff('pp'),l).mul(l).mul(player.bestGrass.div(1e9).max(1).root(3))
 
+        tmp.ppGainBase = x
+
         x = x.mul(upgEffect('crystal',3))
         x = x.mul(upgEffect('plat',3))
         x = x.mul(upgEffect('perk',7))
 
         x = x.mul(chalEff(4))
 
-        x = x.mul(tmp.chargeEff[0]||6)
+        x = x.mul(tmp.chargeEff[6]||1)
 
         x = x.mul(upgEffect('rocket',3))
         x = x.mul(upgEffect('momentum',4))
@@ -23,7 +25,7 @@ MAIN.pp = {
 }
 
 RESET.pp = {
-    unl: _=> !player.decel,
+    unl: _=> !tmp.outsideNormal,
 
     req: _=>player.level>=30,
     reqDesc: _=>`Reach Level 30 to Prestige.`,
@@ -70,7 +72,7 @@ RESET.pp = {
 }
 
 UPGS.pp = {
-    unl: _=> !player.decel,
+    unl: _=> !tmp.outsideNormal,
 
     title: "Prestige Upgrades",
 
@@ -150,8 +152,10 @@ MAIN.ap = {
         let l = Math.max(player.level-29,0)
         let x = Decimal.pow(1.1,l).mul(l).mul(player.aBestGrass.div(1e18).max(1).root(3))
 
+        tmp.apGainBase = x
+
         x = x.mul(upgEffect('plat',8))
-        x = x.mul(tmp.chargeEff[8]||0)
+        x = x.mul(tmp.chargeEff[8]||1)
 
         x = x.mul(upgEffect('oil',3))
 
@@ -329,9 +333,159 @@ UPGS.ap = {
     ],
 }
 
+// Unprestige (Normality)
+
+MAIN.np = {
+    gain() {
+        let l = Math.max(player.level-49,0)
+        let x = Decimal.pow(1.05,l).mul(l).mul(player.unBestGrass.div(1e33).max(1).root(5))
+
+        tmp.npGainBase = x
+
+        return x.floor()
+    },
+}
+
+RESET.np = {
+    unl: _=> player.recel,
+
+    req: _=>player.level>=50,
+    reqDesc: _=>`Reach Level 50 to Normality.`,
+
+    resetDesc: `Normality resets your unnatural grass, unnatural grass upgrades, level, charge and astral for Normality Points (NP).<br>Gain more NP based on your level and unnatural grass.`,
+    resetGain: _=> `Gain <b>${tmp.npGain.format(0)}</b> Normality Points`,
+
+    title: `Normality`,
+    resetBtn: `Normality`,
+
+    reset(force=false) {
+        if (this.req()||force) {
+            if (!force) {
+                player.np = player.np.add(tmp.npGain)
+                player.nTimes++
+
+                player.bestNP2 = player.bestNP2.max(tmp.npGain)
+            }
+
+            updateTemp()
+
+            this.doReset()
+        }
+    },
+
+    doReset(order="n") {
+        player.unGrass = E(0)
+        player.unBestGrass = E(0)
+        player.xp = E(0)
+        player.level = 0
+
+        player.chargeRate = E(0)
+        player.astral = 0
+        player.sp = E(0)
+
+        resetUpgrades('unGrass')
+
+        resetGlasses()
+
+        updateTemp()
+    },
+}
+
+UPGS.np = {
+    unl: _=> player.recel,
+
+    title: "Normality Upgrades",
+
+    req: _=>player.nTimes > 0,
+    reqDesc: _=>`Normality once to unlock.`,
+
+    underDesc: _=>`You have ${format(player.np,0)} Normality Points`,
+
+    autoUnl: _=>false,
+    noSpend: _=>false,
+
+    ctn: [
+        {
+            max: 1000,
+
+            title: "Normality Grass Value",
+            desc: `Increase grass gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
+        
+            res: "np",
+            icon: ["Curr/Grass"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(1).ceil(),
+            bulk: i => i.div(1).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 1000,
+
+            title: "Normality SP",
+            desc: `Increase SP gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
+        
+            res: "np",
+            icon: ["Icons/SP"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(2).ceil(),
+            bulk: i => i.div(2).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 1000,
+
+            title: "Normality Dark Matter",
+            desc: `Increase Dark Matter gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
+        
+            res: "np",
+            icon: ["Curr/DarkMatter"],
+                        
+            cost: i => Decimal.pow(1.35,i).mul(5).ceil(),
+            bulk: i => i.div(5).max(1).log(1.35).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 500,
+
+            title: "Normality Momentum",
+            desc: `Increase momentum gain by <b class="green">+15%</b> every level.`,
+        
+            res: "np",
+            icon: ["Curr/Momentum"],
+                        
+            cost: i => Decimal.pow(2,i**1.25).mul(10).ceil(),
+            bulk: i => i.div(10).max(1).log(2).root(1.25).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = 1.15**i
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },
+    ],
+}
+
 tmp_update.push(_=>{
     tmp.ppGain = MAIN.pp.gain()
     tmp.ppGainP = (upgEffect('auto',11,0)+upgEffect('gen',0,0))*upgEffect('factory',1,1)
 
     tmp.apGain = MAIN.ap.gain()
+
+    tmp.npGain = MAIN.np.gain()
 })

@@ -17,13 +17,15 @@ const UPG_RES = {
     star: ["Star",_=>[player,"stars"],'SpaceBase'],
     SFRGT: ["SFRGT",_=>[player,"SFRGT"],'FunBase'],
     dm: ["Dark Matter",_=>[player,"dm"],'DarkMatterBase'],
+    unGrass: ["Un-Grass",_=>[player,"unGrass"],'UnnaturalBase'],
+    np: ["NP",_=>[player,"np"],'NormalityBase'],
 }
 
 const isResNumber = ['perk','plat','rf','momentum','moonstone']
 
 const UPGS = {
     grass: {
-        unl: _=> !player.decel,
+        unl: _=> !tmp.outsideNormal,
 
         cannotBuy: _=>inChal(1) || inChal(7),
 
@@ -1260,6 +1262,7 @@ el.update.upgs = _=>{
         if (mapID == 'g') {
             updateUpgradesHTML('grass')
             updateUpgradesHTML('aGrass')
+            updateUpgradesHTML('unGrass')
         }
         else if (mapID == 'p') {
             updateUpgradesHTML('perk')
@@ -1272,6 +1275,8 @@ el.update.upgs = _=>{
     
             updateUpgradesHTML('ap')
             updateUpgradesHTML('oil')
+
+            updateUpgradesHTML('np')
         }
         else if (mapID == 'gh') {
             updateUpgradesHTML('factory')

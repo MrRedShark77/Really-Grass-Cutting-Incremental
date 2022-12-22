@@ -4,6 +4,9 @@ var tmp_update = []
 function resetTemp() {
     keep = []
     tmp = {
+        outsideNormal: false,
+
+        stats_tab: 'grass',
         space: false,
 
         sc_tab: 'auto',
@@ -15,6 +18,8 @@ function resetTemp() {
         autocutTime: 0,
         autocutAmt: 1,
         spawnAmt: 1,
+
+        compact: 1,
 
         platChance: 0.005,
         platGain: 1,

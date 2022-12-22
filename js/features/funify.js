@@ -3,11 +3,15 @@ MAIN.fun = {
         let l = player.grassskip+1
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestOil.div(1e42).max(1).root(3))
 
+        tmp.funGainBase = x
+
         x = x.mul(upgEffect('rocket',9))
 
         x = x.mul(upgEffect('fundry',0)).mul(upgEffect('fundry',1)).mul(upgEffect('fundry',2)).mul(upgEffect('fundry',3))
 
         x = x.mul(tmp.chargeEff[10]||1)
+
+        x = x.mul(upgEffect('unGrass',4))
 
         if (player.lowGH <= -12) x = x.mul(getAGHEffect(10))
 
@@ -143,6 +147,26 @@ UPGS.funnyMachine = {
                         
             cost: i => Decimal.pow(1.2,i).mul(1e14).ceil(),
             bulk: i => i.div(1e14).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 100,
+
+            unl: _=>player.sacTimes>0,
+
+            title: "Recelerator",
+            desc: `Unlock a building (on top of Factory/Funny Machine) where you can recelerate time. Each level increases charge rate by <b class="green">+10%</b>.`,
+        
+            res: "fun",
+            icon: ["Icons/Recelerator Badge"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(1e42).ceil(),
+            bulk: i => i.div(1e42).max(1).log(1.2).floor().toNumber()+1,
         
             effect(i) {
                 let x = i/10+1

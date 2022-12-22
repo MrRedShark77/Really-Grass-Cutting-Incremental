@@ -3,12 +3,14 @@ MAIN.crystal = {
         let l = player.tier+1
         let x = Decimal.pow(1.1+getASEff('crystal'),l).mul(l).mul(player.bestPP.div(1e7).max(1).root(3))
 
+        tmp.crystalGainBase = x
+
         x = x.mul(upgEffect('plat',4))
         x = x.mul(upgEffect('perk',8))
 
         x = x.mul(chalEff(6))
 
-        x = x.mul(tmp.chargeEff[0]||7)
+        x = x.mul(tmp.chargeEff[7]||1)
 
         x = x.mul(upgEffect('rocket',4))
         x = x.mul(upgEffect('momentum',5))
@@ -22,7 +24,7 @@ MAIN.crystal = {
 }
 
 RESET.crystal = {
-    unl: _=>player.pTimes>0 && !player.decel,
+    unl: _=>player.pTimes>0 && !tmp.outsideNormal,
 
     req: _=>player.level>=100,
     reqDesc: _=>`Reach Level 100 to Crystallize.`,
@@ -61,7 +63,7 @@ RESET.crystal = {
 UPGS.crystal = {
     title: "Crystal Upgrades",
 
-    unl: _=>player.pTimes > 0 && !player.decel,
+    unl: _=>player.pTimes > 0 && !tmp.outsideNormal,
 
     req: _=>player.cTimes > 0,
     reqDesc: _=>`Crystallize once to unlock.`,
@@ -193,13 +195,15 @@ MAIN.oil = {
         let l = player.tier
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestAP.div(1e12).max(1).root(3))
 
-        x = x.mul(tmp.chargeEff[9]||0)
+        tmp.oilGainBase = x
+
+        x = x.mul(tmp.chargeEff[9]||1)
         x = x.mul(upgEffect('plat',9))
 
         x = x.mul(upgEffect('rocket',8))
         x = x.mul(upgEffect('momentum',9))
 
-        x = x.mul(starTreeEff('speed',6)*starTreeEff('speed',13))
+        x = x.mul(starTreeEff('speed',6)*starTreeEff('speed',13)*starTreeEff('speed',18))
 
         return x.floor()
     },

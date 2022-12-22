@@ -268,7 +268,7 @@ RESET.rocket_part = {
     reqDesc: _=>``,
 
     resetDesc: `<span style="font-size: 14px">Reset everything liquefy does as well as oil, oil upgrades, steel and total rocket fuel.
-    You will create a rocket part, earn one momentum, and reset the cost to make rocket fuel.
+    You will create a rocket part, earn <b class="green" id="momentumGain">1</b> momentum, and reset the cost to make rocket fuel.
     You keep rocket fuel and rocket fuel upgrades.</span>`,
     resetGain: _=> `
         <span style="font-size: 14px">
@@ -287,7 +287,7 @@ RESET.rocket_part = {
         if (player.steel.gte(tmp.rp_req[0])&&player.rocket.total_fp >= tmp.rp_req[1]||force) {
             if (!force) {
                 player.rocket.part++
-                player.momentum++
+                player.momentum += tmp.momentumGain
             }
 
             updateTemp()
@@ -582,6 +582,7 @@ el.update.rocket = _=>{
         tmp.el.rf_craft_bulk.setClasses({locked: tmp.rf_bulk<=player.rocket.total_fp })
     } else if (mapID == 'rp') {
         tmp.el.reset_btn_rocket_part.setClasses({locked: player.rocket.total_fp < tmp.rp_req[1] || player.steel.lt(tmp.rp_req[0])})
+        tmp.el.momentumGain.setTxt(format(tmp.momentumGain,0))
     }
 }
 
@@ -606,4 +607,11 @@ tmp_update.push(_=>{
     tmp.rf_base_mult = Decimal.pow(1.5,rp)
 
     updateRocketTemp()
+
+    let m = 1
+    if (player.lowGH <= -28) m += getAGHEffect(14)
+
+    m *= upgEffect('np',3)
+
+    tmp.momentumGain = Math.ceil(m)
 })

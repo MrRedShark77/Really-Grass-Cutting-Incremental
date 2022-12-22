@@ -367,6 +367,20 @@ button:not(.locked):hover {
     background-color: #305;
 }
 
+.reset_div.recel,
+.reset_req.recel,
+.upg_desc.unGrass,
+.upgs_div.unGrass {
+    background-color: #549e00;
+}
+
+.reset_div.np,
+.reset_req.np,
+.upg_desc.np,
+.upgs_div.np {
+    background-color: #8fcc00;
+}
+
 .upgs_ctn {
     height: calc(100% - 84px);
     width: calc(100% - 24px);
@@ -693,5 +707,70 @@ button:not(.locked):hover {
     background-color: #fff1;
     padding: 5px 0;
     margin-bottom: 3px;
+    font-size: 16px;
+}
+
+#stats_div {
+    border: solid 4px black;
+    padding: 10px;
+    width: calc(100% - 28px);
+    height: calc(100% - 28px);
+    background-color: #222;
+
+    overflow-y: auto;
+}
+
+#stats_tab_div {
+    width: calc(100% - 10px);
+    padding: 5px;
+    background-color: #333;
+    height: 150px;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    display: flex;
+    justify-content: start;
+
+    border-radius: 10px;
+}
+
+.stats_tab_btn {
+    min-width: 200px;
+    height: calc(100%-15px);
+
+    border-radius: 10px;
+    border: solid 3px black;
+    background-color: #222;
+    flex-shrink: 0;
+
+    margin: 5px;
+    padding: 5px;
+
+    cursor: pointer;
+}
+
+.stats_tab_btn:hover {
+    background-color: #333;
+}
+
+.stats_tab_btn > img {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    background-color: #fff1;
+    margin-bottom: 3px;
+
+    pointer-events: none;
+}
+
+.stats_tab_btn > div {
+    font-size: 20px;
+}
+
+#stats_desc_div {
+    min-height: 400px;
+}
+
+#stats_desc {
     font-size: 16px;
 }

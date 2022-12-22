@@ -1,5 +1,8 @@
 function calc(dt) {
     let decel = player.decel
+    let recel = player.recel
+
+    let outsideNormal = decel || recel
 
     tmp.spawn_time += dt
     tmp.autocutTime += dt
@@ -25,10 +28,10 @@ function calc(dt) {
 
     player.maxPerk = Math.max(player.maxPerk, tmp.perks)
 
-    for (let x in UPGS) if (tmp.upgs[x].autoUnl && !(['grass','pp','crystal'].includes(x) && decel) && !(['aGrass'].includes(x) && !decel)) if (player.autoUpg[x]) buyMaxUpgrades(x,true)
+    for (let x in UPGS) if (tmp.upgs[x].autoUnl && !(['grass','pp','crystal'].includes(x) && outsideNormal) && !(['aGrass'].includes(x) && !outsideNormal)) if (player.autoUpg[x]) buyMaxUpgrades(x,true)
 
-    if (tmp.ppGainP > 0 && player.level >= 30 && !decel) player.pp = player.pp.add(tmp.ppGain.mul(dt*tmp.ppGainP))
-    if (tmp.crystalGainP > 0 && player.level >= 100 && !decel) player.crystal = player.crystal.add(tmp.crystalGain.mul(dt*tmp.crystalGainP))
+    if (tmp.ppGainP > 0 && player.level >= 30 && !outsideNormal) player.pp = player.pp.add(tmp.ppGain.mul(dt*tmp.ppGainP))
+    if (tmp.crystalGainP > 0 && player.level >= 100 && !outsideNormal) player.crystal = player.crystal.add(tmp.crystalGain.mul(dt*tmp.crystalGainP))
 
     if (hasUpgrade('factory',7)) {
         player.ap = player.ap.add(player.bestAP2.mul(dt*tmp.oilRigBase))
@@ -50,6 +53,9 @@ function calc(dt) {
     player.bestAP = player.bestAP.max(player.ap)
     player.bestOil = player.bestOil.max(player.oil)
 
+    player.unBestGrass = player.unBestGrass.max(player.unGrass)
+    player.bestNP = player.bestNP.max(player.np)
+
     if (player.level >= 200 && !player.chalUnl) player.chalUnl = true
 
     if (!inChal(-1)) {
@@ -69,4 +75,7 @@ function calc(dt) {
     if (hasStarTree('auto',10)) ROCKET.create()
 
     MAIN.checkCutting()
+
+    if (player.autoGH && !tmp.outsideNormal) RESET.gh.reset()
+    if (player.autoGS && player.decel) RESET.gs.reset()
 }

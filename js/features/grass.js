@@ -26,7 +26,8 @@ function removeGrass(i,auto=false) {
     let y = 1
     if (auto) y *= tmp.autocutBonus
 
-    if (player.decel) player.aGrass = player.aGrass.add(tmp.grassGain.mul(y))
+    if (player.recel) player.unGrass = player.unGrass.add(tmp.grassGain.mul(y))
+    else if (player.decel) player.aGrass = player.aGrass.add(tmp.grassGain.mul(y))
     else player.grass = player.grass.add(tmp.grassGain.mul(y))
     player.xp = player.xp.add(tmp.XPGain.mul(y))
     if (player.pTimes > 0) player.tp = player.tp.add(tmp.TPGain.mul(y))

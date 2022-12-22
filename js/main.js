@@ -10,7 +10,7 @@ function loop() {
 
 const MAIN = {
     grassGain() {
-        let x = Decimal.mul(5,upgEffect('grass',0)).mul(tmp.tier.mult)
+        let x = Decimal.mul(5,upgEffect('grass',0)).mul(tmp.tier.mult).mul(tmp.compact)
 
         x = x.mul(upgEffect('perk',0))
         x = x.mul(upgEffect('pp',0))
@@ -30,26 +30,36 @@ const MAIN = {
         x = x.mul(upgEffect('rocket',0))
         x = x.mul(upgEffect('momentum',0)).mul(upgEffect('momentum',10))
 
-        x = x.mul(starTreeEff('speed',3)*starTreeEff('speed',10))
+        x = x.mul(tmp.chargeEff[4]||1)
+
+        x = x.mul(starTreeEff('speed',3)*starTreeEff('speed',10)*starTreeEff('speed',15))
         if (!player.decel) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',0))
+
+        x = x.mul(upgEffect('np',0))
 
         if (player.lowGH <= 36) x = x.mul(getAGHEffect(0))
 
         if (player.decel) x = x.div(1e15)
 
+        if (player.recel) x = x.div(1e170)
+
         if (x.lt(1)) return x
 
         x = x.pow(chalEff(3))
+        if (!player.recel) x = x.pow(upgEffect('unGrass',5))
         if (inChal(3) || inChal(5)) x = x.root(2)
+        if (player.recel) x = x.root(2)
 
         return x
     },
     grassCap() {
         let x = 10+upgEffect('grass',1,0)+upgEffect('perk',1,0)+upgEffect('ap',4,0)+starTreeEff('progress',0,0)
 
-        return x
+        x *= upgEffect('unGrass',1,1)
+
+        return Math.min(Math.max(10,Math.floor(x/tmp.compact)),4000)
     },
     grassSpwan() {
         let x = 2.5
@@ -57,10 +67,19 @@ const MAIN = {
         x /= upgEffect('perk',2,1)
         x /= upgEffect('aGrass',1,1)
         x /= upgEffect('momentum',1)
-        return x
+        x /= upgEffect('unGrass',0,1)
+
+        tmp.gsBeforeCompact = 2/x
+
+        return Math.max(x*tmp.compact,2e-4)
+    },
+    compact() {
+        let c = upgEffect('unGrass',3,1)
+
+        tmp.compact = Math.min(c,tmp.gsBeforeCompact/100)
     },
     xpGain() {
-        let x = Decimal.mul(3,upgEffect('grass',3)).mul(tmp.tier.mult)
+        let x = Decimal.mul(3,upgEffect('grass',3)).mul(tmp.tier.mult).mul(tmp.compact)
 
         x = x.mul(upgEffect('perk',3))
         x = x.mul(upgEffect('pp',1))
@@ -82,7 +101,7 @@ const MAIN = {
 
         x = x.mul(upgEffect('rocket',1))
 
-        x = x.mul(starTreeEff('speed',4)*starTreeEff('speed',11))
+        x = x.mul(starTreeEff('speed',4)*starTreeEff('speed',11)*starTreeEff('speed',16))
         if (!player.decel) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',1))
@@ -93,9 +112,13 @@ const MAIN = {
 
         if (player.decel) x = x.div(1e16)
 
+        if (player.recel) x = x.div(1e165)
+
         if (x.lt(1)) return x
 
+        if (!player.recel) x = x.pow(upgEffect('unGrass',5))
         if (inChal(3) || inChal(5)) x = x.root(2)
+        if (player.recel) x = x.root(2)
 
         if (!player.decel && hasUpgrade('plat',10)) x = x.pow(upgEffect('plat',10,1))
         x = x.pow(upgEffect('moonstone',6))
@@ -105,7 +128,7 @@ const MAIN = {
     tpGain() {
         if (inChal(2) || inChal(7)) return E(0)
 
-        let x = upgEffect('pp',2)
+        let x = upgEffect('pp',2).mul(tmp.compact)
 
         x = x.mul(upgEffect('crystal',2))
         x = x.mul(upgEffect('perk',6))
@@ -124,7 +147,7 @@ const MAIN = {
         x = x.mul(upgEffect('rocket',2))
         x = x.mul(upgEffect('momentum',3))
 
-        x = x.mul(starTreeEff('speed',5)*starTreeEff('speed',12))
+        x = x.mul(starTreeEff('speed',5)*starTreeEff('speed',12)*starTreeEff('speed',17))
         if (!player.decel) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',2))
@@ -135,11 +158,14 @@ const MAIN = {
 
         if (player.decel) x = x.div(1e16)
 
+        if (player.recel) x = x.div(1e114)
+
         if (x.lt(1)) return x
 
         if (player.grasshop >= 7 || player.lowGH <= 4) x = x.pow(1.25)
 
         if (inChal(5)) x = x.root(2)
+        if (player.recel) x = x.root(2)
 
         return x
     },
@@ -176,6 +202,7 @@ const MAIN = {
     tier: {
         req(i) {
             let pow = player.lowGH <= 12 ? 1.15 : 1.2
+            if (player.recel) pow *= 1.1
             let x = Decimal.pow(3,i**pow).mul(100)
 
             return x.ceil()
@@ -184,6 +211,7 @@ const MAIN = {
             let x = i.div(100)
             if (x.lt(1)) return 0
             let pow = player.lowGH <= 12 ? 1.15 : 1.2
+            if (player.recel) pow *= 1.1
             x = x.log(3).root(pow)
 
             return Math.floor(x.toNumber()+1)
@@ -193,6 +221,9 @@ const MAIN = {
         },
         mult(i) {
             let base = 2 + upgEffect('crystal',5,0) + (tmp.chargeEff[5]||0)
+
+            //if (player.recel) base **= 0.75
+
             let x = Decimal.pow(base,i)
 
             return x
@@ -200,6 +231,8 @@ const MAIN = {
     },
     astral: {
         req(i) {
+            i = E(i).scale(65,2,0)
+
             let x = Decimal.pow(3,i).mul(100)
 
             return x.ceil()
@@ -209,14 +242,14 @@ const MAIN = {
             if (x.lt(1)) return 0
             x = x.log(3)
 
-            return Math.floor(x.toNumber()+1)
+            return Math.floor(x.scale(65,2,0,true).toNumber()+1)
         },
         cur(i) {
             return i > 0 ? this.req(i-1) : E(0) 
         },
     },
     spGain() {
-        let x = E(1)
+        let x = E(tmp.compact)
 
         if (player.grassskip>=2) x = x.add(getGSEffect(1,0))
 
@@ -227,10 +260,14 @@ const MAIN = {
         if (player.lowGH <= 4) x = x.mul(10)
         if (player.lowGH <= -8) x = x.mul(getAGHEffect(9,1))
         x = x.mul(upgEffect('dm',3))
-        
-        if (player.lowGH <= -16) x = x.pow(1.25)
 
         x = x.mul(starTreeEff('progress',12))
+
+        x = x.mul(upgEffect('unGrass',2))
+
+        x = x.mul(upgEffect('np',1))
+        
+        if (player.lowGH <= -16) x = x.pow(1.25)
 
         return x
     },
@@ -248,7 +285,7 @@ const MAIN = {
 }
 
 el.update.main = _=>{
-    let g = player.decel ? player.aGrass : player.grass
+    let g = player.recel ? player.unGrass : player.decel ? player.aGrass : player.grass
 
     tmp.el.grassAmt.setHTML(g.format(0))
     tmp.el.grassGain.setHTML(tmp.autoCutUnlocked ? formatGain(g,tmp.grassGain.div(tmp.autocut).mul(tmp.autocutBonus).mul(tmp.autocutAmt)) : "")
@@ -293,10 +330,15 @@ el.update.main = _=>{
 }
 
 tmp_update.push(_=>{
+    tmp.outsideNormal = player.decel || player.recel
+
     tmp.platCutAmt = hasStarTree('auto',3)
     tmp.moonstoneCutAmt = hasStarTree('auto',5)
 
     tmp.grassCap = MAIN.grassCap()
+
+    MAIN.compact()
+
     tmp.grassSpawn = MAIN.grassSpwan()
     tmp.rangeCut = MAIN.rangeCut()
     tmp.autocut = MAIN.autoCut()
@@ -317,11 +359,11 @@ tmp_update.push(_=>{
 
     let lvl = player.level
 
-    tmp.level.scale1 = player.decel?2:200
+    tmp.level.scale1 = tmp.outsideNormal?2:200
     tmp.level.scale1 += upgEffect('aGrass',5,0)+upgEffect('ap',5,0)
     tmp.level.scale1 *= (tmp.chargeEff[2]||1) * starTreeEff('progress',4)
 
-    tmp.level.scale2 = player.decel?300:700
+    tmp.level.scale2 = player.recel?5:player.decel?300:700
     tmp.level.scale2 *= starTreeEff('progress',7,1)
 
     tmp.level.next = MAIN.level.req(lvl)
@@ -353,7 +395,7 @@ tmp_update.push(_=>{
     tmp.platGain *= upgEffect('oil',4,1) * getASEff('plat') * upgEffect('moonstone',3)
     if (player.lowGH <= 4) tmp.platGain *= 10
 
-    tmp.platGain = Math.ceil(tmp.platGain)
+    tmp.platGain = Math.ceil(tmp.platGain*tmp.compact)
 
     tmp.moonstoneGain = 1
     tmp.moonstoneChance = 0.005
@@ -362,6 +404,8 @@ tmp_update.push(_=>{
         tmp.moonstoneChance *= 2
         tmp.moonstoneGain *= 2
     }
+
+    tmp.moonstoneGain = Math.ceil(tmp.moonstoneGain*tmp.compact)
 
     tmp.platChance = 0.005
     if (player.grasshop >= 6 || player.lowGH <= 4) tmp.platChance *= 2

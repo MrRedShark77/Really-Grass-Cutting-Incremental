@@ -4,6 +4,10 @@ MAIN.sac = {
 
         let x = player.stars.div(1e18).max(1).root(2).mul(Decimal.pow(1.1,a-1).mul(a))
 
+        tmp.dmGainBase = x
+
+        x = x.mul(upgEffect('np',2))
+
         return x.floor()
     },
 }

@@ -1,7 +1,7 @@
 const SC_IDS = {
     auto: [
         [4,1,0,3,9],
-        ['',2,5],
+        [13,12,2,5,''],
         [6,7,8],
         ['','',10,'',11],
     ],
@@ -151,6 +151,28 @@ const STAR_CHART = {
             icon: ['Curr/Momentum','Icons/StarAuto'],
                             
             cost: i => 1e15,
+            bulk: i => 1,
+        },
+        {
+            branch: [1],
+
+            title: "Auto-Grasshop",
+            desc: `Automate Grasshop. (change in grasshop)`,
+
+            icon: ['Icons/Grasshop2','Icons/StarAuto'],
+                            
+            cost: i => 1e5,
+            bulk: i => 1,
+        },
+        {
+            branch: [4],
+
+            title: "Auto-Grass-skip",
+            desc: `Automate Grass-skip. (change in grass-skip)`,
+
+            icon: ['Icons/GrassSkip','Icons/StarAuto'],
+                            
+            cost: i => 2.5e5,
             bulk: i => 1,
         },
     ],
@@ -438,7 +460,7 @@ const STAR_CHART = {
             max: 10,
             branch: [9],
 
-            title: "Stellar Grass II",
+            title: "Stellar Grass III",
             desc: `Increases grass gain by <span class="green">+100%</span> per level.`,
 
             icon: ['Curr/Grass','Icons/StarSpeed'],
@@ -457,7 +479,7 @@ const STAR_CHART = {
             max: 10,
             branch: [9],
 
-            title: "Stellar XP II",
+            title: "Stellar XP III",
             desc: `Increases XP gain by <span class="green">+100%</span> per level.`,
 
             icon: ['Icons/XP','Icons/StarSpeed'],
@@ -476,7 +498,7 @@ const STAR_CHART = {
             max: 10,
             branch: [9],
 
-            title: "Stellar TP II",
+            title: "Stellar TP III",
             desc: `Increases TP by <span class="green">+100%</span> per level.`,
 
             icon: ['Icons/TP','Icons/StarSpeed'],
@@ -495,7 +517,7 @@ const STAR_CHART = {
             max: 10,
             branch: [9],
 
-            title: "Stellar Oil II",
+            title: "Stellar Oil III",
             desc: `Increases oil gain by <span class="green">+100%</span> per level.`,
 
             icon: ['Curr/Oil','Icons/StarSpeed'],

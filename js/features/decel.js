@@ -15,7 +15,16 @@ RESET.decel = {
 
     reset(force=false) {
         if (true) {
-            let aa = player.aRes
+            let aa = player.unRes
+
+            if (player.recel) {
+                aa.level = player.level
+                aa.tier = player.tier
+                aa.xp = player.xp
+                aa.tp = player.tp
+            }
+
+            aa = player.aRes
 
             if (player.decel) {
                 aa.level = player.level
@@ -25,6 +34,7 @@ RESET.decel = {
             }
 
             player.decel = !player.decel
+            player.recel = false
 
             updateTemp()
 
@@ -41,7 +51,8 @@ RESET.decel = {
 }
 
 el.update.decel = _=>{
-    tmp.el.fog.setDisplay(player.decel)
+    tmp.el.fog.setDisplay(player.decel || player.recel)
+    tmp.el.fog.changeStyle('background-color',player.recel?"#1f3b00":"#001c3b")
     if (mapID == "as") tmp.el.reset_btn_decel.setTxt(player.decel?"Accelerate":"Decelerate")
 }
 

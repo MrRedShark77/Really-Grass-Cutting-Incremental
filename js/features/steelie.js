@@ -3,6 +3,8 @@ MAIN.steel = {
         let l = player.grasshop+1
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestCrystal.div(1e21).max(1).root(3))
 
+        tmp.steelGainBase = x
+
         if (hasUpgrade('factory',0)) x = x.mul(tmp.foundryEff)
 
         x = x.mul(upgEffect('foundry',0)).mul(upgEffect('foundry',1)).mul(upgEffect('foundry',2)).mul(upgEffect('plat',5)).mul(chalEff(5))
@@ -44,11 +46,17 @@ MAIN.steel = {
 
             x = x.mul(starTreeEff('speed',1)*starTreeEff('speed',2)*starTreeEff('speed',9)*starTreeEff('speed',14))
 
-            x = x.mul(upgEffect('funnyMachine',0)).mul(upgEffect('funnyMachine',2)).mul(upgEffect('funnyMachine',3))
+            x = x.mul(upgEffect('funnyMachine',0)).mul(upgEffect('funnyMachine',2)).mul(upgEffect('funnyMachine',3)).mul(upgEffect('funnyMachine',4))
 
             x = x.mul(upgEffect('dm',1))
 
             if (player.decel) x = x.div(1e24)
+
+            if (player.recel) x = x.div(1e72)
+
+            if (x.lt(1)) return x
+
+            if (player.recel) x = x.root(2)
 
             return x.max(1)
         },
@@ -208,7 +216,7 @@ MAIN.steel = {
 }
 
 RESET.steel = {
-    unl: _=>(player.grasshop>=10||player.gTimes>0)&&!player.decel,
+    unl: _=>(player.grasshop>=10||player.gTimes>0)&&!tmp.outsideNormal,
 
     req: _=>player.level>=400,
     reqDesc: _=>`Reach Level 400.`,
@@ -243,7 +251,7 @@ RESET.steel = {
 UPGS.factory = {
     title: "The Factory",
 
-    unl: _=>player.sTimes > 0&&!player.decel,
+    unl: _=>player.sTimes > 0&&!tmp.outsideNormal,
 
     underDesc: _=>`You have ${format(player.steel,0)} Steel`+(tmp.steelPass>0?" <span class='smallAmt'>"+player.steel.formatGain(tmp.steelGain.mul(tmp.steelPass))+"</span>":""),
 
@@ -401,7 +409,7 @@ UPGS.factory = {
 UPGS.foundry = {
     title: "Foundry",
 
-    unl: _=>hasUpgrade('factory',0)&&!player.decel,
+    unl: _=>hasUpgrade('factory',0)&&!tmp.outsideNormal,
 
     underDesc: _=>`<b class="green">${tmp.foundryEff.format()}x</b> <span style="font-size:14px;">to Steel multiplier based on time since last steelie (max 1 hour)</span>`,
 
@@ -469,7 +477,7 @@ UPGS.foundry = {
 UPGS.gen = {
     title: "Generator",
 
-    unl: _=>hasUpgrade('factory',1)&&!player.decel,
+    unl: _=>hasUpgrade('factory',1)&&!tmp.outsideNormal,
 
     underDesc: _=>`<b class="green">${format(upgEffect('factory',1))}x</b> <span style="font-size:14px;">to PP/Crystal generator multiplier from factory upgrade</span>`,
 

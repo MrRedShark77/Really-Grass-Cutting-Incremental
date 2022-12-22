@@ -1,10 +1,14 @@
 MAIN.gal = {
     gain() {
-        let x = 10
+        let y = 10
 
-        if (player.grassskip>0) x += getGSEffect(0,0)
+        if (player.grassskip>0) y += getGSEffect(0,0)
 
-        x = Decimal.pow(1.5+upgEffect('dm',5,0),Math.max(player.rocket.part-10,0)).mul(x)
+        let x = Decimal.pow(1.5+upgEffect('dm',5,0),Math.max(player.rocket.part-10,0))
+
+        tmp.starGainBase = x
+
+        x = x.mul(y)
 
         x = x.mul(upgEffect('moonstone',4))
 
