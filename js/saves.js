@@ -153,7 +153,7 @@ function getPlayerData() {
         gTimes: 0,
         gTime: 0,
         stars: E(0),
-        lowGH: 1e300,
+        lowGH: E(1e300),
 
         astral: 0,
         sp: E(0),
