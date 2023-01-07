@@ -595,7 +595,7 @@ button:not(.locked):hover {
     background-color: limegreen !important;
 }
 
-#gh_mil_ctns {
+#gh_mil_ctns, #gs_mil_ctns {
     height: 100%;
 }
 
