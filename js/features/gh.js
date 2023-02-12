@@ -122,6 +122,9 @@ MAIN.agh_milestone = [
         desc: `Increase momentum gain by <b class="green">+1</b> per 8 astral.`,
         effect: _=>Math.floor(player.astral/8),
         effDesc: x=> "+"+format(x,0),
+    },{
+        r: -32,
+        desc: `Unlock more dark matter upgrades.`,
     },
 ]
 

@@ -74,6 +74,8 @@ function calc(dt) {
 
     if (hasStarTree('auto',10)) ROCKET.create()
 
+    if (hasStarTree('auto',14)) RESET.rocket_part.reset(false,true)
+
     MAIN.checkCutting()
 
     if (player.autoGH && !tmp.outsideNormal) RESET.gh.reset()

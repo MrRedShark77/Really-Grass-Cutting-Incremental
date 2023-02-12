@@ -283,6 +283,28 @@ UPGS.moonstone = {
                 return x
             },
             effDesc: x => "^"+format(x),
+        },{
+            max: 10,
+
+            unl: _=>player.sacTimes>0,
+
+            costOnce: true,
+
+            title: "Charge-Exponential XP",
+            desc: `Increase charge rate's exponent by <b class="green">+1%</b> per level.`,
+
+            res: "moonstone",
+            icon: ['Icons/Charge','Icons/Exponent'],
+            
+            cost: i => 2.5e5,
+            bulk: i => Math.floor(i/2.5e5),
+
+            effect(i) {
+                let x = i*0.01+1
+
+                return x
+            },
+            effDesc: x => "^"+format(x),
         },
     ],
 }

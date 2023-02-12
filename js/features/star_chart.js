@@ -3,7 +3,7 @@ const SC_IDS = {
         [4,1,0,3,9],
         [13,12,2,5,''],
         [6,7,8],
-        ['','',10,'',11],
+        ['','',10,11,14],
     ],
     speed: [
         [0],
@@ -16,8 +16,8 @@ const SC_IDS = {
         [0],
         [1,2,3],
         [4,5,6],
-        ['',7,8,9,12],
-        ['',10,11],
+        [7,9,8,12,''],
+        [11,10,''],
     ],
 }
 
@@ -173,6 +173,17 @@ const STAR_CHART = {
             icon: ['Icons/GrassSkip','Icons/StarAuto'],
                             
             cost: i => 2.5e5,
+            bulk: i => 1,
+        },
+        {
+            branch: [11],
+
+            title: "Rocket Part Autobuy",
+            desc: `Automate Rocket Part, and it no longer resets anything except rocket fuel.`,
+
+            icon: ['Curr/RocketFuel','Icons/StarAuto'],
+                            
+            cost: i => 1e24,
             bulk: i => 1,
         },
     ],

@@ -19,7 +19,7 @@ RESET.sac = {
     reqDesc: _=>`Reach ${format(1e18)} stars to unlock.`,
 
     resetDesc: `<span style="font-size:14px">Sacrifice forces a Galactic reset as well as resetting Astral, Stars, Fun, Fun Upgrades (excluding ones in The Funny Machine) and SFRGT to earn Dark Matter.<br>
-    Gain more Dark Matters based on your stars (starting at 1 Qt) and astral (starting at 45).<br>First sacrifice unlocks new the funny machine upgrade.</span>`,
+    Gain more Dark Matters based on your stars (starting at 1 Qt) and astral (starting at 45).<br>First sacrifice unlocks new the funny machine upgrade and moonstone upgrade.</span>`,
     resetGain: _=> `Gain <b>${tmp.dmGain.format(0)}</b> Dark Matters`,
 
     title: `Dark Matter Plant`,
@@ -171,6 +171,46 @@ UPGS.dm = {
                 return x
             },
             effDesc: x => "+"+format(x,1),
+        },{
+            max: 1000,
+
+            unl: ()=>player.lowGH<=-32,
+
+            title: "Dark NP",
+            desc: `Increase NP gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
+        
+            res: "dm",
+            icon: ["Curr/Normality"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(1e10).ceil(),
+            bulk: i => i.div(1e10).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 500,
+
+            unl: ()=>player.lowGH<=-32,
+
+            title: "Dark Momentum",
+            desc: `Increase momentum gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
+        
+            res: "dm",
+            icon: ["Curr/Momentum"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(1e11).ceil(),
+            bulk: i => i.div(1e11).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+        
+                return x.toNumber()
+            },
+            effDesc: x => format(x)+"x",
         },
     ]
 }

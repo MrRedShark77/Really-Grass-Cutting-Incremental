@@ -56,6 +56,8 @@ MAIN.steel = {
 
             if (x.lt(1)) return x
 
+            x = x.pow(upgEffect('moonstone',7))
+
             if (player.recel) x = x.root(2)
 
             return x.max(1)

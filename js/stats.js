@@ -541,6 +541,8 @@ const STATS = {
 
             if (player.recel) x = x.div(2)
 
+            x = x.mul(upgEffect('moonstone',7))
+
             h += `<br><br>Total Exponent: <b>^${format(x)}</b> (if multiplier goes above 1)`
 
             if (player.recel) {
@@ -826,6 +828,12 @@ const STATS = {
             // Muliplier
 
             h += `<br>Base Multiplier: <b>${formatMult(tmp.npGainBase)}</b>`
+
+            if (player.gTimes>0) {
+                x = upgEffect('dm',6)
+
+                h += `<br>Space Multiplier: <b>${formatMult(x)}</b>`
+            }
             
             // Exponent
 
