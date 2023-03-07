@@ -1,37 +1,41 @@
 const U_STEP = [1,25,1/0]
 
 const UPG_RES = {
-    grass: ["Grass",_=>[player,"grass"],'GrassBase'],
-    perk: ["Perk",_=>[tmp,"perkUnspent"],'PerkBase'],
-    pp: ["PP",_=>[player,"pp"],'PrestigeBase'],
-    plat: ["Platinum",_=>[player,"plat"],"PlatBase"],
-    crystal: ["Crystal",_=>[player,"crystal"],"CrystalBase"],
-    steel: ["Steel",_=>[player,"steel"],"GrasshopBase"],
-    aGrass: ["Anti-Grass",_=>[player,"aGrass"],'AntiGrassBase'],
-    ap: ["AP",_=>[player,"ap"],'AnonymityBase'],
-    oil: ["Oil",_=>[player,"oil"],'LiquefyBase'],
-    rf: ["Rocket Fuel",_=>[player.rocket,"amount"],'RocketBase'],
-    momentum: ["Momentum",_=>[player,"momentum"],'RocketBase'],
-    moonstone: ["Moonstone",_=>[player,"moonstone"],'MoonBase'],
-    fun: ["Fun",_=>[player,"fun"],'FunBase'],
-    star: ["Star",_=>[player,"stars"],'SpaceBase'],
-    SFRGT: ["SFRGT",_=>[player,"SFRGT"],'FunBase'],
-    dm: ["Dark Matter",_=>[player,"dm"],'DarkMatterBase'],
-    unGrass: ["Un-Grass",_=>[player,"unGrass"],'UnnaturalBase'],
-    np: ["NP",_=>[player,"np"],'NormalityBase'],
+    grass: ["Grass",()=>[player,"grass"],'GrassBase'],
+    perk: ["Perk",()=>[tmp,"perkUnspent"],'PerkBase'],
+    pp: ["PP",()=>[player,"pp"],'PrestigeBase'],
+    plat: ["Platinum",()=>[player,"plat"],"PlatBase"],
+    crystal: ["Crystal",()=>[player,"crystal"],"CrystalBase"],
+    steel: ["Steel",()=>[player,"steel"],"GrasshopBase"],
+    aGrass: ["Anti-Grass",()=>[player,"aGrass"],'AntiGrassBase'],
+    ap: ["AP",()=>[player,"ap"],'AnonymityBase'],
+    oil: ["Oil",()=>[player,"oil"],'LiquefyBase'],
+    rf: ["Rocket Fuel",()=>[player.rocket,"amount"],'RocketBase'],
+    momentum: ["Momentum",()=>[player,"momentum"],'RocketBase'],
+    moonstone: ["Moonstone",()=>[player,"moonstone"],'MoonBase'],
+    fun: ["Fun",()=>[player,"fun"],'FunBase'],
+    star: ["Star",()=>[player,"stars"],'SpaceBase'],
+    SFRGT: ["SFRGT",()=>[player,"SFRGT"],'FunBase'],
+    dm: ["Dark Matter",()=>[player,"dm"],'DarkMatterBase'],
+    unGrass: ["Un-Grass",()=>[player,"unGrass"],'UnnaturalBase'],
+    np: ["NP",()=>[player,"np"],'NormalityBase'],
+    pm: ["Planetarium",()=>[player.planetoid,"pm"],'PlanetBase'],
+    observ: ["Observatorium",()=>[player.planetoid,"observ"],'ObsBase'],
+    astro: ["Astro",()=>[player.planetoid,"astro"],'AstroBase'],
+    measure: ["Measure",()=>[player.planetoid,"measure"],'GrasshopBase'],
 }
 
 const isResNumber = ['perk','plat','rf','momentum','moonstone']
 
 const UPGS = {
     grass: {
-        unl: _=> !tmp.outsideNormal,
+        unl: ()=> !tmp.outsideNormal,
 
-        cannotBuy: _=>inChal(1) || inChal(7),
+        cannotBuy: ()=>inChal(1) || inChal(7),
 
-        autoUnl: _=>hasUpgrade('auto',3),
+        autoUnl: ()=>hasUpgrade('auto',3),
 
-        noSpend: _=>hasUpgrade('auto',6),
+        noSpend: ()=>hasUpgrade('auto',6),
 
         title: "Grass Upgrades",
 
@@ -132,12 +136,14 @@ const UPGS = {
     perk: {
         title: "Perk Upgrades",
 
-        req: _=>player.level >= 1 || player.pTimes > 0,
-        reqDesc: _=>`Reach Level 1 to unlock.`,
+        unl:()=>!player.planetoid.active,
 
-        underDesc: _=>`You have ${format(tmp.perkUnspent,0)} Perk`,
+        req: ()=>player.level >= 1 || player.pTimes > 0,
+        reqDesc: ()=>`Reach Level 1 to unlock.`,
 
-        autoUnl: _=>hasUpgrade('auto',13),
+        underDesc: ()=>`You have ${format(tmp.perkUnspent,0)} Perk`,
+
+        autoUnl: ()=>hasUpgrade('auto',13),
 
         ctn: [
             {
@@ -265,7 +271,7 @@ const UPGS = {
             },{
                 max: 10,
 
-                unl: _=>player.cTimes>0,
+                unl: ()=>player.cTimes>0,
 
                 costOnce: true,
 
@@ -287,7 +293,7 @@ const UPGS = {
             },{
                 max: 25,
 
-                unl: _=>player.cTimes>0,
+                unl: ()=>player.cTimes>0,
 
                 costOnce: true,
 
@@ -309,7 +315,7 @@ const UPGS = {
             },{
                 max: 25,
 
-                unl: _=>player.cTimes>0,
+                unl: ()=>player.cTimes>0,
 
                 costOnce: true,
 
@@ -334,8 +340,8 @@ const UPGS = {
     auto: {
         title: "Automation Upgrades",
 
-        req: _=>player.level >= 5 || player.pTimes > 0,
-        reqDesc: _=>`Reach Level 5 to unlock.`,
+        req: ()=>player.level >= 5 || player.pTimes > 0,
+        reqDesc: ()=>`Reach Level 5 to unlock.`,
 
         ctn: [
             {
@@ -357,7 +363,7 @@ const UPGS = {
                 },
                 effDesc: x => format(tmp.autocut)+" seconds",
             },{
-                unl: _=>player.pTimes>0,
+                unl: ()=>player.pTimes>0,
                 max: 5,
 
                 title: "Autocut Value",
@@ -376,7 +382,7 @@ const UPGS = {
                 },
                 effDesc: x => format(x)+"x",
             },{
-                unl: _=>player.pTimes>0,
+                unl: ()=>player.pTimes>0,
                 max: 3,
 
                 title: "Autocut Amount",
@@ -395,7 +401,7 @@ const UPGS = {
                 },
                 effDesc: x => "+"+format(x,0),
             },{
-                unl: _=>player.pTimes>0,
+                unl: ()=>player.pTimes>0,
 
                 title: "Grass Upgrade Autobuy",
                 desc: `You can now automatically buy Grass Upgrades.`,
@@ -406,7 +412,7 @@ const UPGS = {
                 cost: i => E(1e3),
                 bulk: i => 1,
             },{
-                unl: _=>player.pTimes>0,
+                unl: ()=>player.pTimes>0,
 
                 title: "Perk Save P",
                 desc: `Keep perks on Prestige.`,
@@ -417,7 +423,7 @@ const UPGS = {
                 cost: i => E(1e4),
                 bulk: i => 1,
             },{
-                unl: _=>player.cTimes>0,
+                unl: ()=>player.cTimes>0,
 
                 title: "Prestige Upgrade Autobuy",
                 desc: `You can now automatically buy Prestige Upgrades.`,
@@ -428,7 +434,7 @@ const UPGS = {
                 cost: i => E(50),
                 bulk: i => 1,
             },{
-                unl: _=>player.cTimes>0,
+                unl: ()=>player.cTimes>0,
 
                 title: "Grass Upgrades EL",
                 desc: `Grass Upgrades no longer spend grass.`,
@@ -439,7 +445,7 @@ const UPGS = {
                 cost: i => E(150),
                 bulk: i => 1,
             },{
-                unl: _=>player.cTimes>0,
+                unl: ()=>player.cTimes>0,
 
                 title: "Perk Save C",
                 desc: `Keep perks on Crystallize.`,
@@ -450,7 +456,7 @@ const UPGS = {
                 cost: i => E(500),
                 bulk: i => 1,
             },{
-                unl: _=>player.grasshop>0,
+                unl: ()=>player.grasshop>0,
 
                 title: "Crystal Upgrade Autobuy",
                 desc: `You can now automatically buy Crystal Upgrades.`,
@@ -461,7 +467,7 @@ const UPGS = {
                 cost: i => E(1e11),
                 bulk: i => 1,
             },{
-                unl: _=>player.grasshop>0,
+                unl: ()=>player.grasshop>0,
 
                 title: "Prestige Upgrades EL",
                 desc: `Prestige Upgrades no longer spend PP.`,
@@ -472,7 +478,7 @@ const UPGS = {
                 cost: i => E(1e12),
                 bulk: i => 1,
             },{
-                unl: _=>player.grasshop>=4,
+                unl: ()=>player.grasshop>=4,
 
                 title: "Crystal Upgrades EL",
                 desc: `Crystal Upgrades no longer spend crystal.`,
@@ -483,7 +489,7 @@ const UPGS = {
                 cost: i => E(1e15),
                 bulk: i => 1,
             },{
-                unl: _=>player.grasshop>=4,
+                unl: ()=>player.grasshop>=4,
 
                 max: 10,
 
@@ -502,7 +508,7 @@ const UPGS = {
                 },
                 effDesc: x => "+"+formatPercent(x,0)+"/s",
             },{
-                unl: _=>player.grasshop>=4,
+                unl: ()=>player.grasshop>=4,
 
                 max: 10,
 
@@ -521,7 +527,7 @@ const UPGS = {
                 },
                 effDesc: x => "+"+formatPercent(x,0)+"/s",
             },{
-                unl: _=>player.grasshop>=6,
+                unl: ()=>player.grasshop>=6,
 
                 title: "Perk Autobuy",
                 desc: `You can now automatically buy Perk Upgrades.`,
@@ -532,7 +538,7 @@ const UPGS = {
                 cost: i => E(1e16),
                 bulk: i => 1,
             },{
-                unl: _=>player.aTimes>0,
+                unl: ()=>player.aTimes>0,
 
                 title: "Anti-Grass Upgrades Autobuy",
                 desc: `You can now automatically buy Anti-Grass Upgrades.`,
@@ -543,7 +549,7 @@ const UPGS = {
                 cost: i => E(100),
                 bulk: i => 1,
             },{
-                unl: _=>player.lTimes>0,
+                unl: ()=>player.lTimes>0,
 
                 title: "Anonymity Upgrades Autobuy",
                 desc: `You can now automatically buy Anonymity Upgrades.`,
@@ -554,7 +560,7 @@ const UPGS = {
                 cost: i => E(100),
                 bulk: i => 1,
             },{
-                unl: _=>player.lTimes>0,
+                unl: ()=>player.lTimes>0,
 
                 title: "Anti-Grass Upgrades EL",
                 desc: `Anti-Grass Upgrades no longer spend anti-grass.`,
@@ -565,7 +571,7 @@ const UPGS = {
                 cost: i => E(1000),
                 bulk: i => 1,
             },{
-                unl: _=>hasUpgrade('factory',5),
+                unl: ()=>hasUpgrade('factory',5),
 
                 title: "Oil Upgrades Autobuy",
                 desc: `You can now automatically buy Oil Upgrades.`,
@@ -576,7 +582,7 @@ const UPGS = {
                 cost: i => 25,
                 bulk: i => 1,
             },{
-                unl: _=>player.rocket.part>0,
+                unl: ()=>player.rocket.part>0,
 
                 title: "Anti Grass Save",
                 desc: `No longer reset anti-grass and anti-grass upgrades on anonymity/liquefy/rocket part.`,
@@ -587,7 +593,7 @@ const UPGS = {
                 cost: i => 50,
                 bulk: i => 1,
             },{
-                unl: _=>hasUpgrade('factory',5),
+                unl: ()=>hasUpgrade('factory',5),
 
                 title: "Anonymity Upgrades EL",
                 desc: `Anonymity Upgrades no longer spend AP.`,
@@ -598,7 +604,7 @@ const UPGS = {
                 cost: i => E(1e12),
                 bulk: i => 1,
             },{
-                unl: _=>player.rocket.part>0,
+                unl: ()=>player.rocket.part>0,
 
                 title: "Oil Upgrades EL",
                 desc: `Oil Upgrades no longer spend Oil.`,
@@ -614,14 +620,14 @@ const UPGS = {
     plat: {
         title: "Platinum Upgrades",
 
-        unl: _=>player.pTimes>0,
+        unl: ()=>player.pTimes>0&&!player.planetoid.active,
 
-        req: _=>player.tier >= 3||player.cTimes > 0,
-        reqDesc: _=>`Reach Tier 3 to unlock.`,
+        req: ()=>player.tier >= 3||player.cTimes > 0,
+        reqDesc: ()=>`Reach Tier 3 to unlock.`,
 
-        underDesc: _=>`You have ${format(player.plat,0)} Platinum (${formatPercent(tmp.platChance)} grow chance)`,
+        underDesc: ()=>`You have ${format(player.plat,0)} Platinum (${formatPercent(tmp.platChance)} grow chance)`,
 
-        autoUnl: _=>hasStarTree('auto',9),
+        autoUnl: ()=>hasStarTree('auto',9),
 
         ctn: [
             {
@@ -687,7 +693,7 @@ const UPGS = {
             },{
                 max: 100,
 
-                unl: _=>player.cTimes>0,
+                unl: ()=>player.cTimes>0,
 
                 costOnce: true,
 
@@ -709,7 +715,7 @@ const UPGS = {
             },{
                 max: 100,
 
-                unl: _=>player.cTimes>0,
+                unl: ()=>player.cTimes>0,
 
                 costOnce: true,
 
@@ -731,7 +737,7 @@ const UPGS = {
             },{
                 max: 100,
 
-                unl: _=>player.sTimes>0,
+                unl: ()=>player.sTimes>0,
 
                 costOnce: true,
 
@@ -753,7 +759,7 @@ const UPGS = {
             },{
                 max: 25,
 
-                unl: _=>player.sTimes>0,
+                unl: ()=>player.sTimes>0,
 
                 costOnce: true,
 
@@ -775,7 +781,7 @@ const UPGS = {
             },{
                 max: 25,
 
-                unl: _=>player.sTimes>0,
+                unl: ()=>player.sTimes>0,
 
                 costOnce: true,
 
@@ -797,7 +803,7 @@ const UPGS = {
             },{
                 max: 100,
 
-                unl: _=>player.aTimes>0,
+                unl: ()=>player.aTimes>0,
 
                 costOnce: true,
 
@@ -819,7 +825,7 @@ const UPGS = {
             },{
                 max: 100,
 
-                unl: _=>player.lTimes>0,
+                unl: ()=>player.lTimes>0,
 
                 costOnce: true,
 
@@ -841,7 +847,7 @@ const UPGS = {
             },{
                 max: 25,
 
-                unl: _=>player.rocket.part>0||player.gTimes>0,
+                unl: ()=>player.rocket.part>0||player.gTimes>0,
 
                 costOnce: true,
 
@@ -1123,7 +1129,7 @@ function setupUpgradesHTML(id) {
         for (let x in UPGS[id].ctn) {
             let upg = UPGS[id].ctn[x]
             let icon = [id=='auto'&&x==0?'Bases/AutoBase':'Bases/'+UPG_RES[upg.res][2]]
-            if (upg.icon) for (i in upg.icon) icon.push(upg.icon[i])
+            if (upg.icon) icon.push(...upg.icon)
             else icon.push('Icons/Placeholder')
 
             html += `
@@ -1241,16 +1247,16 @@ function updateUpgResource(id) {
 
 function hideUpgOption() { player.options.hideUpgOption = !player.options.hideUpgOption }
 
-tmp_update.push(_=>{
+tmp_update.push(()=>{
     for (let x in UPG_RES) updateUpgResource(x)
     for (let x in UPGS) updateUpgTemp(x)
 })
 
-el.setup.upgs = _=>{
+el.setup.upgs = ()=>{
     for (let x in UPGS) setupUpgradesHTML(x)
 }
 
-el.update.upgs = _=>{
+el.update.upgs = ()=>{
     if (tmp.space) {
         if (mapID2 == 'at') {
             updateUpgradesHTML('moonstone')
@@ -1263,10 +1269,12 @@ el.update.upgs = _=>{
             updateUpgradesHTML('grass')
             updateUpgradesHTML('aGrass')
             updateUpgradesHTML('unGrass')
+            updateUpgradesHTML('planetarium')
         }
         else if (mapID == 'p') {
             updateUpgradesHTML('perk')
             updateUpgradesHTML('plat')
+            updateUpgradesHTML('observ')
         }
         else if (mapID == 'auto') updateUpgradesHTML('auto')
         else if (mapID == 'pc') {
@@ -1277,6 +1285,8 @@ el.update.upgs = _=>{
             updateUpgradesHTML('oil')
 
             updateUpgradesHTML('np')
+
+            updateUpgradesHTML('astro')
         }
         else if (mapID == 'gh') {
             updateUpgradesHTML('factory')

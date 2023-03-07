@@ -59,22 +59,35 @@ const MAIN = {
 
         x *= upgEffect('unGrass',1,1)
 
+        x *= starTreeEff('ring',7,1)
+
         return Math.min(Math.max(10,Math.floor(x/tmp.compact)),4000)
     },
     grassSpwan() {
         let x = 2.5
-        x /= upgEffect('grass',2,1)
-        x /= upgEffect('perk',2,1)
-        x /= upgEffect('aGrass',1,1)
-        x /= upgEffect('momentum',1)
-        x /= upgEffect('unGrass',0,1)
+
+        if (!player.planetoid.active) {
+            x /= upgEffect('grass',2,1)
+            x /= upgEffect('perk',2,1)
+            x /= upgEffect('aGrass',1,1)
+            x /= upgEffect('momentum',1)
+            x /= upgEffect('unGrass',0,1)
+        }
+
+        x /= upgEffect('planetarium',0,1)
+        x /= upgEffect('observ',3,1)
+        x /= upgEffect('astro',2,1)
 
         tmp.gsBeforeCompact = 2/x
 
         return Math.max(x*tmp.compact,2e-4)
     },
     compact() {
+        if (!hasUpgrade('unGrass',3)) return 1
+
         let c = upgEffect('unGrass',3,1)
+
+        x *= upgEffect('astro',4,1)
 
         tmp.compact = Math.min(c,tmp.gsBeforeCompact/100)
     },
@@ -109,6 +122,10 @@ const MAIN = {
         if (player.lowGH <= 28) x = x.mul(getAGHEffect(1))
 
         x = x.mul(upgEffect('dm',2))
+
+        x = x.mul(starTreeEff('ring',2))
+
+        x = x.mul(upgEffect('astro',3))
 
         if (player.decel) x = x.div(1e16)
 
@@ -156,6 +173,8 @@ const MAIN = {
 
         x = x.mul(upgEffect('dm',0))
 
+        x = x.mul(starTreeEff('ring',3))
+
         if (player.decel) x = x.div(1e16)
 
         if (player.recel) x = x.div(1e114)
@@ -169,22 +188,22 @@ const MAIN = {
 
         return x
     },
-    rangeCut: _=>50+upgEffect('grass',4,0)+upgEffect('perk',4,0),
-    autoCut: _=>5-upgEffect('auto',0,0)-upgEffect('plat',0,0)-starTreeEff('progress',3,0),
+    rangeCut: ()=>50+upgEffect('grass',4,0)+upgEffect('perk',4,0)+upgEffect('planetarium',3,0),
+    autoCut: ()=>hasStarTree('reserv',2)?0.01:5-(player.planetoid.active?0:upgEffect('auto',0,0)+upgEffect('plat',0,0)+starTreeEff('progress',3,0)),
     level: {
         req(i) {
             i = E(i).scale(tmp.level.scale2,2,0).scale(tmp.level.scale1,2,0)
 
             if (inChal(0) || inChal(7)) i = i.mul(3)
             
-            let x = Decimal.pow(2.7,i.pow(0.75)).mul(50)
+            let x = Decimal.pow(tmp.level.threshold,i.pow(0.75)).mul(50)
 
             return x.ceil()
         },
         bulk(i) {
             let x = i.div(50)
             if (x.lt(1)) return 0
-            x = x.log(2.7).root(0.75)
+            x = x.log(tmp.level.threshold).root(0.75)
 
             if (inChal(0) || inChal(7)) x = x.div(3)
 
@@ -203,7 +222,7 @@ const MAIN = {
         req(i) {
             let pow = player.lowGH <= 12 ? 1.15 : 1.2
             if (player.recel) pow *= 1.1
-            let x = Decimal.pow(3,i**pow).mul(100)
+            let x = Decimal.pow(tmp.level.tier,i**pow).mul(100)
 
             return x.ceil()
         },
@@ -212,7 +231,7 @@ const MAIN = {
             if (x.lt(1)) return 0
             let pow = player.lowGH <= 12 ? 1.15 : 1.2
             if (player.recel) pow *= 1.1
-            x = x.log(3).root(pow)
+            x = x.log(tmp.level.tier).root(pow)
 
             return Math.floor(x.toNumber()+1)
         },
@@ -266,6 +285,8 @@ const MAIN = {
         x = x.mul(upgEffect('unGrass',2))
 
         x = x.mul(upgEffect('np',1))
+
+        x = x.mul(starTreeEff('ring',6)).mul(starTreeEff('ring',16))
         
         if (player.lowGH <= -16) x = x.pow(1.25)
 
@@ -281,19 +302,24 @@ const MAIN = {
         if (player.sp.gte(tmp.astral.next)) {
             player.astral = Math.max(player.astral, tmp.astral.bulk)
         }
+
+        if (player.planetoid.xp.gte(tmp.cosmicLevel.next)) {
+            player.planetoid.level = Math.max(player.planetoid.level, tmp.cosmicLevel.bulk)
+        }
     }, 
 }
 
-el.update.main = _=>{
-    let g = player.recel ? player.unGrass : player.decel ? player.aGrass : player.grass
+el.update.main = ()=>{
+    let pa = player.planetoid.active
+    let g = pa ? player.planetoid.pm : player.recel ? player.unGrass : player.decel ? player.aGrass : player.grass
 
     tmp.el.grassAmt.setHTML(g.format(0))
-    tmp.el.grassGain.setHTML(tmp.autoCutUnlocked ? formatGain(g,tmp.grassGain.div(tmp.autocut).mul(tmp.autocutBonus).mul(tmp.autocutAmt)) : "")
+    tmp.el.grassGain.setHTML(tmp.autoCutUnlocked ? formatGain(g,(pa?tmp.planetiumGain:tmp.grassGain).div(tmp.autocut).mul(tmp.autocutBonus).mul(tmp.autocutAmt)) : "")
 
-    let tier_unl = player.pTimes > 0
+    let tier_unl = !pa && player.pTimes > 0
     let astr_unl = player.gTimes > 0
 
-    tmp.el.level.setHTML(`Level <b class="cyan">${format(player.level,0)}</b> (${formatPercent(tmp.level.percent)})`)
+    tmp.el.level.setHTML(`Level <b class="cyan">${format(pa?player.planetoid.level:player.level,0)}</b> (${formatPercent(pa ? tmp.cosmicLevel.percent : tmp.level.percent)})`)
 
     tmp.el.tier.setDisplay(tier_unl)
     tmp.el.astral.setDisplay(astr_unl)
@@ -301,10 +327,14 @@ el.update.main = _=>{
     if (astr_unl) tmp.el.astral.setHTML(`Astral <b class="magenta">${format(player.astral,0)}</b> (${formatPercent(tmp.astral.percent)})`)
 
     if (mapID == 'g') {
-        tmp.el.level_amt.setTxt(format(player.level,0))
-        tmp.el.level_progress.setTxt(tmp.level.progress.format(0)+" / "+tmp.level.next.sub(tmp.level.cur).format(0)+" XP")
-        tmp.el.level_bar.changeStyle("width",tmp.level.percent*100+"%")
-        tmp.el.level_cut.setTxt("+"+tmp.XPGain.format(1)+" XP/cut")
+        let xpID = pa ? 'Cosmic' : 'XP'
+
+        let tmp_lvl = pa ? tmp.cosmicLevel : tmp.level
+
+        tmp.el.level_amt.setTxt(format(pa?player.planetoid.level:player.level,0))
+        tmp.el.level_progress.setTxt(tmp_lvl.progress.format(0)+" / "+tmp_lvl.next.sub(tmp_lvl.cur).format(0)+" "+xpID)
+        tmp.el.level_bar.changeStyle("width",tmp_lvl.percent*100+"%")
+        tmp.el.level_cut.setTxt("+"+tmp[pa?"cosmicGain":"XPGain"].format(1)+" "+xpID+"/cut")
 
         tmp.el.tier_div.setDisplay(tier_unl)
         tmp.el.astral_div.setDisplay(astr_unl)
@@ -326,11 +356,13 @@ el.update.main = _=>{
     }
 
     tmp.el.main_app.changeStyle('background-color',tmp.space ? "#fff1" : "#fff2")
-    document.body.style.backgroundColor = tmp.space ? "#0A001E" : "#0052af"
+    document.body.style.backgroundColor = tmp.space ? "#0A001E" : player.planetoid.active ? "#24002C" : "#0052af"
+    document.body.className = player.planetoid.active ? 'planetoid' : ''
+    tmp.el.grass_cap_div.changeStyle('background-color',player.planetoid.active ? "#D000FF" : "#29b146")
 }
 
-tmp_update.push(_=>{
-    tmp.outsideNormal = player.decel || player.recel
+tmp_update.push(()=>{
+    tmp.outsideNormal = player.decel || player.recel || player.planetoid.active
 
     tmp.platCutAmt = hasStarTree('auto',3)
     tmp.moonstoneCutAmt = hasStarTree('auto',5)
@@ -359,6 +391,10 @@ tmp_update.push(_=>{
 
     let lvl = player.level
 
+    let th = 1/starTreeEff('progress',13,1)
+
+    tmp.level.threshold = 2.7**th
+
     tmp.level.scale1 = tmp.outsideNormal?2:200
     tmp.level.scale1 += upgEffect('aGrass',5,0)+upgEffect('ap',5,0)
     tmp.level.scale1 *= (tmp.chargeEff[2]||1) * starTreeEff('progress',4)
@@ -373,6 +409,10 @@ tmp_update.push(_=>{
     tmp.level.percent = tmp.level.progress.div(tmp.level.next.sub(tmp.level.cur)).max(0).min(1).toNumber()
 
     let t = player.tier
+
+    th = 1/starTreeEff('progress',14,1)
+
+    tmp.level.tier = 3**th
 
     tmp.tier.next = MAIN.tier.req(t)
     tmp.tier.bulk = MAIN.tier.bulk(player.tp)

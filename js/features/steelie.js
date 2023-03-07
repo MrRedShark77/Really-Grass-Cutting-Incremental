@@ -161,7 +161,7 @@ MAIN.steel = {
                 },
                 effDesc: x => "Boost Crystal gain by "+format(x)+"x",
             },{
-                unl: _=>player.aTimes>0,
+                unl: ()=>player.aTimes>0,
                 req: E(1e21),
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
@@ -174,7 +174,7 @@ MAIN.steel = {
                 },
                 effDesc: x => "Boost AP gain by "+format(x)+"x",
             },{
-                unl: _=>player.lTimes>0,
+                unl: ()=>player.lTimes>0,
                 req: E(1e26),
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
@@ -187,7 +187,7 @@ MAIN.steel = {
                 },
                 effDesc: x => "Boost Oil gain by "+format(x)+"x",
             },{
-                unl: _=>hasUpgrade('funnyMachine',2),
+                unl: ()=>hasUpgrade('funnyMachine',2),
                 req: E(1e30),
                 eff(c) {
                     if (player.bestCharge.lt(this.req)) return E(1)
@@ -200,7 +200,7 @@ MAIN.steel = {
                 },
                 effDesc: x => "Boost Fun gain by "+format(x)+"x",
             },{
-                unl: _=>hasUpgrade('funnyMachine',2),
+                unl: ()=>hasUpgrade('funnyMachine',2),
                 req: E(1e33),
                 eff(c) {
                     if (player.bestCharge.lt(this.req) || !player.decel) return E(1)
@@ -218,13 +218,13 @@ MAIN.steel = {
 }
 
 RESET.steel = {
-    unl: _=>(player.grasshop>=10||player.gTimes>0)&&!tmp.outsideNormal,
+    unl: ()=>(player.grasshop>=10||player.gTimes>0)&&!tmp.outsideNormal,
 
-    req: _=>player.level>=400,
-    reqDesc: _=>`Reach Level 400.`,
+    req: ()=>player.level>=400,
+    reqDesc: ()=>`Reach Level 400.`,
 
     resetDesc: `Reset everything grasshop does, but it benefits from the milestones for grasshop.<br>Gain more Steels based on grasshop and Crystal.`,
-    resetGain: _=> `Gain <b>${tmp.steelGain.format(0)}</b> Steel`,
+    resetGain: ()=> `Gain <b>${tmp.steelGain.format(0)}</b> Steel`,
 
     title: `Steelie`,
     resetBtn: `Steelie!`,
@@ -253,11 +253,11 @@ RESET.steel = {
 UPGS.factory = {
     title: "The Factory",
 
-    unl: _=>player.sTimes > 0&&!tmp.outsideNormal,
+    unl: ()=>player.sTimes > 0&&!tmp.outsideNormal,
 
-    underDesc: _=>`You have ${format(player.steel,0)} Steel`+(tmp.steelPass>0?" <span class='smallAmt'>"+player.steel.formatGain(tmp.steelGain.mul(tmp.steelPass))+"</span>":""),
+    underDesc: ()=>`You have ${format(player.steel,0)} Steel`+(tmp.steelPass>0?" <span class='smallAmt'>"+player.steel.formatGain(tmp.steelGain.mul(tmp.steelPass))+"</span>":""),
 
-    autoUnl: _=>hasStarTree('auto',2),
+    autoUnl: ()=>hasStarTree('auto',2),
 
     ctn: [
         {
@@ -411,11 +411,11 @@ UPGS.factory = {
 UPGS.foundry = {
     title: "Foundry",
 
-    unl: _=>hasUpgrade('factory',0)&&!tmp.outsideNormal,
+    unl: ()=>hasUpgrade('factory',0)&&!tmp.outsideNormal,
 
-    underDesc: _=>`<b class="green">${tmp.foundryEff.format()}x</b> <span style="font-size:14px;">to Steel multiplier based on time since last steelie (max 1 hour)</span>`,
+    underDesc: ()=>`<b class="green">${tmp.foundryEff.format()}x</b> <span style="font-size:14px;">to Steel multiplier based on time since last steelie (max 1 hour)</span>`,
 
-    autoUnl: _=>hasStarTree('auto',6),
+    autoUnl: ()=>hasStarTree('auto',6),
 
     ctn: [
         {
@@ -479,11 +479,11 @@ UPGS.foundry = {
 UPGS.gen = {
     title: "Generator",
 
-    unl: _=>hasUpgrade('factory',1)&&!tmp.outsideNormal,
+    unl: ()=>hasUpgrade('factory',1)&&!tmp.outsideNormal,
 
-    underDesc: _=>`<b class="green">${format(upgEffect('factory',1))}x</b> <span style="font-size:14px;">to PP/Crystal generator multiplier from factory upgrade</span>`,
+    underDesc: ()=>`<b class="green">${format(upgEffect('factory',1))}x</b> <span style="font-size:14px;">to PP/Crystal generator multiplier from factory upgrade</span>`,
 
-    autoUnl: _=>hasStarTree('auto',7),
+    autoUnl: ()=>hasStarTree('auto',7),
 
     ctn: [
         {
@@ -525,7 +525,7 @@ UPGS.gen = {
         },{
             max: 1000,
 
-            unl: _=>player.grasshop>=14||player.gTimes>0,
+            unl: ()=>player.grasshop>=14||player.gTimes>0,
 
             title: "Prestige Charge",
             desc: `Increase charge rate by <b class="green">+10%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
@@ -545,7 +545,7 @@ UPGS.gen = {
         },{
             max: 1000,
 
-            unl: _=>player.grasshop>=14||player.gTimes>0,
+            unl: ()=>player.grasshop>=14||player.gTimes>0,
 
             title: "Crystal Charge",
             desc: `Increase charge rate by <b class="green">+10%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
@@ -569,9 +569,9 @@ UPGS.gen = {
 UPGS.assembler = {
     title: "Assembler",
 
-    unl: _=>hasUpgrade('factory',3),
+    unl: ()=>hasUpgrade('factory',3),
 
-    autoUnl: _=>hasStarTree('auto',8),
+    autoUnl: ()=>hasStarTree('auto',8),
 
     ctn: [
         {
@@ -602,7 +602,7 @@ UPGS.assembler = {
             cost: i => E(1e26),
             bulk: i => 1,
         },{
-            unl: _=>player.aTimes>0,
+            unl: ()=>player.aTimes>0,
 
             title: "Limitless Crystal Upgrades",
             desc: `<b class="green">Tier Base</b> will no longer have maximum limit.`,
@@ -613,7 +613,7 @@ UPGS.assembler = {
             cost: i => E(1e45),
             bulk: i => 1,
         },{
-            unl: _=>player.aTimes>0,
+            unl: ()=>player.aTimes>0,
 
             title: "Limitless Crystal Upgrades II",
             desc: `<b class="green">Grass Value III, XP III, TP II & PP</b> will no longer have maximum limit.`,
@@ -624,7 +624,7 @@ UPGS.assembler = {
             cost: i => E(1e50),
             bulk: i => 1,
         },{
-            unl: _=>player.lTimes>0,
+            unl: ()=>player.lTimes>0,
 
             title: "Charge Milestone Effect",
             desc: `Unsoftcap the effect of 3rd charge milestone.`,
@@ -635,7 +635,7 @@ UPGS.assembler = {
             cost: i => E(1e53),
             bulk: i => 1,
         },{
-            unl: _=>hasUpgrade('funnyMachine',3),
+            unl: ()=>hasUpgrade('funnyMachine',3),
 
             title: "Limitless Anti-Grass Upgrades",
             desc: `<b class="green">Anti-Grass Steel, Anti-Grass Value & Anti-Grass XP</b> will no longer have maximum limit.`,
@@ -646,7 +646,7 @@ UPGS.assembler = {
             cost: i => E(1e220),
             bulk: i => 1,
         },{
-            unl: _=>hasUpgrade('funnyMachine',3),
+            unl: ()=>hasUpgrade('funnyMachine',3),
 
             title: "Limitless Anonymity Upgrades",
             desc: `<b class="green">AP Value, AP Charge, AP XP & AP TP</b> will no longer have maximum limit.`,
@@ -657,7 +657,7 @@ UPGS.assembler = {
             cost: i => E(1e235),
             bulk: i => 1,
         },{
-            unl: _=>hasUpgrade('funnyMachine',3),
+            unl: ()=>hasUpgrade('funnyMachine',3),
 
             title: "Beyond Charge OoM Reduction",
             desc: `Make charge OoM reductions (softcapped) instead of (hardcapped). (charge OoM reductions can go below 0, but negative charge OoMs are softcapped).`,
@@ -668,7 +668,7 @@ UPGS.assembler = {
             cost: i => E(1e275),
             bulk: i => 1,
         },{
-            unl: _=>hasUpgrade('funnyMachine',3),
+            unl: ()=>hasUpgrade('funnyMachine',3),
 
             title: "Limitless Anti-Grass Upgrades II",
             desc: `<b class="green">Anti-Grass Charge & Scaled Level</b> will no longer have maximum limit.<br>Remind: <b class="green">Anti-Grass Charge</b>'s effect softcaps at <b class="green">1 Bx</b>.`,
@@ -679,7 +679,7 @@ UPGS.assembler = {
             cost: i => E('e330'),
             bulk: i => 1,
         },{
-            unl: _=>hasUpgrade('funnyMachine',3),
+            unl: ()=>hasUpgrade('funnyMachine',3),
 
             title: "Limitless Anonymity Upgrades II",
             desc: `<b class="green">Scaled Level II</b> will no longer have maximum limit.`,
@@ -690,7 +690,7 @@ UPGS.assembler = {
             cost: i => E('e385'),
             bulk: i => 1,
         },{
-            unl: _=>hasUpgrade('funnyMachine',3),
+            unl: ()=>hasUpgrade('funnyMachine',3),
 
             title: "Limitless Oil Upgrades",
             desc: `Oil upgrades will no longer have maximum limit.<br>Remind: <b class="green">Oily Platinum</b>'s effect softcaps at <b class="green">100x</b>.`,
@@ -704,7 +704,7 @@ UPGS.assembler = {
     ],
 }
 
-tmp_update.push(_=>{
+tmp_update.push(()=>{
     let ms = MAIN.steel
     
     tmp.steelPass = starTreeEff('speed',7,0)
@@ -746,7 +746,7 @@ function calcChargeAmountFromOoM(charge, req, oom=tmp.chargeOoM) {
     return x
 }
 
-el.setup.factory = _=>{
+el.setup.factory = ()=>{
     let table = new Element(charge_mil)
     let h = "Best Charge Milestones:"
 
@@ -759,7 +759,7 @@ el.setup.factory = _=>{
     table.setHTML(h)
 }
 
-el.update.factory = _=>{
+el.update.factory = ()=>{
     if (mapID == "fd") {
         let unl = hasUpgrade('factory',2)
 

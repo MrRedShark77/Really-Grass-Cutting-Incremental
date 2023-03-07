@@ -28,9 +28,9 @@ const ROCKET = {
 UPGS.rocket = {
     title: "Rocket Fuel Upgrade",
 
-    unl: _=>hasUpgrade("factory",5),
+    unl: ()=>hasUpgrade("factory",5),
 
-    underDesc: _=>`You have ${format(player.rocket.amount,0)} Rocket Fuel`,
+    underDesc: ()=>`You have ${format(player.rocket.amount,0)} Rocket Fuel`,
 
     ctn: [
         {
@@ -216,7 +216,7 @@ UPGS.rocket = {
         },{
             max: 10000,
 
-            unl: _=> player.bestGS>=10,
+            unl: ()=> player.bestGS>=10,
 
             costOnce: true,
 
@@ -238,7 +238,7 @@ UPGS.rocket = {
         },{
             max: 10000,
 
-            unl: _=> player.lowGH<=0,
+            unl: ()=> player.lowGH<=0,
 
             costOnce: true,
 
@@ -262,15 +262,15 @@ UPGS.rocket = {
 }
 
 RESET.rocket_part = {
-    unl: _=> hasUpgrade('factory',6),
+    unl: ()=> hasUpgrade('factory',6),
 
-    req: _=>true,
-    reqDesc: _=>``,
+    req: ()=>true,
+    reqDesc: ()=>``,
 
     resetDesc: `<span style="font-size: 14px">Reset everything liquefy does as well as oil, oil upgrades, steel and total rocket fuel.
     You will create a rocket part, earn <b class="green" id="momentumGain">1</b> momentum, and reset the cost to make rocket fuel.
     You keep rocket fuel and rocket fuel upgrades.</span>`,
-    resetGain: _=> `
+    resetGain: ()=> `
         <span style="font-size: 14px">
         <b class="lightgray">Steel</b><br>
         <span class="${player.steel.gte(tmp.rp_req[0])?"green":"red"}">${player.steel.format(0)} / ${tmp.rp_req[0].format(0)}</span><br><br>
@@ -318,12 +318,12 @@ RESET.rocket_part = {
 UPGS.momentum = {
     title: "Momentum Upgrades",
 
-    unl: _=>player.rocket.part>0,
+    unl: ()=>player.rocket.part>0,
 
-    underDesc: _=>`You have ${format(player.momentum,0)} Momentum`,
+    underDesc: ()=>`You have ${format(player.momentum,0)} Momentum`,
 
-    autoUnl: _=>hasStarTree('auto',11),
-    noSpend: _=>hasStarTree('auto',11),
+    autoUnl: ()=>hasStarTree('auto',11),
+    noSpend: ()=>hasStarTree('auto',11),
 
     ctn: [
         {
@@ -509,7 +509,7 @@ UPGS.momentum = {
         },{
             max: 1000,
 
-            unl: _=>player.lowGH<=-20,
+            unl: ()=>player.lowGH<=-20,
 
             title: "Great Grass",
             desc: `Increase grass gain by 100% every level.`,
@@ -529,7 +529,7 @@ UPGS.momentum = {
         },{
             max: 1000,
 
-            unl: _=>player.lowGH<=-20,
+            unl: ()=>player.lowGH<=-20,
 
             title: "Great Level",
             desc: `Increase XP gain by 100% every level.`,
@@ -549,7 +549,7 @@ UPGS.momentum = {
         },{
             max: 1000,
 
-            unl: _=>player.lowGH<=-20,
+            unl: ()=>player.lowGH<=-20,
 
             title: "Giga Charge",
             desc: `Increase charge rate by 50% every level.`,
@@ -570,7 +570,7 @@ UPGS.momentum = {
     ],
 }
 
-el.update.rocket = _=>{
+el.update.rocket = ()=>{
     if (mapID == "as") {
         for (let i = 0; i < 2; i++) {
             let rc = tmp.el["rf_cost"+i]
@@ -602,7 +602,7 @@ function updateRocketTemp() {
     tmp.rf_bulk = bulk
 }
 
-tmp_update.push(_=>{
+tmp_update.push(()=>{
     let rp = player.rocket.part
     if (rp > 50) rp = (rp/50)**2.5*50
 

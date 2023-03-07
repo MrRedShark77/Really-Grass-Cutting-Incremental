@@ -24,13 +24,13 @@ MAIN.crystal = {
 }
 
 RESET.crystal = {
-    unl: _=>player.pTimes>0 && !tmp.outsideNormal,
+    unl: ()=>player.pTimes>0 && !tmp.outsideNormal,
 
-    req: _=>player.level>=100,
-    reqDesc: _=>`Reach Level 100 to Crystallize.`,
+    req: ()=>player.level>=100,
+    reqDesc: ()=>`Reach Level 100 to Crystallize.`,
 
     resetDesc: `Crystallizing resets everything prestige as well except Platinum for Crystals.<br>Gain more Crystals based on your tier and PP.`,
-    resetGain: _=> `Gain <b>${tmp.crystalGain.format(0)}</b> Crystals`,
+    resetGain: ()=> `Gain <b>${tmp.crystalGain.format(0)}</b> Crystals`,
 
     title: `Crystallize`,
     resetBtn: `Crystallize`,
@@ -63,17 +63,17 @@ RESET.crystal = {
 UPGS.crystal = {
     title: "Crystal Upgrades",
 
-    unl: _=>player.pTimes > 0 && !tmp.outsideNormal,
+    unl: ()=>player.pTimes > 0 && !tmp.outsideNormal,
 
-    req: _=>player.cTimes > 0,
-    reqDesc: _=>`Crystallize once to unlock.`,
+    req: ()=>player.cTimes > 0,
+    reqDesc: ()=>`Crystallize once to unlock.`,
 
-    underDesc: _=>`You have ${format(player.crystal,0)} Crystal`+(tmp.crystalGainP > 0 ? " <span class='smallAmt'>"+formatGain(player.crystal,tmp.crystalGain.mul(tmp.crystalGainP))+"</span>" : ""),
+    underDesc: ()=>`You have ${format(player.crystal,0)} Crystal`+(tmp.crystalGainP > 0 ? " <span class='smallAmt'>"+formatGain(player.crystal,tmp.crystalGain.mul(tmp.crystalGainP))+"</span>" : ""),
 
-    autoUnl: _=>hasUpgrade('auto',8),
-    noSpend: _=>hasUpgrade('auto',10),
+    autoUnl: ()=>hasUpgrade('auto',8),
+    noSpend: ()=>hasUpgrade('auto',10),
 
-    cannotBuy: _=>inChal(6),
+    cannotBuy: ()=>inChal(6),
 
     ctn: [
         {
@@ -210,13 +210,13 @@ MAIN.oil = {
 }
 
 RESET.oil = {
-    unl: _=> player.decel && player.aTimes > 0,
+    unl: ()=> player.decel && player.aTimes > 0,
 
-    req: _=>player.level>=100,
-    reqDesc: _=>`Reach Level 100 to Liquefy.`,
+    req: ()=>player.level>=100,
+    reqDesc: ()=>`Reach Level 100 to Liquefy.`,
 
     resetDesc: `Liquefy resets everything Anonymity as well as your AP, Anonymity upgrades & tier for Oil.<br>Gain more Oil based on your tier and AP.`,
-    resetGain: _=> `Gain <b>${tmp.oilGain.format(0)}</b> Oil`,
+    resetGain: ()=> `Gain <b>${tmp.oilGain.format(0)}</b> Oil`,
 
     title: `Liquefy`,
     resetBtn: `Liquefy`,
@@ -249,17 +249,17 @@ RESET.oil = {
 }
 
 UPGS.oil = {
-    unl: _=> player.decel && player.aTimes > 0,
+    unl: ()=> player.decel && player.aTimes > 0,
 
     title: "Oil Upgrades",
 
-    req: _=>player.lTimes > 0,
-    reqDesc: _=>`Liquefy once to unlock.`,
+    req: ()=>player.lTimes > 0,
+    reqDesc: ()=>`Liquefy once to unlock.`,
 
-    underDesc: _=>`You have ${format(player.oil,0)} Oil`+(hasUpgrade('factory',7) ? " <span class='smallAmt'>"+formatGain(player.oil,player.bestOil2.mul(tmp.oilRigBase))+"</span>" : ""),
+    underDesc: ()=>`You have ${format(player.oil,0)} Oil`+(hasUpgrade('factory',7) ? " <span class='smallAmt'>"+formatGain(player.oil,player.bestOil2.mul(tmp.oilRigBase))+"</span>" : ""),
 
-    autoUnl: _=>hasUpgrade('auto',17),
-    noSpend: _=>hasUpgrade('auto',20),
+    autoUnl: ()=>hasUpgrade('auto',17),
+    noSpend: ()=>hasUpgrade('auto',20),
 
     ctn: [
         {
@@ -374,7 +374,7 @@ UPGS.oil = {
     ],
 }
 
-tmp_update.push(_=>{
+tmp_update.push(()=>{
     tmp.crystalGain = MAIN.crystal.gain()
     tmp.crystalGainP = (upgEffect('auto',12,0)+upgEffect('gen',1,0))*upgEffect('factory',1,1)
 

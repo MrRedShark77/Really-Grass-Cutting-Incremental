@@ -130,12 +130,24 @@ button:not(.locked):hover {
     align-items: center;
 }
 
-#grass_div > div > img {
+#grass-image {
     width: 60px;
     height: 60px;
     border: solid 2px black;
     border-radius: 50%;
     background-color: #73ff91;
+    background-image: url(images/Curr/Grass.png);
+    background-size: 80px;
+    background-position: center;
+}
+
+body.planetoid #grass_div {
+    background-color: #7b00ac;
+}
+
+body.planetoid #grass-image {
+    background-color: #9626ff;
+    background-image: url(images/Curr/Planetoid.png);
 }
 
 .smallAmt,
@@ -152,6 +164,10 @@ button:not(.locked):hover {
     background-color: #186834;
 }
 
+#grass_canvas.planetoid {
+    background-color: #480058;
+}
+
 #level {
     position: relative;
     width: 400px;
@@ -160,6 +176,15 @@ button:not(.locked):hover {
     height: 35px;
     font-size: 25px;
     padding: 0 10px;
+}
+
+body.planetoid #level {
+    background-color: #8421bd;
+}
+
+body.planetoid #level .cyan,
+body.planetoid #level_div .cyan {
+    color: magenta;
 }
 
 #tier {
@@ -192,6 +217,10 @@ button:not(.locked):hover {
     margin: 5px 15px;
 }
 
+body.planetoid #level_div {
+    background-color: #421457;
+}
+
 #tier_div {
     position: relative;
     width: calc(100% - 34px);
@@ -222,6 +251,10 @@ button:not(.locked):hover {
     height: 100%;
     background-color: #2968b1;
     transition: width 0.2s;
+}
+
+body.planetoid #level_bar {
+    background-color: #7429b1;
 }
 
 #tier_bar {
@@ -379,6 +412,26 @@ button:not(.locked):hover {
 .upg_desc.np,
 .upgs_div.np {
     background-color: #8fcc00;
+}
+
+.reset_div.enterPlanetoid,
+.reset_req.enterPlanetoid,
+.reset_div.formRing,
+.reset_req.formRing,
+.upg_desc.planetarium,
+.upgs_div.planetarium,
+.reset_div.astro,
+.reset_req.astro,
+.upg_desc.astro,
+.upgs_div.astro {
+    border-color: #ab00b1;
+    background-color: #4b007c;
+}
+
+.upg_desc.observ,
+.upgs_div.observ {
+    border-color: #0038b1;
+    background-color: #1b007c;
 }
 
 .upgs_ctn {

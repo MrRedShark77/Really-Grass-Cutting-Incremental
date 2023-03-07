@@ -1,6 +1,6 @@
 const CHALS = [
     {
-        unl: _=>true,
+        unl: ()=>true,
 
         max: 20,
         id: 'pp',
@@ -13,12 +13,12 @@ const CHALS = [
         bulk: i=>Math.floor((i-30)/10+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: _=>player.level,
+        goalAmt: ()=>player.level,
 
         eff: i=>Decimal.pow(2,i),
         effDesc: x=>format(x)+"x",
     },{
-        unl: _=>true,
+        unl: ()=>true,
 
         max: 20,
         id: 'pp',
@@ -31,12 +31,12 @@ const CHALS = [
         bulk: i=>Math.floor((i-100)/10+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: _=>player.level,
+        goalAmt: ()=>player.level,
 
         eff: i=>Decimal.pow(2,i),
         effDesc: x=>format(x)+"x",
     },{
-        unl: _=>true,
+        unl: ()=>true,
 
         max: 20,
         id: 'crystal',
@@ -49,12 +49,12 @@ const CHALS = [
         bulk: i=>Math.floor((i-100)/10+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: _=>player.level,
+        goalAmt: ()=>player.level,
 
         eff: i=>Decimal.pow(2,i),
         effDesc: x=>format(x)+"x",
     },{
-        unl: _=>true,
+        unl: ()=>true,
 
         max: 10,
         id: 'crystal',
@@ -67,12 +67,12 @@ const CHALS = [
         bulk: i=>Math.floor((i-50)/20+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: _=>player.level,
+        goalAmt: ()=>player.level,
 
         eff: i=>i/50+1,
         effDesc: x=>"^"+format(x),
     },{
-        unl: _=>true,
+        unl: ()=>true,
 
         max: 10,
         id: 'crystal',
@@ -85,12 +85,12 @@ const CHALS = [
         bulk: i=>i-6,
 
         goalDesc: x=>"Tier "+format(x,0),
-        goalAmt: _=>player.tier,
+        goalAmt: ()=>player.tier,
 
         eff: i=>Decimal.pow(2,i),
         effDesc: x=>format(x)+"x",
     },{
-        unl: _=>player.sTimes > 0,
+        unl: ()=>player.sTimes > 0,
 
         max: 10,
         id: 'steel',
@@ -103,12 +103,12 @@ const CHALS = [
         bulk: i=>Math.floor((i-100)/20+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: _=>player.level,
+        goalAmt: ()=>player.level,
 
         eff: i=>Decimal.pow(1.5,i),
         effDesc: x=>format(x)+"x",
     },{
-        unl: _=>player.sTimes > 0,
+        unl: ()=>player.sTimes > 0,
 
         max: 10,
         id: 'steel',
@@ -121,12 +121,12 @@ const CHALS = [
         bulk: i=>i-19,
 
         goalDesc: x=>"Tier "+format(x,0),
-        goalAmt: _=>player.tier,
+        goalAmt: ()=>player.tier,
 
         eff: i=>Decimal.pow(2,i),
         effDesc: x=>format(x)+"x",
     },{
-        unl: _=>hasUpgrade('factory',2),
+        unl: ()=>hasUpgrade('factory',2),
 
         max: 10,
         id: 'steel',
@@ -139,14 +139,14 @@ const CHALS = [
         bulk: i=>Math.floor((i-40)/10+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: _=>player.level,
+        goalAmt: ()=>player.level,
 
         eff: i=>Decimal.pow(10,i),
         effDesc: x=>format(x)+"x",
     },
 ]
 
-const chalSGoal = (_=>{
+const chalSGoal = (()=>{
     let x = []
     for (let i in CHALS) x.push(CHALS[i].goal(0))
     return x
@@ -169,7 +169,7 @@ function enterChal(x) {
 
 function chalEff(x,def=E(1)) { return tmp.chal.eff[x] || def }
 
-tmp_update.push(_=>{
+tmp_update.push(()=>{
     for (let i in CHALS) {
         let c = player.chal.comp[i]||0
         tmp.chal.goal[i] = CHALS[i].goal(c)
@@ -184,7 +184,7 @@ tmp_update.push(_=>{
     }
 })
 
-el.setup.chal = _=>{
+el.setup.chal = ()=>{
     let table = new Element('chal_table')
     let html = ``
 
@@ -210,7 +210,7 @@ el.setup.chal = _=>{
     table.setHTML(html)
 }
 
-el.update.chal = _=>{
+el.update.chal = ()=>{
     if (mapID == 'chal') {
         let unl = !getPlayerData.chalUnl
 

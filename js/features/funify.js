@@ -34,13 +34,13 @@ MAIN.fun = {
 }
 
 RESET.fun = {
-    unl: _=>(player.bestGS>=10||player.fTimes>0)&&player.decel,
+    unl: ()=>(player.bestGS>=10||player.fTimes>0)&&player.decel,
 
-    req: _=>player.level>=490,
-    reqDesc: _=>`Reach Level 490.`,
+    req: ()=>player.level>=490,
+    reqDesc: ()=>`Reach Level 490.`,
 
     resetDesc: `Reset everything grass-skip does, but it benefits from the milestones for grass-skip.<br>Gain more Fun based on grass-skip and oil.`,
-    resetGain: _=> `Gain <b>${tmp.funGain.format(0)}</b> Fun`,
+    resetGain: ()=> `Gain <b>${tmp.funGain.format(0)}</b> Fun`,
 
     title: `Funify`,
     resetBtn: `Funify!`,
@@ -67,7 +67,7 @@ RESET.fun = {
     },
 }
 
-tmp_update.push(_=>{
+tmp_update.push(()=>{
     let mf = MAIN.fun
     
     tmp.SFRGTgain = mf.SFRGTgain()
@@ -77,9 +77,9 @@ tmp_update.push(_=>{
 UPGS.funnyMachine = {
     title: "The Funny Machine",
 
-    unl: _=>player.fTimes > 0&&player.decel,
+    unl: ()=>player.fTimes > 0&&player.decel,
 
-    underDesc: _=>`You have ${format(player.fun,0)} Fun`,
+    underDesc: ()=>`You have ${format(player.fun,0)} Fun`,
 
     ctn: [
         {
@@ -157,7 +157,7 @@ UPGS.funnyMachine = {
         },{
             max: 100,
 
-            unl: _=>player.sacTimes>0,
+            unl: ()=>player.sacTimes>0,
 
             title: "Recelerator",
             desc: `Unlock a building (on top of Factory/Funny Machine) where you can recelerate time. Each level increases charge rate by <b class="green">+10%</b>.`,
@@ -181,7 +181,7 @@ UPGS.funnyMachine = {
 UPGS.fundry = {
     title: "Fundry",
 
-    unl: _=>hasUpgrade('funnyMachine',0)&&player.decel,
+    unl: ()=>hasUpgrade('funnyMachine',0)&&player.decel,
 
     ctn: [
         {
@@ -263,9 +263,9 @@ UPGS.fundry = {
 UPGS.sfrgt = {
     title: "Super Fun Real Good Time Generator",
 
-    unl: _=>hasUpgrade('funnyMachine',1)&&player.decel,
+    unl: ()=>hasUpgrade('funnyMachine',1)&&player.decel,
 
-    underDesc: _=>`You have ${format(player.SFRGT,0)} SFRGT <span class='smallAmt'>${player.SFRGT.formatGain(tmp.SFRGTgain)}</span>`,
+    underDesc: ()=>`You have ${format(player.SFRGT,0)} SFRGT <span class='smallAmt'>${player.SFRGT.formatGain(tmp.SFRGTgain)}</span>`,
 
     ctn: [
         {
@@ -293,7 +293,7 @@ UPGS.sfrgt = {
             desc: `Increase SP gain by <b class="green">+10%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
         
             res: "SFRGT",
-            icon: ["Curr/SP"],
+            icon: ["Icons/SP"],
                         
             cost: i => Decimal.pow(1.25,i).mul(50).ceil(),
             bulk: i => i.div(50).max(1).log(1.25).floor().toNumber()+1,
