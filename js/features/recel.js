@@ -14,6 +14,8 @@ RESET.recel = {
     resetBtn: `Recelerate`,
 
     reset(force=false) {
+        if (player.planetoid.active) return;
+
         if (true) {
             let aa = player.aRes
 

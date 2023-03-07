@@ -14,6 +14,8 @@ RESET.decel = {
     resetBtn: `Decelerate`,
 
     reset(force=false) {
+        if (player.planetoid.active) return;
+        
         if (true) {
             let aa = player.unRes
 
