@@ -25,12 +25,14 @@ const SC_IDS = {
         [9,5,6,7,8],
         [14,10,11,12,13],
         [19,15,16,17,18],
-        ['',20,21,22,'']
+        [24,20,21,22,23],
+        ['',25,'','','']
     ],
     reserv: [
         [7,'',0,'',6],
         [1,2,3,4,5],
-        [8,9,'','',10],
+        [8,9,11,14,10],
+        [12,13,'','',''],
     ],
 }
 
@@ -1284,6 +1286,64 @@ const STAR_CHART = {
             },
             effDesc: x => formatMult(x),
         },
+        {
+            max: 100,
+            branch: [19],
+
+            title: "Advanced SP",
+            desc: `Increase SP gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/SP'],
+                            
+            cost: i => Math.ceil(1e8*1.8**i),
+            bulk: i => i.div(1e8).max(1).log(1.8).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+
+        {
+            max: 100,
+            branch: [19],
+
+            title: "Mega Planetarium",
+            desc: `Increase planetarium gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Planetoid'],
+                            
+            cost: i => Math.ceil(1e9*2**i),
+            bulk: i => i.div(1e9).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [24],
+
+            title: "Mega Observatorium",
+            desc: `Increase observatorium gain by <span class="green">+100%</span> per level.<br>On first purchase, increase observatorium chance to <span class="green">2%</span>.`,
+
+            icon: ['Curr/Observatorium'],
+                            
+            cost: i => Math.ceil(3e9*2**i),
+            bulk: i => i.div(3e9).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
     ],
     reserv: [
         {
@@ -1451,6 +1511,50 @@ const STAR_CHART = {
             cost: i => 1e6,
             bulk: i => 1,
         },
+        {
+            branch: [3],
+
+            title: "Ring-Free Star Chart",
+            desc: `<span class="green">Ring Upgrades</span> in <span class="green">Star Chart</span> no longer spend ring.`,
+
+            icon: ['Curr/Ring','Icons/Automation'],
+            
+            cost: i => 1e6,
+            bulk: i => 1,
+        },
+        {
+            branch: [8],
+
+            title: "A Normal Upgrade",
+            desc: `Passively generate NP based off of your best normality, starts at 1% of best. Also, keep best liquefy/anonymity on galactic.`,
+
+            icon: ['Curr/Normality','Icons/Automation'],
+            
+            cost: i => 2e6,
+            bulk: i => 1,
+        },
+        {
+            branch: [9],
+
+            title: "Astro Automation",
+            desc: `Automate <span class="green">Astro Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/Astrolabe','Icons/Automation'],
+            
+            cost: i => 1e8,
+            bulk: i => 1,
+        },
+        {
+            branch: [4],
+
+            title: "Funspansion",
+            desc: `<span class="green">Fun</span> and <span class="green">SFRGT Upgrades</span> are not reset on sacrifice.<br>Unlocks new <span class="green">SFRGT Upgrades</span>.`,
+
+            icon: ['Curr/SuperFun','Icons/Automation'],
+            
+            cost: i => 1e7,
+            bulk: i => 1,
+        },
     ],
 }
 
@@ -1497,11 +1601,11 @@ function drawTreeBranch(id, num1, num2) {
 }
 
 const SC_ICONS = {
-    auto: "Bases/SpaceBase",
-    speed: "Bases/SpaceBase",
-    progress: "Bases/SpaceBase",
-    ring: "Bases/RingBase",
-    reserv: "Bases/ResBase",
+    auto: ["Bases/SpaceBase",'Curr/Star'],
+    speed: ["Bases/SpaceBase",'Curr/Star'],
+    progress: ["Bases/SpaceBase",'Curr/Star'],
+    ring: ["Bases/RingBase",'Curr/Ring'],
+    reserv: ["Bases/ResBase",'Curr/Res4'],
 }
 
 el.setup.star_chart = ()=>{
@@ -1523,13 +1627,14 @@ el.setup.star_chart = ()=>{
 
                 if (Number.isInteger(i) || i != "") {
                     let tu = STAR_CHART[id][i]
-                    let icon = [SC_ICONS[id]]
+                    let icon = [SC_ICONS[id][0]]
                     if (tu.icon) icon.push(...tu.icon)
                     else icon.push('Icons/Placeholder')
 
                     h2 += `
                     <div class="sc_upg_ctn" id="sc_upg_${id}${i}" onclick="tmp.sc_choosed = ['${id}',${i}]">`
-                    for (ic in icon) h2 += `<img draggable="false" src="${"images/"+icon[ic]+".png"}">`
+                    for (ic in icon) h2 += `<img class="img_desc" draggable="false" src="${"images/"+icon[ic]+".png"}">`
+                    h2 += `<img class="img_res" draggable="false" src="${"images/"+SC_ICONS[id][0]+".png"}"><img class="img_res" draggable="false" src="${"images/"+SC_ICONS[id][1]+".png"}">`
                     
                     h2 += `
                         <div id="sc_upg_${id}${i}_cost" class="scu_cost">??? Stars</div>
@@ -1605,7 +1710,8 @@ function buySCUpgrade(id,x) {
 
     if ((amt[x]||0) < tu.max[x]) if (Decimal.gte(id == 'ring' ? player.planetoid.ring : id == 'reserv' ? player.planetoid.reserv : player.stars,tu.cost[x])) {
 
-        if (id == 'ring') player.planetoid.ring = player.planetoid.ring.sub(tu.cost[x]).max(0)
+        if (id == 'reserv') player.planetoid.reserv = player.planetoid.reserv.sub(tu.cost[x]).max(0)
+        else if (id == 'ring' && !hasStarTree('reserv',11)) player.planetoid.ring = player.planetoid.ring.sub(tu.cost[x]).max(0)
         else player.stars = player.stars.sub(tu.cost[x]).max(0)
         amt[x] = amt[x] ? amt[x] + 1 : 1
 
@@ -1629,7 +1735,7 @@ function buyNextSCUpgrade(id,x) {
 			amt[x] = Math.min(amt[x] ? Math.max(amt[x],bulk) : bulk,tu.max[x])
 
             if (id == 'reserv') player.planetoid.reserv = player.planetoid.reserv.sub(cost).max(0)
-            else if (id == 'ring') player.planetoid.ring = player.planetoid.ring.sub(cost).max(0)
+            else if (id == 'ring' && !hasStarTree('reserv',11)) player.planetoid.ring = player.planetoid.ring.sub(cost).max(0)
 			else player.stars = player.stars.sub(cost).max(0)
 
 			updateSCTemp()
@@ -1655,7 +1761,7 @@ function buyMaxSCUpgrade(id,x) {
                 amt[x] = Math.min(amt[x] ? Math.max(amt[x],bulk) : bulk,tu.max[x])
 
                 if (id == 'reserv') player.planetoid.reserv = player.planetoid.reserv.sub(cost).max(0)
-                else if (id == 'ring') player.planetoid.ring = player.planetoid.ring.sub(cost).max(0)
+                else if (id == 'ring' && !hasStarTree('reserv',11)) player.planetoid.ring = player.planetoid.ring.sub(cost).max(0)
 			    else player.stars = player.stars.sub(cost).max(0)
 
                 updateSCTemp()
@@ -1734,7 +1840,7 @@ function updateStarChart() {
                 let amt = player.star_chart[id][i]||0
 
                 tmp.el[id2+"_amt"].setTxt(amt)
-                tmp.el[id2+"_cost"].setTxt(amt < tt.max[i] ? format(tt.cost[i],0,6)+" "+resDisplay : "Maxed")
+                tmp.el[id2+"_cost"].setTxt(amt < tt.max[i] ? format(tt.cost[i],0,6) : "Maxed") // +" "+resDisplay
                 tmp.el[id2+"_cost"].setClasses({scu_cost: true, locked: res.lt(tt.cost[i]) && amt < tt.max[i]})
             }
         }

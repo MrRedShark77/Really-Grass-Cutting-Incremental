@@ -236,6 +236,8 @@ RESET.steel = {
                 player.sTimes++
             }
 
+            tmp.pass = 2
+
             updateTemp()
 
             this.doReset()

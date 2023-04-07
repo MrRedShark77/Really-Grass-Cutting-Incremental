@@ -1,28 +1,28 @@
 const U_STEP = [1,25,1/0]
 
 const UPG_RES = {
-    grass: ["Grass",()=>[player,"grass"],'GrassBase'],
-    perk: ["Perk",()=>[tmp,"perkUnspent"],'PerkBase'],
-    pp: ["PP",()=>[player,"pp"],'PrestigeBase'],
-    plat: ["Platinum",()=>[player,"plat"],"PlatBase"],
-    crystal: ["Crystal",()=>[player,"crystal"],"CrystalBase"],
-    steel: ["Steel",()=>[player,"steel"],"GrasshopBase"],
-    aGrass: ["Anti-Grass",()=>[player,"aGrass"],'AntiGrassBase'],
-    ap: ["AP",()=>[player,"ap"],'AnonymityBase'],
-    oil: ["Oil",()=>[player,"oil"],'LiquefyBase'],
-    rf: ["Rocket Fuel",()=>[player.rocket,"amount"],'RocketBase'],
-    momentum: ["Momentum",()=>[player,"momentum"],'RocketBase'],
-    moonstone: ["Moonstone",()=>[player,"moonstone"],'MoonBase'],
-    fun: ["Fun",()=>[player,"fun"],'FunBase'],
-    star: ["Star",()=>[player,"stars"],'SpaceBase'],
-    SFRGT: ["SFRGT",()=>[player,"SFRGT"],'FunBase'],
-    dm: ["Dark Matter",()=>[player,"dm"],'DarkMatterBase'],
-    unGrass: ["Un-Grass",()=>[player,"unGrass"],'UnnaturalBase'],
-    np: ["NP",()=>[player,"np"],'NormalityBase'],
-    pm: ["Planetarium",()=>[player.planetoid,"pm"],'PlanetBase'],
-    observ: ["Observatorium",()=>[player.planetoid,"observ"],'ObsBase'],
-    astro: ["Astro",()=>[player.planetoid,"astro"],'AstroBase'],
-    measure: ["Measure",()=>[player.planetoid,"measure"],'GrasshopBase'],
+    grass: ["Grass",()=>[player,"grass"],'GrassBase','Curr/Grass'],
+    perk: ["Perk",()=>[tmp,"perkUnspent"],'PerkBase','Curr/Perks'],
+    pp: ["PP",()=>[player,"pp"],'PrestigeBase','Curr/Prestige'],
+    plat: ["Platinum",()=>[player,"plat"],"PlatBase",'Curr/Platinum'],
+    crystal: ["Crystal",()=>[player,"crystal"],"CrystalBase",'Curr/Crystal'],
+    steel: ["Steel",()=>[player,"steel"],"GrasshopBase",'Curr/Steel'],
+    aGrass: ["Anti-Grass",()=>[player,"aGrass"],'AntiGrassBase','Curr/AntiGrass'],
+    ap: ["AP",()=>[player,"ap"],'AnonymityBase','Curr/Anonymity'],
+    oil: ["Oil",()=>[player,"oil"],'LiquefyBase','Curr/Oil'],
+    rf: ["Rocket Fuel",()=>[player.rocket,"amount"],'RocketBase','Curr/RocketFuel'],
+    momentum: ["Momentum",()=>[player,"momentum"],'RocketBase',"Curr/Momentum"],
+    moonstone: ["Moonstone",()=>[player,"moonstone"],'MoonBase','Curr/MoonStone'],
+    fun: ["Fun",()=>[player,"fun"],'FunBase','Curr/Fun'],
+    star: ["Star",()=>[player,"stars"],'SpaceBase','Curr/Star'],
+    SFRGT: ["SFRGT",()=>[player,"SFRGT"],'FunBase','Curr/SuperFun'],
+    dm: ["Dark Matter",()=>[player,"dm"],'DarkMatterBase','Curr/DarkMatter'],
+    unGrass: ["Un-Grass",()=>[player,"unGrass"],'UnnaturalBase','Curr/UGrass'],
+    np: ["NP",()=>[player,"np"],'NormalityBase','Curr/Normality'],
+    pm: ["Planetarium",()=>[player.planetoid,"pm"],'PlanetBase','Curr/Planetoid'],
+    observ: ["Observatorium",()=>[player.planetoid,"observ"],'ObsBase','Curr/Observatorium'],
+    astro: ["Astro",()=>[player.planetoid,"astro"],'AstroBase','Curr/Astrolabe'],
+    measure: ["Measure",()=>[player.planetoid,"measure"],'GrasshopBase','Curr/Measure'],
 }
 
 const isResNumber = ['perk','plat','rf','momentum','moonstone']
@@ -1135,7 +1135,8 @@ function setupUpgradesHTML(id) {
             html += `
             <div class="upg_ctn" id="upg_ctn_${id}${x}" style="width: ${height}px; height: ${height}px;" onclick="tmp.upg_ch.${id} = ${x}">`
             for (i in icon) html +=
-                `<img draggable="false" src="${"images/"+icon[i]+".png"}">`
+                `<img class="img_desc" draggable="false" src="${"images/"+icon[i]+".png"}">`
+            html += `<img class="img_res" draggable="false" src="${"images/Bases/"+UPG_RES[upg.res][2]+".png"}"><img class="img_res" draggable="false" src="${"images/"+UPG_RES[upg.res][3]+".png"}">`
             html += `
                 <div id="upg_ctn_${id}${x}_cost" class="upg_cost"></div>
                 <div id="upg_ctn_${id}${x}_amt" class="upg_amt">argh</div>
@@ -1212,7 +1213,7 @@ function updateUpgradesHTML(id) {
                     tmp.el[div_id].changeStyle("width",height+"px")
                     tmp.el[div_id].changeStyle("height",height+"px")
 
-                    tmp.el[div_id+"_cost"].setTxt(amt < tu.max[x] ? format(tu.cost[x],0,6)+" "+UPG_RES[upg.res][0] : "Maxed")
+                    tmp.el[div_id+"_cost"].setTxt(amt < tu.max[x] ? format(tu.cost[x],0,6) : "Maxed") // +" "+UPG_RES[upg.res][0]
                     tmp.el[div_id+"_cost"].setClasses({upg_cost: true, locked: Decimal.lt(res,tu.cost[x]) && amt < tu.max[x]})
                     //tmp.el[div_id+"_cost"].changeStyle("font-size",(tmp.el[div_id+"_cost"].el.offsetHeight-4)+"px")
 

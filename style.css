@@ -470,11 +470,11 @@ body.planetoid #level_bar {
     cursor: pointer;
 }
 
-.upg_ctn:hover > img {
+.upg_ctn:hover > img.img_desc {
     transform: translateX(-50%) scale(1.06);
 }
 
-.upg_ctn > img {
+.upg_ctn > img.img_desc {
     position: absolute;
     top: 10%;
     width: 80%;
@@ -482,6 +482,18 @@ body.planetoid #level_bar {
     left: 50%;
 
     transform: translateX(-50%);
+    transition: transform 0.2s;
+
+    pointer-events: none;
+}
+
+.upg_ctn > img.img_res {
+    position: absolute;
+    bottom: 10%;
+    width: 30%;
+    height: 30%;
+    left: 10%;
+
     transition: transform 0.2s;
 
     pointer-events: none;
@@ -711,15 +723,15 @@ body.planetoid #level_bar {
     height: 100%;
 }
 
-.sc_upg_div > div:not(.choosed):hover > img {
+.sc_upg_div > div:not(.choosed):hover > img.img_desc {
     transform: translateX(-50%) scale(1.06);
 }
 
-.sc_upg_div > div.choosed > img {
+.sc_upg_div > div.choosed > img.img_desc {
     transform: translateX(-50%) scale(1.2);
 }
 
-.sc_upg_div > div > img {
+.sc_upg_div > div > img.img_desc {
     position: absolute;
     top: 13%;
     width: 80%;
@@ -727,6 +739,18 @@ body.planetoid #level_bar {
     left: 50%;
 
     transform: translateX(-50%);
+    transition: transform 0.2s;
+
+    pointer-events: none;
+}
+
+.sc_upg_div > div > img.img_res {
+    position: absolute;
+    bottom: 10%;
+    width: 30%;
+    height: 30%;
+    left: 10%;
+
     transition: transform 0.2s;
 
     pointer-events: none;

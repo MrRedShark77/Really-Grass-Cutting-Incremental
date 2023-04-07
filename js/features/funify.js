@@ -21,7 +21,7 @@ MAIN.fun = {
         let x = E(1)
 
         x = x.mul(upgEffect('funnyMachine',1))
-        x = x.mul(upgEffect('sfrgt',0))
+        x = x.mul(upgEffect('sfrgt',0)).mul(upgEffect('sfrgt',4))
         x = x.mul(upgEffect('moonstone',5))
 
         if (player.lowGH <= 8) x = x.mul(getAGHEffect(5))
@@ -340,6 +340,66 @@ UPGS.sfrgt = {
                 return x
             },
             effDesc: x => "+"+format(x,0)+" OoMs later",
+        },{
+            max: 1000,
+
+            unl: ()=>hasStarTree('reserv',14),
+
+            title: "SFRGT Generation II",
+            desc: `<b class="green">Double</b> SFRGT gain per level.`,
+        
+            res: "SFRGT",
+            icon: ["Curr/SuperFun"],
+                        
+            cost: i => Decimal.pow(10,i).mul(1e54).ceil(),
+            bulk: i => i.div(1e54).max(1).log(10).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(2,i)
+        
+                return x
+            },
+            effDesc: x => format(x,0)+"x",
+        },{
+            max: 10000,
+
+            unl: ()=>hasStarTree('reserv',14),
+
+            title: "SFRGT NP",
+            desc: `Increase NP gain by <b class="green">1%</b> every level.`,
+        
+            res: "SFRGT",
+            icon: ["Curr/Normality"],
+                        
+            cost: i => Decimal.pow(1.15,i).mul(1e63).ceil(),
+            bulk: i => i.div(1e63).max(1).log(1.15).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.01,i)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 10000,
+
+            unl: ()=>hasStarTree('reserv',14),
+
+            title: "SFRGT SP II",
+            desc: `Increase SP gain by <b class="green">1%</b> every level.`,
+        
+            res: "SFRGT",
+            icon: ["Icons/SP"],
+                        
+            cost: i => Decimal.pow(1.15,i).mul(1e63).ceil(),
+            bulk: i => i.div(1e63).max(1).log(1.15).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.01,i)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
         },
     ],
 }

@@ -109,6 +109,8 @@ function resetTemp() {
 
         },
 
+        pass: 0,
+
         reservConvert: 0,
     }
 

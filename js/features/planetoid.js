@@ -37,6 +37,7 @@ const PLANETOID = {
         .mul(starTreeEff('ring',9))
         .mul(starTreeEff('ring',14))
         .mul(starTreeEff('ring',19))
+        .mul(starTreeEff('ring',24))
 
         .mul(upgEffect('astro',0))
 
@@ -106,6 +107,7 @@ const PLANETOID = {
         .mul(starTreeEff('ring',11))
         .mul(starTreeEff('ring',15))
         .mul(starTreeEff('ring',20))
+        .mul(starTreeEff('ring',25))
 
         return x.floor()
     },
@@ -156,7 +158,7 @@ tmp_update.push(()=>{
     tmp.ringGen = hasStarTree('reserv',5)?0.0001:0
     if (hasStarTree('reserv',10)) tmp.ringGen *= 10
 
-    tmp.observChance = hasStarTree('ring',20)?0.01:0.003
+    tmp.observChance = hasStarTree('ring',25)?0.02:hasStarTree('ring',20)?0.01:0.003
 })
 
 RESET.enterPlanetoid = {
@@ -174,6 +176,9 @@ RESET.enterPlanetoid = {
     reset(force=false) {
         player.planetoid.firstEnter = true
         player.planetoid.active = !player.planetoid.active
+
+        player.decel = false
+        player.recel = false
 
         tmp.space = false
         mapID = 'g'
@@ -502,6 +507,9 @@ UPGS.astro = {
     title: "Astro Upgrades",
 
     underDesc: ()=>`You have ${format(player.planetoid.astro,0)} Astro`,
+
+    autoUnl: ()=>hasStarTree('reserv',13),
+    noSpend: ()=>hasStarTree('reserv',13),
 
     ctn: [
         {

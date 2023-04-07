@@ -83,8 +83,10 @@ RESET.gal = {
         player.bestAP = E(0)
         player.aGrass = E(0)
         player.aBestGrass = E(0)
-        player.bestOil2 = E(0)
-        player.bestAP2 = E(0)
+        if (!hasStarTree('reserv',12)) {
+            player.bestOil2 = E(0)
+            player.bestAP2 = E(0)
+        }
         player.aRes.level = 0
         player.aRes.tier = 0
         player.aRes.xp = E(0)

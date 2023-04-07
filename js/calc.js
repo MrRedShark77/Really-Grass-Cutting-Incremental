@@ -34,6 +34,11 @@ function calc(dt) {
             player.oil = player.oil.add(player.bestOil2.mul(dt*tmp.oilRigBase))
         }
 
+        if (hasStarTree('reserv',12)) {
+            player.np = player.np.add(player.bestNP2.mul(dt/100))
+            if (player.recel) player.bestNP2 = player.bestNP2.max(tmp.npGain)
+        }
+
         if (tmp.steelPass > 0) {
             player.steel = player.steel.add(tmp.steelGain.mul(tmp.steelPass*dt))
         }

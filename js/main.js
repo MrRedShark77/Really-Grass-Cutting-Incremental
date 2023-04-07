@@ -135,7 +135,7 @@ const MAIN = {
 
         if (!player.recel) x = x.pow(upgEffect('unGrass',5))
         if (inChal(3) || inChal(5)) x = x.root(2)
-        if (player.recel) x = x.root(2)
+        if (player.recel) x = x.pow(player.lowGH<=-36?.75:.5)
 
         if (!player.decel && hasUpgrade('plat',10)) x = x.pow(upgEffect('plat',10,1))
         x = x.pow(upgEffect('moonstone',6))
@@ -274,7 +274,7 @@ const MAIN = {
 
         x = x.mul(starTreeEff('progress',2)*starTreeEff('progress',5)*starTreeEff('progress',8)*starTreeEff('progress',10))
 
-        x = x.mul(upgEffect('sfrgt',1))
+        x = x.mul(upgEffect('sfrgt',1)).mul(upgEffect('sfrgt',6))
 
         if (player.lowGH <= 4) x = x.mul(10)
         if (player.lowGH <= -8) x = x.mul(getAGHEffect(9,1))
@@ -286,7 +286,7 @@ const MAIN = {
 
         x = x.mul(upgEffect('np',1))
 
-        x = x.mul(starTreeEff('ring',6)).mul(starTreeEff('ring',16))
+        x = x.mul(starTreeEff('ring',6)).mul(starTreeEff('ring',16)).mul(starTreeEff('ring',23))
         
         if (player.lowGH <= -16) x = x.pow(1.25)
 
