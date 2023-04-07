@@ -39,8 +39,10 @@ RESET.sac = {
     },
 
     doReset(order="sac") {
-        resetUpgrades('fundry')
-        resetUpgrades('sfrgt')
+        if (!hasStarTree('reserv',14)) {
+            resetUpgrades('fundry')
+            resetUpgrades('sfrgt')
+        }
 
         player.sp = E(0)
         player.astral = 0
