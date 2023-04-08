@@ -342,7 +342,7 @@ MAIN.np = {
 
         tmp.npGainBase = x
 
-        x = x.mul(upgEffect('dm',6)).mul(upgEffect('sfrgt',5))
+        x = x.mul(upgEffect('dm',6)).mul(upgEffect('sfrgt',5)).mul(upgEffect('cloud',3))
 
         return x.floor()
     },
@@ -401,7 +401,7 @@ UPGS.np = {
     req: ()=>player.nTimes > 0,
     reqDesc: ()=>`Normality once to unlock.`,
 
-    underDesc: ()=>`You have ${format(player.np,0)} Normality Points`+(hasStarTree('reserv',12) ? " <span class='smallAmt'>"+formatGain(player.np,player.bestNP2.mul(.01))+"</span>" : ""),
+    underDesc: ()=>`You have ${format(player.np,0)} Normality Points`+(tmp.npGen>0 ? " <span class='smallAmt'>"+formatGain(player.np,player.bestNP2.mul(tmp.npGen))+"</span>" : ""),
 
     autoUnl: ()=>hasStarTree('reserv',8),
     noSpend: ()=>hasStarTree('reserv',8),

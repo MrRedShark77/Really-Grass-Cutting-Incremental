@@ -414,6 +414,13 @@ body.planetoid #level_bar {
     background-color: #8fcc00;
 }
 
+.reset_div.cloud,
+.reset_req.cloud,
+.upg_desc.cloud,
+.upgs_div.cloud {
+    background-color: #fffabb;
+}
+
 .reset_div.enterPlanetoid,
 .reset_req.enterPlanetoid,
 .reset_div.formRing,

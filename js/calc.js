@@ -35,7 +35,7 @@ function calc(dt) {
         }
 
         if (hasStarTree('reserv',12)) {
-            player.np = player.np.add(player.bestNP2.mul(dt/100))
+            player.np = player.np.add(player.bestNP2.mul(dt*tmp.npGen))
             if (player.recel) player.bestNP2 = player.bestNP2.max(tmp.npGain)
         }
 
@@ -47,6 +47,12 @@ function calc(dt) {
         if (player.decel) if (tmp.funGen > 0) player.fun = player.fun.add(tmp.funGain.mul(dt*tmp.funGen))
 
         if (hasUpgrade('factory',2)) player.chargeRate = player.chargeRate.add(tmp.chargeGain.mul(dt))
+
+        if (player.cloudUnl) {
+            player.bestCloud = player.bestCloud.max(player.cloud)
+            if (player.recel) player.bestCloud2 = player.bestCloud2.max(tmp.cloudGain)
+            player.cloud = player.cloud.add(player.bestCloud2.mul(dt))
+        }
 
         player.bestGrass = player.bestGrass.max(player.grass)
         player.bestPP = player.bestPP.max(player.pp)
@@ -80,8 +86,14 @@ function calc(dt) {
 
         if (hasStarTree('auto',14)) RESET.rocket_part.reset(false,true)
 
-        if (player.autoGH && !tmp.outsideNormal) RESET.gh.reset()
-        if (player.autoGS && player.decel) RESET.gs.reset()
+        if (player.autoGH && !tmp.outsideNormal) {
+            if (player.lowGH > -36) RESET.gh.reset()
+            else player.grasshop = Math.max(player.grasshop,MAIN.gh.bulk())
+        }
+        if (player.autoGS && player.decel) {
+            if (player.lowGH > -36) RESET.gs.reset()
+            else player.grassskip = Math.max(player.grassskip,MAIN.gs.bulk())
+        }
     }
 
     for (let x in UPGS) if (tmp.upgs[x].autoUnl && !(['grass','pp','crystal'].includes(x) && outsideNormal) && !(['aGrass'].includes(x) && !outsideNormal)) if (player.autoUpg[x]) buyMaxUpgrades(x,true)

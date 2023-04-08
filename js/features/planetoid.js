@@ -41,6 +41,8 @@ const PLANETOID = {
 
         .mul(upgEffect('astro',0))
 
+        .mul(upgEffect('measure',1))
+
         x = x.pow(starTreeEff('reserv',7))
 
         return x
@@ -56,6 +58,9 @@ const PLANETOID = {
         .mul(starTreeEff('ring',13))
         .mul(starTreeEff('ring',17))
         .mul(starTreeEff('ring',21))
+        .mul(starTreeEff('ring',26))
+
+        .mul(starTreeEff('reserv',15))
 
         x = x.pow(starTreeEff('reserv',6))
 
@@ -98,6 +103,10 @@ const PLANETOID = {
 
         .mul(upgEffect('astro',1))
 
+        .mul(upgEffect('measure',2))
+
+        .mul(upgEffect('cloud',2))
+
         return x.floor()
     },
     observGain() {
@@ -108,6 +117,8 @@ const PLANETOID = {
         .mul(starTreeEff('ring',15))
         .mul(starTreeEff('ring',20))
         .mul(starTreeEff('ring',25))
+
+        .mul(upgEffect('measure',0))
 
         return x.floor()
     },
@@ -123,7 +134,24 @@ const PLANETOID = {
         x = x
 
         .mul(upgEffect('observ',4))
+        .mul(upgEffect('observ',7))
         .mul(starTreeEff('ring',18))
+
+        return x.floor()
+    },
+    measureGain() {
+        let lvl = player.planetoid.level-99
+
+        if (lvl <= 0) return E(0)
+
+        let x = Decimal.pow(1.1,lvl-1).mul(lvl).mul(player.planetoid.bestAstro.div(1e15).max(1).root(3))
+
+        tmp.measureGainBase = x
+
+        x = x
+
+        .mul(starTreeEff('ring',27))
+        .mul(upgEffect('observ',8))
 
         return x.floor()
     },
@@ -152,11 +180,14 @@ tmp_update.push(()=>{
     tmp.reservGain = player.planetoid.observ.mul(tmp.reservConvert).floor()
 
     tmp.astroGain = PLANETOID.astroGain()
+    tmp.measureGain = PLANETOID.measureGain()
 
     tmp.starGen = starTreeEff('reserv',3,0)
     tmp.funGen = starTreeEff('reserv',4,0)
     tmp.ringGen = hasStarTree('reserv',5)?0.0001:0
     if (hasStarTree('reserv',10)) tmp.ringGen *= 10
+
+    tmp.npGen = starTreeEff('reserv',12,0)
 
     tmp.observChance = hasStarTree('ring',25)?0.02:hasStarTree('ring',20)?0.01:0.003
 })
@@ -233,6 +264,12 @@ RESET.formRing = {
             player.planetoid.astro = E(0)
             player.planetoid.bestAstro = E(0)
             resetUpgrades('astro')
+
+            if (order!='quadrant') {
+                player.planetoid.measure = E(0)
+                player.planetoid.bestMeasure = E(0)
+                resetUpgrades('measure')
+            }
         }
     }
 }
@@ -463,6 +500,44 @@ UPGS.observ = {
                 return x
             },
             effDesc: x => formatMult(x),
+        },{
+            max: 100,
+
+            title: "Astro Observation II",
+            desc: `Increase astro gain by <b class="green">10%</b> per level.`,
+
+            res: "observ",
+            icon: ['Curr/Astrolabe'],
+            costOnce: true,
+            
+            cost: i => E(1e6),
+            bulk: i => i.div(1e6).floor().toNumber(),
+
+            effect(i) {
+                let x = i/10+1
+
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 100,
+
+            title: "Measure Observation",
+            desc: `Increase astro gain by <b class="green">25%</b> per level.`,
+
+            res: "observ",
+            icon: ['Curr/Measure'],
+            costOnce: true,
+            
+            cost: i => E(1e9),
+            bulk: i => i.div(1e9).floor().toNumber(),
+
+            effect(i) {
+                let x = i/4+1
+
+                return x
+            },
+            effDesc: x => formatMult(x),
         },
     ],
 }
@@ -534,7 +609,7 @@ UPGS.astro = {
             max: 1000,
 
             title: "Astro Rings",
-            desc: `Increase ring gain by <b class="green">+20%</b> per level.<br>This effect is increased by <b class="green">25%</b> every <b class="yellow">25</b> levels.`,
+            desc: `Increase ring gain by <b class="green">+25%</b> per level.<br>This effect is increased by <b class="green">25%</b> every <b class="yellow">25</b> levels.`,
 
             res: "astro",
             icon: ['Curr/Ring'],
@@ -543,7 +618,7 @@ UPGS.astro = {
             bulk: i => i.div(10).max(1).log(1.3).floor().toNumber()+1,
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/5+1)
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
 
                 return x
             },
@@ -602,6 +677,126 @@ UPGS.astro = {
                 return x
             },
             effDesc: x => formatMult(x),
+        },
+    ],
+}
+
+RESET.quadrant = {
+    unl: ()=> player.planetoid.active,
+
+    req: ()=>player.planetoid.level>=100,
+    reqDesc: ()=>`Reach Level 100.`,
+
+    resetDesc: `Reset your astro, astro upgrades, and previous contents for measure.<br>Gain more Measures based on your level and astro.`,
+    resetGain: ()=> `Gain <b>${tmp.measureGain.format(0)}</b> Measures`,
+
+    title: `Quadrant`,
+    resetBtn: `Use the Quadrant`,
+
+    reset(force=false) {
+        if (this.req()||force) {
+            if (!force) {
+                player.planetoid.measure = player.planetoid.measure.add(tmp.measureGain)
+                player.planetoid.bestMeasure = player.planetoid.bestMeasure.max(player.planetoid.measure)
+            }
+
+            updateTemp()
+
+            this.doReset()
+        }
+    },
+
+    doReset(order="quadrant") {
+        RESET.formRing.doReset(order)
+
+        updateTemp()
+    },
+}
+
+UPGS.measure = {
+    unl: ()=> player.planetoid.active,
+
+    title: "Measure Upgrades",
+
+    underDesc: ()=>`You have ${format(player.planetoid.measure,0)} Measure`,
+
+    //autoUnl: ()=>hasStarTree('reserv',13),
+    //noSpend: ()=>hasStarTree('reserv',13),
+
+    ctn: [
+        {
+            max: 10,
+
+            title: "Measured Observatorium",
+            desc: `Increase observatorium gain by <b class="green">+10%</b> per level.`,
+
+            res: "measure",
+            icon: ['Curr/Observatorium'],
+            costOnce: true,
+            
+            cost: i => E(5),
+            bulk: i => i.div(5).floor().toNumber(),
+
+            effect(i) {
+                let x = i/10+1
+
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 1000,
+
+            title: "Measured Planetarium",
+            desc: `Increase planetarium gain by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">50%</b> every <b class="yellow">25</b> levels.`,
+
+            res: "measure",
+            icon: ['Curr/Planetoid'],
+            
+            cost: i => Decimal.pow(1.2,i).mul(10).ceil(),
+            bulk: i => i.div(10).max(1).log(1.2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 1000,
+
+            title: "Measured Ring",
+            desc: `Increase ring gain by <b class="green">+25%</b> per level.<br>This effect is increased by <b class="green">25%</b> every <b class="yellow">25</b> levels.`,
+
+            res: "measure",
+            icon: ['Curr/Ring'],
+            
+            cost: i => Decimal.pow(1.25,i).mul(100).ceil(),
+            bulk: i => i.div(100).max(1).log(1.25).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 10,
+
+            title: "Measured XP-Exponent",
+            desc: `Increase XP exponent by <b class="green">+10%</b> per level.`,
+
+            res: "measure",
+            icon: ['Icons/XP',"Icons/Exponent"],
+            
+            cost: i => Decimal.pow(10,i**1.25).mul(1e4).ceil(),
+            bulk: i => i.div(1e4).max(1).log(10).root(1.25).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/10+1
+
+                return x
+            },
+            effDesc: x => "^"+format(x),
         },
     ],
 }

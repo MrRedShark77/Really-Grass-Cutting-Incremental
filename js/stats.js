@@ -158,7 +158,7 @@ const STATS = {
             
             // Exponent
 
-            x = E(upgEffect('moonstone',6))
+            x = Decimal.mul(upgEffect('moonstone',6),upgEffect('measure',3))
 
             if (!player.decel && hasUpgrade('plat',10)) x = x.mul(upgEffect('plat',10,1))
 
@@ -287,7 +287,7 @@ const STATS = {
             }
 
             if (hasUpgrade('funnyMachine',4)) {
-                x = upgEffect('np',1).mul(upgEffect('unGrass',2))
+                x = upgEffect('np',1).mul(upgEffect('unGrass',2)).mul(upgEffect('cloud',1))
 
                 h += `<br>Unnatural Realm Multiplier: <b>${formatMult(x)}</b>`
             }
@@ -827,7 +827,7 @@ const STATS = {
             h += `<br>Base Multiplier: <b>${formatMult(tmp.dmGainBase)}</b>`
 
             if (hasUpgrade('funnyMachine',4)) {
-                x = upgEffect('np',2)
+                x = upgEffect('np',2).mul(upgEffect('cloud',0))
 
                 h += `<br>Unnatural Realm Multiplier: <b>${formatMult(x)}</b>`
             }
@@ -864,6 +864,32 @@ const STATS = {
 
                 h += `<br>Space Multiplier: <b>${formatMult(x)}</b>`
             }
+
+            if (hasUpgrade('funnyMachine',4)) {
+                x = upgEffect('cloud',3)
+
+                h += `<br>Unnatural Realm Multiplier: <b>${formatMult(x)}</b>`
+            }
+            
+            // Exponent
+
+            
+
+            return h
+        },
+    },
+    cloud: {
+        unl:()=>player.cloudUnl,
+        title: "Cloud",
+        icon: "Curr/Cloud",
+        getDesc() {
+            let x = E(1),h = ''
+
+            h += `Total Cloud gain: <b>+${format(tmp.cloudGain,0)}</b><br>`
+
+            // Muliplier
+
+            h += `<br>Base Multiplier: <b>${formatMult(tmp.cloudGainBase)}</b>`
             
             // Exponent
 
@@ -897,6 +923,7 @@ const STATS = {
                 .mul(starTreeEff('ring',24))
         
                 .mul(upgEffect('astro',0))
+                .mul(upgEffect('measure',1))
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
@@ -932,6 +959,9 @@ const STATS = {
                 .mul(starTreeEff('ring',13))
                 .mul(starTreeEff('ring',17))
                 .mul(starTreeEff('ring',21))
+                .mul(starTreeEff('ring',26))
+
+                .mul(starTreeEff('reserv',15))
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
@@ -958,6 +988,12 @@ const STATS = {
 
             h += `<br>Base Multiplier: <b>${formatMult(tmp.ringGainBase)}</b>`
 
+            if (hasUpgrade('funnyMachine',4)) {
+                x = upgEffect('cloud',2)
+
+                h += `<br>Unnatural Realm Multiplier: <b>${formatMult(x)}</b>`
+            }
+
             if (player.planetoid.firstEnter) {
                 x = E(5)
         
@@ -967,6 +1003,8 @@ const STATS = {
                 .mul(starTreeEff('reserv',0))
 
                 .mul(upgEffect('astro',1))
+                
+                .mul(upgEffect('measure',2))
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
@@ -996,6 +1034,8 @@ const STATS = {
                 .mul(starTreeEff('ring',20))
                 .mul(starTreeEff('ring',25))
 
+                .mul(upgEffect('measure',0))
+
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
             
@@ -1021,7 +1061,35 @@ const STATS = {
                 x = E(1)
         
                 .mul(upgEffect('observ',4))
+                .mul(upgEffect('observ',7))
                 .mul(starTreeEff('ring',18))
+
+                h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
+            }
+            
+            // Exponent
+
+            return h
+        },
+    },
+    measure: {
+        unl:()=>player.planetoid.firstEnter,
+        title: "Measure",
+        icon: "Curr/Measure",
+        getDesc() {
+            let x = E(1),h = ''
+
+            h += `Total Measure gain: <b>+${format(tmp.measureGain,0)}</b><br>`
+
+            // Muliplier
+
+            h += `<br>Base Multiplier: <b>${formatMult(tmp.measureGainBase)}</b>`
+
+            if (player.planetoid.firstEnter) {
+                x = E(1)
+        
+                .mul(starTreeEff('ring',27))
+                .mul(upgEffect('observ',8))
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }

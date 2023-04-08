@@ -127,7 +127,7 @@ MAIN.agh_milestone = [
         desc: `Unlock more dark matter upgrades.<br>Unlock the <b class="green">Planetoid</b>.`,
     },{
         r: -36,
-        desc: `Reduce XP penalty in <b class="green">Unnatural Realm</b>.`,
+        desc: `Reduce XP penalty in <b class="green">Unnatural Realm</b>.<br>Auto Grasshop & Grass-skip no longer reset anything.`,
     },
 ]
 

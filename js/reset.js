@@ -61,8 +61,10 @@ el.update.reset = ()=> {
         updateResetHTML('oil')
 
         updateResetHTML('np')
+        updateResetHTML('cloud')
 
         updateResetHTML('astro')
+        updateResetHTML('quadrant')
     }
     else if (mapID == 'gh') {
         updateResetHTML('gh')

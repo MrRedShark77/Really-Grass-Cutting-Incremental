@@ -26,13 +26,13 @@ const SC_IDS = {
         [14,10,11,12,13],
         [19,15,16,17,18],
         [24,20,21,22,23],
-        ['',25,'','','']
+        ['',25,26,27,'']
     ],
     reserv: [
-        [7,'',0,'',6],
+        [7,'',0,6,15],
         [1,2,3,4,5],
         [8,9,11,14,10],
-        [12,13,'','',''],
+        [12,13,'',16,''],
     ],
 }
 
@@ -1344,6 +1344,44 @@ const STAR_CHART = {
             },
             effDesc: x => formatMult(x),
         },
+        {
+            max: 100,
+            branch: [24],
+
+            title: "Mega Cosmic",
+            desc: `Increase cosmic gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/XP2'],
+                            
+            cost: i => Math.ceil(1e10*2**i),
+            bulk: i => i.div(1e10).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [24],
+
+            title: "Measure",
+            desc: `Increase measure gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Measure'],
+                            
+            cost: i => Math.ceil(1e12*2**i),
+            bulk: i => i.div(1e12).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
     ],
     reserv: [
         {
@@ -1525,13 +1563,22 @@ const STAR_CHART = {
         {
             branch: [8],
 
+            max: 100,
+
             title: "A Normal Upgrade",
             desc: `Passively generate NP based off of your best normality, starts at 1% of best. Also, keep best liquefy/anonymity on galactic.`,
 
             icon: ['Curr/Normality','Icons/Automation'],
             
-            cost: i => 2e6,
-            bulk: i => 1,
+            cost: i => Math.ceil(2e6*1.5**i),
+            bulk: i => i.div(2e6).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%/s",
         },
         {
             branch: [9],
@@ -1554,6 +1601,47 @@ const STAR_CHART = {
             
             cost: i => 1e7,
             bulk: i => 1,
+        },
+
+        {
+            branch: [6],
+
+            max: 20,
+
+            title: "Astral to Cosmic",
+            desc: `<span class="green">+0.05</span> to base that boosts Cosmic by Astral per level. (starting base is 1).`,
+
+            icon: ['Icons/SP','Icons/StarProgression'],
+
+            cost: i => Math.ceil(1e9*10**i**1.2),
+            bulk: i => i.div(1e9).max(1).log(10).root(1.2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1+i/20,player.astral)
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            branch: [14],
+
+            max: 10,
+
+            title: "Limit Generator",
+            desc: `Increase <b class="green">Prestige & Crystal Charges</b>' maximum limit by <b class="green">+1,000</b> per level.`,
+
+            icon: ['Icons/Generator','Icons/Automation2'],
+            
+            cost: i => Math.ceil(1e9*10**i),
+            bulk: i => i.div(1e9).max(1).log(10).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i*1000
+        
+                return x
+            },
+            effDesc: x => "+"+format(x,0),
         },
     ],
 }
@@ -1770,6 +1858,11 @@ function buyMaxSCUpgrade(id,x) {
     }
 }
 
+function buyMaxSCs() {
+    let id = tmp.sc_tab, sc = STAR_CHART[id]
+    for (i in sc) if (tmp.sc_unl[id][i]) buyMaxSCUpgrade(id,i)
+}
+
 function updateStarChart() {
     let star = player.stars
     let ring = player.planetoid.ring
@@ -1781,6 +1874,8 @@ function updateStarChart() {
     tmp.el.starAmt.setTxt(sc_tab == 'ring'?ring.format(0)+" Rings":sc_tab == 'reserv'?reserv.format(0)+" Reservatorium":star.format(0)+" Stars")
 
     tmp.el.sc_desc_div.setDisplay(ch[0])
+
+    tmp.el.buy_all_sc.setDisplay(sc_tab == 'ring')
 
     tmp.el.planetoidUnl.setDisplay(player.planetoid.firstEnter)
     if (ch[0]) {

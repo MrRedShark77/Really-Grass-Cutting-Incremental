@@ -139,6 +139,7 @@ const MAIN = {
 
         if (!player.decel && hasUpgrade('plat',10)) x = x.pow(upgEffect('plat',10,1))
         x = x.pow(upgEffect('moonstone',6))
+        x = x.pow(upgEffect('measure',3))
 
         return x
     },
@@ -284,7 +285,7 @@ const MAIN = {
 
         x = x.mul(upgEffect('unGrass',2))
 
-        x = x.mul(upgEffect('np',1))
+        x = x.mul(upgEffect('np',1)).mul(upgEffect('cloud',1))
 
         x = x.mul(starTreeEff('ring',6)).mul(starTreeEff('ring',16)).mul(starTreeEff('ring',23))
         

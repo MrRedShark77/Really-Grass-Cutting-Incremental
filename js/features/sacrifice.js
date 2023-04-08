@@ -6,7 +6,7 @@ MAIN.sac = {
 
         tmp.dmGainBase = x
 
-        x = x.mul(upgEffect('np',2))
+        x = x.mul(upgEffect('np',2)).mul(upgEffect('cloud',0))
 
         return x.floor()
     },

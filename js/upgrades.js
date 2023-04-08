@@ -22,7 +22,8 @@ const UPG_RES = {
     pm: ["Planetarium",()=>[player.planetoid,"pm"],'PlanetBase','Curr/Planetoid'],
     observ: ["Observatorium",()=>[player.planetoid,"observ"],'ObsBase','Curr/Observatorium'],
     astro: ["Astro",()=>[player.planetoid,"astro"],'AstroBase','Curr/Astrolabe'],
-    measure: ["Measure",()=>[player.planetoid,"measure"],'GrasshopBase','Curr/Measure'],
+    measure: ["Measure",()=>[player.planetoid,"measure"],'MeasureBase','Curr/Measure'],
+    cloud: ["Cloud",()=>[player,"cloud"],'CloudBase','Curr/Cloud'],
 }
 
 const isResNumber = ['perk','plat','rf','momentum','moonstone']
@@ -1075,6 +1076,8 @@ function updateUpgTemp(id) {
             else if (hasUpgrade('assembler',10) && (x == 5)) tu.max[x] = Infinity
         } else if (id == "oil") {
             if (hasUpgrade('assembler',11)) tu.max[x] = Infinity
+        } else if (id == "gen") {
+            if (hasStarTree('reserv',16) && (x==2 || x==3)) tu.max[x] = 1000 + starTreeEff('reserv',16)
         }
 
         if (upg.unl?upg.unl():true) if (amt < tu.max[x]) ul++
@@ -1286,8 +1289,10 @@ el.update.upgs = ()=>{
             updateUpgradesHTML('oil')
 
             updateUpgradesHTML('np')
+            updateUpgradesHTML('cloud')
 
             updateUpgradesHTML('astro')
+            updateUpgradesHTML('measure')
         }
         else if (mapID == 'gh') {
             updateUpgradesHTML('factory')

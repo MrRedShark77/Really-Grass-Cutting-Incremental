@@ -374,9 +374,131 @@ UPGS.oil = {
     ],
 }
 
+MAIN.cloud = {
+    gain() {
+        let l = Math.max(0,player.tier-30)
+        let x = Decimal.pow(1.1,l).mul(l).mul(player.bestNP.div(1e24).max(1).root(3))
+
+        tmp.cloudGainBase = x
+
+        x = x
+
+        return x.floor()
+    },
+}
+
+RESET.cloud = {
+    unl: ()=> player.recel && player.nTimes > 0,
+
+    req: ()=>player.level>=150,
+    reqDesc: ()=>`Reach Level 150 to Vaproize.`,
+
+    resetDesc: `Vaproizer passively generates cloud based on NP & tier. Click "Start Vaproizing" to generate.`,
+    resetGain: ()=> `Gain <b>+${tmp.cloudGain.format(0)}</b> Cloud per second`,
+
+    title: `Vaproizer`,
+    resetBtn: `Start Vaproizing`,
+
+    reset(force=false) {
+        player.cloudUnl = true
+    },
+}
+
+UPGS.cloud = {
+    unl: ()=> player.recel && player.nTimes > 0,
+
+    title: "Cloud Upgrades",
+
+    req: ()=>player.cloudUnl,
+    reqDesc: ()=>`Click "Start Vaproizing" once to unlock.`,
+
+    underDesc: ()=>`You have ${format(player.cloud,0)} Cloud`,
+
+    // autoUnl: ()=>hasUpgrade('auto',17),
+    // noSpend: ()=>hasUpgrade('auto',20),
+
+    ctn: [
+        {
+            max: 1000,
+
+            title: "Cloudy Dark Matter",
+            desc: `Increase dark matter gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
+        
+            res: "cloud",
+            icon: ["Curr/DarkMatter"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(2).ceil(),
+            bulk: i => i.div(2).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 1000,
+
+            title: "Cloudy SP",
+            desc: `Increase SP gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
+        
+            res: "cloud",
+            icon: ["Icons/SP"],
+                        
+            cost: i => Decimal.pow(1.2,i).mul(2).ceil(),
+            bulk: i => i.div(2).max(1).log(1.2).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 1000,
+
+            title: "Cloudy Ring",
+            desc: `Increase ring gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
+        
+            res: "cloud",
+            icon: ["Curr/Ring"],
+                        
+            cost: i => Decimal.pow(1.25,i).mul(10).ceil(),
+            bulk: i => i.div(10).max(1).log(1.25).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 1000,
+
+            title: "Cloudy NP",
+            desc: `Increase NP gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
+        
+            res: "cloud",
+            icon: ["Curr/Normality"],
+                        
+            cost: i => Decimal.pow(1.25,i).mul(100).ceil(),
+            bulk: i => i.div(100).max(1).log(1.25).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },
+    ],
+}
+
 tmp_update.push(()=>{
     tmp.crystalGain = MAIN.crystal.gain()
     tmp.crystalGainP = (upgEffect('auto',12,0)+upgEffect('gen',1,0))*upgEffect('factory',1,1)
 
     tmp.oilGain = MAIN.oil.gain()
+
+    tmp.cloudGain = MAIN.cloud.gain()
 })

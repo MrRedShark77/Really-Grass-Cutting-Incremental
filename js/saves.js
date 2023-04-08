@@ -202,6 +202,10 @@ function getPlayerData() {
         bestNP2: E(0),
         nTimes: 0,
 
+        cloud: E(0),
+        bestCloud: E(0),
+        bestCloud2: E(0),
+
         planetoid: getPlanetoidSave(),
 
         time: 0,
