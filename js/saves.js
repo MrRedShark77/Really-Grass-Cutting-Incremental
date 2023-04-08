@@ -205,6 +205,7 @@ function getPlayerData() {
         cloud: E(0),
         bestCloud: E(0),
         bestCloud2: E(0),
+        cloudUnl: false,
 
         planetoid: getPlanetoidSave(),
 
