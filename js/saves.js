@@ -2,7 +2,7 @@ function E(x){return new Decimal(x)};
 
 const VER = 0.0402
 const EINF = Decimal.dInf
-const BETA = true
+const BETA = false
 const save_name = BETA ? "rgci_beta_save" : "gci_save"
 
 Math.lerp = function (value1, value2, amount) {
