@@ -62,7 +62,7 @@ UPGS.dm = {
     req: ()=>player.sacTimes > 0,
     reqDesc: ()=>`Sacrifice once to unlock.`,
 
-    underDesc: ()=>`You have ${format(player.dm,0)} Dark Matters`,
+    underDesc: ()=>`You have ${format(player.dm,0)} Dark Matters`+gainHTML(player.dm,tmp.dmGain,tmp.dmGen),
 
     ctn: [
         {

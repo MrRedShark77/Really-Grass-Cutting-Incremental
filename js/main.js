@@ -320,7 +320,7 @@ el.update.main = ()=>{
     let tier_unl = !pa && player.pTimes > 0
     let astr_unl = player.gTimes > 0
 
-    tmp.el.level.setHTML(`Level <b class="cyan">${format(pa?player.planetoid.level:player.level,0)}</b> (${formatPercent(pa ? tmp.cosmicLevel.percent : tmp.level.percent)})`)
+    tmp.el.level.setHTML(`Level <b class="cyan">${format(pa?player.planetoid.level:player.level,0)}</b>`+(player.level>=10000?"":` (${formatPercent(pa ? tmp.cosmicLevel.percent : tmp.level.percent)})`))
 
     tmp.el.tier.setDisplay(tier_unl)
     tmp.el.astral.setDisplay(astr_unl)

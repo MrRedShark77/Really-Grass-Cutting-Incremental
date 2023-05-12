@@ -616,5 +616,7 @@ tmp_update.push(()=>{
 
     m *= upgEffect('np',3) * upgEffect('dm',7)
 
+    if (player.lowGH <= -44) m *= getAGHEffect(18)
+
     tmp.momentumGain = Math.ceil(m)
 })

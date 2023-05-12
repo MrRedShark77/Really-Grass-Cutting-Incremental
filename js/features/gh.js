@@ -128,6 +128,16 @@ MAIN.agh_milestone = [
     },{
         r: -36,
         desc: `Reduce XP penalty in <b class="green">Unnatural Realm</b>.<br>Auto Grasshop & Grass-skip no longer reset anything.`,
+    },{
+        r: -40,
+        desc: `Rings gain is increased by <b class="green">10%</b> every astral.`,
+        effect: ()=>Decimal.pow(1.1,player.astral),
+        effDesc: x=> format(x)+"x",
+    },{
+        r: -44,
+        desc: `Momentum gain is increased based on rocket part at a reduced rate.`,
+        effect: ()=>Decimal.pow(1.05,player.rocket.part).mul(player.rocket.part+1).toNumber(),
+        effDesc: x=> format(x)+"x",
     },
 ]
 

@@ -107,6 +107,8 @@ const PLANETOID = {
 
         .mul(upgEffect('cloud',2))
 
+        if (player.lowGH <= -40) x = x.mul(getAGHEffect(17))
+
         return x.floor()
     },
     observGain() {
@@ -119,6 +121,7 @@ const PLANETOID = {
         .mul(starTreeEff('ring',25))
 
         .mul(upgEffect('measure',0))
+        .mul(upgEffect('measure',4))
 
         return x.floor()
     },
@@ -176,7 +179,7 @@ tmp_update.push(()=>{
     tmp.ringGain = PLANETOID.ringGain()
     tmp.observGain = PLANETOID.observGain()
 
-    tmp.reservConvert = starTreeEff('ring',8,0)+starTreeEff('ring',12,0)
+    tmp.reservConvert = starTreeEff('ring',8,0)+starTreeEff('ring',12,0)+starTreeEff('ring',28,0)
     tmp.reservGain = player.planetoid.observ.mul(tmp.reservConvert).floor()
 
     tmp.astroGain = PLANETOID.astroGain()
@@ -186,8 +189,12 @@ tmp_update.push(()=>{
     tmp.funGen = starTreeEff('reserv',4,0)
     tmp.ringGen = hasStarTree('reserv',5)?0.0001:0
     if (hasStarTree('reserv',10)) tmp.ringGen *= 10
+    if (hasStarTree('reserv',21)) tmp.ringGen *= 10
 
     tmp.npGen = starTreeEff('reserv',12,0)
+
+    tmp.aGen = starTreeEff('reserv',18,0)
+    tmp.dmGen = starTreeEff('reserv',19,0)
 
     tmp.observChance = hasStarTree('ring',25)?0.02:hasStarTree('ring',20)?0.01:0.003
 })
@@ -581,7 +588,7 @@ UPGS.astro = {
 
     title: "Astro Upgrades",
 
-    underDesc: ()=>`You have ${format(player.planetoid.astro,0)} Astro`,
+    underDesc: ()=>`You have ${format(player.planetoid.astro,0)} Astro`+gainHTML(player.planetoid.astro,tmp.astroGain,tmp.aGen),
 
     autoUnl: ()=>hasStarTree('reserv',13),
     noSpend: ()=>hasStarTree('reserv',13),
@@ -797,6 +804,24 @@ UPGS.measure = {
                 return x
             },
             effDesc: x => "^"+format(x),
+        },{
+            max: 1000,
+
+            title: "Measured Observatorium II",
+            desc: `Increase observatorium gain by <b class="green">+10%</b> per level.<br>This effect is increased by <b class="green">25%</b> every <b class="yellow">25</b> levels.`,
+
+            res: "measure",
+            icon: ['Curr/Observatorium'],
+            
+            cost: i => Decimal.pow(1.25,i).mul(1e6).ceil(),
+            bulk: i => i.div(1e6).max(1).log(1.25).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/10+1)
+
+                return x
+            },
+            effDesc: x => formatMult(x),
         },
     ],
 }

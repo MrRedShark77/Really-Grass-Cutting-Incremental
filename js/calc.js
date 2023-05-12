@@ -101,6 +101,13 @@ function calc(dt) {
 
     if (tmp.ringGen > 0) player.planetoid.ring = player.planetoid.ring.add(tmp.ringGain.mul(dt*tmp.ringGen))
 
+    if (tmp.aGen > 0) {
+        player.planetoid.astro = player.planetoid.astro.add(tmp.astroGain.mul(dt*tmp.aGen))
+        player.planetoid.bestAstro = player.planetoid.bestAstro.max(player.planetoid.astro)
+    }
+
+    if (tmp.dmGen > 0) player.dm = player.dm.add(tmp.dmGain.mul(dt*tmp.dmGen))
+
     player.planetoid.bestPm = player.planetoid.bestPm.max(player.planetoid.pm)
     MAIN.checkCutting()
 }

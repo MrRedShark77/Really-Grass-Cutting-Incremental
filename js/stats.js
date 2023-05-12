@@ -1008,6 +1008,12 @@ const STATS = {
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
+
+            x = E(1)
+
+            if (player.lowGH <= -40) x = x.mul(getAGHEffect(17))
+
+            h += `<br>Milestone Multiplier: <b>${formatMult(x)}</b>`
             
             // Exponent
 
@@ -1035,6 +1041,7 @@ const STATS = {
                 .mul(starTreeEff('ring',25))
 
                 .mul(upgEffect('measure',0))
+                .mul(upgEffect('measure',4))
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }

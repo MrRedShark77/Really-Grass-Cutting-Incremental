@@ -81,6 +81,9 @@ UPGS.funnyMachine = {
 
     underDesc: ()=>`You have ${format(player.fun,0)} Fun`,
 
+    autoUnl: ()=>hasStarTree('reserv',20),
+    noSpend: ()=>hasStarTree('reserv',20),
+
     ctn: [
         {
             max: 100,
@@ -183,6 +186,9 @@ UPGS.fundry = {
 
     unl: ()=>hasUpgrade('funnyMachine',0)&&player.decel,
 
+    autoUnl: ()=>hasStarTree('reserv',20),
+    noSpend: ()=>hasStarTree('reserv',20),
+
     ctn: [
         {
             max: 1000,
@@ -266,6 +272,9 @@ UPGS.sfrgt = {
     unl: ()=>hasUpgrade('funnyMachine',1)&&player.decel,
 
     underDesc: ()=>`You have ${format(player.SFRGT,0)} SFRGT <span class='smallAmt'>${player.SFRGT.formatGain(tmp.SFRGTgain)}</span>`,
+
+    autoUnl: ()=>hasStarTree('reserv',20),
+    noSpend: ()=>hasStarTree('reserv',20),
 
     ctn: [
         {

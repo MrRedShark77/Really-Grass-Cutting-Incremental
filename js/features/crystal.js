@@ -414,8 +414,8 @@ UPGS.cloud = {
 
     underDesc: ()=>`You have ${format(player.cloud,0)} Cloud`,
 
-    // autoUnl: ()=>hasUpgrade('auto',17),
-    // noSpend: ()=>hasUpgrade('auto',20),
+    autoUnl: ()=>hasStarTree('reserv',17),
+    noSpend: ()=>hasStarTree('reserv',17),
 
     ctn: [
         {

@@ -26,13 +26,14 @@ const SC_IDS = {
         [14,10,11,12,13],
         [19,15,16,17,18],
         [24,20,21,22,23],
-        ['',25,26,27,'']
+        ['',25,26,27,28],
     ],
     reserv: [
         [7,'',0,6,15],
         [1,2,3,4,5],
         [8,9,11,14,10],
-        [12,13,'',16,''],
+        [12,13,19,16,21],
+        [17,18,'',20,''],
     ],
 }
 
@@ -1382,6 +1383,25 @@ const STAR_CHART = {
             },
             effDesc: x => formatMult(x),
         },
+        {
+            max: 40,
+            branch: [24],
+
+            title: "Advanced Reservatorium",
+            desc: `<span class="green">+1%</span> of your observatorium will be converted to reservatorium on forming the ring.`,
+
+            icon: ['Curr/Res4'],
+                            
+            cost: i => Math.ceil(1e12*2.5**i**1.25),
+            bulk: i => i.div(1e12).max(1).log(2.5).root(1.25).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%",
+        },
     ],
     reserv: [
         {
@@ -1498,7 +1518,7 @@ const STAR_CHART = {
         {
             branch: [0],
 
-            max: 5,
+            max: 10,
 
             title: "Planetarium Exponent",
             desc: `Increase planetarium exponent by <span class="green">+10%</span> per level.`,
@@ -1633,8 +1653,8 @@ const STAR_CHART = {
 
             icon: ['Icons/Generator','Icons/Automation2'],
             
-            cost: i => Math.ceil(1e9*10**i),
-            bulk: i => i.div(1e9).max(1).log(10).floor().toNumber()+1,
+            cost: i => Math.ceil(1e9*10**i**1.15),
+            bulk: i => i.div(1e9).max(1).log(10).root(1.15).floor().toNumber()+1,
 
             effect(i) {
                 let x = i*1000
@@ -1642,6 +1662,86 @@ const STAR_CHART = {
                 return x
             },
             effDesc: x => "+"+format(x,0),
+        },
+        
+        {
+            branch: [12],
+
+            max: 1,
+
+            title: "Cloud Automation",
+            desc: `Automate <span class="green">Cloud Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/Cloud','Icons/Automation'],
+            
+            cost: i => 1e11,
+            bulk: i => 1,
+        },
+        {
+            branch: [13],
+
+            max: 100,
+
+            title: "Astro Generation",
+            desc: `Passively generates <span class="green">+1%</span> of astro you would earn on astrolabe per second.`,
+
+            icon: ['Curr/Astrolabe','Icons/Automation'],
+            
+            cost: i => Math.ceil(1e12*1.5**i),
+            bulk: i => i.div(1e12).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%/s",
+        },
+        {
+            branch: [11],
+
+            max: 100,
+
+            title: "Dark Matter Generation",
+            desc: `Passively generates <span class="green">+1%</span> of dark matter you would earn on sacrifice per second.`,
+
+            icon: ['Curr/DarkMatter','Icons/Automation'],
+            
+            cost: i => Math.ceil(1e12*1.5**i),
+            bulk: i => i.div(1e12).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%/s",
+        },
+        {
+            branch: [16],
+
+            max: 1,
+
+            title: "Funny Automation",
+            desc: `Automate <span class="green">Fun & SFRGT Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/Fun','Icons/Automation'],
+
+            cost: i => 1e11,
+            bulk: i => 1,
+        },
+        {
+            branch: [10],
+
+            max: 1,
+
+            title: "Ring Generation III",
+            desc: `Increase ring generation by <span class="green">10x</span>.`,
+
+            icon: ['Curr/Ring','Icons/Automation'],
+            
+            cost: i => 1e12,
+            bulk: i => 1,
         },
     ],
 }

@@ -79,6 +79,10 @@ function randint(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
+function gainHTML(amt,gain,pass=0) {
+    return pass>0?" <span class='smallAmt'>"+formatGain(amt,gain.mul(pass))+"</span>":''
+}
+
 function getPlayerData() {
     let s = {
         grass: E(0),
