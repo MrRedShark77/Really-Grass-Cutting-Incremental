@@ -21,7 +21,7 @@ MAIN.fun = {
         let x = E(1)
 
         x = x.mul(upgEffect('funnyMachine',1))
-        x = x.mul(upgEffect('sfrgt',0))
+        x = x.mul(upgEffect('sfrgt',0)).mul(upgEffect('sfrgt',4))
         x = x.mul(upgEffect('moonstone',5))
 
         if (player.lowGH <= 8) x = x.mul(getAGHEffect(5))
@@ -34,13 +34,13 @@ MAIN.fun = {
 }
 
 RESET.fun = {
-    unl: _=>(player.bestGS>=10||player.fTimes>0)&&player.decel,
+    unl: ()=>(player.bestGS>=10||player.fTimes>0)&&player.decel,
 
-    req: _=>player.level>=490,
-    reqDesc: _=>`Reach Level 490.`,
+    req: ()=>player.level>=490,
+    reqDesc: ()=>`Reach Level 490.`,
 
     resetDesc: `Reset everything grass-skip does, but it benefits from the milestones for grass-skip.<br>Gain more Fun based on grass-skip and oil.`,
-    resetGain: _=> `Gain <b>${tmp.funGain.format(0)}</b> Fun`,
+    resetGain: ()=> `Gain <b>${tmp.funGain.format(0)}</b> Fun`,
 
     title: `Funify`,
     resetBtn: `Funify!`,
@@ -67,7 +67,7 @@ RESET.fun = {
     },
 }
 
-tmp_update.push(_=>{
+tmp_update.push(()=>{
     let mf = MAIN.fun
     
     tmp.SFRGTgain = mf.SFRGTgain()
@@ -77,9 +77,12 @@ tmp_update.push(_=>{
 UPGS.funnyMachine = {
     title: "The Funny Machine",
 
-    unl: _=>player.fTimes > 0&&player.decel,
+    unl: ()=>player.fTimes > 0&&player.decel,
 
-    underDesc: _=>`You have ${format(player.fun,0)} Fun`,
+    underDesc: ()=>`You have ${format(player.fun,0)} Fun`,
+
+    autoUnl: ()=>hasStarTree('reserv',20),
+    noSpend: ()=>hasStarTree('reserv',20),
 
     ctn: [
         {
@@ -157,7 +160,7 @@ UPGS.funnyMachine = {
         },{
             max: 100,
 
-            unl: _=>player.sacTimes>0,
+            unl: ()=>player.sacTimes>0,
 
             title: "Recelerator",
             desc: `Unlock a building (on top of Factory/Funny Machine) where you can recelerate time. Each level increases charge rate by <b class="green">+10%</b>.`,
@@ -181,7 +184,10 @@ UPGS.funnyMachine = {
 UPGS.fundry = {
     title: "Fundry",
 
-    unl: _=>hasUpgrade('funnyMachine',0)&&player.decel,
+    unl: ()=>hasUpgrade('funnyMachine',0)&&player.decel,
+
+    autoUnl: ()=>hasStarTree('reserv',20),
+    noSpend: ()=>hasStarTree('reserv',20),
 
     ctn: [
         {
@@ -263,9 +269,12 @@ UPGS.fundry = {
 UPGS.sfrgt = {
     title: "Super Fun Real Good Time Generator",
 
-    unl: _=>hasUpgrade('funnyMachine',1)&&player.decel,
+    unl: ()=>hasUpgrade('funnyMachine',1)&&player.decel,
 
-    underDesc: _=>`You have ${format(player.SFRGT,0)} SFRGT <span class='smallAmt'>${player.SFRGT.formatGain(tmp.SFRGTgain)}</span>`,
+    underDesc: ()=>`You have ${format(player.SFRGT,0)} SFRGT <span class='smallAmt'>${player.SFRGT.formatGain(tmp.SFRGTgain)}</span>`,
+
+    autoUnl: ()=>hasStarTree('reserv',20),
+    noSpend: ()=>hasStarTree('reserv',20),
 
     ctn: [
         {
@@ -293,7 +302,7 @@ UPGS.sfrgt = {
             desc: `Increase SP gain by <b class="green">+10%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
         
             res: "SFRGT",
-            icon: ["Curr/SP"],
+            icon: ["Icons/SP"],
                         
             cost: i => Decimal.pow(1.25,i).mul(50).ceil(),
             bulk: i => i.div(50).max(1).log(1.25).floor().toNumber()+1,
@@ -340,6 +349,66 @@ UPGS.sfrgt = {
                 return x
             },
             effDesc: x => "+"+format(x,0)+" OoMs later",
+        },{
+            max: 1000,
+
+            unl: ()=>hasStarTree('reserv',14),
+
+            title: "SFRGT Generation II",
+            desc: `<b class="green">Double</b> SFRGT gain per level.`,
+        
+            res: "SFRGT",
+            icon: ["Curr/SuperFun"],
+                        
+            cost: i => Decimal.pow(10,i).mul(1e54).ceil(),
+            bulk: i => i.div(1e54).max(1).log(10).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(2,i)
+        
+                return x
+            },
+            effDesc: x => format(x,0)+"x",
+        },{
+            max: 10000,
+
+            unl: ()=>hasStarTree('reserv',14),
+
+            title: "SFRGT NP",
+            desc: `Increase NP gain by <b class="green">1%</b> every level.`,
+        
+            res: "SFRGT",
+            icon: ["Curr/Normality"],
+                        
+            cost: i => Decimal.pow(1.15,i).mul(1e63).ceil(),
+            bulk: i => i.div(1e63).max(1).log(1.15).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.01,i)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
+        },{
+            max: 10000,
+
+            unl: ()=>hasStarTree('reserv',14),
+
+            title: "SFRGT SP II",
+            desc: `Increase SP gain by <b class="green">1%</b> every level.`,
+        
+            res: "SFRGT",
+            icon: ["Icons/SP"],
+                        
+            cost: i => Decimal.pow(1.15,i).mul(1e63).ceil(),
+            bulk: i => i.div(1e63).max(1).log(1.15).floor().toNumber()+1,
+        
+            effect(i) {
+                let x = Decimal.pow(1.01,i)
+        
+                return x
+            },
+            effDesc: x => format(x)+"x",
         },
     ],
 }

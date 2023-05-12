@@ -17,7 +17,23 @@ const SC_IDS = {
         [1,2,3],
         [4,5,6],
         [7,9,8,12,''],
-        [11,10,''],
+        [13,11,10,14,''],
+    ],
+    ring: [
+        [0],
+        [4,'',1,2,3],
+        [9,5,6,7,8],
+        [14,10,11,12,13],
+        [19,15,16,17,18],
+        [24,20,21,22,23],
+        ['',25,26,27,28],
+    ],
+    reserv: [
+        [7,'',0,6,15],
+        [1,2,3,4,5],
+        [8,9,11,14,10],
+        [12,13,19,16,21],
+        [17,18,'',20,''],
     ],
 }
 
@@ -321,7 +337,7 @@ const STAR_CHART = {
             effDesc: x => formatMult(x),
         },
         {
-            unl: _=> starTreeAmt('speed',0)>=10,
+            unl: ()=> starTreeAmt('speed',0)>=10,
             max: 100,
             branch: [0],
 
@@ -341,7 +357,7 @@ const STAR_CHART = {
             effDesc: x => "+"+formatPercent(x)+"/s",
         },
         {
-            unl: _=> starTreeAmt('speed',0)>=10,
+            unl: ()=> starTreeAmt('speed',0)>=10,
             max: 1,
             branch: [0],
 
@@ -589,7 +605,7 @@ const STAR_CHART = {
             title: "Space Power",
             desc: `Increase SP (Space Power) gained by <span class="green">+100%</span> per level. <span class="lightblue">Unlock more upgrades.</span>`,
 
-            icon: ['Curr/SP','Icons/StarProgression'],
+            icon: ['Icons/SP','Icons/StarProgression'],
                             
             cost: i => Math.ceil(15*1.6**i),
             bulk: i => i.div(15).max(1).log(1.6).floor().toNumber()+1,
@@ -646,7 +662,7 @@ const STAR_CHART = {
             title: "Space Power II",
             desc: `Increase SP (Space Power) gained by <span class="green">+100%</span> per level. <span class="lightblue">Unlock more upgrades.</span>`,
 
-            icon: ['Curr/SP','Icons/StarProgression'],
+            icon: ['Icons/SP','Icons/StarProgression'],
                             
             cost: i => Math.ceil(300*1.6**i),
             bulk: i => i.div(300).max(1).log(1.6).floor().toNumber()+1,
@@ -703,7 +719,7 @@ const STAR_CHART = {
             title: "Space Power III",
             desc: `Increase SP (Space Power) gained by <span class="green">+100%</span> per level.`,
 
-            icon: ['Curr/SP','Icons/StarProgression'],
+            icon: ['Icons/SP','Icons/StarProgression'],
                             
             cost: i => Math.ceil(3000*1.8**i),
             bulk: i => i.div(3000).max(1).log(1.8).floor().toNumber()+1,
@@ -741,7 +757,7 @@ const STAR_CHART = {
             title: "Space Power IV",
             desc: `Increase SP (Space Power) gained by <span class="green">+100%</span> per level.`,
 
-            icon: ['Curr/SP','Icons/StarProgression'],
+            icon: ['Icons/SP','Icons/StarProgression'],
                             
             cost: i => Math.ceil(1e9*2**i),
             bulk: i => i.div(1e9).max(1).log(2).floor().toNumber()+1,
@@ -791,6 +807,942 @@ const STAR_CHART = {
             },
             effDesc: x => formatMult(x),
         },
+        {
+            max: 10,
+            branch: [7],
+
+            title: "Level Threshold",
+            desc: `Decrease level threshold by <span class="green">1%</span> per level.`,
+
+            icon: ['Icons/XP','Icons/StarProgression'],
+                            
+            cost: i => Math.ceil(1e33*5**i**1.2),
+            bulk: i => i.div(1e33).max(1).log(5).root(1.2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100+1
+        
+                return x
+            },
+            effDesc: x => "/"+format(x,2),
+        },
+        {
+            max: 10,
+            branch: [12],
+
+            title: "Tier Threshold",
+            desc: `Decrease tier threshold by <span class="green">1%</span> per level.`,
+
+            icon: ['Icons/TP','Icons/StarProgression'],
+                            
+            cost: i => Math.ceil(1e34*6**i**1.25),
+            bulk: i => i.div(1e34).max(1).log(6).root(1.25).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100+1
+        
+                return x
+            },
+            effDesc: x => "/"+format(x,2),
+        },
+    ],
+    ring: [
+        {
+            max: 100,
+
+            title: "Welcome to the Planetarium",
+            desc: `Increase planetarium gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Planetoid'],
+                            
+            cost: i => Math.ceil(1*1.5**i),
+            bulk: i => i.div(1).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [0],
+
+            title: "Basic Cosmic",
+            desc: `Increase cosmic gain by <span class="green">+50%</span> per level.`,
+
+            icon: ['Icons/XP2'],
+                            
+            cost: i => Math.ceil(3*1.6**i),
+            bulk: i => i.div(3).max(1).log(1.6).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [0],
+
+            title: "Basic XP",
+            desc: `Increase XP gain by <span class="green">+200%</span> per level.`,
+
+            icon: ['Icons/XP'],
+                            
+            cost: i => Math.ceil(5*1.6**i),
+            bulk: i => i.div(5).max(1).log(1.6).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i*2+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [0],
+
+            title: "Basic TP",
+            desc: `Increase TP gain by <span class="green">+200%</span> per level.`,
+
+            icon: ['Icons/TP'],
+                            
+            cost: i => Math.ceil(5*1.6**i),
+            bulk: i => i.div(5).max(1).log(1.6).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i*2+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [0],
+
+            title: "Basic Planetarium",
+            desc: `Increase planetarium gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Planetoid'],
+                            
+            cost: i => Math.ceil(10*1.6**i),
+            bulk: i => i.div(10).max(1).log(1.6).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+
+        {
+            max: 100,
+            branch: [4],
+
+            title: "Basic Observatorium",
+            desc: `Increase observatorium gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Observatorium'],
+                            
+            cost: i => Math.ceil(20*1.6**i),
+            bulk: i => i.div(20).max(1).log(1.6).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [4],
+
+            title: "Basic SP",
+            desc: `Increase SP gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/SP'],
+                            
+            cost: i => Math.ceil(30*1.6**i),
+            bulk: i => i.div(30).max(1).log(1.6).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [4],
+
+            title: "Basic Grass Cap",
+            desc: `Increase grass cap by <span class="green">+20%</span> per level.`,
+
+            icon: ['Icons/MoreGrass'],
+                            
+            cost: i => Math.ceil(50*1.6**i),
+            bulk: i => i.div(50).max(1).log(1.6).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/5+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 5,
+            branch: [4],
+
+            title: "Basic Reservatorium",
+            desc: `<span class="green">+1%</span> of your observatorium will be converted to reservatorium on forming the ring.`,
+
+            icon: ['Curr/Res4'],
+                            
+            cost: i => Math.ceil(100*2**i**1.25),
+            bulk: i => i.div(100).max(1).log(2).root(1.25).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%",
+        },
+
+        {
+            max: 100,
+            branch: [4],
+
+            title: "Intermediate Planetarium",
+            desc: `Increase planetarium gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Planetoid'],
+                            
+            cost: i => Math.ceil(250*1.7**i),
+            bulk: i => i.div(250).max(1).log(1.7).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [9],
+
+            title: "Intermediate Star",
+            desc: `Increase star gain by <span class="green">+50%</span> per level.`,
+
+            icon: ['Curr/Star'],
+                            
+            cost: i => Math.ceil(300*1.7**i),
+            bulk: i => i.div(300).max(1).log(1.7).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/2+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [9],
+
+            title: "Intermediate Observatorium",
+            desc: `Increase observatorium gain by <span class="green">+25%</span> per level.`,
+
+            icon: ['Curr/Observatorium'],
+                            
+            cost: i => Math.ceil(500*1.7**i),
+            bulk: i => i.div(500).max(1).log(1.7).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/4+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 5,
+            branch: [9],
+
+            title: "Intermediate Reservatorium",
+            desc: `<span class="green">+1%</span> of your observatorium will be converted to reservatorium on forming the ring.`,
+
+            icon: ['Curr/Res4'],
+                            
+            cost: i => Math.ceil(1000*2.2**i**1.25),
+            bulk: i => i.div(1000).max(1).log(2.2).root(1.25).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%",
+        },
+        {
+            max: 100,
+            branch: [9],
+
+            title: "Intermediate Cosmic",
+            desc: `Increase cosmic gain by <span class="green">+50%</span> per level.`,
+
+            icon: ['Icons/XP2'],
+                            
+            cost: i => Math.ceil(2000*1.7**i),
+            bulk: i => i.div(2000).max(1).log(1.7).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/2+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+
+        {
+            max: 100,
+            branch: [9],
+
+            title: "Advanced Planetarium",
+            desc: `Increase planetarium gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Planetoid'],
+                            
+            cost: i => Math.ceil(3e4*1.8**i),
+            bulk: i => i.div(3e4).max(1).log(1.8).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [14],
+
+            title: "Advanced Observatorium",
+            desc: `Increase observatorium gain by <span class="green">+25%</span> per level.`,
+
+            icon: ['Curr/Observatorium'],
+                            
+            cost: i => Math.ceil(5e4*1.8**i),
+            bulk: i => i.div(5e4).max(1).log(1.8).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/4+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [14],
+
+            title: "Intermediate SP",
+            desc: `Increase SP gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/SP'],
+                            
+            cost: i => Math.ceil(1e5*1.7**i),
+            bulk: i => i.div(1e5).max(1).log(1.7).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [14],
+
+            title: "Advanced Cosmic",
+            desc: `Increase cosmic gain by <span class="green">+50%</span> per level.`,
+
+            icon: ['Icons/XP2'],
+                            
+            cost: i => Math.ceil(3e5*1.8**i),
+            bulk: i => i.div(3e5).max(1).log(1.8).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/2+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [14],
+
+            title: "Astrolabe",
+            desc: `Increase astro gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Astrolabe'],
+                            
+            cost: i => Math.ceil(1e6*2**i),
+            bulk: i => i.div(1e6).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+
+        {
+            max: 100,
+            branch: [14],
+
+            title: "Powerful Planetarium",
+            desc: `Increase planetarium gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Planetoid'],
+                            
+            cost: i => Math.ceil(2e6*1.9**i),
+            bulk: i => i.div(2e6).max(1).log(1.9).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [19],
+
+            title: "Powerful Observatorium",
+            desc: `Increase observatorium gain by <span class="green">+25%</span> per level.<br>On first purchase, increase observatorium chance to <span class="green">1%</span>.`,
+
+            icon: ['Curr/Observatorium'],
+                            
+            cost: i => Math.ceil(4e6*1.9**i),
+            bulk: i => i.div(4e6).max(1).log(1.9).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/4+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [19],
+
+            title: "Powerful Cosmic",
+            desc: `Increase cosmic gain by <span class="green">+50%</span> per level.`,
+
+            icon: ['Icons/XP2'],
+                            
+            cost: i => Math.ceil(1e7*1.9**i),
+            bulk: i => i.div(1e7).max(1).log(1.9).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/2+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [19],
+
+            title: "Advanced Star",
+            desc: `Increase star gain by <span class="green">+50%</span> per level.`,
+
+            icon: ['Curr/Star'],
+                            
+            cost: i => Math.ceil(2.5e7*1.8**i),
+            bulk: i => i.div(2.5e7).max(1).log(1.8).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/2+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [19],
+
+            title: "Advanced SP",
+            desc: `Increase SP gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/SP'],
+                            
+            cost: i => Math.ceil(1e8*1.8**i),
+            bulk: i => i.div(1e8).max(1).log(1.8).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+
+        {
+            max: 100,
+            branch: [19],
+
+            title: "Mega Planetarium",
+            desc: `Increase planetarium gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Planetoid'],
+                            
+            cost: i => Math.ceil(1e9*2**i),
+            bulk: i => i.div(1e9).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [24],
+
+            title: "Mega Observatorium",
+            desc: `Increase observatorium gain by <span class="green">+100%</span> per level.<br>On first purchase, increase observatorium chance to <span class="green">2%</span>.`,
+
+            icon: ['Curr/Observatorium'],
+                            
+            cost: i => Math.ceil(3e9*2**i),
+            bulk: i => i.div(3e9).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [24],
+
+            title: "Mega Cosmic",
+            desc: `Increase cosmic gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Icons/XP2'],
+                            
+            cost: i => Math.ceil(1e10*2**i),
+            bulk: i => i.div(1e10).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [24],
+
+            title: "Measure",
+            desc: `Increase measure gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Measure'],
+                            
+            cost: i => Math.ceil(1e12*2**i),
+            bulk: i => i.div(1e12).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 40,
+            branch: [24],
+
+            title: "Advanced Reservatorium",
+            desc: `<span class="green">+1%</span> of your observatorium will be converted to reservatorium on forming the ring.`,
+
+            icon: ['Curr/Res4'],
+                            
+            cost: i => Math.ceil(1e12*2.5**i**1.25),
+            bulk: i => i.div(1e12).max(1).log(2.5).root(1.25).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%",
+        },
+    ],
+    reserv: [
+        {
+            max: 100,
+
+            title: "Reserved Rings",
+            desc: `Increase rings gain by <span class="green">+10%</span> per level.`,
+
+            icon: ['Curr/Ring'],
+            
+            cost: i => Math.ceil(1*1.5**i),
+            bulk: i => i.div(1).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            branch: [0],
+
+            title: "Unnatural Automation",
+            desc: `Automate <span class="green">Unnatural Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/UGrass','Icons/Automation'],
+            
+            cost: i => 1000,
+            bulk: i => 1,
+        },
+        {
+            branch: [0],
+
+            title: "Return to Autocut",
+            desc: `Autocut grass/planetarium is always <span class="green">0.01s</span>.`,
+
+            icon: ['Icons/Placeholder','Icons/Automation'],
+            
+            cost: i => 1000,
+            bulk: i => 1,
+        },
+        {
+            branch: [0],
+
+            max: 100,
+
+            title: "Star Generation",
+            desc: `Passively generates <span class="green">+1%</span> of stars you would earn on galactic per second.`,
+
+            icon: ['Curr/Star','Icons/Automation'],
+            
+            cost: i => Math.ceil(10000*1.5**i),
+            bulk: i => i.div(10000).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%/s",
+        },
+        {
+            branch: [0],
+
+            max: 100,
+
+            title: "Fun Generation",
+            desc: `Passively generates <span class="green">+1%</span> of fun you would earn on funify per second.`,
+
+            icon: ['Curr/Fun','Icons/Automation'],
+            
+            cost: i => Math.ceil(50000*1.5**i),
+            bulk: i => i.div(50000).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%/s",
+        },
+        {
+            branch: [0],
+
+            title: "Ring Generation",
+            desc: `Passively generates <span class="green">0.01%</span> of ring you would earn on forming ring per second.`,
+
+            icon: ['Curr/Ring','Icons/Automation'],
+            
+            cost: i => 1e5,
+            bulk: i => 1,
+        },
+        {
+            branch: [0],
+
+            max: 5,
+
+            title: "Cosmic Exponent",
+            desc: `Increase cosmic exponent by <span class="green">+10%</span> per level.`,
+
+            icon: ['Icons/XP2','Icons/Exponent'],
+            
+            cost: i => Math.ceil(2000*10**i**1.25),
+            bulk: i => i.div(2000).max(1).log(10).root(1.25).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => "^"+format(x,2),
+        },
+        {
+            branch: [0],
+
+            max: 10,
+
+            title: "Planetarium Exponent",
+            desc: `Increase planetarium exponent by <span class="green">+10%</span> per level.`,
+
+            icon: ['Curr/Planetoid','Icons/Exponent'],
+            
+            cost: i => Math.ceil(2000*10**i**1.15),
+            bulk: i => i.div(2000).max(1).log(10).root(1.15).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => "^"+format(x,2),
+        },
+
+        {
+            branch: [1],
+
+            title: "Normality Automation",
+            desc: `Automate <span class="green">Normality Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/Normality','Icons/Automation'],
+            
+            cost: i => 5e5,
+            bulk: i => 1,
+        },
+        {
+            branch: [2],
+
+            title: "Planetarium Automation",
+            desc: `Automate <span class="green">Planetarium Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/Planetoid','Icons/Automation'],
+            
+            cost: i => 1e5,
+            bulk: i => 1,
+        },
+        {
+            branch: [5],
+
+            title: "Ring Generation II",
+            desc: `Increase ring generation by <span class="green">10x</span>.`,
+
+            icon: ['Curr/Ring','Icons/Automation'],
+            
+            cost: i => 1e6,
+            bulk: i => 1,
+        },
+        {
+            branch: [3],
+
+            title: "Ring-Free Star Chart",
+            desc: `<span class="green">Ring Upgrades</span> in <span class="green">Star Chart</span> no longer spend ring.`,
+
+            icon: ['Curr/Ring','Icons/Automation'],
+            
+            cost: i => 1e6,
+            bulk: i => 1,
+        },
+        {
+            branch: [8],
+
+            max: 100,
+
+            title: "A Normal Upgrade",
+            desc: `Passively generate NP based off of your best normality, starts at 1% of best. Also, keep best liquefy/anonymity on galactic.`,
+
+            icon: ['Curr/Normality','Icons/Automation'],
+            
+            cost: i => Math.ceil(2e6*1.5**i),
+            bulk: i => i.div(2e6).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%/s",
+        },
+        {
+            branch: [9],
+
+            title: "Astro Automation",
+            desc: `Automate <span class="green">Astro Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/Astrolabe','Icons/Automation'],
+            
+            cost: i => 1e8,
+            bulk: i => 1,
+        },
+        {
+            branch: [4],
+
+            title: "Funspansion",
+            desc: `<span class="green">Fun</span> and <span class="green">SFRGT Upgrades</span> are not reset on sacrifice.<br>Unlocks new <span class="green">SFRGT Upgrades</span>.`,
+
+            icon: ['Curr/SuperFun','Icons/Automation'],
+            
+            cost: i => 1e7,
+            bulk: i => 1,
+        },
+
+        {
+            branch: [6],
+
+            max: 20,
+
+            title: "Astral to Cosmic",
+            desc: `<span class="green">+0.05</span> to base that boosts Cosmic by Astral per level. (starting base is 1).`,
+
+            icon: ['Icons/SP','Icons/StarProgression'],
+
+            cost: i => Math.ceil(1e9*10**i**1.2),
+            bulk: i => i.div(1e9).max(1).log(10).root(1.2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1+i/20,player.astral)
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            branch: [14],
+
+            max: 10,
+
+            title: "Limit Generator",
+            desc: `Increase <b class="green">Prestige & Crystal Charges</b>' maximum limit by <b class="green">+1,000</b> per level.`,
+
+            icon: ['Icons/Generator','Icons/Automation2'],
+            
+            cost: i => Math.ceil(1e9*10**i**1.15),
+            bulk: i => i.div(1e9).max(1).log(10).root(1.15).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i*1000
+        
+                return x
+            },
+            effDesc: x => "+"+format(x,0),
+        },
+        
+        {
+            branch: [12],
+
+            max: 1,
+
+            title: "Cloud Automation",
+            desc: `Automate <span class="green">Cloud Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/Cloud','Icons/Automation'],
+            
+            cost: i => 1e11,
+            bulk: i => 1,
+        },
+        {
+            branch: [13],
+
+            max: 100,
+
+            title: "Astro Generation",
+            desc: `Passively generates <span class="green">+1%</span> of astro you would earn on astrolabe per second.`,
+
+            icon: ['Curr/Astrolabe','Icons/Automation'],
+            
+            cost: i => Math.ceil(1e12*1.5**i),
+            bulk: i => i.div(1e12).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%/s",
+        },
+        {
+            branch: [11],
+
+            max: 100,
+
+            title: "Dark Matter Generation",
+            desc: `Passively generates <span class="green">+1%</span> of dark matter you would earn on sacrifice per second.`,
+
+            icon: ['Curr/DarkMatter','Icons/Automation'],
+            
+            cost: i => Math.ceil(1e12*1.5**i),
+            bulk: i => i.div(1e12).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%/s",
+        },
+        {
+            branch: [16],
+
+            max: 1,
+
+            title: "Funny Automation",
+            desc: `Automate <span class="green">Fun & SFRGT Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/Fun','Icons/Automation'],
+
+            cost: i => 1e11,
+            bulk: i => 1,
+        },
+        {
+            branch: [10],
+
+            max: 1,
+
+            title: "Ring Generation III",
+            desc: `Increase ring generation by <span class="green">10x</span>.`,
+
+            icon: ['Curr/Ring','Icons/Automation'],
+            
+            cost: i => 1e12,
+            bulk: i => 1,
+        },
     ],
 }
 
@@ -836,7 +1788,15 @@ function drawTreeBranch(id, num1, num2) {
     tree_ctx.stroke();
 }
 
-el.setup.star_chart = _=>{
+const SC_ICONS = {
+    auto: ["Bases/SpaceBase",'Curr/Star'],
+    speed: ["Bases/SpaceBase",'Curr/Star'],
+    progress: ["Bases/SpaceBase",'Curr/Star'],
+    ring: ["Bases/RingBase",'Curr/Ring'],
+    reserv: ["Bases/ResBase",'Curr/Res4'],
+}
+
+el.setup.star_chart = ()=>{
     let nt = new Element("star_chart_table")
     let h = ""
 
@@ -855,13 +1815,14 @@ el.setup.star_chart = _=>{
 
                 if (Number.isInteger(i) || i != "") {
                     let tu = STAR_CHART[id][i]
-                    let icon = ['Bases/SpaceBase']
-                    if (tu.icon) for (ic in tu.icon) icon.push(tu.icon[ic])
+                    let icon = [SC_ICONS[id][0]]
+                    if (tu.icon) icon.push(...tu.icon)
                     else icon.push('Icons/Placeholder')
 
                     h2 += `
                     <div class="sc_upg_ctn" id="sc_upg_${id}${i}" onclick="tmp.sc_choosed = ['${id}',${i}]">`
-                    for (ic in icon) h2 += `<img draggable="false" src="${"images/"+icon[ic]+".png"}">`
+                    for (ic in icon) h2 += `<img class="img_desc" draggable="false" src="${"images/"+icon[ic]+".png"}">`
+                    h2 += `<img class="img_res" draggable="false" src="${"images/"+SC_ICONS[id][0]+".png"}"><img class="img_res" draggable="false" src="${"images/"+SC_ICONS[id][1]+".png"}">`
                     
                     h2 += `
                         <div id="sc_upg_${id}${i}_cost" class="scu_cost">??? Stars</div>
@@ -894,8 +1855,12 @@ function starTreeAmt(id,i) { return player.star_chart[id][i]||0 }
 
 function updateSCTemp() {
     let star = player.stars
+    let ring = player.planetoid.ring
+    let reserv = player.planetoid.reserv
 
     for (let id in STAR_CHART) {
+        let res = id == 'ring' ? ring : id == 'reserv' ? reserv : star
+
         let tt = tmp.star_chart[id]
 
         for (let i = 0; i < STAR_CHART[id].length; i++) {
@@ -904,10 +1869,10 @@ function updateSCTemp() {
 
             tt.max[i] = tu.max||1
             tt.cost[i] = tu.cost(amt)
-            tt.bulk[i] = Decimal.gte(star,SC_SCOST[id][i])?Math.min(tu.bulk(star),tt.max[i]):0
+            tt.bulk[i] = Decimal.gte(res,SC_SCOST[id][i])?Math.min(tu.bulk(res),tt.max[i]):0
 
             let unl = tu.unl?tu.unl():true
-            let afford = star.gte(tt.cost[i])
+            let afford = res.gte(tt.cost[i])
             if (tu.branch) for (let y in tu.branch) if (!hasStarTree(id,tu.branch[y])) {
                 afford = false
                 unl = false
@@ -922,7 +1887,7 @@ function updateSCTemp() {
     }
 }
 
-tmp_update.push(_=>{
+tmp_update.push(()=>{
     updateSCTemp()
 })
 
@@ -931,9 +1896,11 @@ function buySCUpgrade(id,x) {
 
     let amt = player.star_chart[id]
 
-    if ((amt[x]||0) < tu.max[x]) if (Decimal.gte(player.stars,tu.cost[x])) {
+    if ((amt[x]||0) < tu.max[x]) if (Decimal.gte(id == 'ring' ? player.planetoid.ring : id == 'reserv' ? player.planetoid.reserv : player.stars,tu.cost[x])) {
 
-        player.stars = player.stars.sub(tu.cost[x]).max(0)
+        if (id == 'reserv') player.planetoid.reserv = player.planetoid.reserv.sub(tu.cost[x]).max(0)
+        else if (id == 'ring' && !hasStarTree('reserv',11)) player.planetoid.ring = player.planetoid.ring.sub(tu.cost[x]).max(0)
+        else player.stars = player.stars.sub(tu.cost[x]).max(0)
         amt[x] = amt[x] ? amt[x] + 1 : 1
 
         updateSCTemp()
@@ -947,14 +1914,17 @@ function buyNextSCUpgrade(id,x) {
     let amt = player.star_chart[id]
 	let amt2 = amt[x]||0
 
-	if (amt2 < tu.max[x] && Decimal.gte(player.stars,tu.cost[x])) {
+	if (amt2 < tu.max[x] && Decimal.gte(id == 'ring' ? player.planetoid.ring : id == 'reserv' ? player.planetoid.reserv : player.stars,tu.cost[x])) {
 		let bulk = Math.min(tu.bulk[x], Math.ceil((amt2 + 1) / 25) * 25)
 
 		if (bulk > amt2) {
 			let cost = upg.cost(bulk-1)
 
 			amt[x] = Math.min(amt[x] ? Math.max(amt[x],bulk) : bulk,tu.max[x])
-			player.stars = player.stars.sub(cost).max(0)
+
+            if (id == 'reserv') player.planetoid.reserv = player.planetoid.reserv.sub(cost).max(0)
+            else if (id == 'ring' && !hasStarTree('reserv',11)) player.planetoid.ring = player.planetoid.ring.sub(cost).max(0)
+			else player.stars = player.stars.sub(cost).max(0)
 
 			updateSCTemp()
 		}
@@ -970,14 +1940,17 @@ function buyMaxSCUpgrade(id,x) {
         let amt = player.star_chart[id]
 	    let amt2 = amt[x]||0
 
-        if (amt2 < tu.max[x]) if (Decimal.gte(player.stars,tu.cost[x])) {
+        if (amt2 < tu.max[x]) if (Decimal.gte(id == 'ring' ? player.planetoid.ring : id == 'reserv' ? player.planetoid.reserv : player.stars,tu.cost[x])) {
             let bulk = tu.bulk[x]
 
             if (bulk > amt2) {
                 let cost = upg.cost(bulk-1)
 
                 amt[x] = Math.min(amt[x] ? Math.max(amt[x],bulk) : bulk,tu.max[x])
-                player.stars = player.stars.sub(cost).max(0)
+
+                if (id == 'reserv') player.planetoid.reserv = player.planetoid.reserv.sub(cost).max(0)
+                else if (id == 'ring' && !hasStarTree('reserv',11)) player.planetoid.ring = player.planetoid.ring.sub(cost).max(0)
+			    else player.stars = player.stars.sub(cost).max(0)
 
                 updateSCTemp()
             }
@@ -985,18 +1958,34 @@ function buyMaxSCUpgrade(id,x) {
     }
 }
 
+function buyMaxSCs() {
+    let id = tmp.sc_tab, sc = STAR_CHART[id]
+    for (i in sc) if (tmp.sc_unl[id][i]) buyMaxSCUpgrade(id,i)
+}
+
 function updateStarChart() {
     let star = player.stars
-    let ch = tmp.sc_choosed
+    let ring = player.planetoid.ring
+    let reserv = player.planetoid.reserv
 
-    tmp.el.starAmt.setTxt(star.format(0))
+    let ch = tmp.sc_choosed
+    let sc_tab = tmp.sc_tab
+
+    tmp.el.starAmt.setTxt(sc_tab == 'ring'?ring.format(0)+" Rings":sc_tab == 'reserv'?reserv.format(0)+" Reservatorium":star.format(0)+" Stars")
 
     tmp.el.sc_desc_div.setDisplay(ch[0])
+
+    tmp.el.buy_all_sc.setDisplay(sc_tab == 'ring')
+
+    tmp.el.planetoidUnl.setDisplay(player.planetoid.firstEnter)
     if (ch[0]) {
         let [id, i] = ch
         let tt = tmp.star_chart[id]
         let tu = STAR_CHART[id][i]
         let amt = player.star_chart[id][i]||0
+
+        let res = id == 'ring' ? ring : id == 'reserv' ? reserv : star
+        let resDisplay = id == 'ring' ? 'Rings' : id == 'reserv' ? 'Reservatorium' : 'Stars'
 
         tmp.el.sc_title.setHTML(`[${id}-#${i}] <h3>${tu.title}</h3>`)
 
@@ -1012,9 +2001,11 @@ function updateStarChart() {
             let cost2 = tu.costOnce?Decimal.mul(tt.cost[i],m-amt%m):tu.cost((Math.floor(amt/m)+1)*m-1)//upg.cost(amt+25)
             
             h += `
-            <br><span class="${Decimal.gte(star,cost2)?"green":"red"}">Cost to next 25: ${format(cost2,0)} Stars</span>
-            <br><span class="${Decimal.gte(star,tt.cost[i])?"green":"red"}">Cost: ${format(tt.cost[i],0)} Stars</span>
-            ` // <br>You have ${format(res,0)} Stars
+            <br><span class="${Decimal.gte(res,cost2)?"green":"red"}">Cost to next 25: ${format(cost2,0)} ${resDisplay}</span>
+            <br><span class="${Decimal.gte(res,tt.cost[i])?"green":"red"}">Cost: ${format(tt.cost[i],0)} ${resDisplay}</span>
+            `
+
+            // if (id == "ring") h += `<br>You have ${format(res,0)} ${resDisplay}`
         }
 
         tmp.el.sc_desc.setHTML(h)
@@ -1023,6 +2014,9 @@ function updateStarChart() {
     for (let id in STAR_CHART) {
         let d = tmp.sc_tab == id
         let tt = tmp.star_chart[id]
+
+        let res = id == 'ring' ? ring : id == 'reserv' ? reserv : star
+        let resDisplay = id == 'ring' ? 'Rings' : id == 'reserv' ? 'Reservatorium' : 'Stars'
 
         tmp.el["star_chart_"+id].setDisplay(d)
 
@@ -1041,8 +2035,8 @@ function updateStarChart() {
                 let amt = player.star_chart[id][i]||0
 
                 tmp.el[id2+"_amt"].setTxt(amt)
-                tmp.el[id2+"_cost"].setTxt(amt < tt.max[i] ? format(tt.cost[i],0,6)+" Stars" : "Maxed")
-                tmp.el[id2+"_cost"].setClasses({scu_cost: true, locked: star.lt(tt.cost[i]) && amt < tt.max[i]})
+                tmp.el[id2+"_cost"].setTxt(amt < tt.max[i] ? format(tt.cost[i],0,6) : "Maxed") // +" "+resDisplay
+                tmp.el[id2+"_cost"].setClasses({scu_cost: true, locked: res.lt(tt.cost[i]) && amt < tt.max[i]})
             }
         }
     }

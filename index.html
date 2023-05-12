@@ -3,6 +3,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/grass.png">
     <title>Really Grass Cutting Incremental</title>
 
     <script src="js/break_eternity.js"></script>
@@ -37,6 +38,7 @@
     <script src="js/features/funify.js"></script>
     <script src="js/features/sacrifice.js"></script>
     <script src="js/features/recel.js"></script>
+    <script src="js/features/planetoid.js"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -47,7 +49,7 @@
         <div class="table_space">
             <div id="grass_div" style="margin: 10px;">
                 <div class="table_between">
-                    <img src="images/grass.png">
+                    <div id="grass-image"></div>
                     <div>
                         <span id="grassAmt"></span> <span id="grassGain"></span>
                     </div>
@@ -97,6 +99,7 @@
                         <div class="upgs_div" id="upgs_div_grass"></div>
                         <div class="upgs_div" id="upgs_div_aGrass"></div>
                         <div class="upgs_div" id="upgs_div_unGrass"></div>
+                        <div class="upgs_div" id="upgs_div_planetarium"></div>
                     </div>
                 </div>
             </div><div id="map_div_opt">
@@ -110,19 +113,22 @@
                 <button onclick="changeGHMult()" id="multGHButton">Multi-Grasshop: <span id="multGHOption">OFF</span></button>
                 <button onclick="changeGSMult()" id="multGSButton">Multi-Grass-skip: <span id="multGSOption">OFF</span></button>
                 <br><br>
-                Really Grass Cutting Incremental - v0.4.3.1 - Made by MrRedShark77<br>
+                Really Grass Cutting Incremental - v0.4.4 pre-release 1 - Planetoid Test - Made by MrRedShark77<br>
                 The game inspired by <a href="https://www.roblox.com/games/9292879820">Grass Cutting Incremental</a><br>
                 <b class="red">Warning! Recommended size is 1920x1080! You may change zoom!</b><br><br>
-                Endgame: Level 6000+, Tier 740+; Level 80+ in Unnatural Realm; 37+ Grass-skip; AGHGS 32+
+                Endgame: Level 11,000+, Tier 1,100+; Level 250+ in Unnatural Realm; Level 200+ in Planetoid;
             </div><div id="map_div_p">
                 <div style="width: 100%; height: 50%;">
                     <div class="upgs_div" id="upgs_div_perk"></div>
+                    <div class="upgs_div" id="upgs_div_observ"></div>
                 </div><div style="width: 100%; height: 50%;">
                     <div class="upgs_div" id="upgs_div_plat"></div>
                 </div>
             </div><div id="map_div_auto">
                 <div style="width: 100%; height: 50%;">
                     <div class="upgs_div" id="upgs_div_auto"></div>
+                </div><div style="width: 100%; height: 50%;">
+                    <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_formRing"></div></div>
                 </div>
             </div><div id="map_div_pc">
                 <div style="width: 100%; height: 50%;" class="table_center">
@@ -130,15 +136,27 @@
                         <div class="reset_div" id="reset_div_pp"></div>
                         <div class="reset_div" id="reset_div_ap"></div>
                         <div class="reset_div" id="reset_div_np"></div>
+                        <div class="reset_div" id="reset_div_astro"></div>
                     </div>
                     <div style="width: 67%; height: 100%;">
                         <div class="upgs_div" id="upgs_div_pp"></div>
                         <div class="upgs_div" id="upgs_div_ap"></div>
                         <div class="upgs_div" id="upgs_div_np"></div>
+                        <div class="upgs_div" id="upgs_div_astro"></div>
                     </div>
                 </div><div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 33%; height: 100%;"><div class="reset_div" id="reset_div_crystal"></div><div class="reset_div" id="reset_div_oil"></div></div>
-                    <div style="width: 67%; height: 100%;"><div class="upgs_div" id="upgs_div_crystal"></div><div class="upgs_div" id="upgs_div_oil"></div></div>
+                    <div style="width: 33%; height: 100%;">
+                        <div class="reset_div" id="reset_div_crystal"></div>
+                        <div class="reset_div" id="reset_div_oil"></div>
+                        <div class="reset_div" id="reset_div_cloud"></div>
+                        <div class="reset_div" id="reset_div_quadrant"></div>
+                    </div>
+                    <div style="width: 67%; height: 100%;">
+                        <div class="upgs_div" id="upgs_div_crystal"></div>
+                        <div class="upgs_div" id="upgs_div_oil"></div>
+                        <div class="upgs_div" id="upgs_div_cloud"></div>
+                        <div class="upgs_div" id="upgs_div_measure"></div>
+                    </div>
                 </div>
             </div><div id="map_div_chal" style="overflow-y: auto;">
                 <div id="chal_unl">
@@ -212,9 +230,14 @@
                         <button onclick="tmp.sc_tab = 'auto'">Automation Tree</button>
                         <button onclick="tmp.sc_tab = 'speed'">Speed Tree</button>
                         <button onclick="tmp.sc_tab = 'progress'">Progession Tree</button>
+                        <span id="planetoidUnl">
+                            <button onclick="tmp.sc_tab = 'ring'">Ring Tree</button>
+                            <button onclick="tmp.sc_tab = 'reserv'">Reservatorium Tree</button>
+                        </span>
                     </div>
-                </div><div style="position: absolute; right: 5px; top: 5px;">
-                    <span id="starAmt">0</span> Stars
+                </div><div style="position: absolute; right: 15px; top: 5px;">
+                    <button id="buy_all_sc" onclick="buyMaxSCs()">Buy All</button>
+                    <div id="starAmt" style="display: inline-block;"></div>
                 </div><canvas id="star_chart_canvas">
 
                 </canvas>
@@ -232,6 +255,8 @@
                 <div style="width: 100%; height: 50%;" class="table_center">
                     <div style="width: 33%; height: 100%;"><div class="reset_div" id="reset_div_sac"></div></div>
                     <div style="width: 67%; height: 100%;"><div class="upgs_div" id="upgs_div_dm" style="display: none;"></div></div>
+                </div><div style="width: 100%; height: 50%;" class="table_center">
+                    <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_enterPlanetoid"></div></div>
                 </div>
             </div><div id="map_div_stats">
                 <div id="stats_div">

@@ -1,19 +1,21 @@
 RESET.recel = {
-    unl: _=>hasUpgrade('funnyMachine',4),
+    unl: ()=>hasUpgrade('funnyMachine',4),
 
-    req: _=>true,
-    reqDesc: _=>"",
+    req: ()=>true,
+    reqDesc: ()=>"",
 
     resetDesc: `<span style="font-size: 14px;">Recelerating will temporarily slow down time and reduce the effectiveness of everything significantly until you press the Accelerate button.
     <br>During this time you will not be able to earn regular grass, Instead you earn unnatural grass which is spent in unnatural grass upgrades panel which takes the place of regular Grass Upgrades panel.
     These upgrades affect the normal and anti realm, are kept on galactic/sacrifice.<br>However, and level scales instantly.
     </span>`,
-    resetGain: _=> `Recelerating will force a Steelie.`,
+    resetGain: ()=> `Recelerating will force a Steelie.`,
 
     title: `Recelerator`,
     resetBtn: `Recelerate`,
 
     reset(force=false) {
+        if (player.planetoid.active) return;
+
         if (true) {
             let aa = player.aRes
 
@@ -50,18 +52,18 @@ RESET.recel = {
     },
 }
 
-el.update.recel = _=>{
+el.update.recel = ()=>{
     if (mapID == "rp") tmp.el.reset_btn_recel.setTxt(player.recel?"Accelerate":"Recelerate")
 }
 
 UPGS.unGrass = {
-    unl: _=> player.recel,
+    unl: ()=> player.recel,
 
     title: "Unnatural Grass Upgrades",
 
-    autoUnl: _=>false,
+    autoUnl: ()=>hasStarTree('reserv',1),
 
-    noSpend: _=>false,
+    noSpend: ()=>hasStarTree('reserv',1),
 
     ctn: [
         {

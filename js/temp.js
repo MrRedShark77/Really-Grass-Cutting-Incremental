@@ -73,21 +73,45 @@ function resetTemp() {
                 bulk: [],
                 eff: [],
             },
+            ring: {
+                max: [],
+                cost: [],
+                bulk: [],
+                eff: [],
+            },
+            reserv: {
+                max: [],
+                cost: [],
+                bulk: [],
+                eff: [],
+            },
         },
 
         sc_unl: {
             auto: [],
             speed: [],
             progress: [],
+            ring: [],
+            reserv: [],
         },
 
         sc_afford: {
             auto: [],
             speed: [],
             progress: [],
+            ring: [],
+            reserv: [],
         },
 
         astral_eff: {},
+
+        cosmicLevel: {
+
+        },
+
+        pass: 0,
+
+        reservConvert: 0,
     }
 
     for (let x in UPG_RES) tmp.upg_res[x] = E(0)

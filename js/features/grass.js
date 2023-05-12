@@ -7,8 +7,10 @@ var mouse_in = false
 
 function createGrass() {
     if (tmp.grasses.length < tmp.grassCap) {
-        let pl = Math.random()<tmp.platChance&&player.tier>=3
-        let ms = Math.random()<tmp.moonstoneChance&&pl&&player.gTimes>0
+        let pl_active = player.planetoid.active
+
+        let pl = pl_active?Math.random()<tmp.observChance:Math.random()<tmp.platChance&&player.tier>=3
+        let ms = !pl_active&&Math.random()<tmp.moonstoneChance&&pl&&player.gTimes>0
 
         tmp.grasses.push({
             x: Math.random(),
@@ -26,26 +28,35 @@ function removeGrass(i,auto=false) {
     let y = 1
     if (auto) y *= tmp.autocutBonus
 
-    if (player.recel) player.unGrass = player.unGrass.add(tmp.grassGain.mul(y))
-    else if (player.decel) player.aGrass = player.aGrass.add(tmp.grassGain.mul(y))
-    else player.grass = player.grass.add(tmp.grassGain.mul(y))
-    player.xp = player.xp.add(tmp.XPGain.mul(y))
-    if (player.pTimes > 0) player.tp = player.tp.add(tmp.TPGain.mul(y))
-    if (player.gTimes > 0) player.sp = player.sp.add(tmp.SPGain)
+    if (player.planetoid.active) {
+        player.planetoid.pm = player.planetoid.pm.add(tmp.planetiumGain)
+        player.planetoid.xp = player.planetoid.xp.add(tmp.cosmicGain)
 
-    if (tg.pl) player.plat += tmp.platGain * (tmp.platCutAmt ? y : 1)
-    if (tg.ms) player.moonstone += tmp.moonstoneGain * (tmp.moonstonesCutAmt ? y : 1)
+        if (tg.pl) player.planetoid.observ = player.planetoid.observ.add(tmp.observGain)
+    } else {
+        if (player.recel) player.unGrass = player.unGrass.add(tmp.grassGain.mul(y))
+        else if (player.decel) player.aGrass = player.aGrass.add(tmp.grassGain.mul(y))
+        else player.grass = player.grass.add(tmp.grassGain.mul(y))
+        player.xp = player.xp.add(tmp.XPGain.mul(y))
+        if (player.pTimes > 0) player.tp = player.tp.add(tmp.TPGain.mul(y))
+
+        if (tg.pl) player.plat += tmp.platGain * (tmp.platCutAmt ? y : 1)
+        if (tg.ms) player.moonstone += tmp.moonstoneGain * (tmp.moonstonesCutAmt ? y : 1)
+    }
+
+    if (player.gTimes > 0) player.sp = player.sp.add(tmp.SPGain)
 
     tmp.grasses.splice(i, 1)
 }
 
-el.update.grassCanvas = _=>{
-    if (mapID == 'g') {
+el.update.grassCanvas = ()=>{
+    if (mapID == 'g' && !tmp.space) {
         if (grass_canvas.width == 0 || grass_canvas.height == 0) resizeCanvas()
+        tmp.el.grass_canvas.setClasses({planetoid: player.planetoid.active})
         drawGrass()
 
         tmp.el.grass_cap.setHTML(`${format(tmp.grasses.length,0)} / ${format(tmp.grassCap,0)} <span class="smallAmt">(+${format(1/tmp.grassSpawn*tmp.spawnAmt)}/s)</span>`)
-        tmp.el.grass_cut.setHTML("+"+format(tmp.grassGain,1)+'<span class="smallAmt">/cut</span>')
+        tmp.el.grass_cut.setHTML("+"+format(player.planetoid.active?tmp.planetiumGain:tmp.grassGain,1)+'<span class="smallAmt">/cut</span>')
     }
 }
 
@@ -56,6 +67,9 @@ function resetGlasses() {
 
 function drawGrass() {
 	if (!retrieveCanvasData()) return;
+
+    let pl_active = player.planetoid.active
+
 	grass_ctx.clearRect(0, 0, grass_canvas.width, grass_canvas.height);
     let gs = tmp.grasses
 
@@ -71,7 +85,7 @@ function drawGrass() {
         let g = gs[i]
 
         if (g) {
-            grass_ctx.fillStyle = g.pl?g.ms?'#008DFF':"#DDD":"#00AF00"
+            grass_ctx.fillStyle = pl_active?g.pl?"#6C69C6":"#8500A3":g.pl?g.ms?'#008DFF':"#DDD":"#00AF00"
 
             let [x,y] = [Math.min(grass_canvas.width*g.x,grass_canvas.width-G_SIZE),Math.min(grass_canvas.height*g.y,grass_canvas.height-G_SIZE)]
 

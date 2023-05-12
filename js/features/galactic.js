@@ -19,18 +19,20 @@ MAIN.gal = {
 
         x = x.mul(upgEffect('dm',4))
 
+        x = x.mul(starTreeEff('ring',10)).mul(starTreeEff('ring',22))
+
         return x.floor()
     },
 }
 
 RESET.gal = {
-    unl: _=>player.rocket.part>=1,
+    unl: ()=>player.rocket.part>=1,
 
-    req: _=>player.rocket.part>=10,
-    reqDesc: _=>`Reach 10 rocket parts.`,
+    req: ()=>player.rocket.part>=10,
+    reqDesc: ()=>`Reach 10 rocket parts.`,
 
     resetDesc: `Reset EVERYTHING except rocket fuel upgrades.<br>First galactic breaks rocket part's limit.<br>Gain more Stars based on rocket parts, starting at 10.`,
-    resetGain: _=> `Gain <b>${tmp.starGain.format(0)}</b> Stars`,
+    resetGain: ()=> `Gain <b>${tmp.starGain.format(0)}</b> Stars`,
 
     title: `Galactic`,
     resetBtn: `Go Galaxy!`,
@@ -81,8 +83,10 @@ RESET.gal = {
         player.bestAP = E(0)
         player.aGrass = E(0)
         player.aBestGrass = E(0)
-        player.bestOil2 = E(0)
-        player.bestAP2 = E(0)
+        if (!hasStarTree('reserv',12)) {
+            player.bestOil2 = E(0)
+            player.bestAP2 = E(0)
+        }
         player.aRes.level = 0
         player.aRes.tier = 0
         player.aRes.xp = E(0)
@@ -136,7 +140,7 @@ function getASEff(id,def=1) { return tmp.astral_eff[id]||def }
 UPGS.moonstone = {
     title: "Moonstone Upgrades",
 
-    underDesc: _=>`You have ${format(player.moonstone,0)} Moonstone (${formatPercent(tmp.moonstoneChance)} platinum grow chance)`,
+    underDesc: ()=>`You have ${format(player.moonstone,0)} Moonstone (${formatPercent(tmp.moonstoneChance)} platinum grow chance)`,
 
     ctn: [
         {
@@ -242,7 +246,7 @@ UPGS.moonstone = {
         },{
             max: 100,
 
-            unl: _=>hasUpgrade('funnyMachine',1),
+            unl: ()=>hasUpgrade('funnyMachine',1),
 
             costOnce: true,
 
@@ -264,7 +268,7 @@ UPGS.moonstone = {
         },{
             max: 10,
 
-            unl: _=>player.lowGH<=-20,
+            unl: ()=>player.lowGH<=-20,
 
             costOnce: true,
 
@@ -286,7 +290,7 @@ UPGS.moonstone = {
         },{
             max: 10,
 
-            unl: _=>player.sacTimes>0,
+            unl: ()=>player.sacTimes>0,
 
             costOnce: true,
 
@@ -309,7 +313,7 @@ UPGS.moonstone = {
     ],
 }
 
-tmp_update.push(_=>{
+tmp_update.push(()=>{
     let mg = MAIN.gal
     
     tmp.starGain = mg.gain()
@@ -317,14 +321,16 @@ tmp_update.push(_=>{
     tmp.astral_eff = ASTRAL.eff()
 })
 
-el.update.space = _=>{
-    if (mapID2 == 'sc') {
-        updateStarChart()
-        if (tree_canvas.width == 0 || tree_canvas.height == 0) resizeCanvas2()
-        drawTree()
-    }
-    if (mapID2 == 'at') {
-        tmp.el.astral2.setTxt(format(player.astral,0))
-        tmp.el.astral_eff.setHTML(ASTRAL.effDesc(tmp.astral_eff))
+el.update.space = ()=>{
+    if (tmp.space) {
+        if (mapID2 == 'sc') {
+            updateStarChart()
+            if (tree_canvas.width == 0 || tree_canvas.height == 0) resizeCanvas2()
+            drawTree()
+        }
+        if (mapID2 == 'at') {
+            tmp.el.astral2.setTxt(format(player.astral,0))
+            tmp.el.astral_eff.setHTML(ASTRAL.effDesc(tmp.astral_eff))
+        }
     }
 }

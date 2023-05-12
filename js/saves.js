@@ -2,6 +2,8 @@ function E(x){return new Decimal(x)};
 
 const VER = 0.0402
 const EINF = Decimal.dInf
+const BETA = true
+const save_name = BETA ? "rgci_beta_save" : "gci_save"
 
 Math.lerp = function (value1, value2, amount) {
 	amount = amount < 0 ? 0 : amount;
@@ -75,6 +77,10 @@ Decimal.prototype.softcapHTML = function (start) { return softcapHTML(this.clone
 
 function randint(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
+}
+
+function gainHTML(amt,gain,pass=0) {
+    return pass>0?" <span class='smallAmt'>"+formatGain(amt,gain.mul(pass))+"</span>":''
 }
 
 function getPlayerData() {
@@ -174,6 +180,8 @@ function getPlayerData() {
             auto: [],
             speed: [],
             progress: [],
+            ring: [],
+            reserv: [],
         },
 
         fTimes: 0,
@@ -197,6 +205,13 @@ function getPlayerData() {
         bestNP: E(0),
         bestNP2: E(0),
         nTimes: 0,
+
+        cloud: E(0),
+        bestCloud: E(0),
+        bestCloud2: E(0),
+        cloudUnl: false,
+
+        planetoid: getPlanetoidSave(),
 
         time: 0,
         version: VER,
@@ -292,9 +307,9 @@ function cannotSave() { return false }
 function save(){
     let str = btoa(JSON.stringify(player))
     if (cannotSave() || findNaN(str, true)) return
-    if (localStorage.getItem("gci_save") == '') wipe()
-    localStorage.setItem("gci_save",str)
-    tmp.prevSave = localStorage.getItem("gci_save")
+    if (localStorage.getItem(save_name) == '') wipe()
+    localStorage.setItem(save_name,str)
+    tmp.prevSave = localStorage.getItem(save_name)
     console.log("Game Saved")
 }
 
@@ -342,7 +357,7 @@ function importy() {
         if (loadgame != null) {
             let keep = player
             try {
-                setTimeout(_=>{
+                setTimeout(()=>{
                     if (findNaN(loadgame, true)) {
                         addNotify("Error Importing, because it got NaNed")
                         return
@@ -361,7 +376,7 @@ function importy() {
 }
 
 function loadGame(start=true, gotNaN=false) {
-    if (!gotNaN) tmp.prevSave = localStorage.getItem("gci_save")
+    if (!gotNaN) tmp.prevSave = localStorage.getItem(save_name)
     wipe()
     load(tmp.prevSave)
     resetTemp()

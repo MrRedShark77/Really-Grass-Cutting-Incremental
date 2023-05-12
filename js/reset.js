@@ -1,6 +1,6 @@
 const RESET = {}
 
-el.setup.reset = _=>{
+el.setup.reset = ()=>{
     for (x in RESET) {
         let resetTable = new Element("reset_div_"+x)
 
@@ -25,11 +25,11 @@ el.setup.reset = _=>{
         }
     }
 
-    document.getElementById('reset_auto_gh').onclick = _=>{
+    document.getElementById('reset_auto_gh').onclick = ()=>{
         player.autoGH = !player.autoGH
     }
 
-    document.getElementById('reset_auto_gs').onclick = _=>{
+    document.getElementById('reset_auto_gs').onclick = ()=>{
         player.autoGS = !player.autoGS
     }
 }
@@ -52,7 +52,7 @@ function updateResetHTML(id) {
     }
 }
 
-el.update.reset = _=> {
+el.update.reset = ()=> {
     if (mapID == 'pc') {
         updateResetHTML('pp')
         updateResetHTML('crystal')
@@ -61,22 +61,31 @@ el.update.reset = _=> {
         updateResetHTML('oil')
 
         updateResetHTML('np')
+        updateResetHTML('cloud')
+
+        updateResetHTML('astro')
+        updateResetHTML('quadrant')
     }
-    if (mapID == 'gh') {
+    else if (mapID == 'gh') {
         updateResetHTML('gh')
         updateResetHTML('steel')
         updateResetHTML('gs')
         updateResetHTML('fun')
     }
-    if (mapID == 'as') {
+    else if (mapID == 'as') {
         updateResetHTML('decel')
     }
-    if (mapID == 'rp') {
+    else if (mapID == 'rp') {
         updateResetHTML('rocket_part')
         updateResetHTML('gal')
         updateResetHTML('recel')
     }
+    else if (mapID == 'auto') {
+        updateResetHTML('formRing')
+    }
+
     if (mapID2 == 'sac') {
         updateResetHTML('sac')
+        updateResetHTML('enterPlanetoid')
     }
 }

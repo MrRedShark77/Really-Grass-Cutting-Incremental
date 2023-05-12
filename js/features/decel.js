@@ -1,19 +1,21 @@
 RESET.decel = {
-    unl: _=>hasUpgrade('factory',4),
+    unl: ()=>hasUpgrade('factory',4),
 
-    req: _=>true,
-    reqDesc: _=>"",
+    req: ()=>true,
+    reqDesc: ()=>"",
 
     resetDesc: `<span style="font-size: 14px;">Decelerating will temporarily slow down time and reduce the effectiveness of everything significantly until you press the Accelerate button.
     <br>During this time you will not be able to earn regular grass, Instead you earn anti-grass which is spent in Anti-grass upgrades panel which takes the place of regular Grass Upgrades panel.
     These upgrades affect the normal realm.<br>However, and level scales instantly.
     </span>`,
-    resetGain: _=> `Decelerating will force a Steelie.`,
+    resetGain: ()=> `Decelerating will force a Steelie.`,
 
     title: `Decelerator`,
     resetBtn: `Decelerate`,
 
     reset(force=false) {
+        if (player.planetoid.active) return;
+        
         if (true) {
             let aa = player.unRes
 
@@ -50,20 +52,20 @@ RESET.decel = {
     },
 }
 
-el.update.decel = _=>{
+el.update.decel = ()=>{
     tmp.el.fog.setDisplay(player.decel || player.recel)
     tmp.el.fog.changeStyle('background-color',player.recel?"#1f3b00":"#001c3b")
     if (mapID == "as") tmp.el.reset_btn_decel.setTxt(player.decel?"Accelerate":"Decelerate")
 }
 
 UPGS.aGrass = {
-    unl: _=> player.decel,
+    unl: ()=> player.decel,
 
     title: "Anti-Grass Upgrades",
 
-    autoUnl: _=>hasUpgrade('auto',14),
+    autoUnl: ()=>hasUpgrade('auto',14),
 
-    noSpend: _=>hasUpgrade('auto',16),
+    noSpend: ()=>hasUpgrade('auto',16),
 
     ctn: [
         {

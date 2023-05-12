@@ -25,13 +25,13 @@ MAIN.pp = {
 }
 
 RESET.pp = {
-    unl: _=> !tmp.outsideNormal,
+    unl: ()=> !tmp.outsideNormal,
 
-    req: _=>player.level>=30,
-    reqDesc: _=>`Reach Level 30 to Prestige.`,
+    req: ()=>player.level>=30,
+    reqDesc: ()=>`Reach Level 30 to Prestige.`,
 
     resetDesc: `Prestiging resets your grass, grass upgrades, level and perks for Prestige Points (PP).<br>Gain more PP based on your level and grass.`,
-    resetGain: _=> `Gain <b>${tmp.ppGain.format(0)}</b> Prestige Points`,
+    resetGain: ()=> `Gain <b>${tmp.ppGain.format(0)}</b> Prestige Points`,
 
     title: `Prestige`,
     resetBtn: `Prestige`,
@@ -72,19 +72,19 @@ RESET.pp = {
 }
 
 UPGS.pp = {
-    unl: _=> !tmp.outsideNormal,
+    unl: ()=> !tmp.outsideNormal,
 
     title: "Prestige Upgrades",
 
-    cannotBuy: _=>inChal(4) || inChal(7),
+    cannotBuy: ()=>inChal(4) || inChal(7),
 
-    autoUnl: _=>hasUpgrade('auto',5),
-    noSpend: _=>hasUpgrade('auto',9),
+    autoUnl: ()=>hasUpgrade('auto',5),
+    noSpend: ()=>hasUpgrade('auto',9),
 
-    req: _=>player.pTimes > 0,
-    reqDesc: _=>`Prestige once to unlock.`,
+    req: ()=>player.pTimes > 0,
+    reqDesc: ()=>`Prestige once to unlock.`,
 
-    underDesc: _=>`You have ${format(player.pp,0)} Prestige Points`+(tmp.ppGainP > 0 ? " <span class='smallAmt'>"+formatGain(player.pp,tmp.ppGain.mul(tmp.ppGainP))+"</span>" : ""),
+    underDesc: ()=>`You have ${format(player.pp,0)} Prestige Points`+(tmp.ppGainP > 0 ? " <span class='smallAmt'>"+formatGain(player.pp,tmp.ppGain.mul(tmp.ppGainP))+"</span>" : ""),
 
     ctn: [
         {
@@ -167,13 +167,13 @@ MAIN.ap = {
 }
 
 RESET.ap = {
-    unl: _=> player.decel,
+    unl: ()=> player.decel,
 
-    req: _=>player.level>=30,
-    reqDesc: _=>`Reach Level 30 to Anonymity.`,
+    req: ()=>player.level>=30,
+    reqDesc: ()=>`Reach Level 30 to Anonymity.`,
 
     resetDesc: `Anonymity resets your anti-grass, anti-grass upgrades, level for Anonymity Points (AP).<br>Gain more AP based on your level and anti-grass.`,
-    resetGain: _=> `Gain <b>${tmp.apGain.format(0)}</b> Anonymity Points`,
+    resetGain: ()=> `Gain <b>${tmp.apGain.format(0)}</b> Anonymity Points`,
 
     title: `Anonymity`,
     resetBtn: `Anonymity`,
@@ -208,17 +208,17 @@ RESET.ap = {
 }
 
 UPGS.ap = {
-    unl: _=> player.decel,
+    unl: ()=> player.decel,
 
     title: "Anonymity Upgrades",
 
-    req: _=>player.aTimes > 0,
-    reqDesc: _=>`Anonymity once to unlock.`,
+    req: ()=>player.aTimes > 0,
+    reqDesc: ()=>`Anonymity once to unlock.`,
 
-    underDesc: _=>`You have ${format(player.ap,0)} Anonymity Points`+(hasUpgrade('factory',7) ? " <span class='smallAmt'>"+formatGain(player.ap,player.bestAP2.mul(tmp.oilRigBase))+"</span>" : ""),
+    underDesc: ()=>`You have ${format(player.ap,0)} Anonymity Points`+(hasUpgrade('factory',7) ? " <span class='smallAmt'>"+formatGain(player.ap,player.bestAP2.mul(tmp.oilRigBase))+"</span>" : ""),
 
-    autoUnl: _=>hasUpgrade('auto',15),
-    noSpend: _=>hasUpgrade('auto',19),
+    autoUnl: ()=>hasUpgrade('auto',15),
+    noSpend: ()=>hasUpgrade('auto',19),
 
     ctn: [
         {
@@ -342,20 +342,20 @@ MAIN.np = {
 
         tmp.npGainBase = x
 
-        x = x.mul(upgEffect('dm',6))
+        x = x.mul(upgEffect('dm',6)).mul(upgEffect('sfrgt',5)).mul(upgEffect('cloud',3))
 
         return x.floor()
     },
 }
 
 RESET.np = {
-    unl: _=> player.recel,
+    unl: ()=> player.recel,
 
-    req: _=>player.level>=50,
-    reqDesc: _=>`Reach Level 50 to Normality.`,
+    req: ()=>player.level>=50,
+    reqDesc: ()=>`Reach Level 50 to Normality.`,
 
     resetDesc: `Normality resets your unnatural grass, unnatural grass upgrades, level, charge and astral for Normality Points (NP).<br>Gain more NP based on your level and unnatural grass.`,
-    resetGain: _=> `Gain <b>${tmp.npGain.format(0)}</b> Normality Points`,
+    resetGain: ()=> `Gain <b>${tmp.npGain.format(0)}</b> Normality Points`,
 
     title: `Normality`,
     resetBtn: `Normality`,
@@ -394,17 +394,17 @@ RESET.np = {
 }
 
 UPGS.np = {
-    unl: _=> player.recel,
+    unl: ()=> player.recel,
 
     title: "Normality Upgrades",
 
-    req: _=>player.nTimes > 0,
-    reqDesc: _=>`Normality once to unlock.`,
+    req: ()=>player.nTimes > 0,
+    reqDesc: ()=>`Normality once to unlock.`,
 
-    underDesc: _=>`You have ${format(player.np,0)} Normality Points`,
+    underDesc: ()=>`You have ${format(player.np,0)} Normality Points`+(tmp.npGen>0 ? " <span class='smallAmt'>"+formatGain(player.np,player.bestNP2.mul(tmp.npGen))+"</span>" : ""),
 
-    autoUnl: _=>false,
-    noSpend: _=>false,
+    autoUnl: ()=>hasStarTree('reserv',8),
+    noSpend: ()=>hasStarTree('reserv',8),
 
     ctn: [
         {
@@ -483,7 +483,7 @@ UPGS.np = {
     ],
 }
 
-tmp_update.push(_=>{
+tmp_update.push(()=>{
     tmp.ppGain = MAIN.pp.gain()
     tmp.ppGainP = (upgEffect('auto',11,0)+upgEffect('gen',0,0))*upgEffect('factory',1,1)
 
