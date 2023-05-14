@@ -87,7 +87,9 @@ const MAIN = {
 
         let c = upgEffect('unGrass',3,1)
 
-        x *= upgEffect('astro',4,1)
+        c *= upgEffect('astro',4,1)
+
+        if (player.grassjump>=2) c **= 2
 
         tmp.compact = Math.min(c,tmp.gsBeforeCompact/100)
     },
@@ -126,6 +128,8 @@ const MAIN = {
         x = x.mul(starTreeEff('ring',2))
 
         x = x.mul(upgEffect('astro',3))
+
+        if (player.planetoid.planetTier>=6) x = x.mul(getPTEffect(3))
 
         if (player.decel) x = x.div(1e16)
 
@@ -251,18 +255,26 @@ const MAIN = {
     },
     astral: {
         req(i) {
-            i = E(i).scale(65,2,0)
+            let ap = player.astralPrestige
+            let b = Decimal.pow(10,ap*20+2)
 
-            let x = Decimal.pow(3,i).mul(100)
+            i += ap*50
+
+            i = E(i).scale(65,2+ap/5,0)
+
+            let x = Decimal.pow(3+ap/5,i).mul(b)
 
             return x.ceil()
         },
         bulk(i) {
-            let x = i.div(100)
-            if (x.lt(1)) return 0
-            x = x.log(3)
+            let ap = player.astralPrestige
+            let b = Decimal.pow(10,ap*20+2)
 
-            return Math.floor(x.scale(65,2,0,true).toNumber()+1)
+            let x = i.div(b)
+            if (x.lt(1)) return 0
+            x = x.log(3+ap/5)
+
+            return Math.floor(x.scale(65,2+ap/5,0,true).toNumber()-ap*50+1)
         },
         cur(i) {
             return i > 0 ? this.req(i-1) : E(0) 
@@ -288,8 +300,13 @@ const MAIN = {
         x = x.mul(upgEffect('np',1)).mul(upgEffect('cloud',1))
 
         x = x.mul(starTreeEff('ring',6)).mul(starTreeEff('ring',16)).mul(starTreeEff('ring',23))
+
+        if (player.grassjump>=3) x = x.mul(getGJEffect(2))
         
         if (player.lowGH <= -16) x = x.pow(1.25)
+        if (player.grassjump >= 1) x = x.pow(1.25)
+
+        x = x.pow(starTreeEff('ring',31))
 
         return x
     },
@@ -325,7 +342,7 @@ el.update.main = ()=>{
     tmp.el.tier.setDisplay(tier_unl)
     tmp.el.astral.setDisplay(astr_unl)
     if (tier_unl) tmp.el.tier.setHTML(`Tier <b class="yellow">${format(player.tier,0)}</b> (${formatPercent(tmp.tier.percent)})`)
-    if (astr_unl) tmp.el.astral.setHTML(`Astral <b class="magenta">${format(player.astral,0)}</b> (${formatPercent(tmp.astral.percent)})`)
+    if (astr_unl) tmp.el.astral.setHTML(`Astral <b class="magenta">${(player.astralPrestige>0?format(player.astralPrestige,0)+"-":"")+format(player.astral,0)}</b> (${formatPercent(tmp.astral.percent)})`)
 
     if (mapID == 'g') {
         let xpID = pa ? 'Cosmic' : 'XP'
@@ -349,7 +366,7 @@ el.update.main = ()=>{
         }
 
         if (astr_unl) {
-            tmp.el.astral_amt.setTxt(format(player.astral,0))
+            tmp.el.astral_amt.setTxt((player.astralPrestige>0?format(player.astralPrestige,0)+"-":"")+format(player.astral,0))
             tmp.el.astral_progress.setTxt(tmp.astral.progress.format(0)+" / "+tmp.astral.next.sub(tmp.astral.cur).format(0)+" SP")
             tmp.el.astral_bar.changeStyle("width",tmp.astral.percent*100+"%")
             tmp.el.astral_cut.setTxt("+"+tmp.SPGain.format(1)+" SP/cut")

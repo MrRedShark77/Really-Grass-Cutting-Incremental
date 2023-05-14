@@ -113,13 +113,16 @@ RESET.gal = {
 
 const ASTRAL = {
     eff() {
-        let a = player.astral
+        let a = tmp.total_astral
         let x = {}
 
         x.pp = a/100
         x.crystal = a/25
         x.plat = a+1
         x.steel = 1.1**a*a+1
+
+        if (player.astralPrestige>0) x.dm = getAPEff(0)
+        if (player.astralPrestige>1) x.ring = getAPEff(1)
 
         return x
     },
@@ -131,11 +134,15 @@ const ASTRAL = {
         Increase Steel gain by <b class="green">${formatMult(e.steel,1)}</b><br>
         `
 
+        if (e.dm) x += `Increase Dark Matter gain by <b class="green">${formatMult(e.dm,0)}</b><br>`
+        if (e.ring) x += `Increase Rings gain by <b class="green">${formatMult(e.ring,0)}</b><br>`
+
         return x
     },
 }
 
 function getASEff(id,def=1) { return tmp.astral_eff[id]||def }
+function getAPEff(id) { return Decimal.pow(AP_BONUS_BASE[id],player.astralPrestige-id) }
 
 UPGS.moonstone = {
     title: "Moonstone Upgrades",
@@ -329,7 +336,7 @@ el.update.space = ()=>{
             drawTree()
         }
         if (mapID2 == 'at') {
-            tmp.el.astral2.setTxt(format(player.astral,0))
+            tmp.el.astral2.setTxt((player.astralPrestige>0?format(player.astralPrestige,0)+"-":"")+format(player.astral,0))
             tmp.el.astral_eff.setHTML(ASTRAL.effDesc(tmp.astral_eff))
         }
     }

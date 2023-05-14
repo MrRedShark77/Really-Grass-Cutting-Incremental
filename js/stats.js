@@ -119,7 +119,7 @@ const STATS = {
             }
 
             if (player.planetoid.firstEnter) {
-                x = Decimal.mul(starTreeEff('ring',2),upgEffect('astro',3))
+                x = Decimal.mul(starTreeEff('ring',2),upgEffect('astro',3)).mul(upgEffect('planet',2))
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
@@ -309,6 +309,7 @@ const STATS = {
 
             if (player.lowGH <= 4) x = x.mul(10)
             if (player.lowGH <= -8) x = x.mul(getAGHEffect(9,1))
+            if (player.grassjump>=3) x = x.mul(getGJEffect(2))
 
             h += `<br>Milestone Multiplier: <b>${formatMult(x)}</b>`
 
@@ -316,9 +317,10 @@ const STATS = {
             
             // Exponent
 
-            x = E(1)
+            x = E(1).mul(starTreeEff('ring',31))
 
             if (player.lowGH <= -16) x = x.mul(1.25)
+            if (player.grassjump >= 1) x = x.mul(1.25)
 
             h += `<br><br>Total Exponent: <b>^${format(x)}</b> (if multiplier goes above 1)`
 
@@ -831,6 +833,12 @@ const STATS = {
 
                 h += `<br>Unnatural Realm Multiplier: <b>${formatMult(x)}</b>`
             }
+
+            x = E(1)
+
+            if (player.grassjump>=1) x = x.mul(getGJEffect(0))
+
+            h += `<br>Milestone Multiplier: <b>${formatMult(x)}</b>`
             
             // Exponent
 
@@ -921,12 +929,21 @@ const STATS = {
                 .mul(starTreeEff('ring',14))
                 .mul(starTreeEff('ring',19))
                 .mul(starTreeEff('ring',24))
+                .mul(starTreeEff('ring',29))
         
                 .mul(upgEffect('astro',0))
                 .mul(upgEffect('measure',1))
 
+                .mul(upgEffect('planet',0))
+
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
+
+            x = E(1)
+
+            if (player.planetoid.planetTier>0) x = x.mul(getPTEffect(0))
+
+            h += `<br>Milestone Multiplier: <b>${formatMult(x)}</b>`
             
             // Exponent
 
@@ -965,6 +982,12 @@ const STATS = {
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
+
+            x = E(1)
+
+            if (player.planetoid.planetTier>0) x = x.mul(getPTEffect(0))
+
+            h += `<br>Milestone Multiplier: <b>${formatMult(x)}</b>`
             
             // Exponent
 
@@ -1009,7 +1032,7 @@ const STATS = {
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
 
-            x = E(1)
+            x = E(1).mul(getASEff('ring'))
 
             if (player.lowGH <= -40) x = x.mul(getAGHEffect(17))
 
@@ -1039,9 +1062,12 @@ const STATS = {
                 .mul(starTreeEff('ring',15))
                 .mul(starTreeEff('ring',20))
                 .mul(starTreeEff('ring',25))
+                .mul(starTreeEff('ring',30))
 
                 .mul(upgEffect('measure',0))
                 .mul(upgEffect('measure',4))
+
+                .mul(upgEffect('planet',1))
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
@@ -1073,6 +1099,12 @@ const STATS = {
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
+
+            x = E(1)
+
+            if (player.planetoid.planetTier>1) x = x.mul(getPTEffect(1))
+
+            h += `<br>Milestone Multiplier: <b>${formatMult(x)}</b>`
             
             // Exponent
 
@@ -1100,6 +1132,30 @@ const STATS = {
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
+
+            x = E(1)
+
+            if (player.planetoid.planetTier>1) x = x.mul(getPTEffect(1))
+
+            h += `<br>Milestone Multiplier: <b>${formatMult(x)}</b>`
+            
+            // Exponent
+
+            return h
+        },
+    },
+    planet: {
+        unl:()=>player.lowGH<=-48,
+        title: "Planets",
+        icon: "Curr/Planet",
+        getDesc() {
+            let x = E(1),h = ''
+
+            h += `Total Measure gain: <b>+${format(tmp.planetGain,0)}</b><br>`
+
+            // Muliplier
+
+            h += `<br>Base Multiplier: <b>${formatMult(tmp.planetGainBase)}</b>`
             
             // Exponent
 

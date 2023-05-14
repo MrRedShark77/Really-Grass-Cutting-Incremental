@@ -26,14 +26,17 @@ const SC_IDS = {
         [14,10,11,12,13],
         [19,15,16,17,18],
         [24,20,21,22,23],
-        ['',25,26,27,28],
+        [29,25,26,27,28],
+        ['',30,31,'',''],
     ],
     reserv: [
-        [7,'',0,6,15],
+        [22,7,0,6,15],
         [1,2,3,4,5],
         [8,9,11,14,10],
         [12,13,19,16,21],
-        [17,18,'',20,''],
+        [17,18,23,20,29],
+        [25,24,27,28,''],
+        ['',26,'',30,''],
     ],
 }
 
@@ -1402,7 +1405,68 @@ const STAR_CHART = {
             },
             effDesc: x => "+"+format(x*100,0)+"%",
         },
+
+        {
+            max: 100,
+            branch: [24],
+
+            title: "Giga Planetarium",
+            desc: `Increase planetarium gain by <span class="green">+400%</span> per level.`,
+
+            icon: ['Curr/Planetoid'],
+                            
+            cost: i => Math.ceil(1e30*2.2**i),
+            bulk: i => i.div(1e30).max(1).log(2.2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i*4+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 100,
+            branch: [29],
+
+            title: "Giga Observatorium",
+            desc: `Increase observatorium gain by <span class="green">+200%</span> per level.<br>On first purchase, increase observatorium chance to <span class="green">5%</span>.`,
+
+            icon: ['Curr/Observatorium'],
+                            
+            cost: i => Math.ceil(1e33*2.2**i),
+            bulk: i => i.div(1e33).max(1).log(2.2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i*2+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        {
+            max: 20,
+            branch: [29],
+
+            title: "Ringy SP Exponent",
+            desc: `Increase SP's exponent by <span class="green">+1%</span> per level.`,
+
+            icon: ['Icons/SP','Icons/Exponent'],
+                            
+            cost: i => Math.ceil(1e36*3**i),
+            bulk: i => i.div(1e36).max(1).log(3).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100+1
+        
+                return x
+            },
+            effDesc: x => "^"+format(x),
+        },
     ],
+
+    // Reservatorium
+
     reserv: [
         {
             max: 100,
@@ -1626,7 +1690,7 @@ const STAR_CHART = {
         {
             branch: [6],
 
-            max: 20,
+            max: 5,
 
             title: "Astral to Cosmic",
             desc: `<span class="green">+0.05</span> to base that boosts Cosmic by Astral per level. (starting base is 1).`,
@@ -1637,7 +1701,7 @@ const STAR_CHART = {
             bulk: i => i.div(1e9).max(1).log(10).root(1.2).floor().toNumber()+1,
 
             effect(i) {
-                let x = Decimal.pow(1+i/20,player.astral)
+                let x = Decimal.pow(1+i/20,tmp.total_astral)
         
                 return x
             },
@@ -1741,6 +1805,133 @@ const STAR_CHART = {
             icon: ['Curr/Ring','Icons/Automation'],
             
             cost: i => 1e12,
+            bulk: i => 1,
+        },
+        {
+            branch: [7],
+
+            max: 1,
+
+            title: "Planetoid Compaction",
+            desc: `Compaction now affects planetarium, cosmic, and observatorium.`,
+
+            icon: ['Icons/Compaction','Icons/StarProgression'],
+            
+            cost: i => 1e14,
+            bulk: i => 1,
+        },
+        {
+            branch: [19],
+
+            max: 1,
+
+            title: "Dark Matter Automation",
+            desc: `Automate <span class="green">Dark Matter Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/DarkMatter','Icons/Automation'],
+            
+            cost: i => 1e13,
+            bulk: i => 1,
+        },
+        {
+            branch: [18],
+
+            max: 1,
+
+            title: "Measure Automation",
+            desc: `Automate <span class="green">Measure Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/Measure','Icons/Automation'],
+            
+            cost: i => 2.5e13,
+            bulk: i => 1,
+        },
+
+        {
+            branch: [17],
+
+            max: 1,
+
+            title: "Limitless Unnatural Upgrades",
+            desc: `Uncap <span class="green">Unnatural Grass Upgrades</span>' maximum level (except <span class="green">Unnatural Pre-Prestige Exponent</span>).`,
+
+            icon: ['Curr/UGrass','Icons/Automation2'],
+            
+            cost: i => 1e16,
+            bulk: i => 1,
+        },{
+            branch: [24],
+
+            max: 100,
+
+            title: "Measure Generation",
+            desc: `Passively generates <span class="green">+1%</span> of measure you would earn on quadrant per second.`,
+
+            icon: ['Curr/Measure','Icons/Automation'],
+            
+            cost: i => Math.ceil(1e15*1.5**i),
+            bulk: i => i.div(1e15).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%/s",
+        },{
+            branch: [23],
+
+            max: 100,
+
+            title: "Momentum Generation",
+            desc: `Passively generates <span class="green">+1%</span> of momentum you would earn on rocket part per second.`,
+
+            icon: ['Curr/Momentum','Icons/Automation'],
+            
+            cost: i => Math.ceil(1e16*1.5**i),
+            bulk: i => i.div(1e16).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%/s",
+        },{
+            branch: [20],
+
+            max: 1,
+
+            title: "Limitless Foundry",
+            desc: `Uncap <span class="green">Foundry Upgrades</span>' maximum level.`,
+
+            icon: ['Icons/Foundry','Icons/Automation2'],
+            
+            cost: i => 1e16,
+            bulk: i => 1,
+        },{
+            branch: [21],
+
+            max: 1,
+
+            title: "Ring Generation IV",
+            desc: `Increase ring generation by <span class="green">10x</span>.`,
+
+            icon: ['Curr/Ring','Icons/Automation'],
+            
+            cost: i => 1e18,
+            bulk: i => 1,
+        },{
+            branch: [28],
+
+            max: 1,
+
+            title: "Beyond Fun",
+            desc: `Uncap <span class="green">SFRGT Generation</span>'s maximum level.<br>Charge's SFRGT milestone now works outside anti-realm.`,
+
+            icon: ['Curr/SuperFun','Icons/Automation2'],
+            
+            cost: i => 1e19,
             bulk: i => 1,
         },
     ],

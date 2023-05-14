@@ -94,6 +94,10 @@ function calc(dt) {
             if (player.lowGH > -36) RESET.gs.reset()
             else player.grassskip = Math.max(player.grassskip,MAIN.gs.bulk())
         }
+
+        if (tmp.momentumGen > 0) {
+            player.momentum += tmp.momentumGain*tmp.momentumGen*dt
+        }
     }
 
     for (let x in UPGS) if (tmp.upgs[x].autoUnl && !(['grass','pp','crystal'].includes(x) && outsideNormal) && !(['aGrass'].includes(x) && !outsideNormal)) if (player.autoUpg[x]) buyMaxUpgrades(x,true)
@@ -104,6 +108,11 @@ function calc(dt) {
     if (tmp.aGen > 0) {
         player.planetoid.astro = player.planetoid.astro.add(tmp.astroGain.mul(dt*tmp.aGen))
         player.planetoid.bestAstro = player.planetoid.bestAstro.max(player.planetoid.astro)
+    }
+
+    if (tmp.measureGen > 0) {
+        player.planetoid.measure = player.planetoid.measure.add(tmp.measureGain.mul(dt*tmp.measureGen))
+        player.planetoid.bestMeasure = player.planetoid.bestMeasure.max(player.planetoid.measure)
     }
 
     if (tmp.dmGen > 0) player.dm = player.dm.add(tmp.dmGain.mul(dt*tmp.dmGen))

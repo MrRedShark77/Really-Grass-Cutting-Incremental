@@ -203,7 +203,7 @@ MAIN.steel = {
                 unl: ()=>hasUpgrade('funnyMachine',2),
                 req: E(1e33),
                 eff(c) {
-                    if (player.bestCharge.lt(this.req) || !player.decel) return E(1)
+                    if (player.bestCharge.lt(this.req) || (!player.decel && !hasStarTree('reserv',30))) return E(1)
 
                     let s = c.div(this.req).max(1)
 

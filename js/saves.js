@@ -80,7 +80,7 @@ function randint(min, max) {
 }
 
 function gainHTML(amt,gain,pass=0) {
-    return pass>0?" <span class='smallAmt'>"+formatGain(amt,gain.mul(pass))+"</span>":''
+    return pass>0?" <span class='smallAmt'>"+formatGain(amt,Decimal.mul(gain,pass))+"</span>":''
 }
 
 function getPlayerData() {
@@ -162,6 +162,7 @@ function getPlayerData() {
         lowGH: 1e300,
 
         astral: 0,
+        astralPrestige: 0,
         sp: E(0),
 
         moonstone: 0,
@@ -210,6 +211,8 @@ function getPlayerData() {
         bestCloud: E(0),
         bestCloud2: E(0),
         cloudUnl: false,
+
+        grassjump: 0,
 
         planetoid: getPlanetoidSave(),
 

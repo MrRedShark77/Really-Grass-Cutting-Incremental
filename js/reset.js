@@ -71,6 +71,9 @@ el.update.reset = ()=> {
         updateResetHTML('steel')
         updateResetHTML('gs')
         updateResetHTML('fun')
+        updateResetHTML('gj')
+
+        updateResetHTML('planetary')
     }
     else if (mapID == 'as') {
         updateResetHTML('decel')
@@ -87,5 +90,8 @@ el.update.reset = ()=> {
     if (mapID2 == 'sac') {
         updateResetHTML('sac')
         updateResetHTML('enterPlanetoid')
+    }
+    else if (mapID2 == 'ap') {
+        updateResetHTML('astralPrestige')
     }
 }

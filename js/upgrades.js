@@ -6,7 +6,7 @@ const UPG_RES = {
     pp: ["PP",()=>[player,"pp"],'PrestigeBase','Curr/Prestige'],
     plat: ["Platinum",()=>[player,"plat"],"PlatBase",'Curr/Platinum'],
     crystal: ["Crystal",()=>[player,"crystal"],"CrystalBase",'Curr/Crystal'],
-    steel: ["Steel",()=>[player,"steel"],"GrasshopBase",'Curr/Steel'],
+    steel: ["Steel",()=>[player,"steel"],"GrasshopBase",'Curr/Steel2'],
     aGrass: ["Anti-Grass",()=>[player,"aGrass"],'AntiGrassBase','Curr/AntiGrass'],
     ap: ["AP",()=>[player,"ap"],'AnonymityBase','Curr/Anonymity'],
     oil: ["Oil",()=>[player,"oil"],'LiquefyBase','Curr/Oil'],
@@ -24,6 +24,7 @@ const UPG_RES = {
     astro: ["Astro",()=>[player.planetoid,"astro"],'AstroBase','Curr/Astrolabe'],
     measure: ["Measure",()=>[player.planetoid,"measure"],'MeasureBase','Curr/Measure'],
     cloud: ["Cloud",()=>[player,"cloud"],'CloudBase','Curr/Cloud'],
+    planet: ["Planet",()=>[player.planetoid,"planet"],'PlanetaryBase','Curr/Planet'],
 }
 
 const isResNumber = ['perk','plat','rf','momentum','moonstone']
@@ -1078,6 +1079,12 @@ function updateUpgTemp(id) {
             if (hasUpgrade('assembler',11)) tu.max[x] = Infinity
         } else if (id == "gen") {
             if (hasStarTree('reserv',16) && (x==2 || x==3)) tu.max[x] = 1000 + starTreeEff('reserv',16)
+        } else if (id == "unGrass") {
+            if (hasStarTree('reserv',25) && x < 5) tu.max[x] = Infinity
+        } else if (id == "foundry") {
+            if (hasStarTree('reserv',28)) tu.max[x] = Infinity
+        } else if (id == "sfrgt") {
+            if (hasStarTree('reserv',30) && x == 0) tu.max[x] = Infinity
         }
 
         if (upg.unl?upg.unl():true) if (amt < tu.max[x]) ul++
@@ -1297,6 +1304,8 @@ el.update.upgs = ()=>{
         else if (mapID == 'gh') {
             updateUpgradesHTML('factory')
             updateUpgradesHTML('funnyMachine')
+
+            updateUpgradesHTML('planet')
         }
         else if (mapID == 'fd') {
             updateUpgradesHTML('foundry')

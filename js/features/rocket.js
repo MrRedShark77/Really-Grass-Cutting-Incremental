@@ -320,7 +320,7 @@ UPGS.momentum = {
 
     unl: ()=>player.rocket.part>0,
 
-    underDesc: ()=>`You have ${format(player.momentum,0)} Momentum`,
+    underDesc: ()=>`You have ${format(player.momentum,0)} Momentum`+gainHTML(E(player.momentum),tmp.momentumGain,tmp.momentumGen),
 
     autoUnl: ()=>hasStarTree('auto',11),
     noSpend: ()=>hasStarTree('auto',11),
@@ -617,6 +617,8 @@ tmp_update.push(()=>{
     m *= upgEffect('np',3) * upgEffect('dm',7)
 
     if (player.lowGH <= -44) m *= getAGHEffect(18)
+
+    if (player.grassjump>=2) m *= getGJEffect(1)
 
     tmp.momentumGain = Math.ceil(m)
 })

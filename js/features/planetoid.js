@@ -20,6 +20,10 @@ function getPlanetoidSave() {
 
         measure: E(0),
         bestMeasure: E(0),
+
+        planet: E(0),
+        planetTier: 0,
+        bestPlanet: E(0),
     }
 
     return s
@@ -38,12 +42,19 @@ const PLANETOID = {
         .mul(starTreeEff('ring',14))
         .mul(starTreeEff('ring',19))
         .mul(starTreeEff('ring',24))
+        .mul(starTreeEff('ring',29))
 
         .mul(upgEffect('astro',0))
 
         .mul(upgEffect('measure',1))
 
+        .mul(upgEffect('planet',0))
+        
+        if (player.planetoid.planetTier>=1) x = x.mul(getPTEffect(0))
+
         x = x.pow(starTreeEff('reserv',7))
+
+        if (hasStarTree('reserv',22)) x = x.mul(tmp.compact)
 
         return x
     },
@@ -62,12 +73,18 @@ const PLANETOID = {
 
         .mul(starTreeEff('reserv',15))
 
+        if (player.planetoid.planetTier>=1) x = x.mul(getPTEffect(0))
+
         x = x.pow(starTreeEff('reserv',6))
+
+        if (hasStarTree('reserv',22)) x = x.mul(tmp.compact)
 
         return x
     },
     level: {
         req(i) {
+            i = E(i).scale(200,2,0)
+
             let x = Decimal.pow(tmp.cosmicLevel.threshold,i**0.87).mul(50)
 
             return x.ceil()
@@ -75,7 +92,7 @@ const PLANETOID = {
         bulk(i) {
             let x = i.div(50)
             if (x.lt(1)) return 0
-            x = x.log(tmp.cosmicLevel.threshold).root(.87)
+            x = x.log(tmp.cosmicLevel.threshold).root(.87).scale(200,2,0,true)
 
             return Math.floor(x.toNumber()+1)
         },
@@ -109,6 +126,8 @@ const PLANETOID = {
 
         if (player.lowGH <= -40) x = x.mul(getAGHEffect(17))
 
+        x = x.mul(getASEff('ring'))
+
         return x.floor()
     },
     observGain() {
@@ -119,9 +138,14 @@ const PLANETOID = {
         .mul(starTreeEff('ring',15))
         .mul(starTreeEff('ring',20))
         .mul(starTreeEff('ring',25))
+        .mul(starTreeEff('ring',30))
 
         .mul(upgEffect('measure',0))
         .mul(upgEffect('measure',4))
+
+        .mul(upgEffect('planet',1))
+
+        if (hasStarTree('reserv',22)) x = x.mul(tmp.compact)
 
         return x.floor()
     },
@@ -140,6 +164,8 @@ const PLANETOID = {
         .mul(upgEffect('observ',7))
         .mul(starTreeEff('ring',18))
 
+        if (player.planetoid.planetTier>=2) x = x.mul(getPTEffect(1))
+
         return x.floor()
     },
     measureGain() {
@@ -156,7 +182,49 @@ const PLANETOID = {
         .mul(starTreeEff('ring',27))
         .mul(upgEffect('observ',8))
 
+        if (player.planetoid.planetTier>=2) x = x.mul(getPTEffect(1))
+
         return x.floor()
+    },
+    planetary: {
+        gain() {
+            let lvl = player.planetoid.level-199
+
+            if (lvl <= 0) return E(0)
+
+            let x = Decimal.pow(1.1,lvl-1).mul(lvl).mul(player.planetoid.bestMeasure.div(1e15).max(1).root(3))
+
+            tmp.planetGainBase = x
+
+            return x.floor()
+        },
+        tierReq() {
+            let p = player.planetoid.planetTier
+            let x = 200+10*p
+
+            return x
+        },
+        milestone: [
+            {
+                r: 1,
+                desc: `Gain <b class='green'>+200%</b> more Planetarium and Cosmic per planetary tier.`,
+                effect: ()=>player.planetoid.planetTier*2+1,
+                effDesc: x=> formatMult(x),
+            },{
+                r: 2,
+                desc: `Gain <b class='green'>+100%</b> more Astro and Measure per planetary tier.`,
+                effect: ()=>player.planetoid.planetTier+1,
+                effDesc: x=> formatMult(x),
+            },{
+                r: 5,
+                desc: `Unlock <b class='green'>Grass Jump</b> in Unnatural Realm.`,
+            },{
+                r: 6,
+                desc: `Gain more XP based on planetary tier.`,
+                effect: ()=>Decimal.pow(10,player.planetoid.planetTier**1.75),
+                effDesc: x=> formatMult(x),
+            },
+        ],
     },
 }
 
@@ -185,18 +253,25 @@ tmp_update.push(()=>{
     tmp.astroGain = PLANETOID.astroGain()
     tmp.measureGain = PLANETOID.measureGain()
 
+    tmp.planetGain = PLANETOID.planetary.gain()
+    tmp.planetTierReq = PLANETOID.planetary.tierReq()
+
     tmp.starGen = starTreeEff('reserv',3,0)
     tmp.funGen = starTreeEff('reserv',4,0)
     tmp.ringGen = hasStarTree('reserv',5)?0.0001:0
     if (hasStarTree('reserv',10)) tmp.ringGen *= 10
     if (hasStarTree('reserv',21)) tmp.ringGen *= 10
+    if (hasStarTree('reserv',29)) tmp.ringGen *= 10
 
     tmp.npGen = starTreeEff('reserv',12,0)
 
     tmp.aGen = starTreeEff('reserv',18,0)
     tmp.dmGen = starTreeEff('reserv',19,0)
 
-    tmp.observChance = hasStarTree('ring',25)?0.02:hasStarTree('ring',20)?0.01:0.003
+    tmp.measureGen = starTreeEff('reserv',26,0)
+    tmp.momentumGen = starTreeEff('reserv',27,0)
+
+    tmp.observChance = hasStarTree('ring',30)?0.05:hasStarTree('ring',25)?0.02:hasStarTree('ring',20)?0.01:0.003
 })
 
 RESET.enterPlanetoid = {
@@ -725,10 +800,10 @@ UPGS.measure = {
 
     title: "Measure Upgrades",
 
-    underDesc: ()=>`You have ${format(player.planetoid.measure,0)} Measure`,
+    underDesc: ()=>`You have ${format(player.planetoid.measure,0)} Measure`+gainHTML(player.planetoid.measure,tmp.measureGain,tmp.measureGen),
 
-    //autoUnl: ()=>hasStarTree('reserv',13),
-    //noSpend: ()=>hasStarTree('reserv',13),
+    autoUnl: ()=>hasStarTree('reserv',24),
+    noSpend: ()=>hasStarTree('reserv',24),
 
     ctn: [
         {
@@ -824,4 +899,131 @@ UPGS.measure = {
             effDesc: x => formatMult(x),
         },
     ],
+}
+
+RESET.planetary = {
+    unl: ()=>player.planetoid.active&&player.lowGH<=-48,
+
+    req: ()=>player.planetoid.level>=200,
+    reqDesc: ()=>`Reach Level 200.`,
+
+    resetDesc: `<span style="font-size:14px">
+    Reset your measure, measure upgrades, and previous contents for Planets.<br>Gain more Planets based on your level and measure.<br><br>
+    To reach the planetary tier, you must reach Level <b id='PTReq'>???</b>.
+    </span>`,
+    resetGain: ()=> `Gain <b>${tmp.planetGain.format(0)}</b> Planets`,
+
+    title: `Planetary`,
+    resetBtn: `Go Planetary`,
+
+    reset(force=false) {
+        if (this.req()||force) {
+            if (!force) {
+                player.planetoid.planet = player.planetoid.planet.add(tmp.planetGain)
+                player.planetoid.bestPlanet = player.planetoid.bestPlanet.max(player.planetoid.planet)
+
+                if (player.planetoid.level >= tmp.planetTierReq) {
+                    player.planetoid.planetTier++
+                }
+            }
+
+            updateTemp()
+
+            this.doReset()
+        }
+    },
+
+    doReset(order="planet") {
+        RESET.formRing.doReset(order)
+
+        updateTemp()
+    },
+}
+
+UPGS.planet = {
+    unl: ()=>player.planetoid.active&&player.lowGH<=-48,
+
+    title: "Planet Upgrades",
+
+    underDesc: ()=>`You have ${format(player.planetoid.planet,0)} Planet`,
+
+    ctn: [
+        {
+            max: 1000,
+
+            title: "Planetary Planetarium of Planetness",
+            desc: `Increase planetarium gain by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">50%</b> every <b class="yellow">25</b> levels.`,
+
+            res: "planet",
+            icon: ['Curr/Planetoid'],
+            
+            cost: i => Decimal.pow(1.2,i).mul(3).ceil(),
+            bulk: i => i.div(3).max(1).log(1.2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 100,
+
+            title: "Planetary Observatorium",
+            desc: `Increase observatorium gain by <b class="green">+50%</b> per level.`,
+
+            res: "planet",
+            icon: ['Curr/Observatorium'],
+            
+            cost: i => Decimal.pow(1.2,i).mul(3).ceil(),
+            bulk: i => i.div(3).max(1).log(1.2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/2+1
+
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 1000,
+
+            title: "Planetary Level",
+            desc: `Increase XP gain by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">50%</b> every <b class="yellow">25</b> levels.`,
+
+            res: "planet",
+            icon: ['Icons/XP'],
+            
+            cost: i => Decimal.pow(1.2,i).mul(10).ceil(),
+            bulk: i => i.div(10).max(1).log(1.2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+    ],
+}
+
+el.update.planetoid = () => {
+    if (mapID == 'gh') {
+        tmp.el.PTReq.setHTML(format(tmp.planetTierReq,0))
+
+        let unl = player.planetoid.active&&player.lowGH<=-48
+
+        tmp.el.milestone_div_planetary.setDisplay(unl)
+
+        if (unl) {
+            tmp.el.planetTier.setHTML(format(player.planetoid.planetTier,0))
+    
+            for (let x in PLANETOID.planetary.milestone) {
+                let m = PLANETOID.planetary.milestone[x]
+                let id = "pt_mil_ctn"+x
+    
+                tmp.el[id+"_div"].setClasses({bought: player.planetoid.planetTier >= m.r})
+                if (m.effDesc) tmp.el[id+"_eff"].setHTML(m.effDesc(tmp.ptEffect[x]))
+            }
+        }
+    }
 }

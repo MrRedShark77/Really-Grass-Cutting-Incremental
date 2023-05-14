@@ -53,6 +53,8 @@ function resetTemp() {
 
         aghEffect: [],
         gsEffect: [],
+        gjEffect: [],
+        ptEffect: [],
 
         star_chart: {
             auto: {
@@ -104,6 +106,7 @@ function resetTemp() {
         },
 
         astral_eff: {},
+        total_astral: 0,
 
         cosmicLevel: {
 
@@ -129,6 +132,7 @@ function resetTemp() {
 }
 
 function updateTemp() {
+    tmp.total_astral = player.astral+100*player.astralPrestige
     tmp.oilRigBase = (player.upgs.factory[7]||0)/100
     for (let x = 0; x < tmp_update.length; x++) tmp_update[x]()
 }

@@ -441,6 +441,26 @@ body.planetoid #level_bar {
     background-color: #1b007c;
 }
 
+.reset_div.astralPrestige {
+    background-color: #333;
+}
+
+.reset_div.planetary,
+.reset_req.planetary,
+#milestone_div_planetary,
+#milestone_div_planetary .milestone_ctns > div.bought,
+.upg_desc.planet,
+.upgs_div.planet {
+    background: linear-gradient(0deg, rgba(0,212,255,1) 0%, rgba(0,21,139,1) 100%);
+}
+
+.reset_div.gj,
+.reset_req.gj,
+#milestone_div_gj,
+#milestone_div_gj .milestone_ctns > div.bought {
+    background-color: #222 !important;
+}
+
 .upgs_ctn {
     height: calc(100% - 84px);
     width: calc(100% - 24px);
@@ -667,7 +687,7 @@ body.planetoid #level_bar {
     background-color: limegreen !important;
 }
 
-#gh_mil_ctns, #gs_mil_ctns {
+#gh_mil_ctns, #gs_mil_ctns, #planetary_mil_ctns {
     height: 100%;
 }
 

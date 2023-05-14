@@ -1,12 +1,16 @@
 MAIN.sac = {
     dmGain() {
-        let a = Math.max(1,player.astral-44)
+        let a = Math.max(1,tmp.total_astral-44)
 
         let x = player.stars.div(1e18).max(1).root(2).mul(Decimal.pow(1.1,a-1).mul(a))
 
         tmp.dmGainBase = x
 
         x = x.mul(upgEffect('np',2)).mul(upgEffect('cloud',0))
+
+        x = x.mul(getASEff('dm'))
+
+        if (player.grassjump>=1) x = x.mul(getGJEffect(0))
 
         return x.floor()
     },
@@ -63,6 +67,9 @@ UPGS.dm = {
     reqDesc: ()=>`Sacrifice once to unlock.`,
 
     underDesc: ()=>`You have ${format(player.dm,0)} Dark Matters`+gainHTML(player.dm,tmp.dmGain,tmp.dmGen),
+
+    autoUnl: ()=>hasStarTree('reserv',23),
+    noSpend: ()=>hasStarTree('reserv',23),
 
     ctn: [
         {

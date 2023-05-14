@@ -391,13 +391,13 @@ RESET.cloud = {
     unl: ()=> player.recel && player.nTimes > 0,
 
     req: ()=>player.level>=150,
-    reqDesc: ()=>`Reach Level 150 to Vaproize.`,
+    reqDesc: ()=>`Reach Level 150 to Vaporize.`,
 
-    resetDesc: `Vaproizer passively generates cloud based on NP & tier. Click "Start Vaproizing" to generate.`,
+    resetDesc: `Vaporizer passively generates cloud based on NP & tier. Click "Start Vaporizing" to generate.`,
     resetGain: ()=> `Gain <b>+${tmp.cloudGain.format(0)}</b> Cloud per second`,
 
-    title: `Vaproizer`,
-    resetBtn: `Start Vaproizing`,
+    title: `Vaporizer`,
+    resetBtn: `Start Vaporizing`,
 
     reset(force=false) {
         player.cloudUnl = true
@@ -410,7 +410,7 @@ UPGS.cloud = {
     title: "Cloud Upgrades",
 
     req: ()=>player.cloudUnl,
-    reqDesc: ()=>`Click "Start Vaproizing" once to unlock.`,
+    reqDesc: ()=>`Click "Start Vaporizing" once to unlock.`,
 
     underDesc: ()=>`You have ${format(player.cloud,0)} Cloud`,
 
