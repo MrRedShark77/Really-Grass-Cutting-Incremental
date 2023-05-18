@@ -202,7 +202,7 @@ const MAIN = {
     autoCut: ()=>hasStarTree('reserv',2)?0.01:5-(player.planetoid.active?0:upgEffect('auto',0,0)+upgEffect('plat',0,0)+starTreeEff('progress',3,0)),
     level: {
         req(i) {
-            i = E(i).scale(tmp.level.scale2,2,0).scale(tmp.level.scale1,2,0)
+            i = E(i).scale(1e5,1.00010,1).scale(tmp.level.scale2,2,0).scale(tmp.level.scale1,2,0)
 
             if (inChal(0) || inChal(7)) i = i.mul(3)
             
@@ -217,7 +217,7 @@ const MAIN = {
 
             if (inChal(0) || inChal(7)) x = x.div(3)
 
-            return Math.floor(x.scale(tmp.level.scale1,2,0,true).scale(tmp.level.scale2,2,0,true).toNumber()+1)
+            return Math.floor(x.scale(tmp.level.scale1,2,0,true).scale(tmp.level.scale2,2,0,true).scale(1e5,1.00010,1,true).toNumber()+1)
         },
         cur(i) {
             return i > 0 ? this.req(i-1) : E(0) 

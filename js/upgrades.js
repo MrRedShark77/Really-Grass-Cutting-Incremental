@@ -51,8 +51,8 @@ const UPGS = {
                 res: "grass",
                 icon: ['Curr/Grass'],
                 
-                cost: i => Decimal.pow(1.2,i).mul(10).ceil(),
-                bulk: i => i.div(10).max(1).log(1.2).floor().toNumber()+1,
+                cost: i => Decimal.pow(1.2,scale(E(i),1e6,2,0)).mul(10).ceil(),
+                bulk: i => i.div(10).max(1).log(1.2).scale(1e6,2,0,true).floor().toNumber()+1,
 
                 effect(i) {
                     let x = Decimal.pow(2,Math.floor(i/25)).mul(i+1)
@@ -105,8 +105,8 @@ const UPGS = {
                 res: "grass",
                 icon: ['Icons/XP'],
                 
-                cost: i => Decimal.pow(1.3,i).mul(1e3).ceil(),
-                bulk: i => i.div(1e3).max(1).log(1.3).floor().toNumber()+1,
+                cost: i => Decimal.pow(1.3,scale(E(i),1e6,2,0)).mul(1e3).ceil(),
+                bulk: i => i.div(1e3).max(1).log(1.3).scale(1e6,2,0,true).floor().toNumber()+1,
 
                 effect(i) {
                     let x = Decimal.pow(2,Math.floor(i/25)).mul(i+1)
