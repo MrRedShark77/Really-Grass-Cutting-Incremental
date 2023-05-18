@@ -49,6 +49,8 @@ const PLANETOID = {
         .mul(upgEffect('measure',1))
 
         .mul(upgEffect('planet',0))
+
+        .mul(getLEffect(6))
         
         if (player.planetoid.planetTier>=1) x = x.mul(getPTEffect(0))
 
@@ -72,6 +74,8 @@ const PLANETOID = {
         .mul(starTreeEff('ring',26))
 
         .mul(starTreeEff('reserv',15))
+
+        .mul(getLEffect(3))
 
         if (player.planetoid.planetTier>=1) x = x.mul(getPTEffect(0))
 
@@ -223,6 +227,11 @@ const PLANETOID = {
                 desc: `Gain more XP based on planetary tier.`,
                 effect: ()=>Decimal.pow(10,player.planetoid.planetTier**1.75),
                 effDesc: x=> formatMult(x),
+            },{
+                r: 10,
+                desc: `You can equip <b class='green'>1</b> more lunar slot per 5 planetary tiers, starting at 10.`,
+                effect: ()=>Math.floor(Math.max(player.planetoid.planetTier-5,0)/5),
+                effDesc: x=>"+"+format(x,0),
             },
         ],
     },
@@ -270,6 +279,7 @@ tmp_update.push(()=>{
 
     tmp.measureGen = starTreeEff('reserv',26,0)
     tmp.momentumGen = starTreeEff('reserv',27,0)
+    tmp.planetGen = starTreeEff('reserv',32,0)
 
     tmp.observChance = hasStarTree('ring',30)?0.05:hasStarTree('ring',25)?0.02:hasStarTree('ring',20)?0.01:0.003
 })
@@ -945,7 +955,10 @@ UPGS.planet = {
 
     title: "Planet Upgrades",
 
-    underDesc: ()=>`You have ${format(player.planetoid.planet,0)} Planet`,
+    underDesc: ()=>`You have ${format(player.planetoid.planet,0)} Planet`+gainHTML(player.planetoid.planet,tmp.planetGain,tmp.planetGen),
+
+    autoUnl: ()=>hasStarTree('reserv',31),
+    noSpend: ()=>hasStarTree('reserv',31),
 
     ctn: [
         {

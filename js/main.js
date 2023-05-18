@@ -47,7 +47,7 @@ const MAIN = {
 
         if (x.lt(1)) return x
 
-        x = x.pow(chalEff(3))
+        x = x.pow(chalEff(3)).pow(getLEffect(0))
         if (!player.recel) x = x.pow(upgEffect('unGrass',5))
         if (inChal(3) || inChal(5)) x = x.root(2)
         if (player.recel) x = x.root(2)
@@ -80,7 +80,11 @@ const MAIN = {
 
         tmp.gsBeforeCompact = 2/x
 
-        return Math.max(x*tmp.compact,2e-4)
+        if (player.grassjump>=2) x /= 10
+
+        x = Math.min(Math.max(x*tmp.compact,2e-4),10)
+
+        return x
     },
     compact() {
         if (!hasUpgrade('unGrass',3)) return 1
@@ -142,8 +146,7 @@ const MAIN = {
         if (player.recel) x = x.pow(player.lowGH<=-36?.75:.5)
 
         if (!player.decel && hasUpgrade('plat',10)) x = x.pow(upgEffect('plat',10,1))
-        x = x.pow(upgEffect('moonstone',6))
-        x = x.pow(upgEffect('measure',3))
+        x = x.pow(upgEffect('moonstone',6)).pow(upgEffect('measure',3)).pow(getLEffect(1))
 
         return x
     },
@@ -190,6 +193,8 @@ const MAIN = {
 
         if (inChal(5)) x = x.root(2)
         if (player.recel) x = x.root(2)
+
+        x = x.pow(getLEffect(2))
 
         return x
     },

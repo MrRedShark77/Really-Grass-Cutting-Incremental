@@ -71,7 +71,7 @@ const STATS = {
 
             // Exponent
 
-            x = E(chalEff(3))
+            x = E(chalEff(3)).mul(getLEffect(0))
 
             if (inChal(3) || inChal(5)) x = x.div(2)
             if (player.recel) x = x.div(2)
@@ -158,7 +158,7 @@ const STATS = {
             
             // Exponent
 
-            x = Decimal.mul(upgEffect('moonstone',6),upgEffect('measure',3))
+            x = Decimal.mul(upgEffect('moonstone',6),upgEffect('measure',3)).mul(getLEffect(1))
 
             if (!player.decel && hasUpgrade('plat',10)) x = x.mul(upgEffect('plat',10,1))
 
@@ -247,7 +247,7 @@ const STATS = {
             
             // Exponent
 
-            x = E(1)
+            x = E(1).mul(getLEffect(2))
 
             if (player.grasshop >= 7 || player.lowGH <= 4) x = x.mul(1.25)
 
@@ -557,7 +557,7 @@ const STATS = {
             
             // Exponent
 
-            x = E(1)
+            x = E(1).mul(getLEffect(4))
 
             if (player.recel) x = x.div(2)
 
@@ -939,6 +939,12 @@ const STATS = {
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
             }
 
+            if (tmp.lunarUnl) {
+                x = getLEffect(6)
+
+                h += `<br>LO Multiplier: <b>${formatMult(x)}</b>`
+            }
+
             x = E(1)
 
             if (player.planetoid.planetTier>0) x = x.mul(getPTEffect(0))
@@ -981,6 +987,12 @@ const STATS = {
                 .mul(starTreeEff('reserv',15))
 
                 h += `<br>Planetoid Multiplier: <b>${formatMult(x)}</b>`
+            }
+
+            if (tmp.lunarUnl) {
+                x = getLEffect(3)
+
+                h += `<br>LO Multiplier: <b>${formatMult(x)}</b>`
             }
 
             x = E(1)

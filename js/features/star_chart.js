@@ -27,7 +27,7 @@ const SC_IDS = {
         [19,15,16,17,18],
         [24,20,21,22,23],
         [29,25,26,27,28],
-        ['',30,31,'',''],
+        ['',30,31,32,''],
     ],
     reserv: [
         [22,7,0,6,15],
@@ -36,7 +36,9 @@ const SC_IDS = {
         [12,13,19,16,21],
         [17,18,23,20,29],
         [25,24,27,28,''],
-        ['',26,'',30,''],
+        [33,26,'',30,''],
+        ['',31,'','',''],
+        ['',32,'','',''],
     ],
 }
 
@@ -1463,6 +1465,27 @@ const STAR_CHART = {
             },
             effDesc: x => "^"+format(x),
         },
+        {
+            unl:()=>tmp.lunarUnl,
+
+            max: 100,
+            branch: [29],
+
+            title: "Basic Lunar Power",
+            desc: `Increase lunar power gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Lunar'],
+                            
+            cost: i => Math.ceil(1e45*1.5**i),
+            bulk: i => i.div(1e45).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
     ],
 
     // Reservatorium
@@ -1932,6 +1955,51 @@ const STAR_CHART = {
             icon: ['Curr/SuperFun','Icons/Automation2'],
             
             cost: i => 1e19,
+            bulk: i => 1,
+        },
+
+        {
+            branch: [26],
+
+            max: 1,
+
+            title: "Planet Automation",
+            desc: `Automate <span class="green">Planet Upgrades</span>, and they no longer spend.`,
+
+            icon: ['Curr/Planet','Icons/Automation'],
+            
+            cost: i => 1e18,
+            bulk: i => 1,
+        },{
+            branch: [31],
+
+            max: 100,
+
+            title: "Planet Generation",
+            desc: `Passively generates <span class="green">+1%</span> of planet you would earn on planetary per second.`,
+
+            icon: ['Curr/Planet','Icons/Automation'],
+            
+            cost: i => Math.ceil(1e20*1.5**i),
+            bulk: i => i.div(1e20).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/100
+        
+                return x
+            },
+            effDesc: x => "+"+format(x*100,0)+"%/s",
+        },{
+            branch: [25],
+
+            max: 1,
+
+            title: "Limitless Normality Upgrades",
+            desc: `Uncap <span class="green">Normality Upgrades</span>' maximum level.`,
+
+            icon: ['Curr/Normality','Icons/Automation2'],
+            
+            cost: i => 5e21,
             bulk: i => 1,
         },
     ],

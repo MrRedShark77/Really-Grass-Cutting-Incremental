@@ -587,6 +587,11 @@ body.planetoid #level_bar {
     color: magenta;
 }
 
+.cyan {
+    color: cyan;
+}
+
+#lunar_obelisk_div,
 .reset_div {
     position: relative;
     width: calc(100% - 24px);
@@ -877,4 +882,75 @@ body.planetoid #level_bar {
 
 #stats_desc {
     font-size: 16px;
+}
+
+#lunar_obelisk_div {
+    width: calc(100% - 44px);
+    height: calc(100% - 44px);
+    padding: 10px;
+    background-color: #005bd1;
+    box-shadow: inset 0px 0px 30px #b3f0ff, inset 0px 0px 30px #b3f0ff;
+    border-color: #b3f0ff;
+}
+
+#lop_table {
+    height: calc(100% - 144px);
+    width: calc(100% - 4px);
+    border: solid 2px black;
+    background-color: #272727;
+    overflow-y: scroll;
+}
+
+#lop_table > div {
+    width: 100%;
+    height: 120px;
+
+    margin: 5px 0px;
+}
+
+.lop_btn {
+    position: relative;
+    width: calc(100% - 8px);
+    height: 88px;
+
+    border: solid 4px white;
+    background-color: #004094;
+    border-radius: 10px;
+
+    cursor: pointer;
+}
+
+.lop_btn * {
+    pointer-events: none;
+}
+
+.lop_btn > img {
+    position: absolute;
+    top: 44px;
+    left: 60px;
+
+    width: 88px;
+    height: 88px;
+
+    transform: translate(-50%, -50%) scale(1.33);
+}
+
+.lop_btn > div {
+    position: absolute;
+    top: 50%;
+    left: 120px;
+    width: calc(100% - 120px);
+    font-size: 16px;
+    transform: translateY(-50%)
+}
+
+.lop_progress {
+    width: calc(100% - 4px);
+    height: 20px;
+
+    border: solid 2px black;
+    background-color: #002c66;
+    border-radius: 10px;
+
+    font-size: 14px;
 }

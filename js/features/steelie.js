@@ -56,7 +56,7 @@ MAIN.steel = {
 
             if (x.lt(1)) return x
 
-            x = x.pow(upgEffect('moonstone',7))
+            x = x.pow(upgEffect('moonstone',7)).pow(getLEffect(4))
 
             if (player.recel) x = x.root(2)
 

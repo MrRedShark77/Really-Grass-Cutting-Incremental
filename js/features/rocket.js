@@ -590,7 +590,7 @@ el.update.rocket = ()=>{
 }
 
 function updateRocketTemp() {
-    let cheap = 1 * starTreeEff('progress',9,1) * starTreeEff('progress',11,1)
+    let cheap = 1 * starTreeEff('progress',9,1) * starTreeEff('progress',11,1) * getLEffect(5)
     
     let rf = player.rocket.total_fp
     tmp.rf_base = RF_COST_POW ** (1/cheap)

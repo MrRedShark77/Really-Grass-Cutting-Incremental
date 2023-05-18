@@ -100,8 +100,8 @@ MAIN.agh_milestone = [
         effDesc: x=> "+"+format(x,0)+" later",
     },{
         r: -8,
-        desc: `Increase SP gained by <b class="green">25%</b> every zero grasshop grass-skips.<br>Steelie no longer reset its time.`,
-        effect: ()=>Decimal.pow(1.25,Math.max(-player.lowGH,0)),
+        desc: `Increase SP gained by <b class="green">25%</b> every zero grasshop grass-skips, ending at 60.<br>Steelie no longer reset its time.`,
+        effect: ()=>Decimal.pow(1.25,Math.min(Math.max(-player.lowGH,0),60)),
         effDesc: x=> format(x)+"x",
     },{
         r: -12,
@@ -141,6 +141,9 @@ MAIN.agh_milestone = [
     },{
         r: -48,
         desc: `Unlock the <b class="green">Stellar Obelisk</b> (aka. Astral Prestige, on top of star chart) and <b class="green">Planetary</b>.`,
+    },{
+        r: -60,
+        desc: `Keep grasshop & grass-skip on galactic/sacrifice.<br><l>Will stop getting zero grasshop and more grass-skips.</l>`,
     },
 ]
 
@@ -196,7 +199,7 @@ MAIN.gj = {
             effDesc: x=> format(x)+"x",
         },{
             r: 2,
-            desc: `Increase Momentum gained by <b class="green">+100%</b> per grass-jump.<br>Compaction works <b class="green">^2</b> as stronger.`,
+            desc: `Increase Momentum gained by <b class="green">+100%</b> per grass-jump.<br>Compaction works <b class="green">^2</b> as stronger.<br>Grow speed is increased <b class="green">x10</b> after compaction.`,
             effect: ()=>player.grassjump+1,
             effDesc: x=> format(x)+"x",
         },{
@@ -204,6 +207,9 @@ MAIN.gj = {
             desc: `<b class="green">x10</b> SP gained every grass-jump.`,
             effect: ()=>Decimal.pow(10,player.grassjump),
             effDesc: x=> format(x)+"x",
+        },{
+            r: 5,
+            desc: `Unlock the <b class="green">Lunar Obelisk</b> (on top of star chart).`,
         },
     ],
 }

@@ -95,8 +95,12 @@ RESET.gal = {
         player.steel = E(0)
         player.chargeRate = E(0)
         player.bestCharge = E(0)
-        player.grasshop = 0
-        player.grassskip = 0
+
+        if (player.lowGH > -60) {
+            player.grasshop = 0
+            player.grassskip = 0
+        }
+
         if (player.lowGH > -12 || order=='sac') player.plat = 0
 
         if (player.lowGH > 28) player.chal.comp = []

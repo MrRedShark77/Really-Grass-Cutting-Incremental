@@ -1085,6 +1085,8 @@ function updateUpgTemp(id) {
             if (hasStarTree('reserv',28)) tu.max[x] = Infinity
         } else if (id == "sfrgt") {
             if (hasStarTree('reserv',30) && x == 0) tu.max[x] = Infinity
+        } else if (id == "np") {
+            if (hasStarTree('reserv',33)) tu.max[x] = Infinity
         }
 
         if (upg.unl?upg.unl():true) if (amt < tu.max[x]) ul++

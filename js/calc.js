@@ -115,7 +115,17 @@ function calc(dt) {
         player.planetoid.bestMeasure = player.planetoid.bestMeasure.max(player.planetoid.measure)
     }
 
+    if (tmp.planetGen > 0) {
+        player.planetoid.planet = player.planetoid.planet.add(tmp.planetGain.mul(dt*tmp.planetGen))
+        player.planetoid.bestPlanet = player.planetoid.bestPlanet.max(player.planetoid.planet)
+    }
+
     if (tmp.dmGen > 0) player.dm = player.dm.add(tmp.dmGain.mul(dt*tmp.dmGen))
+
+    for (let i = 0; i < LUNAR_OB.length; i++) {
+        if (player.lunar.active.includes(i)) player.lunar.lp[i] = player.lunar.lp[i].add(tmp.LPgain.mul(dt))
+        if (player.lunar.lp[i].gte(tmp.lunar_next[i])) player.lunar.level[i] = Math.max(player.lunar.level[i],getLPLevel(i))
+    }
 
     player.planetoid.bestPm = player.planetoid.bestPm.max(player.planetoid.pm)
     MAIN.checkCutting()

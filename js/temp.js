@@ -112,6 +112,10 @@ function resetTemp() {
 
         },
 
+        lunar_eff: [],
+        lunar_next: [],
+        lunar_max_active: 3,
+
         pass: 0,
 
         reservConvert: 0,
@@ -132,6 +136,8 @@ function resetTemp() {
 }
 
 function updateTemp() {
+    tmp.lunarUnl = player.grassjump>=5
+
     tmp.total_astral = player.astral+100*player.astralPrestige
     tmp.oilRigBase = (player.upgs.factory[7]||0)/100
     for (let x = 0; x < tmp_update.length; x++) tmp_update[x]()
