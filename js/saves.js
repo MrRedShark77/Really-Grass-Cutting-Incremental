@@ -277,6 +277,8 @@ function loadPlayer(load) {
         player.bestGS = Math.max(player.bestGS, player.grassskip)
     }
 
+    player.lowGH = Math.max(player.lowGH,-60)
+
     player.version = VER
 }
 

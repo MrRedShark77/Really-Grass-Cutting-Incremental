@@ -44,7 +44,7 @@ RESET.gal = {
                 player.gTimes++
 
                 if (player.lowGH <= 0 && player.grasshop <= 0) player.lowGH = Math.min(player.lowGH,-player.grassskip)
-                else player.lowGH = Math.min(player.lowGH,player.grasshop)
+                else player.lowGH = Math.max(Math.min(player.lowGH,player.grasshop),-60)
 
                 tmp.space = true
             }
