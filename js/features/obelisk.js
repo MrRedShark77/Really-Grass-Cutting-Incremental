@@ -42,11 +42,11 @@ const AP_BONUS_BASE = [100,25]
 const LUNAR_OB = [
     // 0 - multiplier, 1 - exponent
 
-    ['Grass Value','Curr/Grass',10,10,0.001,1],
-    ['XP','Icons/XP',10,10,0.001,1],
-    [`TP`,'Icons/TP',10,10,0.001,1],
+    ['Grass Value','Curr/Grass',10,1.1,0.001,1],
+    ['XP','Icons/XP',10,1.1,0.001,1],
+    [`TP`,'Icons/TP',10,1.1,0.001,1],
     [`Cosmic`,'Icons/XP2',20,10,1,0],
-    [`Charge`,'Curr/Charge',100,50,0.001,1],
+    [`Charge`,'Curr/Charge',100,1.1,0.001,1],
     [`Rocket Fuel`,'Curr/RocketFuel',1000,100,0.01,0],
     [`Planetarium`,'Curr/Planetoid',20,10,1,0],
 ]
@@ -61,17 +61,21 @@ tmp_update.push(()=>{
     for (let i = 0; i < LUNAR_OB.length; i++) {
         let l = LUNAR_OB[i]
 
-        tmp.lunar_next[i] = Decimal.mul(l[3],player.lunar.level[i]).add(l[2])
+        tmp.lunar_next[i] = l[5]==0?Decimal.mul(l[3],player.lunar.level[i]).add(l[2]):Decimal.pow(l[3],player.lunar.level[i]).mul(l[2])
         tmp.lunar_eff[i] = (l[5]==1 ? softcap(player.lunar.level[i],200,0.5,0) : player.lunar.level[i]) * l[4] + 1
     }
 })
 
 function getLPLevel(i, lp = player.lunar.lp[i]) {
-    let l = LUNAR_OB[i], b = l[3], s = l[2]
+    let l = LUNAR_OB[i], b = l[3], s = l[2], x = 0
 
-    let d = lp.mul(8*b).add((2*s-b)**2)
+    if (l[5]==0) {
+        let d = lp.mul(8*b).add((2*s-b)**2)
 
-    let x = d.sqrt().sub(2*s-b).div(2*b)
+        x = d.sqrt().sub(2*s-b).div(2*b)
+    } else if (l[5]==1) {
+        x = lp.mul((b-1)/s).add(1).log(b)
+    }
 
     return x.floor().toNumber()
 }
@@ -133,7 +137,7 @@ el.update.obelisk = () => {
                 `)
 
                 let nl = tmp.lunar_next[i]
-                let p = Decimal.pow(lvl,2).sub(lvl).mul(l[3]/2).add(l[2]*lvl)
+                let p = l[5]==0?Decimal.pow(lvl,2).sub(lvl).mul(l[3]/2).add(l[2]*lvl):Decimal.pow(l[3],lvl).sub(1).mul(l[2]/(l[3]-1))
 
                 tmp.el[id+'amt'].setHTML(`${player.lunar.lp[i].sub(p).max(0).min(nl).format(0)} / ${nl.format(0)}`)
                 tmp.el[id+'btn'].changeStyle('border-color',player.lunar.active.includes(i)?'lime':'white')

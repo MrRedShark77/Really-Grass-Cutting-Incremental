@@ -87,7 +87,10 @@ const MAIN = {
         return x
     },
     compact() {
-        if (!hasUpgrade('unGrass',3)) return 1
+        if (!hasUpgrade('unGrass',3)) {
+            tmp.compact = 1
+            return
+        }
 
         let c = upgEffect('unGrass',3,1)
 
