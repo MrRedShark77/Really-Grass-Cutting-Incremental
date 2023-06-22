@@ -156,7 +156,7 @@ const CS_BUILDINGS = [
 
         desc: x => `Passively generate <b class='green'>${format(x,0)}</b> Lines.`,
 
-        cost: x => Decimal.pow(100,x**1.2).round(),
+        cost: x => Decimal.pow(100*Math.max(x-7,1)**2,x**1.2).round(),
         insta: x => Decimal.pow(9,x).round(),
         eff: x => Decimal.pow(10,x).round(),
     },{
@@ -166,7 +166,7 @@ const CS_BUILDINGS = [
 
         desc: x => `Reduce the instability of adjacent constellations by <b class='green'>${format(x,0)}</b>.`,
 
-        cost: x => Decimal.pow(100,x**1.15).mul(50).round(),
+        cost: x => Decimal.pow(100*Math.max(x-7,1)**2,x**1.15).mul(50).round(),
         eff: x => Decimal.pow(4,x).mul(5).mul(tmp.coolerPow).round(),
     },{
         title: 'Reinforcement',
@@ -175,7 +175,7 @@ const CS_BUILDINGS = [
 
         desc: x => `Increase the instability limit by <b class='green'>${format(x,0)}</b>.`,
 
-        cost: x => Decimal.pow(100,x**1.15).mul(250).round(),
+        cost: x => Decimal.pow(100*Math.max(x-7,1)**2,x**1.15).mul(250).round(),
         eff: x => Decimal.pow(4,x).mul(10).mul(tmp.squarePow).round(),
     },{
         title: 'Ring',
@@ -184,7 +184,7 @@ const CS_BUILDINGS = [
 
         desc: x => `Increase rings gain by <b class='green'>${formatMult(x.add(1))}</b>.`,
 
-        cost: x => Decimal.pow(100,x**1.2).mul(1e5).round(),
+        cost: x => Decimal.pow(100*Math.max(x-7,1)**2,x**1.2).mul(1e5).round(),
         insta: x => Decimal.pow(6,x).mul(1e2).round(),
         eff: x => Decimal.pow(1.5,x).mul(1.25).sub(1),
     },{
@@ -194,7 +194,7 @@ const CS_BUILDINGS = [
 
         desc: x => `Increase lunar powers gain by <b class='green'>${formatMult(x.add(1))}</b>.`,
 
-        cost: x => Decimal.pow(100,x**1.2).mul(5e5).round(),
+        cost: x => Decimal.pow(100*Math.max(x-7,1)**2,x**1.2).mul(5e5).round(),
         insta: x => Decimal.pow(6,x).mul(5e2).round(),
         eff: x => Decimal.pow(1.5,x).mul(1.25).sub(1),
     },{
@@ -204,7 +204,7 @@ const CS_BUILDINGS = [
 
         desc: x => `Boost the power of adjacent constellations and their instability by <b class='green'>${formatMult(x)}</b>.`,
 
-        cost: x => Decimal.pow(1000,x).mul(1e6).round(),
+        cost: x => Decimal.pow(1000*Math.max(x-7,1)**2,x).mul(1e6).round(),
         eff: x => Decimal.pow(1.25,x).mul(1.25),
     },
 ]
