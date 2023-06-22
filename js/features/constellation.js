@@ -484,7 +484,7 @@ el.update.constellation = function () {
     tmp.el.constellation_select.setHTML(h)
 
     h = 'Instability: '+cs_insta.total.format(1)+' / '+cs_insta.max.format(1)
-    if (cs_insta.total.gt(cs_insta.max)) h = '<b class="red">'+h+'</b>'
+    if (cs_insta.total.gt(cs_insta.max)) h = '<b class="red">'+h+'<br>Effects no longer work!</br>'
     tmp.el.constellation_stab.setHTML(h)
 
     h = player.constellation.line.format(0) + ' Lines' + (tmp.lineGain.gt(0) ? ' <span class="smallAmt">'+player.constellation.line.formatGain(tmp.lineGain)+'</span>' : '')
