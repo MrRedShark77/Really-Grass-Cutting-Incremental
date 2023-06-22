@@ -1,4 +1,4 @@
-var mapID = 'g'
+var mapID = 'g' // 'cs'
 var mapPos = [3,3]
 
 var mapID2 = 'sc'

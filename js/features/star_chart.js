@@ -28,7 +28,8 @@ const SC_IDS = {
         [24,20,21,22,23],
         [29,25,26,27,28],
         [34,30,31,32,33],
-        ['',35,36,'',''],
+        [38,35,36,37,''],
+        ['',39,'','',''],
     ],
     reserv: [
         [22,7,0,6,15],
@@ -1496,8 +1497,8 @@ const STAR_CHART = {
 
             icon: ['Icons/XP2'],
                             
-            cost: i => Math.ceil(1e48*3**i),
-            bulk: i => i.div(1e48).max(1).log(3).floor().toNumber()+1,
+            cost: i => Math.ceil(1e46*3**i),
+            bulk: i => i.div(1e46).max(1).log(3).floor().toNumber()+1,
 
             effect(i) {
                 let x = Decimal.pow(1.5,i)
@@ -1517,8 +1518,8 @@ const STAR_CHART = {
 
             icon: ['Icons/ConstCooler'],
                             
-            cost: i => Math.ceil(1e51*1.5**i),
-            bulk: i => i.div(1e51).max(1).log(1.5).floor().toNumber()+1,
+            cost: i => Math.ceil(1e49*1.5**i),
+            bulk: i => i.div(1e49).max(1).log(1.5).floor().toNumber()+1,
 
             effect(i) {
                 let x = i/10+1
@@ -1535,8 +1536,8 @@ const STAR_CHART = {
 
             icon: ['Icons/ConstellationSquare'],
                             
-            cost: i => Math.ceil(1e52*1.5**i),
-            bulk: i => i.div(1e52).max(1).log(1.5).floor().toNumber()+1,
+            cost: i => Math.ceil(1e50*1.5**i),
+            bulk: i => i.div(1e50).max(1).log(1.5).floor().toNumber()+1,
 
             effect(i) {
                 let x = i/10+1
@@ -1553,11 +1554,66 @@ const STAR_CHART = {
 
             icon: ['Curr/Lunar'],
                             
-            cost: i => Math.ceil(1e53*1.75**i),
-            bulk: i => i.div(1e53).max(1).log(1.75).floor().toNumber()+1,
+            cost: i => Math.ceil(1e51*1.75**i),
+            bulk: i => i.div(1e51).max(1).log(1.75).floor().toNumber()+1,
 
             effect(i) {
                 let x = i/2+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 100,
+            branch: [34],
+
+            title: "Line I",
+            desc: `Increase lines gain by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/Lines'],
+                            
+            cost: i => Math.ceil(1e57*1.5**i),
+            bulk: i => i.div(1e57).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            unl: ()=>player.constellation.unl,
+            max: 40,
+            branch: [34],
+
+            title: "Stabilizer II",
+            desc: `Increase stabilizer power by <span class="green">+10%</span> per level.`,
+
+            icon: ['Icons/ConstCooler'],
+                            
+            cost: i => Math.ceil(1e72*2**i),
+            bulk: i => i.div(1e72).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 40,
+            branch: [35],
+
+            title: "Reinforcement II",
+            desc: `Increase reinforcement by <span class="green">+10%</span> per level.`,
+
+            icon: ['Icons/ConstellationSquare'],
+                            
+            cost: i => Math.ceil(1e73*2**i),
+            bulk: i => i.div(1e73).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/10+1
         
                 return x
             },

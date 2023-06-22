@@ -223,6 +223,8 @@ function getPlayerData() {
             lp: new Array(LUNAR_OB.length).fill(E(0)),
         },
 
+        darkCharge: E(0),
+
         time: 0,
         version: VER,
     }

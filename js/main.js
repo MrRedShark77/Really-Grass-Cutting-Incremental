@@ -318,7 +318,7 @@ const MAIN = {
         if (player.lowGH <= -16) x = x.pow(1.25)
         if (player.grassjump >= 1) x = x.pow(1.25)
 
-        x = x.pow(starTreeEff('ring',31))
+        x = x.pow(starTreeEff('ring',31)).pow(tmp.darkChargeEffs.sp||1)
 
         return x
     },

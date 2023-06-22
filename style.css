@@ -1046,7 +1046,8 @@ body.planetoid #level_bar {
 }
 
 #cs_effects,
-#cs_presets {
+#cs_presets,
+#cs_dark {
     width: 100%;
     height: 100%;
     overflow-y: auto;

@@ -210,6 +210,9 @@ MAIN.gj = {
         },{
             r: 5,
             desc: `Unlock the <b class="green">Lunar Obelisk</b> (on top of star chart).`,
+        },{
+            r: 16,
+            desc: `Unlock the <b class="green">Dark Charger</b> (in constellation).`,
         },
     ],
 }

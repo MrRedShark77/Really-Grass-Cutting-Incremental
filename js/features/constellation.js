@@ -156,7 +156,7 @@ const CS_BUILDINGS = [
 
         desc: x => `Passively generate <b class='green'>${format(x,0)}</b> Lines.`,
 
-        cost: x => Decimal.pow(100*Math.max(x-7,1)**2,x**1.2).round(),
+        cost: x => Decimal.pow(100*Math.max(x-8,1)**2,x**1.2).round(),
         insta: x => Decimal.pow(9,x).round(),
         eff: x => Decimal.pow(10,x).round(),
     },{
@@ -166,7 +166,7 @@ const CS_BUILDINGS = [
 
         desc: x => `Reduce the instability of adjacent constellations by <b class='green'>${format(x,0)}</b>.`,
 
-        cost: x => Decimal.pow(100*Math.max(x-7,1)**2,x**1.15).mul(50).round(),
+        cost: x => Decimal.pow(100*Math.max(x-8,1)**2,x**1.15).mul(50).round(),
         eff: x => Decimal.pow(4,x).mul(5).mul(tmp.coolerPow).round(),
     },{
         title: 'Reinforcement',
@@ -175,7 +175,7 @@ const CS_BUILDINGS = [
 
         desc: x => `Increase the instability limit by <b class='green'>${format(x,0)}</b>.`,
 
-        cost: x => Decimal.pow(100*Math.max(x-7,1)**2,x**1.15).mul(250).round(),
+        cost: x => Decimal.pow(100*Math.max(x-8,1)**2,x**1.15).mul(250).round(),
         eff: x => Decimal.pow(4,x).mul(10).mul(tmp.squarePow).round(),
     },{
         title: 'Ring',
@@ -184,9 +184,9 @@ const CS_BUILDINGS = [
 
         desc: x => `Increase rings gain by <b class='green'>${formatMult(x.add(1))}</b>.`,
 
-        cost: x => Decimal.pow(100*Math.max(x-7,1)**2,x**1.2).mul(1e5).round(),
+        cost: x => Decimal.pow(100*Math.max(x-8,1)**2,x**1.2).mul(1e5).round(),
         insta: x => Decimal.pow(6,x).mul(1e2).round(),
-        eff: x => Decimal.pow(1.5,x).mul(1.25).sub(1),
+        eff: x => Decimal.pow(1.5,x).mul(.5),
     },{
         title: 'Moon',
         img: 'Icons/ConstMoon',
@@ -194,9 +194,9 @@ const CS_BUILDINGS = [
 
         desc: x => `Increase lunar powers gain by <b class='green'>${formatMult(x.add(1))}</b>.`,
 
-        cost: x => Decimal.pow(100*Math.max(x-7,1)**2,x**1.2).mul(5e5).round(),
+        cost: x => Decimal.pow(100*Math.max(x-8,1)**2,x**1.2).mul(5e5).round(),
         insta: x => Decimal.pow(6,x).mul(5e2).round(),
-        eff: x => Decimal.pow(1.5,x).mul(1.25).sub(1),
+        eff: x => Decimal.pow(1.5,x).mul(.5),
     },{
         title: 'Amplifier',
         img: 'Icons/ConstArrow',
@@ -204,8 +204,18 @@ const CS_BUILDINGS = [
 
         desc: x => `Boost the power of adjacent constellations and their instability by <b class='green'>${formatMult(x)}</b>.`,
 
-        cost: x => Decimal.pow(1000*Math.max(x-7,1)**2,x).mul(1e6).round(),
+        cost: x => Decimal.pow(1000*Math.max(x-8,1)**2,x).mul(1e6).round(),
         eff: x => Decimal.pow(1.25,x).mul(1.25),
+    },{
+        title: 'Bolt',
+        img: 'Icons/ConstCharge',
+        max: 12,
+
+        desc: x => `Boost dark charge rate by <b class='green'>${formatMult(x.add(1))}</b>.`,
+
+        cost: x => Decimal.pow(1000*Math.max(x-8,1)**2,x).mul(1e13).round(),
+        insta: x => Decimal.pow(7.5,x).mul(1.5e3).round(),
+        eff: x => Decimal.pow(1.5,x).mul(.25),
     },
 ]
 
@@ -240,6 +250,7 @@ function resetConstellationTemp() {
         line: E(0),
         ring: E(1),
         moon: E(1),
+        bolt: E(1),
     }
 }
 
@@ -247,7 +258,7 @@ resetConstellationTemp()
 
 const ADJ_VEL = [[0,1],[0,-1],[1,0],[-1,0]]
 const NO_ADJ_TYPE = [1,2,5]
-const ADJ_BOOST = [3,4]
+const ADJ_BOOST = [3,4,6]
 const MAX_PRESETS = 5
 
 function selectConstellation(i) { cs_selected = i + 't' + cs_tier }
@@ -349,6 +360,9 @@ function checkGrid(update=false) {
                     case 4:
                         cs_effect.moon = cs_effect.moon.mul(eff.mul(o.mult).add(1))
                         break
+                    case 6:
+                        cs_effect.bolt = cs_effect.bolt.mul(eff.mul(o.mult).add(1))
+                        break
                 }
 
                 cs_insta.total = cs_insta.total.add(o.insta)
@@ -406,16 +420,38 @@ function lineGain() {
     let x = cs_effect.line
 
     .mul(upgEffect('constellation',2))
-    .mul(getLEffect(7))
+    .mul(starTreeEff('ring',37))
+
+    x = x.mul(tmp.darkChargeEffs.line||1)
 
     return x
 }
 
+function darkChargeRate() {
+    let x = cs_effect.bolt
+
+    return x
+}
+
+function getDCEffects() {
+    let a = player.darkCharge, eff = {}
+
+    eff.charge = a.max(1)
+    eff.cosmic = a.div(1e3).max(1).root(3)
+    eff.sp = a.div(1e6).max(1).log10().div(100).add(1)
+    eff.lunar = a.div(1e9).max(1).root(3)
+    eff.line = a.div(1e12).max(1).root(3)
+
+    return eff
+}
+
 function updateConstellationTemp() {
     tmp.lineGain = lineGain()
+    tmp.darkChargeRate = darkChargeRate()
+    tmp.darkChargeEffs = getDCEffects()
 
-    tmp.squarePow = E(1).mul(starTreeEff('ring',35))
-    tmp.coolerPow = E(1).mul(starTreeEff('ring',34))
+    tmp.squarePow = E(1).mul(starTreeEff('ring',35)).mul(starTreeEff('ring',39))
+    tmp.coolerPow = E(1).mul(starTreeEff('ring',34)).mul(starTreeEff('ring',38))
 }
 
 tmp_update.push(()=>{
@@ -423,9 +459,11 @@ tmp_update.push(()=>{
 })
 
 el.update.constellation = function () {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
         tmp.el['cs_tab'+i].setDisplay(cs_tab == i)
     }
+
+    tmp.el.dc_tab.setDisplay(player.grassjump>=16)
 
     if (cs_tab == 0) {
         let lines = player.constellation.line
@@ -435,9 +473,11 @@ el.update.constellation = function () {
         }
 
         for (let i in CS_BUILDINGS) {
+            i = parseInt(i)
+
             let cs = CS_BUILDINGS[i], prefix = CS_PREFIX[cs_tier]
 
-            let dis = cs_tier <= cs.max && prefix && cs_tier <= cs_building_tiers_dis[i], div = tmp.el['cs_build_div'+i]
+            let dis = cs_tier <= cs.max && prefix && cs_tier <= cs_building_tiers_dis[i] && (i != 6 || player.grassjump>=16), div = tmp.el['cs_build_div'+i]
 
             div.setDisplay(dis)
 
@@ -467,6 +507,7 @@ el.update.constellation = function () {
         if (cs_effect.line.gt(0)) h += `+${cs_effect.line.format(0)}/s to Lines gain.<br>`
         if (cs_effect.ring.gt(1)) h += `${formatMult(cs_effect.ring)} to Rings gain.<br>`
         if (cs_effect.moon.gt(1)) h += `${formatMult(cs_effect.moon)} to Lunar Powers gain.<br>`
+        if (cs_effect.bolt.gt(1)) h += `${formatMult(cs_effect.bolt)} to Dark Charge rate.<br>`
 
         tmp.el.cs_effects.setHTML(h)
     } else if (cs_tab == 2) {
@@ -477,6 +518,18 @@ el.update.constellation = function () {
 
             tmp.el['cs_preset_boost'+i].setHTML(p.boosts?'Boosts: '+p.boosts:'No Boosts')
         }
+    } else if (cs_tab == 3) {
+        let h = `You have ${player.darkCharge.format(0)} <span class='smallAmt'>${player.darkCharge.formatGain(tmp.darkChargeRate)}</span> Dark Charge.`
+
+        let effs = tmp.darkChargeEffs
+
+        if (effs.charge.gt(1)) h += `<br><b class='green'>${formatMult(effs.charge)}</b> to Charge Rate.`
+        if (effs.cosmic.gt(1)) h += `<br><b class='green'>${formatMult(effs.cosmic)}</b> to Cosmic Gain.`
+        if (effs.sp.gt(1)) h += `<br><b class='green'>^${format(effs.sp)}</b> to SP Gain.`
+        if (effs.lunar.gt(1)) h += `<br><b class='green'>${formatMult(effs.lunar)}</b> to Lunar Powers Gain.`
+        if (effs.line.gt(1)) h += `<br><b class='green'>${formatMult(effs.line)}</b> to Lines Gain.`
+
+        tmp.el.cs_dark.setHTML(h)
     }
 
     let h = ''
@@ -519,6 +572,7 @@ const PRES_BOOSTS = {
     0: 'Lines',
     3: 'Rings',
     4: 'Lunar Powers',
+    6: 'Dark Charge',
 }
 
 function savePreset(i) {

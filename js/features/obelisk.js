@@ -49,7 +49,6 @@ const LUNAR_OB = [
     [`Charge`,'Curr/Charge',100,1.1,0.001,1],
     [`Rocket Fuel`,'Curr/RocketFuel',1000,100,0.01,0],
     [`Planetarium`,'Curr/Planetoid',20,5,2,0],
-    [`Lines`,'Curr/Lines',1000,100,0.005,0],
 ]
 const LUNAR_OB_MODE = ['x','^']
 
@@ -58,10 +57,11 @@ tmp_update.push(()=>{
 
     .mul(cs_effect.moon)
 
+    x = x.mul(tmp.darkChargeEffs.lunar||1)
+
     tmp.LPgain = x
 
     tmp.lunar_length = 7
-    if (player.constellation.unl) tmp.lunar_length++
     tmp.lunar_max_active = 1+getPTEffect(4,0)
 
     for (let i = 0; i < LUNAR_OB.length; i++) {

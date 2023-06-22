@@ -78,7 +78,7 @@ const PLANETOID = {
 
         .mul(starTreeEff('reserv',15))
 
-        .mul(getLEffect(3))
+        .mul(getLEffect(3)).mul(tmp.darkChargeEffs.cosmic||1)
 
         if (player.planetoid.planetTier>=1) x = x.mul(getPTEffect(0))
 

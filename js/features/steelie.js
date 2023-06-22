@@ -50,6 +50,8 @@ MAIN.steel = {
 
             x = x.mul(upgEffect('dm',1))
 
+            x = x.mul(tmp.darkChargeEffs.charge||1)
+
             if (player.decel) x = x.div(1e24)
 
             if (player.recel) x = x.div(1e72)

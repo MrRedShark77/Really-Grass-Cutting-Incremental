@@ -131,6 +131,10 @@ function calc(dt) {
         player.constellation.line = player.constellation.line.add(tmp.lineGain.mul(dt))
     }
 
+    if (player.grassjump>=16) {
+        player.darkCharge = player.darkCharge.add(tmp.darkChargeRate.mul(dt))
+    }
+
     player.planetoid.bestPm = player.planetoid.bestPm.max(player.planetoid.pm)
     MAIN.checkCutting()
 }

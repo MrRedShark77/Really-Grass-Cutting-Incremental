@@ -116,6 +116,8 @@ function resetTemp() {
         lunar_next: [],
         lunar_max_active: 3,
 
+        darkChargeEffs: {},
+
         pass: 0,
 
         reservConvert: 0,
