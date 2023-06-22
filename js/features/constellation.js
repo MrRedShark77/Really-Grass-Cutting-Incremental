@@ -255,20 +255,20 @@ function actionGrid(y,x) {
     if (cs_selected || cs_sellMode) {
         let grid = player.constellation.grid[y][x]
 
-        if (cs_sellMode || grid && grid != cs_selected) sellGrid(y,x,false)
+        if (cs_sellMode || grid && grid != cs_selected && checkCost(cs_selected)) sellGrid(y,x,false)
 
-        if (!cs_sellMode && !player.constellation.grid[y][x] && checkCost(cs_selected)) player.constellation.grid[y][x] = cs_selected
+        if (!cs_sellMode && !player.constellation.grid[y][x] && checkCost(cs_selected,true)) player.constellation.grid[y][x] = cs_selected
     }
 
     updateConstellation()
 }
-function checkCost(id) {
+function checkCost(id,buy=false) {
     let s = id.split('t'), type = parseInt(s[0]), tier = parseInt(s[1]), cs = CS_BUILDINGS[type]
 
     let cost = cs.cost(tier-1)
 
     if (player.constellation.line.gte(cost)) {
-        player.constellation.line = player.constellation.line.sub(cost).max(0)
+        if (buy) player.constellation.line = player.constellation.line.sub(cost).max(0)
         return true
     }
 
