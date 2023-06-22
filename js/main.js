@@ -61,7 +61,9 @@ const MAIN = {
 
         x *= starTreeEff('ring',7,1)
 
-        return Math.min(Math.max(10,Math.floor(x/tmp.compact)),4000)
+        if (!hasUpgrade('constellation',3)) x /= tmp.compact
+
+        return Math.min(Math.max(10,Math.floor(x)),4000)
     },
     grassSpwan() {
         let x = 2.5
@@ -137,6 +139,8 @@ const MAIN = {
         x = x.mul(upgEffect('astro',3))
 
         if (player.planetoid.planetTier>=6) x = x.mul(getPTEffect(3))
+
+        x = x.mul(upgEffect('constellation',1))
 
         if (player.decel) x = x.div(1e16)
 
@@ -385,6 +389,8 @@ el.update.main = ()=>{
     document.body.style.backgroundColor = tmp.space ? "#0A001E" : player.planetoid.active ? "#24002C" : "#0052af"
     document.body.className = player.planetoid.active ? 'planetoid' : ''
     tmp.el.grass_cap_div.changeStyle('background-color',player.planetoid.active ? "#D000FF" : "#29b146")
+
+    tmp.el.cs_div.setDisplay(player.constellation.unl)
 }
 
 tmp_update.push(()=>{

@@ -215,6 +215,7 @@ function getPlayerData() {
         grassjump: 0,
 
         planetoid: getPlanetoidSave(),
+        constellation: getConstellationSave(),
 
         lunar: {
             active: [],
@@ -463,9 +464,15 @@ function loadGame(start=true, gotNaN=false) {
         //for (let x = 0; x < 10; x++) createGrass()
         grassCanvas()
         treeCanvas()
+        checkConstellationCosts()
+        updateConstellation()
         setInterval(save,60000)
         setInterval(loop, 100/3)
         setInterval(checkNaN,1000)
+        setInterval(()=>{
+            checkConstellationCosts()
+            updateConstellation()
+        },1000)
     }
 }
 

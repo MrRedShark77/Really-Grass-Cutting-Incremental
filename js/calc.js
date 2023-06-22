@@ -127,6 +127,10 @@ function calc(dt) {
         if (player.lunar.lp[i].gte(tmp.lunar_next[i])) player.lunar.level[i] = Math.max(player.lunar.level[i],getLPLevel(i))
     }
 
+    if (player.constellation.unl) {
+        player.constellation.line = player.constellation.line.add(tmp.lineGain.mul(dt))
+    }
+
     player.planetoid.bestPm = player.planetoid.bestPm.max(player.planetoid.pm)
     MAIN.checkCutting()
 }

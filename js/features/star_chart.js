@@ -27,7 +27,8 @@ const SC_IDS = {
         [19,15,16,17,18],
         [24,20,21,22,23],
         [29,25,26,27,28],
-        ['',30,31,32,''],
+        [34,30,31,32,33],
+        ['',35,36,'',''],
     ],
     reserv: [
         [22,7,0,6,15],
@@ -1486,6 +1487,82 @@ const STAR_CHART = {
             },
             effDesc: x => formatMult(x),
         },
+        {
+            max: 100,
+            branch: [29],
+
+            title: "Giga Cosmic",
+            desc: `Increase cosmic gain by <span class="green">+50%</span> compounding per level.`,
+
+            icon: ['Icons/XP2'],
+                            
+            cost: i => Math.ceil(1e48*3**i),
+            bulk: i => i.div(1e48).max(1).log(3).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.5,i)
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+
+        {
+            unl: ()=>player.constellation.unl,
+            max: 40,
+            branch: [29],
+
+            title: "Stabilizer I",
+            desc: `Increase stabilizer power by <span class="green">+10%</span> per level.`,
+
+            icon: ['Icons/ConstCooler'],
+                            
+            cost: i => Math.ceil(1e51*1.5**i),
+            bulk: i => i.div(1e51).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 40,
+            branch: [34],
+
+            title: "Reinforcement I",
+            desc: `Increase reinforcement by <span class="green">+10%</span> per level.`,
+
+            icon: ['Icons/ConstellationSquare'],
+                            
+            cost: i => Math.ceil(1e52*1.5**i),
+            bulk: i => i.div(1e52).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/10+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 100,
+            branch: [34],
+
+            title: "Advanced Lunar Power",
+            desc: `Increase lunar power gain by <span class="green">+50%</span> per level.`,
+
+            icon: ['Curr/Lunar'],
+                            
+            cost: i => Math.ceil(1e53*1.75**i),
+            bulk: i => i.div(1e53).max(1).log(1.75).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i/2+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
     ],
 
     // Reservatorium
@@ -1713,7 +1790,7 @@ const STAR_CHART = {
         {
             branch: [6],
 
-            max: 5,
+            max: 6,
 
             title: "Astral to Cosmic",
             desc: `<span class="green">+0.05</span> to base that boosts Cosmic by Astral per level. (starting base is 1).`,

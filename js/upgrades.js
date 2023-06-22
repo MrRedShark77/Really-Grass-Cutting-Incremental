@@ -25,6 +25,7 @@ const UPG_RES = {
     measure: ["Measure",()=>[player.planetoid,"measure"],'MeasureBase','Curr/Measure'],
     cloud: ["Cloud",()=>[player,"cloud"],'CloudBase','Curr/Cloud'],
     planet: ["Planet",()=>[player.planetoid,"planet"],'PlanetaryBase','Curr/Planet'],
+    line: ["Line",()=>[player.constellation,"line"],'ConstellationBase','Curr/Lines'],
 }
 
 const isResNumber = ['perk','plat','rf','momentum','moonstone']
@@ -1186,7 +1187,7 @@ function updateUpgradesHTML(id) {
 
                 let h = `
                 [#${ch}] <h2>${upg.title}</h2><br>
-                Level <b class="yellow">${format(amt,0)}${tu.max[ch] < Infinity ? ` / ${format(tu.max[ch],0)}` : ""}</b><br>
+                Level <b class="yellow">${format(amt,0)}${tu.max[ch] < Infinity ? ` / ${format(tu.max[ch],0)}` : ""}</b><br><span style='font-size: 16px'>
                 ${upg.desc}
                 `
 
@@ -1202,6 +1203,8 @@ function updateUpgradesHTML(id) {
                     <br>You have ${format(res,0)} ${dis}
                     `
                 }
+
+                h += '</span>'
 
                 tmp.el["upg_desc_"+id].setHTML(h)
             }
@@ -1325,6 +1328,9 @@ el.update.upgs = ()=>{
         }
         else if (mapID == 'rp') {
             updateUpgradesHTML('momentum')
+        }
+        else if (mapID == 'cs' && player.constellation.unl) {
+            updateUpgradesHTML('constellation')
         }
     }
 

@@ -74,6 +74,7 @@ el.update.reset = ()=> {
         updateResetHTML('gj')
 
         updateResetHTML('planetary')
+        updateResetHTML('constellation')
     }
     else if (mapID == 'as') {
         updateResetHTML('decel')

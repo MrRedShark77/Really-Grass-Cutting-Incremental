@@ -1,5 +1,5 @@
 RESET.recel = {
-    unl: ()=>hasUpgrade('funnyMachine',4),
+    unl: ()=>hasUpgrade('funnyMachine',4) && !player.planetoid.active,
 
     req: ()=>true,
     reqDesc: ()=>"",
