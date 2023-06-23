@@ -52,7 +52,7 @@ const PLANETOID = {
 
         .mul(getLEffect(6))
 
-        .mul(upgEffect('constellation',0))
+        .mul(upgEffect('constellation',0)).mul(upgEffect('constellation',4))
         
         if (player.planetoid.planetTier>=1) x = x.mul(getPTEffect(0))
 
@@ -209,6 +209,9 @@ const PLANETOID = {
         },
         tierReq() {
             let p = player.planetoid.planetTier
+
+            if (p >= 30) p = (p/29)**2*29
+
             let x = 200+10*p
 
             return x

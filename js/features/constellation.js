@@ -112,6 +112,60 @@ UPGS.constellation = {
                 
             cost: i => E(1e6),
             bulk: i => 1,
+        },{
+            max: 1000,
+
+            title: "Planetarium Arc",
+            desc: `Increase planetarium gain by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">50%</b> every <b class="yellow">25</b> levels.`,
+
+            res: "arc",
+            icon: ['Curr/Planetoid'],
+                
+            cost: i => Decimal.pow(1.25,i).mul(5).ceil(),
+            bulk: i => i.div(5).max(1).log(1.25).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 500,
+
+            title: "Arc Constellation",
+            desc: `Increase arc gain compounding by <b class="green">+20%</b> per level.`,
+
+            res: "arc",
+            icon: ['Curr/Arcs'],
+                
+            cost: i => Decimal.pow(2,i).mul(10).ceil(),
+            bulk: i => i.div(10).max(1).log(2).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.2,i)
+
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 1000,
+
+            title: "XP Arc",
+            desc: `Increase XP gain compounding by <b class="green">+100%</b> per level.`,
+
+            res: "arc",
+            icon: ['Icons/XP'],
+                
+            cost: i => Decimal.pow(1.25,i).mul(1e3).ceil(),
+            bulk: i => i.div(1e3).max(1).log(1.25).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(2,i)
+
+                return x
+            },
+            effDesc: x => formatMult(x),
         },
     ],
 }
@@ -120,12 +174,14 @@ function getConstellationSave() {
     let s = {
         unl: false,
         line: E(0),
+        arc: E(0),
+        arcUnl: false,
 
         grid: new Array(7).fill(new Array(7).fill('')),
         presets: new Array(MAX_PRESETS).fill({
             encode: '',
             boosts: '',
-            cost: [E(0)],
+            cost: [E(0),E(0)],
         }),
     }
 
@@ -148,6 +204,8 @@ const CS_PREFIX = [
     ['Quetta ',`brightness(0) saturate(100%) invert(75%) sepia(38%) saturate(6450%) hue-rotate(359deg) brightness(100%) contrast(107%)`], // #FF9500
 ]
 
+function getCSTierMult(t) { return Math.max(t-8,1)**2 }
+
 const CS_BUILDINGS = [
     {
         title: 'Generator',
@@ -156,9 +214,9 @@ const CS_BUILDINGS = [
 
         desc: x => `Passively generate <b class='green'>${format(x,0)}</b> Lines.`,
 
-        cost: x => Decimal.pow(100*Math.max(x-8,1)**2,x**1.2).round(),
+        cost: x => Decimal.pow(100*getCSTierMult(x),x**1.2).round(),
         insta: x => Decimal.pow(9,x).round(),
-        eff: x => Decimal.pow(10,x).round(),
+        eff: x => Decimal.pow(10,x).mul(cs_effect.boostPow).round(),
     },{
         title: 'Stabilizer',
         img: 'Icons/ConstCooler',
@@ -166,7 +224,7 @@ const CS_BUILDINGS = [
 
         desc: x => `Reduce the instability of adjacent constellations by <b class='green'>${format(x,0)}</b>.`,
 
-        cost: x => Decimal.pow(100*Math.max(x-8,1)**2,x**1.15).mul(50).round(),
+        cost: x => Decimal.pow(100*getCSTierMult(x),x**1.15).mul(50).round(),
         eff: x => Decimal.pow(4,x).mul(5).mul(tmp.coolerPow).round(),
     },{
         title: 'Reinforcement',
@@ -175,8 +233,8 @@ const CS_BUILDINGS = [
 
         desc: x => `Increase the instability limit by <b class='green'>${format(x,0)}</b>.`,
 
-        cost: x => Decimal.pow(100*Math.max(x-8,1)**2,x**1.15).mul(250).round(),
-        eff: x => Decimal.pow(4,x).mul(10).mul(tmp.squarePow).round(),
+        cost: x => Decimal.pow(100*getCSTierMult(x),x**1.15).mul(250).round(),
+        eff: x => Decimal.pow(4,x).mul(10).mul(tmp.squarePow).mul(cs_effect.reinPow).round(),
     },{
         title: 'Ring',
         img: 'Icons/ConstRings',
@@ -184,9 +242,9 @@ const CS_BUILDINGS = [
 
         desc: x => `Increase rings gain by <b class='green'>${formatMult(x.add(1))}</b>.`,
 
-        cost: x => Decimal.pow(100*Math.max(x-8,1)**2,x**1.2).mul(1e5).round(),
+        cost: x => Decimal.pow(100*getCSTierMult(x),x**1.2).mul(1e5).round(),
         insta: x => Decimal.pow(6,x).mul(1e2).round(),
-        eff: x => Decimal.pow(1.5,x).mul(.5),
+        eff: x => Decimal.pow(1.5,x).mul(.5).mul(cs_effect.boostPow),
     },{
         title: 'Moon',
         img: 'Icons/ConstMoon',
@@ -194,9 +252,9 @@ const CS_BUILDINGS = [
 
         desc: x => `Increase lunar powers gain by <b class='green'>${formatMult(x.add(1))}</b>.`,
 
-        cost: x => Decimal.pow(100*Math.max(x-8,1)**2,x**1.2).mul(5e5).round(),
+        cost: x => Decimal.pow(100*getCSTierMult(x),x**1.2).mul(5e5).round(),
         insta: x => Decimal.pow(6,x).mul(5e2).round(),
-        eff: x => Decimal.pow(1.5,x).mul(.5),
+        eff: x => Decimal.pow(1.5,x).mul(.5).mul(cs_effect.boostPow),
     },{
         title: 'Amplifier',
         img: 'Icons/ConstArrow',
@@ -204,7 +262,7 @@ const CS_BUILDINGS = [
 
         desc: x => `Boost the power of adjacent constellations and their instability by <b class='green'>${formatMult(x)}</b>.`,
 
-        cost: x => Decimal.pow(1000*Math.max(x-8,1)**2,x).mul(1e6).round(),
+        cost: x => Decimal.pow(1000*getCSTierMult(x),x).mul(1e6).round(),
         eff: x => Decimal.pow(1.25,x).mul(1.25),
     },{
         title: 'Bolt',
@@ -213,9 +271,78 @@ const CS_BUILDINGS = [
 
         desc: x => `Boost dark charge rate by <b class='green'>${formatMult(x.add(1))}</b>.`,
 
-        cost: x => Decimal.pow(1000*Math.max(x-8,1)**2,x).mul(1e13).round(),
+        cost: x => Decimal.pow(1000*getCSTierMult(x),x).mul(1e13).round(),
         insta: x => Decimal.pow(7.5,x).mul(1.5e3).round(),
-        eff: x => Decimal.pow(1.5,x).mul(.25),
+        eff: x => Decimal.pow(1.5,x).mul(.25).mul(cs_effect.boostPow),
+    },{
+        title: 'Arc',
+        img: 'Icons/ConstArc',
+        max: 12,
+
+        desc: x => `Passively generate <b class='green'>${format(x,0)}</b> Arcs, if must be placed adjacent to 2+ Moons with tier of 4+. Higher moon tier means higher generation!`,
+
+        cost: x => Decimal.pow(1000*getCSTierMult(x),x).mul(1e16).round(),
+        insta: x => Decimal.pow(9,x).mul(1e5).round(),
+        eff: x => Decimal.pow(10,x).round(),
+    },{
+        type: 1,
+
+        title: 'Stellarium',
+        img: 'Icons/ConstStar',
+        max: 12,
+
+        desc: x => `Increase Stellaris limit by <b class='green'>${format(x,0)}</b>.`,
+
+        cost: x => Decimal.pow(100*getCSTierMult(x),x).mul(100).round(),
+        eff: x => 3*x+3,
+    },{
+        type: 1,
+
+        title: 'Diminisher',
+        img: 'Icons/ConstReducer',
+        max: 12,
+
+        desc: x => `Divide the instability generation of adjacent constellations by <b class='green'>${format(x,0)}</b>.`,
+
+        cost: x => Decimal.pow(100*getCSTierMult(x),x).mul(500).round(),
+        insta: x => E(2*x+2),
+        eff: x => x+2,
+    },{
+        type: 1,
+
+        title: 'Bulwark',
+        img: 'Icons/ConstWall',
+        max: 12,
+
+        desc: x => `Additively boost the power of reinforcements by <b class='green'>+${format(x.mul(100))}%</b>.`,
+
+        cost: x => Decimal.pow(100*getCSTierMult(x),x).mul(1e3).round(),
+        insta: x => E(x+1),
+        eff: x => E(2**x*0.3),
+    },{
+        type: 1,
+
+        title: 'Magnifier',
+        img: 'Icons/ConstCircle',
+        max: 12,
+
+        desc: x => `Boost the power of Generators, Moons, Rings and Bolts by <b class='green'>${formatMult(x.add(1))}</b>.`,
+
+        cost: x => Decimal.pow(100*getCSTierMult(x),x).mul(1e3).round(),
+        insta: x => E(x+1),
+        eff: x => E(1.25**x*0.25),
+    },{
+        type: 1,
+
+        title: 'Echo',
+        img: 'Icons/ConstEcho',
+        max: 12,
+
+        desc: x => `Increase the power of the constellation to the left tile by <b class='green'>${formatMult(x)}</b>. It's not affected by Echo.`,
+
+        cost: x => Decimal.pow(1e3*getCSTierMult(x),x).mul(1e5).round(),
+        insta: x => E(x*3+3),
+        eff: x => E(x*0.25+1.5),
     },
 ]
 
@@ -226,6 +353,17 @@ Constellation Type
 0 - Generator
 1 - Stabilizer
 2 - Reinforcement
+3 - Ring
+4 - Moon
+5 - Amplifier
+6 - Bolt
+7 - Arc
+
+8 - Stellarium
+9
+10
+11
+12
 
 */
 
@@ -239,6 +377,10 @@ var cs_insta = {
     total: E(0),
     max: E(10),
 }
+var cs_stellar = {
+    total: E(0),
+    max: E(0),
+}
 var cs_effect = {
     
 }
@@ -251,13 +393,17 @@ function resetConstellationTemp() {
         ring: E(1),
         moon: E(1),
         bolt: E(1),
+        arc: E(0),
+
+        reinPow: E(1),
+        boostPow: E(1),
     }
 }
 
 resetConstellationTemp()
 
 const ADJ_VEL = [[0,1],[0,-1],[1,0],[-1,0]]
-const NO_ADJ_TYPE = [1,2,5]
+const NO_ADJ_TYPE = [1,2,5,8]
 const ADJ_BOOST = [3,4,6]
 const MAX_PRESETS = 5
 
@@ -274,12 +420,12 @@ function actionGrid(y,x) {
     updateConstellation()
 }
 function checkCost(id,buy=false) {
-    let s = id.split('t'), type = parseInt(s[0]), tier = parseInt(s[1]), cs = CS_BUILDINGS[type]
+    let s = id.split('t'), type = parseInt(s[0]), tier = parseInt(s[1]), cs = CS_BUILDINGS[type], cs_type = cs.type||0
 
-    let cost = cs.cost(tier-1)
+    let cost = cs.cost(tier-1), res = [player.constellation.line, player.constellation.arc]
 
-    if (player.constellation.line.gte(cost)) {
-        if (buy) player.constellation.line = player.constellation.line.sub(cost).max(0)
+    if (res[cs_type].gte(cost)) {
+        if (buy) player.constellation[['line','arc'][cs_type]] = player.constellation[['line','arc'][cs_type]].sub(cost).max(0)
         return true
     }
 
@@ -290,9 +436,9 @@ function sellGrid(y,x,update=true) {
     let g = player.constellation.grid[y][x]
 
     if (g) {
-        let s = g.split('t'), type = parseInt(s[0]), tier = parseInt(s[1]), cs = CS_BUILDINGS[type]
+        let s = g.split('t'), type = parseInt(s[0]), tier = parseInt(s[1]), cs = CS_BUILDINGS[type], cs_type = cs.type||0
 
-        player.constellation.line = player.constellation.line.add(cs.cost(tier-1))
+        player.constellation[['line','arc'][cs_type]] = player.constellation[['line','arc'][cs_type]].add(cs.cost(tier-1))
         player.constellation.grid[y][x] = ''
 
         if (update) updateConstellation()
@@ -305,20 +451,23 @@ function sellAllGrids(update=true) {
     if (update) updateConstellation()
 }
 
-function checkGrid(update=false) {
+function checkGrid(update) {
     let grids = player.constellation.grid
 
     for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) {
         let g = grids[y][x], o = { mult: E(1), insta: E(0) }
 
         if (g) {
-            let s = g.split('t'), type = parseInt(s[0]), tier = parseInt(s[1]), cs = CS_BUILDINGS[type], insta_sub = E(0), eff = cs.eff(tier-1)
+            let s = g.split('t'), type = parseInt(s[0]), tier = parseInt(s[1]), cs = CS_BUILDINGS[type], insta_sub = E(0), eff = cs.eff(tier-1), cs_type = cs.type||0
+            let arc = 0
 
             let mul_add = E(0), mul_mul = E(1)
 
             if (cs.insta) o.insta = cs.insta(tier-1)
 
-            if (!NO_ADJ_TYPE.includes(type)) for (let i in ADJ_VEL) {
+            let no_type = !NO_ADJ_TYPE.includes(type)
+
+            for (let i in ADJ_VEL) {
                 let ag = grids[y+ADJ_VEL[i][0]]
 
                 if (!ag) continue
@@ -328,31 +477,36 @@ function checkGrid(update=false) {
                 if (ag) {
                     let atype = parseInt(ag.split('t')[0]), atier = parseInt(ag.split('t')[1]), acs = CS_BUILDINGS[atype], aeff = acs.eff(atier-1)
 
-                    if (atype == type) {
+                    if (type != 7 && atype == type && cs_type == 0 && no_type) {
                         if (ADJ_BOOST.includes(type)) mul_add = mul_add.add(0.5)
                         else mul_mul = mul_mul.mul(2)
                         o.insta = o.insta.mul(1.5)
-                    } else if (atype == 1) {
+                    } else if (atype == 1 && cs_type == 0 && no_type) {
                         insta_sub = insta_sub.add(aeff)
-                    } else if (atype == 5) {
+                    } else if (atype == 4 && type == 7 && atier >= 4) {
+                        mul_mul = mul_mul.mul(1.5**(atier-4))
+                        arc++
+                    } else if (atype == 5 && cs_type == 0 && no_type) {
                         o.insta = o.insta.mul(aeff)
                         mul_mul = mul_mul.mul(aeff)
-                    } 
+                    } else if (atype == 9 && cs_type == 0) {
+                        o.insta = o.insta.div(aeff)
+                    } else if (atype == 12 && type != 12 && i == '0') {
+                        mul_mul = mul_mul.mul(aeff)
+                    }
                 }
             }
 
-            // console.log(o,y,x)
-
             o.mult = o.mult.add(mul_add).mul(mul_mul)
-            o.insta = o.insta.sub(insta_sub).max(0)
+            o.insta = o.insta.sub(insta_sub.mul(o.mult)).max(0)
 
-            if (update) {
+            if (update == 'line') {
                 switch (type) {
                     case 0:
                         cs_effect.line = cs_effect.line.add(eff.mul(o.mult))
                         break
                     case 2:
-                        cs_insta.max = cs_insta.max.add(eff)
+                        cs_insta.max = cs_insta.max.add(eff.mul(o.mult))
                         break
                     case 3:
                         cs_effect.ring = cs_effect.ring.mul(eff.mul(o.mult).add(1))
@@ -363,9 +517,25 @@ function checkGrid(update=false) {
                     case 6:
                         cs_effect.bolt = cs_effect.bolt.mul(eff.mul(o.mult).add(1))
                         break
+                    case 7:
+                        if (arc >= 2) cs_effect.arc = cs_effect.arc.add(eff.mul(o.mult))
+                        break
+                    case 8:
+                        cs_stellar.max = cs_stellar.max.add(eff)
+                        break
                 }
 
-                cs_insta.total = cs_insta.total.add(o.insta)
+                if (cs_type == 0) cs_insta.total = cs_insta.total.add(o.insta)
+                else cs_stellar.total = cs_stellar.total.add(o.insta)
+            } else if (update == 'arc') {
+                switch (type) {
+                    case 10:
+                        cs_effect.reinPow = cs_effect.reinPow.add(eff.mul(o.mult))
+                        break
+                    case 11:
+                        cs_effect.boostPow = cs_effect.boostPow.mul(eff.mul(o.mult).add(1))
+                        break
+                }
             }
         }
 
@@ -376,16 +546,23 @@ function checkGrid(update=false) {
 function updateConstellation() {
     resetConstellationTemp()
 
+    let grids = player.constellation.grid
+
     cs_insta = {
         total: E(0),
         max: E(5),
     }
 
-    let grids = player.constellation.grid
+    cs_stellar = {
+        total: E(0),
+        max: E(0),
+    }
 
-    checkGrid(true)
+    checkGrid('arc')
 
-    if (cs_insta.total.gt(cs_insta.max)) resetConstellationTemp()
+    checkGrid('line')
+
+    if (cs_insta.total.gt(cs_insta.max) || cs_stellar.total.gt(cs_stellar.max)) resetConstellationTemp()
 
     // Update Images/Texts
 
@@ -393,13 +570,15 @@ function updateConstellation() {
         let g = grids[y][x], h = ''
 
         if (g) {
+            let cs_type = CS_BUILDINGS[g.split('t')[0]].type||0
+
             let gt = cs_grid_temp[y][x]
 
             // console.log(gt,y,x)
 
             h += getConstellationImage(g) + '<div style="font-weight: bold">'
 
-            if (gt.insta.gt(0)) h += "<div class='red'>+"+format(gt.insta,1,6)+"</div>"
+            if (cs_type == 0 && gt.insta.gt(0)) h += "<div class='red'>+"+format(gt.insta,1,6)+"</div>"
 
             if (gt.mult.gt(1)) h += "<div class='green'>x"+format(gt.mult,2,6)+"</div>"
 
@@ -427,8 +606,19 @@ function lineGain() {
     return x
 }
 
+function arcGain() {
+    let x = cs_effect.arc
+
+    .mul(upgEffect('constellation',5))
+    .mul(getAPEff(3))
+
+    return x
+}
+
 function darkChargeRate() {
     let x = cs_effect.bolt
+
+    .mul(starTreeEff('ring',40))
 
     return x
 }
@@ -438,15 +628,16 @@ function getDCEffects() {
 
     eff.charge = a.max(1)
     eff.cosmic = a.div(1e3).max(1).root(3)
-    eff.sp = a.div(1e6).max(1).log10().div(100).add(1)
-    eff.lunar = a.div(1e9).max(1).root(3)
-    eff.line = a.div(1e12).max(1).root(3)
+    eff.sp = a.div(1e6).max(1).log10().div(100).add(1).softcap(1.2,0.25,0)
+    eff.lunar = a.div(1e9).max(1).root(3).softcap(1e3,0.25,0)
+    eff.line = a.div(1e12).max(1).root(3).softcap(1e3,0.25,0)
 
     return eff
 }
 
 function updateConstellationTemp() {
     tmp.lineGain = lineGain()
+    tmp.arcGain = arcGain()
     tmp.darkChargeRate = darkChargeRate()
     tmp.darkChargeEffs = getDCEffects()
 
@@ -466,7 +657,7 @@ el.update.constellation = function () {
     tmp.el.dc_tab.setDisplay(player.grassjump>=16)
 
     if (cs_tab == 0) {
-        let lines = player.constellation.line
+        let res = [player.constellation.line,player.constellation.arc]
 
         for (let i = 1; i <= 12; i++) {
             tmp.el['cs_tier_btn'+i].setDisplay(i <= cs_max_tier)
@@ -484,14 +675,16 @@ el.update.constellation = function () {
             if (dis) {
                 tmp.el['cs_build_img'+i].changeStyle('filter',prefix[1])
 
+                let cs_type = cs.type||0
+
                 let h = `${prefix[0]+cs.title} [T${cs_tier}]<span style='font-size: 14px'>`
 
                 h += '<br>' + cs.desc(cs.eff(cs_tier-1))
 
-                if (cs.insta) h += '<br>Increase the instability by <b class="red">'+format(cs.insta(cs_tier-1),0)+'</b>'
+                if (cs.insta) h += cs_type == 1 ? '<br>Uses up <b class="magenta">'+format(cs.insta(cs_tier-1),0)+' Stellaris</b>' : '<br>Increase the instability by <b class="red">'+format(cs.insta(cs_tier-1),0)+'</b>'
                 
-                let cost = cs.cost(cs_tier-1), c = `<br> Cost: ${cost.format(0)}` + ' Lines'
-                if (lines.lt(cost)) c = '<span class="red">'+c+'</span>'
+                let cost = cs.cost(cs_tier-1), c = `<br> Cost: ${cost.format(0)}` + [' Lines',' Arcs'][cs.type||0]
+                if (res[cs.type||0].lt(cost)) c = '<span class="red">'+c+'</span>'
                 h += c
 
                 h += '</span>'
@@ -505,6 +698,7 @@ el.update.constellation = function () {
         let h = ''
 
         if (cs_effect.line.gt(0)) h += `+${cs_effect.line.format(0)}/s to Lines gain.<br>`
+        if (cs_effect.arc.gt(0)) h += `+${cs_effect.arc.format(0)}/s to Arcs gain.<br>`
         if (cs_effect.ring.gt(1)) h += `${formatMult(cs_effect.ring)} to Rings gain.<br>`
         if (cs_effect.moon.gt(1)) h += `${formatMult(cs_effect.moon)} to Lunar Powers gain.<br>`
         if (cs_effect.bolt.gt(1)) h += `${formatMult(cs_effect.bolt)} to Dark Charge rate.<br>`
@@ -512,9 +706,12 @@ el.update.constellation = function () {
         tmp.el.cs_effects.setHTML(h)
     } else if (cs_tab == 2) {
         for (let i = 0; i < MAX_PRESETS; i++) {
-            let p = player.constellation.presets[i];
+            let p = player.constellation.presets[i], c = ''
 
-            tmp.el['cs_preset_cost'+i].setHTML(p.cost[0].gt(0) ? p.cost[0].format(0) + ' Lines' : '???')
+            if (p.cost[0].gt(0)) c += p.cost[0].format(0) + ' Lines'
+            if (p.cost[1].gt(0)) c += (c ? ', ' : '') + p.cost[1].format(0) + ' Arcs'
+
+            tmp.el['cs_preset_cost'+i].setHTML(c||'???')
 
             tmp.el['cs_preset_boost'+i].setHTML(p.boosts?'Boosts: '+p.boosts:'No Boosts')
         }
@@ -525,9 +722,9 @@ el.update.constellation = function () {
 
         if (effs.charge.gt(1)) h += `<br><b class='green'>${formatMult(effs.charge)}</b> to Charge Rate.`
         if (effs.cosmic.gt(1)) h += `<br><b class='green'>${formatMult(effs.cosmic)}</b> to Cosmic Gain.`
-        if (effs.sp.gt(1)) h += `<br><b class='green'>^${format(effs.sp)}</b> to SP Gain.`
-        if (effs.lunar.gt(1)) h += `<br><b class='green'>${formatMult(effs.lunar)}</b> to Lunar Powers Gain.`
-        if (effs.line.gt(1)) h += `<br><b class='green'>${formatMult(effs.line)}</b> to Lines Gain.`
+        if (effs.sp.gt(1)) h += `<br><b class='green'>^${format(effs.sp,4)}</b> to SP Gain.`+effs.sp.softcapHTML(1.2)
+        if (effs.lunar.gt(1)) h += `<br><b class='green'>${formatMult(effs.lunar)}</b> to Lunar Powers Gain.`+effs.lunar.softcapHTML(1e3)
+        if (effs.line.gt(1)) h += `<br><b class='green'>${formatMult(effs.line)}</b> to Lines Gain.`+effs.line.softcapHTML(1e3)
 
         tmp.el.cs_dark.setHTML(h)
     }
@@ -537,10 +734,14 @@ el.update.constellation = function () {
     tmp.el.constellation_select.setHTML(h)
 
     h = 'Instability: '+cs_insta.total.format(1)+' / '+cs_insta.max.format(1)
-    if (cs_insta.total.gt(cs_insta.max)) h = '<b class="red">'+h+'<br>Effects no longer work!</br>'
+    if (player.constellation.arcUnl) h += '<br>Stellaris: '+cs_stellar.total.format(0)+' / '+cs_stellar.max.format(0)
+
+    if (cs_insta.total.gt(cs_insta.max) || cs_stellar.total.gt(cs_stellar.max)) h = '<b class="red">'+h+'<br>Effects no longer work!</b>'
     tmp.el.constellation_stab.setHTML(h)
 
     h = player.constellation.line.format(0) + ' Lines' + (tmp.lineGain.gt(0) ? ' <span class="smallAmt">'+player.constellation.line.formatGain(tmp.lineGain)+'</span>' : '')
+    if (player.constellation.arcUnl) h += '<br>' + player.constellation.arc.format(0) + ' Arcs' + (tmp.arcGain.gt(0) ? ' <span class="smallAmt">'+player.constellation.arc.formatGain(tmp.arcGain)+'</span>' : '')
+
     tmp.el.constellation_amt.setHTML(h)
 
     tmp.el.cs_sell.setTxt('Delete Mode: '+(cs_sellMode ? "ON" : "OFF"))
@@ -550,7 +751,7 @@ var cs_building_tiers_dis = new Array(CS_BUILDINGS.length).fill(1);
 var cs_max_tier = 1
 
 function checkConstellationCosts() {
-    let lines = player.constellation.line
+    let res = [player.constellation.line,player.constellation.arc]
 
     cs_building_tiers_dis = new Array(CS_BUILDINGS.length).fill(1)
     cs_max_tier = 1
@@ -558,7 +759,7 @@ function checkConstellationCosts() {
     for (let i in CS_BUILDINGS) {
         let cs = CS_BUILDINGS[i], t = 1
         for (let j = 2; j <= cs.max; j++) {
-            if (lines.lt(cs.cost(j-1).mul(0.04))) break;
+            if (res[cs.type||0].lt(cs.cost(j-1).mul(0.04))) break;
 
             t = j
         }
@@ -573,18 +774,19 @@ const PRES_BOOSTS = {
     3: 'Rings',
     4: 'Lunar Powers',
     6: 'Dark Charge',
+    7: 'Arcs',
 }
 
 function savePreset(i) {
     let grids = player.constellation.grid
-    let c = '', cost = [E(0)], b = ''
+    let c = '', cost = [E(0),E(0)], b = ''
 
     for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) if (grids[y][x]) {
-        let s = grids[y][x].split('t'), type = parseInt(s[0]), tier = parseInt(s[1]), cs = CS_BUILDINGS[type]
+        let s = grids[y][x].split('t'), type = parseInt(s[0]), tier = parseInt(s[1]), cs = CS_BUILDINGS[type], cs_type = cs.type||0
 
         c += c ? ','+grids[y][x] : grids[y][x]
 
-        cost[0] = cost[0].add(cs.cost(tier-1))
+        cost[cs_type] = cost[cs_type].add(cs.cost(tier-1))
 
         if (type in PRES_BOOSTS && !b.includes(PRES_BOOSTS[type])) b += b ? ', ' + PRES_BOOSTS[type] : PRES_BOOSTS[type]
     } else c += c ? ',-' : '-'
@@ -599,8 +801,9 @@ function savePreset(i) {
 function loadPreset(i) {
     let p = player.constellation.presets[i]
 
-    if (p.encode && player.constellation.line.gte(p.cost[0])) {
+    if (p.encode && player.constellation.line.gte(p.cost[0]) && player.constellation.arc.gte(p.cost[1])) {
         player.constellation.line = player.constellation.line.sub(p.cost[0])
+        player.constellation.arc = player.constellation.arc.sub(p.cost[1])
 
         let e = p.encode.split(',')
 

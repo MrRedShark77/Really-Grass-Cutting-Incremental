@@ -2,7 +2,7 @@ const RF_COST_POW = 1.1
 
 const ROCKET = {
     bulk(x,r,base) {
-        return x.mul(tmp.rf_base-1).div(base).div(tmp.rf_base_mult).add(Decimal.pow(tmp.rf_base,r)).log(tmp.rf_base).floor().toNumber()
+        return x.mul(RF_COST_POW-1).div(base).div(tmp.rf_base_mult).add(Decimal.pow(RF_COST_POW,r)).log(RF_COST_POW).mul(tmp.rf_cheap).floor().toNumber()
     },
     create() {
         let rf = player.rocket.total_fp
@@ -14,7 +14,7 @@ const ROCKET = {
             player.rocket.amount += b-rf
 
             if (!hasStarTree('auto',10)) {
-                let c = Decimal.pow(tmp.rf_base, b).sub(Decimal.pow(tmp.rf_base, rf)).div(tmp.rf_base-1).mul(tmp.rf_base_mult)
+                let c = Decimal.pow(RF_COST_POW, Decimal.div(b,tmp.rf_cheap)).sub(Decimal.pow(RF_COST_POW, Decimal.div(rf,tmp.rf_cheap))).div(RF_COST_POW-1).mul(tmp.rf_base_mult)
 
                 player.chargeRate = player.chargeRate.sub(Decimal.mul(c,1e36)).max(0)
                 player.oil = player.oil.sub(Decimal.mul(c,1e9)).max(0)
@@ -590,12 +590,12 @@ el.update.rocket = ()=>{
 }
 
 function updateRocketTemp() {
-    let cheap = 1 * starTreeEff('progress',9,1) * starTreeEff('progress',11,1) * getLEffect(5)
+    let cheap = Decimal.mul(starTreeEff('progress',9,1),starTreeEff('progress',11,1)).mul(getLEffect(5))
     
-    let rf = player.rocket.total_fp
-    tmp.rf_base = RF_COST_POW ** (1/cheap)
-    let b = Decimal.pow(tmp.rf_base,rf).mul(tmp.rf_base_mult)
+    let rf = Decimal.div(player.rocket.total_fp,cheap)
+    let b = Decimal.pow(RF_COST_POW,rf).mul(tmp.rf_base_mult)
     tmp.rf_cost = [b.mul(1e36),b.mul(1e9)]
+    tmp.rf_cheap = cheap
 
     let bulk = 0
     if (player.chargeRate.gte(tmp.rf_cost[0]) && player.oil.gte(tmp.rf_cost[1])) bulk = Math.min(ROCKET.bulk(player.chargeRate,rf,1e36),ROCKET.bulk(player.oil,rf,1e9))

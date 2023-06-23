@@ -140,7 +140,7 @@ const MAIN = {
 
         if (player.planetoid.planetTier>=6) x = x.mul(getPTEffect(3))
 
-        x = x.mul(upgEffect('constellation',1))
+        x = x.mul(upgEffect('constellation',1)).mul(upgEffect('constellation',6))
 
         if (player.decel) x = x.div(1e16)
 
@@ -353,7 +353,7 @@ el.update.main = ()=>{
 
     tmp.el.tier.setDisplay(tier_unl)
     tmp.el.astral.setDisplay(astr_unl)
-    if (tier_unl) tmp.el.tier.setHTML(`Tier <b class="yellow">${format(player.tier,0)}</b> (${formatPercent(tmp.tier.percent)})`)
+    if (tier_unl) tmp.el.tier.setHTML(`Tier <b class="yellow">${format(player.tier,0)}</b> ${player.tier>=10000?'':'('+formatPercent(tmp.tier.percent)+')'}`)
     if (astr_unl) tmp.el.astral.setHTML(`Astral <b class="magenta">${(player.astralPrestige>0?format(player.astralPrestige,0)+"-":"")+format(player.astral,0)}</b> (${formatPercent(tmp.astral.percent)})`)
 
     if (mapID == 'g') {

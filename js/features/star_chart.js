@@ -28,7 +28,7 @@ const SC_IDS = {
         [24,20,21,22,23],
         [29,25,26,27,28],
         [34,30,31,32,33],
-        [38,35,36,37,''],
+        [38,35,36,37,40],
         ['',39,'','',''],
     ],
     reserv: [
@@ -39,8 +39,9 @@ const SC_IDS = {
         [17,18,23,20,29],
         [25,24,27,28,''],
         [33,26,'',30,''],
-        ['',31,'','',''],
+        [35,31,'','',''],
         ['',32,'','',''],
+        ['',34,'','',''],
     ],
 }
 
@@ -1619,6 +1620,28 @@ const STAR_CHART = {
             },
             effDesc: x => formatMult(x),
         },
+
+        {
+            max: 100,
+            branch: [34],
+
+            unl: ()=>player.grassjump>=16,
+
+            title: "Dark Charge I",
+            desc: `Increase dark charge rate by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/DarkCharge'],
+                            
+            cost: i => Math.ceil(1e75*1.5**i),
+            bulk: i => i.div(1e75).max(1).log(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
     ],
 
     // Reservatorium
@@ -2133,6 +2156,30 @@ const STAR_CHART = {
             icon: ['Curr/Normality','Icons/Automation2'],
             
             cost: i => 5e21,
+            bulk: i => 1,
+        },{
+            branch: [32],
+
+            max: 1,
+
+            title: "Limitless Planetarium Upgrades",
+            desc: `Uncap <span class="green">Planetarium Upgrades</span>' maximum level, except Planetarium Grow Speed & Planetarium Range.`,
+
+            icon: ['Curr/Planetoid','Icons/Automation2'],
+            
+            cost: i => 1e23,
+            bulk: i => 1,
+        },{
+            branch: [33],
+
+            max: 1,
+
+            title: "Limitless Cloud Upgrades",
+            desc: `Uncap <span class="green">Cloud Upgrades</span>' maximum level.`,
+
+            icon: ['Curr/Cloud','Icons/Automation2'],
+            
+            cost: i => 1e24,
             bulk: i => 1,
         },
     ],

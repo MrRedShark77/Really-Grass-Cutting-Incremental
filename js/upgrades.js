@@ -26,6 +26,7 @@ const UPG_RES = {
     cloud: ["Cloud",()=>[player,"cloud"],'CloudBase','Curr/Cloud'],
     planet: ["Planet",()=>[player.planetoid,"planet"],'PlanetaryBase','Curr/Planet'],
     line: ["Line",()=>[player.constellation,"line"],'ConstellationBase','Curr/Lines'],
+    arc: ["Arc",()=>[player.constellation,"arc"],'ConstellationBase','Curr/Arcs'],
 }
 
 const isResNumber = ['perk','plat','rf','momentum','moonstone']
@@ -1088,6 +1089,10 @@ function updateUpgTemp(id) {
             if (hasStarTree('reserv',30) && x == 0) tu.max[x] = Infinity
         } else if (id == "np") {
             if (hasStarTree('reserv',33)) tu.max[x] = Infinity
+        } else if (id == "planetarium") {
+            if (hasStarTree('reserv',34) && (x == 1 || x == 2)) tu.max[x] = Infinity
+        } else if (id == "cloud") {
+            if (hasStarTree('reserv',35)) tu.max[x] = Infinity
         }
 
         if (upg.unl?upg.unl():true) if (amt < tu.max[x]) ul++

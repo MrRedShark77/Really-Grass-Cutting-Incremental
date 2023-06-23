@@ -129,6 +129,9 @@ function calc(dt) {
 
     if (player.constellation.unl) {
         player.constellation.line = player.constellation.line.add(tmp.lineGain.mul(dt))
+        player.constellation.arc = player.constellation.arc.add(tmp.arcGain.mul(dt))
+
+        player.constellation.arcUnl = player.constellation.arcUnl || player.constellation.arc.gt(0)
     }
 
     if (player.grassjump>=16) {
