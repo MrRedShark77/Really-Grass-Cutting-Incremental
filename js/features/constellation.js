@@ -603,7 +603,7 @@ function lineGain() {
     .mul(upgEffect('constellation',2))
     .mul(starTreeEff('ring',37))
     .mul(starTreeEff('ring',44))
-    .mul(getAPEff(4))
+    .mul(ggetASEff('line'))
 
     x = x.mul(tmp.darkChargeEffs.line||1)
 
@@ -614,7 +614,7 @@ function arcGain() {
     let x = cs_effect.arc
 
     .mul(upgEffect('constellation',5))
-    .mul(getAPEff(3))
+    .mul(getASEff('arc'))
 
     return x
 }
