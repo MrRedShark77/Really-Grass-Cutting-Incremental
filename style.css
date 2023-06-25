@@ -15,6 +15,8 @@
     -webkit-font-smoothing: antialiased;
 }
 
+* { scrollbar-color: auto !important; scrollbar-width: auto !important; }
+
 body {
     color: white;
     background-color: #0052af;
@@ -1000,7 +1002,7 @@ body.planetoid #level_bar {
     width: 100%;
     height: 50px;
     background-color: #0006;
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 #cs_btn_table > button {
@@ -1013,7 +1015,7 @@ body.planetoid #level_bar {
 #cs_build_table {
     width: 100%;
     height: calc(100% - 50px);
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 .cs-building {
@@ -1050,7 +1052,7 @@ body.planetoid #level_bar {
 #cs_dark {
     width: 100%;
     height: 100%;
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 .cs-preset {
