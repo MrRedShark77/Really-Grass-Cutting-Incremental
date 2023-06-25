@@ -131,6 +131,8 @@ const PLANETOID = {
 
         .mul(upgEffect('cloud',2))
 
+        .mul(cs_effect.ring)
+
         if (player.lowGH <= -40) x = x.mul(getAGHEffect(17))
 
         x = x.mul(getASEff('ring'))
