@@ -30,6 +30,7 @@ const SC_IDS = {
         [34,30,31,32,33],
         [38,35,36,37,40],
         ['',39,'','',''],
+        [41,42,43,44,45],
     ],
     reserv: [
         [22,7,0,6,15],
@@ -42,6 +43,7 @@ const SC_IDS = {
         [35,31,'','',''],
         ['',32,'','',''],
         ['',34,'','',''],
+        ['',36,'','',''],
     ],
 }
 
@@ -1619,9 +1621,7 @@ const STAR_CHART = {
                 return x
             },
             effDesc: x => formatMult(x),
-        },
-
-        {
+        },{
             max: 100,
             branch: [34],
 
@@ -1637,6 +1637,98 @@ const STAR_CHART = {
 
             effect(i) {
                 let x = i+1
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+
+        {
+            max: 100,
+            branch: [38],
+
+            title: "Final Stabilizer",
+            desc: `Increase stabilizer power compounding by <span class="green">+5%</span> per level.`,
+
+            icon: ['Icons/ConstCooler'],
+                            
+            cost: i => Decimal.pow(10,i**1.5).mul(1e100),
+            bulk: i => i.div(1e100).max(1).log(10).root(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.05,i)
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 100,
+            branch: [39],
+
+            title: "Final Reinforcement",
+            desc: `Increase reinforcement power compounding by <span class="green">+5%</span> per level.`,
+
+            icon: ['Icons/ConstellationSquare'],
+                            
+            cost: i => Decimal.pow(10,i**1.5).mul(1e150),
+            bulk: i => i.div(1e150).max(1).log(10).root(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.05,i)
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 100,
+            branch: [36],
+
+            title: "Final Observatorium",
+            desc: `Increase observatorium gain compounding by <span class="green">+25%</span> per level.`,
+
+            icon: ['Curr/Observatorium'],
+                            
+            cost: i => Decimal.pow(10,i**1.35).mul(1e100),
+            bulk: i => i.div(1e100).max(1).log(10).root(1.35).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.25,i)
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 100,
+            branch: [37],
+
+            title: "Final Line",
+            desc: `Increase line gain compounding by <span class="green">+20%</span> per level.`,
+
+            icon: ['Curr/Lines'],
+                            
+            cost: i => Decimal.pow(10,i**1.5).mul(1e150),
+            bulk: i => i.div(1e150).max(1).log(10).root(1.5).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(1.2,i)
+        
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },{
+            max: 100,
+            branch: [40],
+
+            title: "Final Dark Charge",
+            desc: `Increase dark charge rate compounding by <span class="green">+100%</span> per level.`,
+
+            icon: ['Curr/DarkCharge'],
+                            
+            cost: i => Decimal.pow(10,i**1.35).mul(1e100),
+            bulk: i => i.div(1e100).max(1).log(10).root(1.35).floor().toNumber()+1,
+
+            effect(i) {
+                let x = Decimal.pow(2,i)
         
                 return x
             },
@@ -2180,6 +2272,18 @@ const STAR_CHART = {
             icon: ['Curr/Cloud','Icons/Automation2'],
             
             cost: i => 1e24,
+            bulk: i => 1,
+        },{
+            branch: [34],
+
+            max: 1,
+
+            title: "Limitless Astro Upgrades",
+            desc: `Uncap <span class="green">Astro Upgrades</span>' maximum level.`,
+
+            icon: ['Curr/Astrolabe','Icons/Automation2'],
+            
+            cost: i => 1e27,
             bulk: i => 1,
         },
     ],

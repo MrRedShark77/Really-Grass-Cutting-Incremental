@@ -501,3 +501,15 @@ function findNaN(obj, str=false, data=getPlayerData()) {
     }
     return false
 }
+
+function overflow(number, start, power, meta=1){
+	if(isNaN(number.mag))return new Decimal(0);
+	start=E(start);
+	if(number.gte(start)){
+        let s = start.iteratedlog(10,meta)
+		number=Decimal.iteratedexp(10,meta,number.iteratedlog(10,meta).div(s).pow(power).mul(s));
+	}
+	return number;
+}
+
+Decimal.prototype.overflow = function (start, power, meta) { return overflow(this.clone(), start, power, meta) }

@@ -147,7 +147,7 @@ MAIN.steel = {
 
                     let x = s.root(3)
 
-                    return x.toNumber()
+                    return x
                 },
                 effDesc: x => "Boost PP gain by "+format(x)+"x",
             },{
@@ -159,7 +159,7 @@ MAIN.steel = {
 
                     let x = s.root(3)
 
-                    return x.toNumber()
+                    return x
                 },
                 effDesc: x => "Boost Crystal gain by "+format(x)+"x",
             },{
@@ -172,7 +172,7 @@ MAIN.steel = {
 
                     let x = s.root(4)
 
-                    return x.toNumber()
+                    return x
                 },
                 effDesc: x => "Boost AP gain by "+format(x)+"x",
             },{
@@ -185,7 +185,7 @@ MAIN.steel = {
 
                     let x = s.root(4)
 
-                    return x.toNumber()
+                    return x
                 },
                 effDesc: x => "Boost Oil gain by "+format(x)+"x",
             },{
@@ -198,7 +198,7 @@ MAIN.steel = {
 
                     let x = s.root(4)
 
-                    return x.toNumber()
+                    return x
                 },
                 effDesc: x => "Boost Fun gain by "+format(x)+"x",
             },{
@@ -211,7 +211,7 @@ MAIN.steel = {
 
                     let x = s.root(4)
 
-                    return x.toNumber()
+                    return x
                 },
                 effDesc: x => "Boost SFRGT gain by "+format(x)+"x",
             },

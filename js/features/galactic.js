@@ -129,6 +129,7 @@ const ASTRAL = {
         if (player.astralPrestige>1) x.ring = getAPEff(1)
         if (player.astralPrestige>2) x.lunar = getAPEff(2)
         if (player.astralPrestige>3) x.arc = getAPEff(3)
+        if (player.astralPrestige>3) x.line = getAPEff(4)
 
         return x
     },
@@ -144,6 +145,7 @@ const ASTRAL = {
         if (e.ring) x += `Increase Rings gain by <b class="green">${formatMult(e.ring,0)}</b><br>`
         if (e.lunar) x += `Increase Lunar Powers gain by <b class="green">${formatMult(e.lunar,0)}</b><br>`
         if (e.arc) x += `Increase Arcs gain by <b class="green">${formatMult(e.arc,0)}</b><br>`
+        if (e.line) x += `Increase Lines gain by <b class="green">${formatMult(e.line,0)}</b><br>`
 
         return x
     },

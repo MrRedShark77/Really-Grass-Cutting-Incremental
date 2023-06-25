@@ -213,6 +213,11 @@ MAIN.gj = {
         },{
             r: 16,
             desc: `Unlock the <b class="green">Dark Charger</b> (in constellation).`,
+        },{
+            r: 20,
+            desc: `<b class="green">Double</b> Dark Charge rate every grass-jump, starting at 20.`,
+            effect: ()=>Decimal.pow(2,player.grassjump-19),
+            effDesc: x=> format(x)+"x",
         },
     ],
 }

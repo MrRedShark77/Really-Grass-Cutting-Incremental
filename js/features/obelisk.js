@@ -36,8 +36,8 @@ RESET.astralPrestige = {
     },
 }
 
-const AP_BONUS = ['Dark Matter','Ring','Lunar Power','Arc']
-const AP_BONUS_BASE = [100,25,5,3]
+const AP_BONUS = ['Dark Matter','Ring','Lunar Power','Arc','Line']
+const AP_BONUS_BASE = [100,25,5,3,5]
 
 const LUNAR_OB = [
     // 0 - multiplier, 1 - exponent

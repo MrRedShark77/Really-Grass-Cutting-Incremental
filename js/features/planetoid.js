@@ -154,6 +154,8 @@ const PLANETOID = {
 
         .mul(upgEffect('planet',1))
 
+        .mul(starTreeEff('ring',43))
+
         if (hasStarTree('reserv',22)) x = x.mul(tmp.compact)
 
         return x.floor()
