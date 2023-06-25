@@ -764,7 +764,7 @@ function checkConstellationCosts() {
 
     for (let i in CS_BUILDINGS) {
         let cs = CS_BUILDINGS[i], t = 1
-        for (let j = 2; j <= cs.max; j++) {
+        for (let j = 2; j <= Math.min(12,cs.max); j++) {
             if (res[cs.type||0].lt(cs.cost(j-1).mul(0.04))) break;
 
             t = j
