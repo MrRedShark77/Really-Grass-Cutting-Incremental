@@ -603,7 +603,7 @@ function lineGain() {
     .mul(upgEffect('constellation',2))
     .mul(starTreeEff('ring',37))
     .mul(starTreeEff('ring',44))
-    .mul(ggetASEff('line'))
+    .mul(getASEff('line'))
 
     x = x.mul(tmp.darkChargeEffs.line||1)
 
