@@ -1,6 +1,6 @@
 function E(x){return new Decimal(x)};
 
-const VER = 0.0404
+const VER = 0.05
 const EINF = Decimal.dInf
 const BETA = false
 const save_name = BETA ? "rgci_beta_save" : "gci_save"
@@ -350,6 +350,11 @@ function checkVersion() {
         console.log('guh? ^2')
     }
 
+    if (player.version < 0.05) {
+        player.offline.current = Date.now();
+        player.offline.time = 0;
+    }
+ 
     player.lowGH = Math.max(player.lowGH,-60)
 
     player.version = VER
