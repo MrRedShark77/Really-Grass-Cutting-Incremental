@@ -59,6 +59,8 @@ RESET.supernova = {
         player.planetoid.planetTier = solarUpgEffect(0,6,0)
 
         sellAllGrids(false,false)
+        updateConstellationTemp()
+        updateConstellation()
         resetUpgrades('constellation')
         resetUpgrades('observ')
         player.constellation.line = E(0)
@@ -93,6 +95,8 @@ RESET.supernova = {
         }
 
         updateTemp()
+
+        tmp.pass = 3
     },
 }
 

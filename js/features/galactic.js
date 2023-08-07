@@ -105,7 +105,7 @@ RESET.gal = {
             player.grassskip = 0
         }
 
-        if (player.lowGH > -12 || order=='sac') player.plat = 0
+        if (player.lowGH > -12 || order=='sac') player.plat = E(0)
 
         if (player.lowGH > 28) player.chal.comp = []
 

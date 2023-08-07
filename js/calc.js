@@ -1,4 +1,9 @@
 function calc(dt) {
+    if (tmp.pass > 0) {
+        tmp.pass--
+        return
+    }
+
     let decel = player.decel || player.hsj > 0
     let recel = player.recel || player.hsj > 0
 
