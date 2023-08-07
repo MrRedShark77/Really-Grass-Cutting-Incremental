@@ -104,6 +104,8 @@ const SOLAR_UPGS = [
                 cost: i => Decimal.pow(1.2,i).mul(20),
                 bulk: i => i.div(20).log(1.2).floor().toNumber()+1,
                 effect(i) {
+                    if (i == 0) return E(0)
+
                     let x = Decimal.pow(1e3,i)
                         
                     return x
@@ -120,6 +122,8 @@ const SOLAR_UPGS = [
                 cost: i => Decimal.pow(1.2,i).mul(20),
                 bulk: i => i.div(20).log(1.2).floor().toNumber()+1,
                 effect(i) {
+                    if (i == 0) return E(0)
+
                     let x = Decimal.pow(1e3,i)
                         
                     return x
@@ -136,6 +140,8 @@ const SOLAR_UPGS = [
                 cost: i => Decimal.pow(1.2,i).mul(20),
                 bulk: i => i.div(20).log(1.2).floor().toNumber()+1,
                 effect(i) {
+                    if (i == 0) return E(0)
+                    
                     let x = Decimal.pow(1e5,i)
                         
                     return x
