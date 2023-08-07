@@ -1341,7 +1341,8 @@ el.update.upgs = ()=>{
     else if (m && player.constellation.unl) {
         updateUpgradesHTML('constellation')
     }
-    else if (mapID == 'opt') {
+    
+    if (m == 'opt') {
         tmp.el.hideUpgOption.setTxt(player.options.hideUpgOption?"ON":"OFF")
         tmp.el.offlineOption.setTxt(player.offline.enabled?"ON":"OFF")
     }
