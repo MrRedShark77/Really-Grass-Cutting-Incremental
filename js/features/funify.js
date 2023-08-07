@@ -1,6 +1,6 @@
 MAIN.fun = {
     gain() {
-        let l = player.grassskip+1
+        let l = tmp.minStats.gs+1
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestOil.div(1e42).max(1).root(3))
 
         tmp.funGainBase = x
@@ -15,6 +15,8 @@ MAIN.fun = {
 
         if (player.lowGH <= -12) x = x.mul(getAGHEffect(10))
 
+        x = x.mul(solarUpgEffect(1,8))
+
         return x.floor()
     },
     SFRGTgain() {
@@ -25,7 +27,7 @@ MAIN.fun = {
         x = x.mul(upgEffect('moonstone',5))
 
         if (player.lowGH <= 8) x = x.mul(getAGHEffect(5))
-        if (player.grassskip >= 15) x = x.mul(getGSEffect(4,1))
+        if (tmp.minStats.gs >= 15) x = x.mul(getGSEffect(4,1))
 
         x = x.mul(tmp.chargeEff[11]||1)
 

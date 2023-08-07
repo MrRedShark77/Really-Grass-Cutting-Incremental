@@ -27,9 +27,10 @@ const UPG_RES = {
     planet: ["Planet",()=>[player.planetoid,"planet"],'PlanetaryBase','Curr/Planet'],
     line: ["Line",()=>[player.constellation,"line"],'ConstellationBase','Curr/Lines'],
     arc: ["Arc",()=>[player.constellation,"arc"],'ConstellationBase','Curr/Arcs'],
+    stardust: ["Stardust",()=>[player,"stardust"],'NebulaBase','Curr/Stardust'],
 }
 
-const isResNumber = ['perk','plat','rf','momentum','moonstone']
+const isResNumber = ['perk','moonstone']
 
 const UPGS = {
     grass: {
@@ -460,7 +461,7 @@ const UPGS = {
                 cost: i => E(500),
                 bulk: i => 1,
             },{
-                unl: ()=>player.grasshop>0,
+                unl: ()=>tmp.minStats.gh>0,
 
                 title: "Crystal Upgrade Autobuy",
                 desc: `You can now automatically buy Crystal Upgrades.`,
@@ -471,7 +472,7 @@ const UPGS = {
                 cost: i => E(1e11),
                 bulk: i => 1,
             },{
-                unl: ()=>player.grasshop>0,
+                unl: ()=>tmp.minStats.gh>0,
 
                 title: "Prestige Upgrades EL",
                 desc: `Prestige Upgrades no longer spend PP.`,
@@ -482,7 +483,7 @@ const UPGS = {
                 cost: i => E(1e12),
                 bulk: i => 1,
             },{
-                unl: ()=>player.grasshop>=4,
+                unl: ()=>tmp.minStats.gh>=4,
 
                 title: "Crystal Upgrades EL",
                 desc: `Crystal Upgrades no longer spend crystal.`,
@@ -493,7 +494,7 @@ const UPGS = {
                 cost: i => E(1e15),
                 bulk: i => 1,
             },{
-                unl: ()=>player.grasshop>=4,
+                unl: ()=>tmp.minStats.gh>=4,
 
                 max: 10,
 
@@ -512,7 +513,7 @@ const UPGS = {
                 },
                 effDesc: x => "+"+formatPercent(x,0)+"/s",
             },{
-                unl: ()=>player.grasshop>=4,
+                unl: ()=>tmp.minStats.gh>=4,
 
                 max: 10,
 
@@ -531,7 +532,7 @@ const UPGS = {
                 },
                 effDesc: x => "+"+formatPercent(x,0)+"/s",
             },{
-                unl: ()=>player.grasshop>=6,
+                unl: ()=>tmp.minStats.gh>=6,
 
                 title: "Perk Autobuy",
                 desc: `You can now automatically buy Perk Upgrades.`,
@@ -1026,7 +1027,7 @@ function buyMaxUpgrade(id,x,auto=false) {
         let amt2 = amt[x]||0
 
         if (amt2 < tu.max[x]) if (Decimal.gte(res2,tu.cost[x])) {
-            if (auto) res = numInc ? Math.max(res,tu.cost[x]*1.01) : res.max(tu.cost[x].mul(1.01))
+            if (auto) res = numInc ? Math.max(res,tu.cost[x]*1.01) : res.max(Decimal.mul(tu.cost[x],1.01))
             let bulk = auto ? upg.bulk(res) : tu.bulk[x]
 
             if (costOnce ? true : bulk > amt2) {
@@ -1094,7 +1095,9 @@ function updateUpgTemp(id) {
         } else if (id == "cloud") {
             if (hasStarTree('reserv',35)) tu.max[x] = Infinity
         } else if (id == "astro") {
-            if (hasStarTree('reserv',36)) tu.max[x] = Infinity
+            if (hasStarTree('reserv',36) && x < 5) tu.max[x] = Infinity
+        } else if (id == "measure") {
+            if (hasStarTree('reserv',37) && (x == 1 || x == 2 || x == 4)) tu.max[x] = Infinity
         }
 
         if (upg.unl?upg.unl():true) if (amt < tu.max[x]) ul++
@@ -1280,66 +1283,66 @@ el.setup.upgs = ()=>{
 }
 
 el.update.upgs = ()=>{
-    if (tmp.space) {
-        if (mapID2 == 'at') {
-            updateUpgradesHTML('moonstone')
-        }
-        else if (mapID2 == 'sac') {
-            updateUpgradesHTML('dm')
-        }
-    } else {
-        if (mapID == 'g') {
-            updateUpgradesHTML('grass')
-            updateUpgradesHTML('aGrass')
-            updateUpgradesHTML('unGrass')
-            updateUpgradesHTML('planetarium')
-        }
-        else if (mapID == 'p') {
-            updateUpgradesHTML('perk')
-            updateUpgradesHTML('plat')
-            updateUpgradesHTML('observ')
-        }
-        else if (mapID == 'auto') updateUpgradesHTML('auto')
-        else if (mapID == 'pc') {
-            updateUpgradesHTML('pp')
-            updateUpgradesHTML('crystal')
-    
-            updateUpgradesHTML('ap')
-            updateUpgradesHTML('oil')
+    let m = player.world == 'star' ? mapID3 : player.world == 'space' ? mapID2 : mapID
 
-            updateUpgradesHTML('np')
-            updateUpgradesHTML('cloud')
-
-            updateUpgradesHTML('astro')
-            updateUpgradesHTML('measure')
-        }
-        else if (mapID == 'gh') {
-            updateUpgradesHTML('factory')
-            updateUpgradesHTML('funnyMachine')
-
-            updateUpgradesHTML('planet')
-        }
-        else if (mapID == 'fd') {
-            updateUpgradesHTML('foundry')
-            updateUpgradesHTML('gen')
-
-            updateUpgradesHTML('fundry')
-            updateUpgradesHTML('sfrgt')
-        }
-        else if (mapID == 'as') {
-            updateUpgradesHTML('assembler')
-            updateUpgradesHTML('rocket')
-        }
-        else if (mapID == 'rp') {
-            updateUpgradesHTML('momentum')
-        }
-        else if (mapID == 'rp') {
-            updateUpgradesHTML('momentum')
-        }
-        else if (mapID == 'cs' && player.constellation.unl) {
-            updateUpgradesHTML('constellation')
-        }
+    if (m == 'at') {
+        updateUpgradesHTML('moonstone')
     }
+    else if (m == 'sac') {
+        updateUpgradesHTML('dm')
+    }
+    else if (m == 'g') {
+        updateUpgradesHTML('grass')
+        updateUpgradesHTML('aGrass')
+        updateUpgradesHTML('unGrass')
+        updateUpgradesHTML('planetarium')
+    }
+    else if (m == 'p') {
+        updateUpgradesHTML('perk')
+        updateUpgradesHTML('plat')
+        updateUpgradesHTML('observ')
+    }
+    else if (m == 'auto') updateUpgradesHTML('auto')
+    else if (m == 'pc') {
+        updateUpgradesHTML('pp')
+        updateUpgradesHTML('crystal')
+    
+        updateUpgradesHTML('ap')
+        updateUpgradesHTML('oil')
 
-    if (mapID == 'opt') tmp.el.hideUpgOption.setTxt(player.options.hideUpgOption?"ON":"OFF")
+        updateUpgradesHTML('np')
+        updateUpgradesHTML('cloud')
+
+        updateUpgradesHTML('astro')
+        updateUpgradesHTML('measure')
+    }
+    else if (m == 'gh') {
+        updateUpgradesHTML('factory')
+        updateUpgradesHTML('funnyMachine')
+
+        updateUpgradesHTML('planet')
+    }
+    else if (m == 'fd') {
+        updateUpgradesHTML('foundry')
+        updateUpgradesHTML('gen')
+
+        updateUpgradesHTML('fundry')
+        updateUpgradesHTML('sfrgt')
+    }
+    else if (m == 'as') {
+        updateUpgradesHTML('assembler')
+        updateUpgradesHTML('rocket')
+    }
+    else if (m == 'rp') {
+        updateUpgradesHTML('momentum')
+
+        updateUpgradesHTML('stardust')
+    }
+    else if (m && player.constellation.unl) {
+        updateUpgradesHTML('constellation')
+    }
+    else if (mapID == 'opt') {
+        tmp.el.hideUpgOption.setTxt(player.options.hideUpgOption?"ON":"OFF")
+        tmp.el.offlineOption.setTxt(player.offline.enabled?"ON":"OFF")
+    }
 }

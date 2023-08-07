@@ -2,7 +2,7 @@ MAIN.gal = {
     gain() {
         let y = 10
 
-        if (player.grassskip>0) y += getGSEffect(0,0)
+        if (tmp.minStats.gs>0) y += getGSEffect(0,0)
 
         let x = Decimal.pow(1.5+upgEffect('dm',5,0),Math.max(player.rocket.part-10,0))
 
@@ -21,12 +21,16 @@ MAIN.gal = {
 
         x = x.mul(starTreeEff('ring',10)).mul(starTreeEff('ring',22))
 
+        if (player.sn.tier.gte(1)) x = x.mul(100)
+
+        x = x.mul(solarUpgEffect(3,3))
+
         return x.floor()
     },
 }
 
 RESET.gal = {
-    unl: ()=>player.rocket.part>=1,
+    unl: ()=>!player.planetoid.active && player.rocket.part>=1,
 
     req: ()=>player.rocket.part>=10,
     reqDesc: ()=>`Reach 10 rocket parts.`,
@@ -43,10 +47,10 @@ RESET.gal = {
                 player.stars = player.stars.add(tmp.starGain)
                 player.gTimes++
 
-                if (player.lowGH <= 0 && player.grasshop <= 0) player.lowGH = Math.min(player.lowGH,-player.grassskip)
-                else player.lowGH = Math.max(Math.min(player.lowGH,player.grasshop),-60)
+                if (!hasSolarUpgrade(0,1) && player.lowGH <= 0 && player.grasshop <= 0) player.lowGH = Math.min(player.lowGH,-player.grassskip)
+                else player.lowGH = Math.max(Math.min(player.lowGH,tmp.minStats.gs),-60)
 
-                tmp.space = true
+                player.world = 'space'
             }
 
             updateTemp()
@@ -68,13 +72,13 @@ RESET.gal = {
         resetUpgrades('plat')
 
         player.decel = false
-        player.rocket.total_fp = 0
-        player.rocket.amount = 0
+        player.rocket.total_fp = E(0)
+        player.rocket.amount = E(0)
         player.rocket.part = 0
 
         if (player.lowGH > -20) {
-            resetUpgrades('momentum')
-            player.momentum = 0
+            startMomentum(true)
+            player.momentum = E(0)
         }
 
         player.oil = E(0)
@@ -129,7 +133,9 @@ const ASTRAL = {
         if (player.astralPrestige>1) x.ring = getAPEff(1)
         if (player.astralPrestige>2) x.lunar = getAPEff(2)
         if (player.astralPrestige>3) x.arc = getAPEff(3)
-        if (player.astralPrestige>3) x.line = getAPEff(4)
+        if (player.astralPrestige>4) x.line = getAPEff(4)
+        if (player.astralPrestige>5) x.sd = getAPEff(5)
+        if (player.astralPrestige>6) x.sf = getAPEff(6)
 
         return x
     },
@@ -146,13 +152,15 @@ const ASTRAL = {
         if (e.lunar) x += `Increase Lunar Powers gain by <b class="green">${formatMult(e.lunar,0)}</b><br>`
         if (e.arc) x += `Increase Arcs gain by <b class="green">${formatMult(e.arc,0)}</b><br>`
         if (e.line) x += `Increase Lines gain by <b class="green">${formatMult(e.line,0)}</b><br>`
+        if (e.sd) x += `Increase Stardust gain by <b class="green">${formatMult(e.sd,0)}</b><br>`
+        if (e.sf) x += `Increase Solar Flare gain by <b class="green">${formatMult(e.sf,0)}</b><br>`
 
         return x
     },
 }
 
 function getASEff(id,def=1) { return tmp.astral_eff[id]||def }
-function getAPEff(id) { return Decimal.pow(AP_BONUS_BASE[id],player.astralPrestige-id) }
+function getAPEff(id) { return Decimal.pow(AP_BONUS_BASE[id],softcap(player.astralPrestige,0.25,0)-id) }
 
 UPGS.moonstone = {
     title: "Moonstone Upgrades",

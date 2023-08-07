@@ -6,22 +6,22 @@ MAIN.gh = {
         {
             r: 1,
             desc: `Gain <b class="green">5x</b> more grass. Grass gain is increased by <b class="green">50%</b> every grasshop. Unlock more automation upgrades.`,
-            effect: ()=>Decimal.pow(1.5,player.grasshop),
+            effect: ()=>Decimal.pow(1.5,tmp.minStats.gh),
             effDesc: x=> format(x)+"x",
         },{
             r: 2,
             desc: `Gain <b class="green">5x</b> more XP. XP gain is increased by <b class="green">50%</b> every grasshop.`,
-            effect: ()=>Decimal.pow(1.5,player.grasshop),
+            effect: ()=>Decimal.pow(1.5,tmp.minStats.gh),
             effDesc: x=> format(x)+"x",
         },{
             r: 3,
             desc: `Gain <b class="green">5x</b> more TP. TP gain is increased by <b class="green">50%</b> every grasshop. Keep Prestige challenges on Grasshop.`,
-            effect: ()=>Decimal.pow(1.5,player.grasshop),
+            effect: ()=>Decimal.pow(1.5,tmp.minStats.gh),
             effDesc: x=> format(x)+"x",
         },{
             r: 4,
             desc: `Platinum worth <b class="green">+1</b> per grasshop (start at 3). Unlock more automation upgrades.`,
-            effect: ()=>Math.max(0,player.grasshop-3),
+            effect: ()=>Math.max(0,tmp.minStats.gh-3),
             effDesc: x=> "+"+format(x,0),
         },{
             r: 5,
@@ -41,7 +41,7 @@ MAIN.gh = {
         },{
             r: 15,
             desc: `Charge rate is increased by <b class="green">25%</b> every grasshop.`,
-            effect: ()=>Decimal.pow(1.25,player.grasshop),
+            effect: ()=>Decimal.pow(1.25,tmp.minStats.gh),
             effDesc: x=> format(x)+"x",
         },{
             r: 18,
@@ -52,7 +52,7 @@ MAIN.gh = {
         },{
             r: 24,
             desc: `Charger charge bonuses increase another <b class="green">1</b> OoM sooner per grasshop starting at 24.`,
-            effect: ()=>Math.max(player.grasshop-23,0),
+            effect: ()=>Math.max(tmp.minStats.gh-23,0),
             effDesc: x=> "+"+format(x,0)+" later",
         },
     ],
@@ -96,7 +96,7 @@ MAIN.agh_milestone = [
     },{
         r: -4,
         desc: `Charger charge bonuses increase <b class="green">1</b> OoM sooner per grassskip.`,
-        effect: ()=>Math.max(player.grassskip,0),
+        effect: ()=>Math.max(tmp.minStats.gs,0),
         effDesc: x=> "+"+format(x,0)+" later",
     },{
         r: -8,
@@ -148,24 +148,24 @@ MAIN.agh_milestone = [
 ]
 
 MAIN.gs = {
-    req: ()=> Math.ceil(400+E(player.grassskip).scale(10,2,0).toNumber()*10),
+    req: ()=> Math.ceil(400+E(tmp.minStats.gs).scale(10,2,0).toNumber()*10),
     bulk: ()=> player.level>=400?E((player.level-400)/10).scale(10,2,0,true).floor().toNumber()+1:0,
 
     milestone: [
         {
             r: 1,
             desc: `Gain <b class="green">+5</b> more stars per grass-skip.`,
-            effect: ()=>5*player.grassskip,
+            effect: ()=>5*tmp.minStats.gs,
             effDesc: x=> "+"+format(x,0),
         },{
             r: 2,
             desc: `Gain <b class="green">+2</b> more SP per grass-skip.`,
-            effect: ()=>player.grassskip*2,
+            effect: ()=>tmp.minStats.gs*2,
             effDesc: x=> "+"+format(x,0),
         },{
             r: 8,
             desc: `Gain <b class="green">+1</b> more moonstones per 2 grass-skips (starting at 8).`,
-            effect: ()=>Math.floor((Math.max(player.grassskip-7,0)+1)/2),
+            effect: ()=>Math.floor((Math.max(tmp.minStats.gs-7,0)+1)/2),
             effDesc: x=> "+"+format(x,0),
         },{
             r: 10,
@@ -173,7 +173,7 @@ MAIN.gs = {
         },{
             r: 15,
             desc: `SFRGT is increased by <b class="green">50%</b> every grass-skip.`,
-            effect: ()=>Decimal.pow(1.5,player.grassskip),
+            effect: ()=>Decimal.pow(1.5,tmp.minStats.gs),
             effDesc: x=> format(x)+"x",
         },{
             r: 21,
@@ -181,7 +181,7 @@ MAIN.gs = {
         },{
             r: 25,
             desc: `Steel is increased by <b class="green">50%</b> every grass-skip.`,
-            effect: ()=>Decimal.pow(1.5,player.grassskip),
+            effect: ()=>Decimal.pow(1.5,tmp.minStats.gs),
             effDesc: x=> format(x)+"x",
         },
     ],
@@ -218,6 +218,17 @@ MAIN.gj = {
             desc: `<b class="green">Double</b> Dark Charge rate every grass-jump, starting at 20.`,
             effect: ()=>Decimal.pow(2,player.grassjump-19),
             effDesc: x=> format(x)+"x",
+        },{
+            r: 30,
+            desc: `Unlock <b class="green">the Star</b> in the planetoid (on right of constellation).`,
+        },{
+            r: 35,
+            desc: `Increase solar rays gain by <b class="green">+10%</b> compounding per grass jump, starting at 35.`,
+            effect: ()=>Decimal.pow(1.1,softcap(player.grassjump,75,1/3,2)-34),
+            effDesc: x=>formatMult(x),
+        },{
+            r: 70,
+            desc: `Unlock the <b class="green">Crazy Machine</b> on bottom of Grass Jump.`,
         },
     ],
 }
@@ -274,8 +285,8 @@ RESET.gh = {
         player.bestCrystal = E(0)
 
         let keep = []
-        if (player.grasshop >= 3) keep.push(0,1)
-        if (player.grasshop >= 4) keep.push(2,3,4)
+        if (tmp.minStats.gh >= 3) keep.push(0,1)
+        if (tmp.minStats.gh >= 4) keep.push(2,3,4)
         for (let i = 0; i < 5; i++) if (!keep.includes(i) && player.lowGH > 28) player.chal.comp[i] = 0
 
         resetUpgrades('crystal')
@@ -363,6 +374,36 @@ RESET.gj = {
         resetUpgrades('np')
 
         RESET.np.doReset(order)
+    },
+}
+
+MAIN.hsj = {
+    get amount() { return player.hsj },
+    set amount(v) { return player.hsj = v },
+
+    get require() { return [10000][this.amount] || Infinity },
+    get desc() {
+        return [
+            `Doing this will allow you to use upgrades, generate currencies, and auto grasshop/skip/jump from all three realms at the same time.`,
+        ][this.amount] || "Say Nothing!"
+    },
+}
+
+RESET.hsj = {
+    unl: ()=>player.grassjump>=70 && player.recel,
+    req: ()=>true,
+    reqDesc: ()=>`wtfff!!!`,
+
+    resetDesc: `<span id='hsj_desc'></span>`,
+    resetGain: ()=>`Reach Level <b>${format(MAIN.hsj.require,0)}</b> to do Hop-Skip-Jump`,
+
+    title: `Hop-Skip-Jump`,
+    resetBtn: `DO IT NOW!`,
+
+    reset() {
+        if (this.req()&&player.level>=MAIN.hsj.require) {
+            MAIN.hsj.amount++
+        }
     },
 }
 
@@ -589,15 +630,20 @@ el.update.milestones = ()=>{
             if (unl) {
                 tmp.el.gj.setHTML(format(player.grassjump,0))
 
+                const sn2 = player.sn.tier.gte(2), sn3 = player.sn.tier.gte(3)
+
                 for (let x = 0; x < GJ_MIL_LEN; x++) {
                     let m = MAIN.gj.milestone[x]
                     let id = "gj_mil_ctn"+x
 
+                    tmp.el[id+"_div"].setDisplay((x<=6 || sn2) && (x<=7 || sn3))
                     tmp.el[id+"_div"].setClasses({bought: player.grassjump >= m.r})
                     if (m.effDesc) tmp.el[id+"_eff"].setHTML(m.effDesc(tmp.gjEffect[x]))
                 }
             }
         }
+
+        tmp.el.hsj_desc.setHTML(MAIN.hsj.desc)
     }
     if (mapID2 == 'at') {
         tmp.el.aghgs_text.setTxt(player.lowGH<0?"AGH Grass-skip":"lowest grasshop")

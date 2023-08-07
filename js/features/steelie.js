@@ -1,6 +1,6 @@
 MAIN.steel = {
     gain() {
-        let l = player.grasshop+1
+        let l = tmp.minStats.gh+1
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestCrystal.div(1e21).max(1).root(3))
 
         tmp.steelGainBase = x
@@ -19,7 +19,9 @@ MAIN.steel = {
 
         x = x.mul(getASEff('steel'))
 
-        if (player.grassskip >= 25) x = x.mul(getGSEffect(6,1))
+        x = x.mul(solarUpgEffect(1,3))
+
+        if (tmp.minStats.gs >= 25) x = x.mul(getGSEffect(6,1))
 
         return x.floor()
     },
@@ -52,15 +54,17 @@ MAIN.steel = {
 
             x = x.mul(tmp.darkChargeEffs.charge||1)
 
-            if (player.decel) x = x.div(1e24)
+            x = x.mul(solarUpgEffect(1,5)).mul(solarUpgEffect(4,1))
 
-            if (player.recel) x = x.div(1e72)
+            if (player.decel && player.hsj <= 0) x = x.div(1e24)
+
+            if (player.recel && player.hsj <= 0) x = x.div(1e72)
 
             if (x.lt(1)) return x
 
             x = x.pow(upgEffect('moonstone',7)).pow(getLEffect(4))
 
-            if (player.recel) x = x.root(2)
+            if (player.recel && player.hsj <= 0) x = x.root(2)
 
             return x.max(1)
         },
@@ -205,7 +209,7 @@ MAIN.steel = {
                 unl: ()=>hasUpgrade('funnyMachine',2),
                 req: E(1e33),
                 eff(c) {
-                    if (player.bestCharge.lt(this.req) || (!player.decel && !hasStarTree('reserv',30))) return E(1)
+                    if (player.bestCharge.lt(this.req) || ((!player.decel || player.hsj > 0) && !hasStarTree('reserv',30))) return E(1)
 
                     let s = c.div(this.req).max(1)
 
@@ -220,7 +224,7 @@ MAIN.steel = {
 }
 
 RESET.steel = {
-    unl: ()=>(player.grasshop>=10||player.gTimes>0)&&!tmp.outsideNormal,
+    unl: ()=>(tmp.minStats.gh>=10||player.gTimes>0)&&!tmp.outsideNormal,
 
     req: ()=>player.level>=400,
     reqDesc: ()=>`Reach Level 400.`,
@@ -529,7 +533,7 @@ UPGS.gen = {
         },{
             max: 1000,
 
-            unl: ()=>player.grasshop>=14||player.gTimes>0,
+            unl: ()=>tmp.minStats.gh>=14||player.gTimes>0,
 
             title: "Prestige Charge",
             desc: `Increase charge rate by <b class="green">+10%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
@@ -549,7 +553,7 @@ UPGS.gen = {
         },{
             max: 1000,
 
-            unl: ()=>player.grasshop>=14||player.gTimes>0,
+            unl: ()=>tmp.minStats.gh>=14||player.gTimes>0,
 
             title: "Crystal Charge",
             desc: `Increase charge rate by <b class="green">+10%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
@@ -720,9 +724,9 @@ tmp_update.push(()=>{
     tmp.beyondOoM = hasUpgrade('assembler',8)
 
     tmp.chargeOoM = 0
-    if (player.grasshop >= 18) tmp.chargeOoM++
-    if (player.grasshop >= 20) tmp.chargeOoM++
-    if (player.grasshop >= 24) tmp.chargeOoM += getGHEffect(12,0)
+    if (tmp.minStats.gh >= 18) tmp.chargeOoM++
+    if (tmp.minStats.gh >= 20) tmp.chargeOoM++
+    if (tmp.minStats.gh >= 24) tmp.chargeOoM += getGHEffect(12,0)
     if (player.lowGH <= -4) tmp.chargeOoM += getAGHEffect(8,0)
     tmp.chargeOoM += upgEffect('sfrgt',3,0)
 

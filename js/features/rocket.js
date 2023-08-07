@@ -2,16 +2,18 @@ const RF_COST_POW = 1.1
 
 const ROCKET = {
     bulk(x,r,base) {
-        return x.mul(RF_COST_POW-1).div(base).div(tmp.rf_base_mult).add(Decimal.pow(RF_COST_POW,r)).log(RF_COST_POW).mul(tmp.rf_cheap).floor().toNumber()
+        return x.mul(RF_COST_POW-1).div(base).div(tmp.rf_base_mult).add(hasSolarUpgrade(2,2) ? 1 : Decimal.pow(RF_COST_POW,r)).log(RF_COST_POW).mul(tmp.rf_cheap).floor()
     },
     create() {
+        if (hasSolarUpgrade(2,2)) return;
+
         let rf = player.rocket.total_fp
         let b = tmp.rf_bulk
 
         if (b>rf) {
             player.rocket.total_fp = b
 
-            player.rocket.amount += b-rf
+            player.rocket.amount = player.rocket.amount.add(b.sub(rf))
 
             if (!hasStarTree('auto',10)) {
                 let c = Decimal.pow(RF_COST_POW, Decimal.div(b,tmp.rf_cheap)).sub(Decimal.pow(RF_COST_POW, Decimal.div(rf,tmp.rf_cheap))).div(RF_COST_POW-1).mul(tmp.rf_base_mult)
@@ -28,9 +30,9 @@ const ROCKET = {
 UPGS.rocket = {
     title: "Rocket Fuel Upgrade",
 
-    unl: ()=>hasUpgrade("factory",5),
+    unl: ()=>!player.planetoid.active && hasUpgrade("factory",5),
 
-    underDesc: ()=>`You have ${format(player.rocket.amount,0)} Rocket Fuel`,
+    underDesc: ()=>`You have ${format(player.rocket.amount,0)} Rocket Fuel`+(hasSolarUpgrade(2,2) ? gainHTML(player.rocket.amount,tmp.rf_bulk,1) : ""),
 
     ctn: [
         {
@@ -262,7 +264,7 @@ UPGS.rocket = {
 }
 
 RESET.rocket_part = {
-    unl: ()=> hasUpgrade('factory',6),
+    unl: ()=>!player.planetoid.active && hasUpgrade('factory',6),
 
     req: ()=>true,
     reqDesc: ()=>``,
@@ -275,7 +277,7 @@ RESET.rocket_part = {
         <b class="lightgray">Steel</b><br>
         <span class="${player.steel.gte(tmp.rp_req[0])?"green":"red"}">${player.steel.format(0)} / ${tmp.rp_req[0].format(0)}</span><br><br>
         <b class="lightblue">Total Rocket Fuel</b><br>
-        <span class="${player.rocket.total_fp >= tmp.rp_req[1]?"green":"red"}">${format(player.rocket.total_fp,0)} / ${format(tmp.rp_req[1],0)}</span><br><br>
+        <span class="${player.rocket.total_fp.gte(tmp.rp_req[1])?"green":"red"}">${format(player.rocket.total_fp,0)} / ${format(tmp.rp_req[1],0)}</span><br><br>
         You have created ${format(player.rocket.part,0)} Rocket Parts
         </span>
     `,
@@ -284,23 +286,27 @@ RESET.rocket_part = {
     resetBtn: `Create Rocket Part`,
 
     reset(force=false, auto=false) {
-        if (player.steel.gte(tmp.rp_req[0])&&player.rocket.total_fp >= tmp.rp_req[1]||force) {
+        if (player.steel.gte(tmp.rp_req[0])&&player.rocket.total_fp.gte(tmp.rp_req[1])||force) {
+            if (tmp.rp_bulk <= 0) return;
+
+            const su = hasSolarUpgrade(2,2)
+
             if (!force) {
-                player.rocket.part++
-                player.momentum += tmp.momentumGain
+                player.rocket.part += tmp.rp_bulk
+                player.momentum = player.momentum.add(tmp.momentumGain.mul(tmp.rp_bulk))
             }
 
             updateTemp()
 
             if (auto) {
-                player.rocket.total_fp = 0
+                if (!su) player.rocket.total_fp = E(0)
             }
             else this.doReset()
         }
     },
 
     doReset(order="rp") {
-        player.rocket.total_fp = 0
+        player.rocket.total_fp = E(0)
         player.oil = E(0)
         player.bestOil = E(0)
         player.steel = E(0)
@@ -318,7 +324,7 @@ RESET.rocket_part = {
 UPGS.momentum = {
     title: "Momentum Upgrades",
 
-    unl: ()=>player.rocket.part>0,
+    unl: ()=>!player.planetoid.active && player.rocket.part>0,
 
     underDesc: ()=>`You have ${format(player.momentum,0)} Momentum`+gainHTML(E(player.momentum),tmp.momentumGain,tmp.momentumGen),
 
@@ -581,10 +587,11 @@ el.update.rocket = ()=>{
             rc.setClasses({[res.gte(cost)?"green":"red"]: true})
         }
 
-        tmp.el.rf_craft_bulk.setTxt("Craft to "+format(Math.max(tmp.rf_bulk-player.rocket.total_fp,0),0)+" Rocket Fuel")
-        tmp.el.rf_craft_bulk.setClasses({locked: tmp.rf_bulk<=player.rocket.total_fp })
+        tmp.el.rf_craft_bulk.setDisplay(!hasSolarUpgrade(2,2))
+        tmp.el.rf_craft_bulk.setTxt("Craft to "+format(tmp.rf_bulk.sub(player.rocket.total_fp).max(0),0)+" Rocket Fuel")
+        tmp.el.rf_craft_bulk.setClasses({locked: tmp.rf_bulk.lte(player.rocket.total_fp) })
     } else if (mapID == 'rp') {
-        tmp.el.reset_btn_rocket_part.setClasses({locked: player.rocket.total_fp < tmp.rp_req[1] || player.steel.lt(tmp.rp_req[0])})
+        tmp.el.reset_btn_rocket_part.setClasses({locked: player.rocket.total_fp.lt(tmp.rp_req[1]) || player.steel.lt(tmp.rp_req[0])})
         tmp.el.momentumGain.setTxt(format(tmp.momentumGain,0))
     }
 }
@@ -593,32 +600,41 @@ function updateRocketTemp() {
     let cheap = Decimal.mul(starTreeEff('progress',9,1),starTreeEff('progress',11,1)).mul(getLEffect(5))
     
     let rf = Decimal.div(player.rocket.total_fp,cheap)
-    let b = Decimal.pow(RF_COST_POW,rf).mul(tmp.rf_base_mult)
+    let b = hasSolarUpgrade(2,2) ? E(1) : Decimal.pow(RF_COST_POW,rf).mul(tmp.rf_base_mult)
     tmp.rf_cost = [b.mul(1e36),b.mul(1e9)]
     tmp.rf_cheap = cheap
 
-    let bulk = 0
-    if (player.chargeRate.gte(tmp.rf_cost[0]) && player.oil.gte(tmp.rf_cost[1])) bulk = Math.min(ROCKET.bulk(player.chargeRate,rf,1e36),ROCKET.bulk(player.oil,rf,1e9))
+    let bulk = E(0)
+    if (player.chargeRate.gte(tmp.rf_cost[0]) && player.oil.gte(tmp.rf_cost[1])) bulk = Decimal.min(ROCKET.bulk(player.chargeRate,rf,1e36),ROCKET.bulk(player.oil,rf,1e9))
     tmp.rf_bulk = bulk
 }
 
 tmp_update.push(()=>{
-    let rp = player.rocket.part
-    if (rp > 50) rp = (rp/50)**2.5*50
+    let rp = player.rocket.part, req, mult = E(1), bulk = 1
 
-    tmp.rp_req = [Decimal.pow(4+rp/2,rp).mul(1e60),player.rocket.part>9&&player.gTimes==0?1/0:Math.ceil(15*rp)+15]
-    tmp.rf_base_mult = Decimal.pow(1.5,rp)
+    if (hasSolarUpgrade(2,2)) {
+        req = [Decimal.pow(10, rp**1.5).mul(1e60), Decimal.mul(rp+1,10).scale(100,3,3).pow(2)]
+        bulk = player.rocket.total_fp.root(2).scale(100,3,3,true).div(10).min(player.steel.div(10).max(1).log10().pow(1.5).add(1)).sub(rp).max(0).floor().toNumber()
+    } else {
+        if (rp > 50) rp = (rp/50)**2.5*50
+        req = [Decimal.pow(4+rp/2,rp).mul(1e60),player.rocket.part>9&&player.gTimes==0?1/0:Math.ceil(15*rp)+15]
+        mult = Decimal.pow(1.5,rp)
+    }
+
+    tmp.rp_req = req
+    tmp.rf_base_mult = mult
+    tmp.rp_bulk = bulk
 
     updateRocketTemp()
 
-    let m = 1
-    if (player.lowGH <= -28) m += getAGHEffect(14)
+    let m = E(1)
+    if (player.lowGH <= -28) m = m.add(getAGHEffect(14))
 
-    m *= upgEffect('np',3) * upgEffect('dm',7)
+    m = m.mul(upgEffect('np',3)).mul(upgEffect('dm',7))
 
-    if (player.lowGH <= -44) m *= getAGHEffect(18)
+    if (player.lowGH <= -44) m = m.mul(getAGHEffect(18))
 
-    if (player.grassjump>=2) m *= getGJEffect(1)
+    if (player.grassjump>=2) m = m.mul(getGJEffect(1))
 
-    tmp.momentumGain = Math.ceil(m)
+    tmp.momentumGain = Decimal.ceil(m)
 })

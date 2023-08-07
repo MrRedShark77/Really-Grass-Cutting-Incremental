@@ -121,6 +121,13 @@ function resetTemp() {
         pass: 0,
 
         reservConvert: 0,
+
+        solar_upgs_effect: [],
+
+        minStats: {
+            gh: 0,
+            gs: 0,
+        },
     }
 
     for (let x in UPG_RES) tmp.upg_res[x] = E(0)
@@ -135,6 +142,8 @@ function resetTemp() {
             eff: [],
         }
     }
+
+    for (let x in SOLAR_UPGS) tmp.solar_upgs_effect[x] = []
 }
 
 function updateTemp() {

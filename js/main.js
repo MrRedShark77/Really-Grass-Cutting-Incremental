@@ -1,12 +1,19 @@
 var player = {}, date = Date.now(), diff = 0;
 
 function loop() {
-    diff = Date.now() - date
-    updateTemp()
+    if (is_online) {
+        diff = Date.now() - date
+        updateTemp()
+        calc(diff/1000);
+    }
+
     updateHTML()
-    calc(diff/1000);
+    
     date = Date.now();
+    player.offline.current = date;
 }
+
+const MAX_WARPS = 10, WARP_TIME = 3600*6, WARP_LENGTH = 1800
 
 const MAIN = {
     grassGain() {
@@ -19,7 +26,7 @@ const MAIN = {
 
         x = x.mul(chalEff(1))
 
-        if (player.grasshop >= 1) {
+        if (tmp.minStats.gh >= 1) {
             x = x.mul(5).mul(getGHEffect(0))
         }
 
@@ -33,7 +40,7 @@ const MAIN = {
         x = x.mul(tmp.chargeEff[4]||1)
 
         x = x.mul(starTreeEff('speed',3)*starTreeEff('speed',10)*starTreeEff('speed',15))
-        if (!player.decel) x = x.mul(starTreeEff('progress',6))
+        if (!player.decel || player.hsj > 0) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',0))
 
@@ -41,16 +48,18 @@ const MAIN = {
 
         if (player.lowGH <= 36) x = x.mul(getAGHEffect(0))
 
-        if (player.decel) x = x.div(1e15)
+        x = x.mul(solarUpgEffect(1,0))
 
-        if (player.recel) x = x.div(1e170)
+        if (player.decel && player.hsj <= 0) x = x.div(1e15)
+
+        if (player.recel && player.hsj <= 0) x = x.div(1e170)
 
         if (x.lt(1)) return x
 
         x = x.pow(chalEff(3)).pow(getLEffect(0))
-        if (!player.recel) x = x.pow(upgEffect('unGrass',5))
+        if (!player.recel || player.hsj > 0) x = x.pow(upgEffect('unGrass',5))
         if (inChal(3) || inChal(5)) x = x.root(2)
-        if (player.recel) x = x.root(2)
+        if (player.recel && player.hsj <= 0) x = x.root(2)
 
         return x
     },
@@ -114,7 +123,7 @@ const MAIN = {
 
         x = x.mul(tmp.chargeEff[1]||1)
 
-        if (player.grasshop >= 2) {
+        if (tmp.minStats.gh >= 2) {
             x = x.mul(5).mul(getGHEffect(1))
         }
 
@@ -126,7 +135,7 @@ const MAIN = {
         x = x.mul(upgEffect('rocket',1))
 
         x = x.mul(starTreeEff('speed',4)*starTreeEff('speed',11)*starTreeEff('speed',16))
-        if (!player.decel) x = x.mul(starTreeEff('progress',6))
+        if (!player.decel || player.hsj > 0) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',1))
         
@@ -142,18 +151,18 @@ const MAIN = {
 
         x = x.mul(upgEffect('constellation',1)).mul(upgEffect('constellation',6))
 
-        if (player.decel) x = x.div(1e16)
+        if (player.decel && player.hsj <= 0) x = x.div(1e16)
 
-        if (player.recel) x = x.div(1e165)
+        if (player.recel && player.hsj <= 0) x = x.div(1e165)
 
         if (x.lt(1)) return x
 
-        if (!player.recel) x = x.pow(upgEffect('unGrass',5))
+        if (!player.recel || player.hsj > 0) x = x.pow(upgEffect('unGrass',5))
         if (inChal(3) || inChal(5)) x = x.root(2)
-        if (player.recel) x = x.pow(player.lowGH<=-36?.75:.5)
+        if (player.recel && player.hsj <= 0) x = x.pow(player.lowGH<=-36?.75:.5)
 
-        if (!player.decel && hasUpgrade('plat',10)) x = x.pow(upgEffect('plat',10,1))
-        x = x.pow(upgEffect('moonstone',6)).pow(upgEffect('measure',3)).pow(getLEffect(1))
+        if ((!player.decel || player.hsj > 0) && hasUpgrade('plat',10)) x = x.pow(upgEffect('plat',10,1))
+        x = x.pow(upgEffect('moonstone',6)).pow(upgEffect('measure',3)).pow(getLEffect(1)).pow(upgEffect('stardust',2)).pow(solarUpgEffect(4,10))
 
         return x
     },
@@ -169,7 +178,7 @@ const MAIN = {
 
         x = x.mul(tmp.chargeEff[3]||1)
 
-        if (player.grasshop >= 3) {
+        if (tmp.minStats.gh >= 3) {
             x = x.mul(5).mul(getGHEffect(2))
         }
 
@@ -180,7 +189,7 @@ const MAIN = {
         x = x.mul(upgEffect('momentum',3))
 
         x = x.mul(starTreeEff('speed',5)*starTreeEff('speed',12)*starTreeEff('speed',17))
-        if (!player.decel) x = x.mul(starTreeEff('progress',6))
+        if (!player.decel || player.hsj > 0) x = x.mul(starTreeEff('progress',6))
 
         x = x.mul(upgEffect('moonstone',2))
 
@@ -190,18 +199,18 @@ const MAIN = {
 
         x = x.mul(starTreeEff('ring',3))
 
-        if (player.decel) x = x.div(1e16)
+        if (player.decel && player.hsj <= 0) x = x.div(1e16)
 
-        if (player.recel) x = x.div(1e114)
+        if (player.recel && player.hsj <= 0) x = x.div(1e114)
 
         if (x.lt(1)) return x
 
-        if (player.grasshop >= 7 || player.lowGH <= 4) x = x.pow(1.25)
+        if (tmp.minStats.gh >= 7 || player.lowGH <= 4) x = x.pow(1.25)
 
         if (inChal(5)) x = x.root(2)
-        if (player.recel) x = x.root(2)
+        if (player.recel && player.hsj <= 0) x = x.root(2)
 
-        x = x.pow(getLEffect(2))
+        x = x.pow(getLEffect(2)).pow(solarUpgEffect(4,11))
 
         return x
     },
@@ -209,7 +218,7 @@ const MAIN = {
     autoCut: ()=>hasStarTree('reserv',2)?0.01:5-(player.planetoid.active?0:upgEffect('auto',0,0)+upgEffect('plat',0,0)+starTreeEff('progress',3,0)),
     level: {
         req(i) {
-            i = E(i).scale(1e5,1.00010,1).scale(tmp.level.scale2,2,0).scale(tmp.level.scale1,2,0)
+            i = E(i).scale(1e5,3,3).scale(tmp.level.scale2,2,0).scale(tmp.level.scale1,2,0)
 
             if (inChal(0) || inChal(7)) i = i.mul(3)
             
@@ -224,7 +233,7 @@ const MAIN = {
 
             if (inChal(0) || inChal(7)) x = x.div(3)
 
-            return Math.floor(x.scale(tmp.level.scale1,2,0,true).scale(tmp.level.scale2,2,0,true).scale(1e5,1.00010,1,true).toNumber()+1)
+            return Math.floor(x.scale(tmp.level.scale1,2,0,true).scale(tmp.level.scale2,2,0,true).scale(1e5,3,3,true).toNumber()+1)
         },
         cur(i) {
             return i > 0 ? this.req(i-1) : E(0) 
@@ -238,7 +247,7 @@ const MAIN = {
     tier: {
         req(i) {
             let pow = player.lowGH <= 12 ? 1.15 : 1.2
-            if (player.recel) pow *= 1.1
+            if (player.recel && player.hsj <= 0) pow *= 1.1
             let x = Decimal.pow(tmp.level.tier,i**pow).mul(100)
 
             return x.ceil()
@@ -247,7 +256,7 @@ const MAIN = {
             let x = i.div(100)
             if (x.lt(1)) return 0
             let pow = player.lowGH <= 12 ? 1.15 : 1.2
-            if (player.recel) pow *= 1.1
+            if (player.recel && player.hsj <= 0) pow *= 1.1
             x = x.log(tmp.level.tier).root(pow)
 
             return Math.floor(x.toNumber()+1)
@@ -295,7 +304,7 @@ const MAIN = {
     spGain() {
         let x = E(tmp.compact)
 
-        if (player.grassskip>=2) x = x.add(getGSEffect(1,0))
+        if (tmp.minStats.gs>=2) x = x.add(getGSEffect(1,0))
 
         x = x.mul(starTreeEff('progress',2)*starTreeEff('progress',5)*starTreeEff('progress',8)*starTreeEff('progress',10))
 
@@ -318,7 +327,7 @@ const MAIN = {
         if (player.lowGH <= -16) x = x.pow(1.25)
         if (player.grassjump >= 1) x = x.pow(1.25)
 
-        x = x.pow(starTreeEff('ring',31)).pow(tmp.darkChargeEffs.sp||1)
+        x = x.pow(starTreeEff('ring',31)).pow(tmp.darkChargeEffs.sp||1).pow(solarUpgEffect(4,12))
 
         return x
     },
@@ -383,17 +392,14 @@ el.update.main = ()=>{
             tmp.el.astral_bar.changeStyle("width",tmp.astral.percent*100+"%")
             tmp.el.astral_cut.setTxt("+"+tmp.SPGain.format(1)+" SP/cut")
         }
+    } else if (mapID == 'auto') {
+        tmp.el.wrap_time.setHTML(`Next warp in: <b>${formatTime(Math.max(WARP_TIME-player.timewarp.time,0),0)}</b>`)
     }
-
-    tmp.el.main_app.changeStyle('background-color',tmp.space ? "#fff1" : "#fff2")
-    document.body.style.backgroundColor = tmp.space ? "#0A001E" : player.planetoid.active ? "#24002C" : "#0052af"
-    document.body.className = player.planetoid.active ? 'planetoid' : ''
-    tmp.el.grass_cap_div.changeStyle('background-color',player.planetoid.active ? "#D000FF" : "#29b146")
-
-    tmp.el.cs_div.setDisplay(player.constellation.unl)
 }
 
 tmp_update.push(()=>{
+    tmp.star = player.world == 'star'
+    tmp.space = player.world == 'space'
     tmp.outsideNormal = player.decel || player.recel || player.planetoid.active
 
     tmp.platCutAmt = hasStarTree('auto',3)
@@ -427,11 +433,11 @@ tmp_update.push(()=>{
 
     tmp.level.threshold = 2.7**th
 
-    tmp.level.scale1 = tmp.outsideNormal?2:200
+    tmp.level.scale1 = tmp.outsideNormal && player.hsj <= 0?2:200
     tmp.level.scale1 += upgEffect('aGrass',5,0)+upgEffect('ap',5,0)
     tmp.level.scale1 *= (tmp.chargeEff[2]||1) * starTreeEff('progress',4)
 
-    tmp.level.scale2 = player.recel?5:player.decel?300:700
+    tmp.level.scale2 = player.recel && player.hsj <= 0?5:player.decel && player.hsj <= 0?300:700
     tmp.level.scale2 *= starTreeEff('progress',7,1)
 
     tmp.level.next = MAIN.level.req(lvl)
@@ -462,23 +468,62 @@ tmp_update.push(()=>{
     tmp.astral.percent = tmp.astral.progress.div(tmp.astral.next.sub(tmp.astral.cur)).max(0).min(1).toNumber()
 
     tmp.platGain = 1
-    if (player.grasshop >= 4) tmp.platGain += getGHEffect(3)
+    if (tmp.minStats.gh >= 4) tmp.platGain += getGHEffect(3)
 
-    tmp.platGain *= upgEffect('oil',4,1) * getASEff('plat') * upgEffect('moonstone',3)
+    tmp.platGain *= getASEff('plat') * upgEffect('moonstone',3)
     if (player.lowGH <= 4) tmp.platGain *= 10
+    tmp.platGain = tmp.platGain *= solarUpgEffect(3,1)
 
-    tmp.platGain = Math.ceil(tmp.platGain*tmp.compact)
+    tmp.platGain = Decimal.mul(tmp.platGain,upgEffect('oil',4))
+
+    tmp.platGain = Decimal.ceil(tmp.platGain.mul(tmp.compact))
 
     tmp.moonstoneGain = 1
     tmp.moonstoneChance = 0.005
-    if (player.grassskip >= 8) tmp.moonstoneGain += getGSEffect(2,0)
-    if (player.grassskip >= 21) {
+    if (tmp.minStats.gs >= 8) tmp.moonstoneGain += getGSEffect(2,0)
+    if (tmp.minStats.gs >= 21) {
         tmp.moonstoneChance *= 2
         tmp.moonstoneGain *= 2
     }
+    tmp.moonstoneGain = tmp.moonstoneGain *= solarUpgEffect(3,2)
 
     tmp.moonstoneGain = Math.ceil(tmp.moonstoneGain*tmp.compact)
 
     tmp.platChance = 0.005
-    if (player.grasshop >= 6 || player.lowGH <= 4) tmp.platChance *= 2
+    if (tmp.minStats.gh >= 6 || player.lowGH <= 4) tmp.platChance *= 2
 })
+
+RESET.timewarp = {
+    unl: ()=>true,
+
+    req: ()=>true,
+    reqDesc: ()=>`wtf!!!`,
+
+    resetDesc: `
+    Warp Length: <b class="green">${formatTime(WARP_LENGTH,0)}</b>.<br>
+    The Warp will give you offline progress equals to its length at the cost of one wrap.<br><br>
+    <div id="wrap_time"></div>
+    `,
+    resetGain: ()=> `Warps Left: <b class="cyan">${player.timewarp.amt}</b> / <b>${MAX_WARPS}</b>`,
+
+    title: `Time Warp`,
+    resetBtn: `Time Warp!`,
+
+    reset() {
+        if (player.timewarp.amt > 0) {
+            player.timewarp.amt--
+
+            simulateTime(WARP_LENGTH)
+        }
+    },
+}
+
+function calcTimeWarp(dt) {
+    if (player.timewarp.amt < MAX_WARPS) {
+        player.timewarp.time += dt
+        if (player.timewarp.time > WARP_TIME) {
+            player.timewarp.amt = Math.min(player.timewarp.amt+Math.floor(player.timewarp.time/WARP_TIME),MAX_WARPS)
+            player.timewarp.time -= Math.floor(player.timewarp.time/WARP_TIME)*WARP_TIME
+        }
+    }
+}

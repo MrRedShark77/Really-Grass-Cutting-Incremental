@@ -1,31 +1,39 @@
 function calc(dt) {
-    let decel = player.decel
-    let recel = player.recel
+    let decel = player.decel || player.hsj > 0
+    let recel = player.recel || player.hsj > 0
 
-    let outsideNormal = decel || recel
+    let outsideNormal = (decel || recel) && player.hsj < 1
 
-    tmp.spawn_time += dt
-    tmp.autocutTime += dt
     player.time += dt
     player.sTime += dt
     player.gTime += dt
-    if (tmp.spawn_time >= tmp.grassSpawn) {
-        while (tmp.spawn_time >= tmp.grassSpawn) {
-            tmp.spawn_time -= tmp.grassSpawn
-            for (let i=0;i<tmp.spawnAmt;i++) createGrass()
+
+    if (is_online) {
+        tmp.spawn_time += dt
+        tmp.autocutTime += dt
+
+        calcTimeWarp(dt)
+
+        if (tmp.spawn_time >= tmp.grassSpawn) {
+            while (tmp.spawn_time >= tmp.grassSpawn) {
+                tmp.spawn_time -= tmp.grassSpawn
+                for (let i=0;i<tmp.spawnAmt;i++) createGrass()
+            }
+            tmp.spawn_time = 0
         }
-        tmp.spawn_time = 0
+
+        if (tmp.autocutTime >= tmp.autocut && tmp.grasses.length > 0 && hasUpgrade('auto',0)) {
+            while (tmp.autocutTime >= tmp.autocut) {
+                tmp.autocutTime -= tmp.autocut
+                for (let i=0;i<tmp.autocutAmt;i++) removeGrass(randint(0, tmp.grasses.length-1),true)
+            }
+            tmp.autocutTime = 0
+        }
+    } else {
+        gainCurrenciesOnGrass(tmp.autocutBonus, tmp.autocutAmt / tmp.autocut * dt)
     }
 
-    if (tmp.autocutTime >= tmp.autocut && tmp.grasses.length > 0 && hasUpgrade('auto',0)) {
-        while (tmp.autocutTime >= tmp.autocut) {
-            tmp.autocutTime -= tmp.autocut
-            for (let i=0;i<tmp.autocutAmt;i++) removeGrass(randint(0, tmp.grasses.length-1),true)
-        }
-        tmp.autocutTime = 0
-    }
-
-    if (!player.planetoid.active) {
+    if (!player.planetoid.active || player.hsj > 0) {
         if (tmp.ppGainP > 0 && player.level >= 30 && !outsideNormal) player.pp = player.pp.add(tmp.ppGain.mul(dt*tmp.ppGainP))
         if (tmp.crystalGainP > 0 && player.level >= 100 && !outsideNormal) player.crystal = player.crystal.add(tmp.crystalGain.mul(dt*tmp.crystalGainP))
 
@@ -36,7 +44,7 @@ function calc(dt) {
 
         if (hasStarTree('reserv',12)) {
             player.np = player.np.add(player.bestNP2.mul(dt*tmp.npGen))
-            if (player.recel) player.bestNP2 = player.bestNP2.max(tmp.npGain)
+            if (recel) player.bestNP2 = player.bestNP2.max(tmp.npGain)
         }
 
         if (tmp.steelPass > 0) {
@@ -44,13 +52,13 @@ function calc(dt) {
         }
 
         if (tmp.starGen > 0) player.stars = player.stars.add(tmp.starGain.mul(dt*tmp.starGen))
-        if (player.decel) if (tmp.funGen > 0) player.fun = player.fun.add(tmp.funGain.mul(dt*tmp.funGen))
+        if (decel) if (tmp.funGen > 0) player.fun = player.fun.add(tmp.funGain.mul(dt*tmp.funGen))
 
         if (hasUpgrade('factory',2)) player.chargeRate = player.chargeRate.add(tmp.chargeGain.mul(dt))
 
         if (player.cloudUnl) {
             player.bestCloud = player.bestCloud.max(player.cloud)
-            if (player.recel) player.bestCloud2 = player.bestCloud2.max(tmp.cloudGain)
+            if (recel) player.bestCloud2 = player.bestCloud2.max(tmp.cloudGain)
             player.cloud = player.cloud.add(player.bestCloud2.mul(dt))
         }
 
@@ -73,7 +81,7 @@ function calc(dt) {
             player.chal.comp[p] = Math.min(Math.max(player.chal.comp[p]||0,tmp.chal.bulk),CHALS[p].max)
         }
 
-        if (player.lowGH <= 16 && player.decel) {
+        if (player.lowGH <= 16 && decel) {
             player.bestAP2 = player.bestAP2.max(tmp.apGain)
             player.bestOil2 = player.bestOil2.max(tmp.oilGain)
         }
@@ -82,21 +90,29 @@ function calc(dt) {
             player.SFRGT = player.SFRGT.add(tmp.SFRGTgain.mul(dt))
         }
 
-        if (hasStarTree('auto',10)) ROCKET.create()
+        if (hasSolarUpgrade(2,2) && hasUpgrade('factory',5)) {
+            let g = tmp.rf_bulk.mul(dt)
+            player.rocket.amount = player.rocket.amount.add(g)
+            player.rocket.total_fp = player.rocket.total_fp.add(g)
+        }
+        else if (hasStarTree('auto',10)) ROCKET.create()
 
         if (hasStarTree('auto',14)) RESET.rocket_part.reset(false,true)
 
-        if (player.autoGH && !tmp.outsideNormal) {
-            if (player.lowGH > -36) RESET.gh.reset()
+        if (player.autoGH && (!tmp.outsideNormal || player.hsj > 0)) {
+            if (player.lowGH > -36 && !hasSolarUpgrade(0,0)) RESET.gh.reset()
             else player.grasshop = Math.max(player.grasshop,MAIN.gh.bulk())
         }
-        if (player.autoGS && player.decel) {
-            if (player.lowGH > -36) RESET.gs.reset()
+        if (player.autoGS && decel) {
+            if (player.lowGH > -36 && !hasSolarUpgrade(0,1)) RESET.gs.reset()
             else player.grassskip = Math.max(player.grassskip,MAIN.gs.bulk())
+        }
+        if (hasSolarUpgrade(0,4)) {
+            if (recel) player.grassjump = Math.max(player.grassjump,MAIN.gj.bulk())
         }
 
         if (tmp.momentumGen > 0) {
-            player.momentum += tmp.momentumGain*tmp.momentumGen*dt
+            player.momentum = player.momentum.add(tmp.momentumGain.mul(tmp.momentumGen*dt))
         }
     }
 
@@ -123,7 +139,7 @@ function calc(dt) {
     if (tmp.dmGen > 0) player.dm = player.dm.add(tmp.dmGain.mul(dt*tmp.dmGen))
 
     for (let i = 0; i < LUNAR_OB.length; i++) {
-        if (player.lunar.active.includes(i)) player.lunar.lp[i] = player.lunar.lp[i].add(tmp.LPgain.mul(dt))
+        if (player.lunar.active.includes(i) || hasSolarUpgrade(2,4)) player.lunar.lp[i] = player.lunar.lp[i].add(tmp.LPgain.mul(dt))
         if (player.lunar.lp[i].gte(tmp.lunar_next[i])) player.lunar.level[i] = Math.max(player.lunar.level[i],getLPLevel(i))
     }
 
@@ -138,6 +154,14 @@ function calc(dt) {
         player.darkCharge = player.darkCharge.add(tmp.darkChargeRate.mul(dt))
     }
 
+    if (player.grassjump>=30) {
+        player.stardust = player.stardust.add(tmp.stardustGain.mul(dt))
+        player.stargrowth = player.stargrowth.add(tmp.growSpeed.mul(dt))
+    }
+
     player.planetoid.bestPm = player.planetoid.bestPm.max(player.planetoid.pm)
+
+    calcSupernova(dt)
+
     MAIN.checkCutting()
 }

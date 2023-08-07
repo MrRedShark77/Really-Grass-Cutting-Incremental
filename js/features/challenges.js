@@ -212,9 +212,9 @@ el.setup.chal = ()=>{
 
 el.update.chal = ()=>{
     if (mapID == 'chal') {
-        let unl = !getPlayerData.chalUnl
+        let unl = !tmp.outsideNormal
 
-        tmp.el.chal_unl.setDisplay(!unl && player.cTimes > 0)
+        tmp.el.chal_unl.setDisplay(unl && player.cTimes == 0)
         tmp.el.chal_div.setDisplay(unl && player.cTimes > 0)
 
         if (unl) {

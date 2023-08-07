@@ -29,24 +29,37 @@ function removeGrass(i,auto=false) {
     if (auto) y *= tmp.autocutBonus
 
     if (player.planetoid.active) {
-        player.planetoid.pm = player.planetoid.pm.add(tmp.planetiumGain)
-        player.planetoid.xp = player.planetoid.xp.add(tmp.cosmicGain)
-
         if (tg.pl) player.planetoid.observ = player.planetoid.observ.add(tmp.observGain)
     } else {
-        if (player.recel) player.unGrass = player.unGrass.add(tmp.grassGain.mul(y))
-        else if (player.decel) player.aGrass = player.aGrass.add(tmp.grassGain.mul(y))
-        else player.grass = player.grass.add(tmp.grassGain.mul(y))
-        player.xp = player.xp.add(tmp.XPGain.mul(y))
-        if (player.pTimes > 0) player.tp = player.tp.add(tmp.TPGain.mul(y))
-
-        if (tg.pl) player.plat += tmp.platGain * (tmp.platCutAmt ? y : 1)
+        if (tg.pl) player.plat = player.plat.add(tmp.platGain.mul(tmp.platCutAmt ? y : 1))
         if (tg.ms) player.moonstone += tmp.moonstoneGain * (tmp.moonstonesCutAmt ? y : 1)
     }
+
+    gainCurrenciesOnGrass(y)
 
     if (player.gTimes > 0) player.sp = player.sp.add(tmp.SPGain)
 
     tmp.grasses.splice(i, 1)
+}
+
+function gainCurrenciesOnGrass(bonus=1, mult=1) {
+    if (player.planetoid.active) {
+        player.planetoid.pm = player.planetoid.pm.add(tmp.planetiumGain.mul(mult))
+        player.planetoid.xp = player.planetoid.xp.add(tmp.cosmicGain.mul(mult))
+    } else {
+        let g = tmp.grassGain.mul(bonus).mul(mult)
+        if (player.hsj > 0) {
+            player.unGrass = player.unGrass.add(g)
+            player.aGrass = player.aGrass.add(g)
+            player.grass = player.grass.add(g)
+        } else if (player.recel) player.unGrass = player.unGrass.add(g)
+        else if (player.decel) player.aGrass = player.aGrass.add(g)
+        else player.grass = player.grass.add(g)
+        player.xp = player.xp.add(tmp.XPGain.mul(bonus).mul(mult))
+        if (player.pTimes > 0) player.tp = player.tp.add(tmp.TPGain.mul(bonus).mul(mult))
+    }
+
+    if (player.gTimes > 0) player.sp = player.sp.add(tmp.SPGain.mul(mult))
 }
 
 el.update.grassCanvas = ()=>{

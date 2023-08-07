@@ -210,6 +210,7 @@ const CS_BUILDINGS = [
     {
         title: 'Generator',
         img: 'Icons/ConstellationGenerator',
+        imgTier: 'Icons/ConstGenerator2',
         max: 24,
 
         desc: x => `Passively generate <b class='green'>${format(x,0)}</b> Lines.`,
@@ -220,6 +221,7 @@ const CS_BUILDINGS = [
     },{
         title: 'Stabilizer',
         img: 'Icons/ConstCooler',
+        imgTier: 'Icons/ConstCooler2',
         max: 24,
 
         desc: x => `Reduce the instability of adjacent constellations by <b class='green'>${format(x,0)}</b>.`,
@@ -229,6 +231,7 @@ const CS_BUILDINGS = [
     },{
         title: 'Reinforcement',
         img: 'Icons/ConstellationSquare',
+        imgTier: 'Icons/ConstSquare2',
         max: 24,
 
         desc: x => `Increase the instability limit by <b class='green'>${format(x,0)}</b>.`,
@@ -238,6 +241,7 @@ const CS_BUILDINGS = [
     },{
         title: 'Ring',
         img: 'Icons/ConstRings',
+        imgTier: 'Icons/ConstRing2',
         max: 24,
 
         desc: x => `Increase rings gain by <b class='green'>${formatMult(x.add(1))}</b>.`,
@@ -248,6 +252,7 @@ const CS_BUILDINGS = [
     },{
         title: 'Moon',
         img: 'Icons/ConstMoon',
+        imgTier: 'Icons/ConstMoon2',
         max: 24,
 
         desc: x => `Increase lunar powers gain by <b class='green'>${formatMult(x.add(1))}</b>.`,
@@ -258,6 +263,7 @@ const CS_BUILDINGS = [
     },{
         title: 'Amplifier',
         img: 'Icons/ConstArrow',
+        imgTier: 'Icons/ConstArrow2',
         max: 24,
 
         desc: x => `Boost the power of adjacent constellations and their instability by <b class='green'>${formatMult(x)}</b>.`,
@@ -267,6 +273,7 @@ const CS_BUILDINGS = [
     },{
         title: 'Bolt',
         img: 'Icons/ConstCharge',
+        imgTier: 'Icons/ConstCharge2',
         max: 24,
 
         desc: x => `Boost dark charge rate by <b class='green'>${formatMult(x.add(1))}</b>.`,
@@ -277,7 +284,7 @@ const CS_BUILDINGS = [
     },{
         title: 'Arc',
         img: 'Icons/ConstArc',
-        max: 24,
+        max: 12,
 
         desc: x => `Passively generate <b class='green'>${format(x,0)}</b> Arcs, if must be placed adjacent to 2+ Moons with tier of 4+. Higher moon tier means higher generation!`,
 
@@ -343,6 +350,30 @@ const CS_BUILDINGS = [
         cost: x => Decimal.pow(1e3,x*getCSTierMult(x)).mul(1e5).round(),
         insta: x => E(x*3+3),
         eff: x => E(1.5**x+1),
+    },{
+        title: 'Prism',
+        img: 'Icons/ConstPrism',
+        imgTier: 'Icons/ConstPrism2',
+        max: 24,
+
+        desc: x => `
+        Generate <b class='green'>${format(x.line,0)}</b> Lines & <b class='green'>${format(x.arc,0)}</b> Arcs.<br>
+        Increase rings & lunar powers gain, dark charge rate by <b class='green'>${formatMult(x.rmb.add(1))}</b>.
+        `,
+
+        cost: x => Decimal.pow(100,x**1.25*getCSTierMult(x)).mul(1e4).round(),
+        insta: x => Decimal.pow(9,x).mul(10).round(),
+        eff: x => {
+            let p = cs_effect.boostPow
+            const e = {}
+
+            e.line = Decimal.pow(10,x).mul(100).mul(p)
+            e.arc = Decimal.pow(10,x).mul(10).mul(p)
+
+            e.rmb = Decimal.pow(1.75,x).mul(.5).mul(p)
+
+            return e
+        },
     },
 ]
 
@@ -364,6 +395,8 @@ Constellation Type
 10
 11
 12
+
+13 - Prism
 
 */
 
@@ -432,21 +465,21 @@ function checkCost(id,buy=false) {
     return false
 }
 
-function sellGrid(y,x,update=true) {
+function sellGrid(y,x,update=true,refund=true) {
     let g = player.constellation.grid[y][x]
 
     if (g) {
         let s = g.split('t'), type = parseInt(s[0]), tier = parseInt(s[1]), cs = CS_BUILDINGS[type], cs_type = cs.type||0
 
-        player.constellation[['line','arc'][cs_type]] = player.constellation[['line','arc'][cs_type]].add(cs.cost(tier-1))
+        if (refund) player.constellation[['line','arc'][cs_type]] = player.constellation[['line','arc'][cs_type]].add(cs.cost(tier-1))
         player.constellation.grid[y][x] = ''
 
         if (update) updateConstellation()
     }
 }
 
-function sellAllGrids(update=true) {
-    for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) sellGrid(y,x,false);
+function sellAllGrids(update=true,refund=true) {
+    for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) sellGrid(y,x,false,refund);
 
     if (update) updateConstellation()
 }
@@ -523,6 +556,16 @@ function checkGrid(update) {
                     case 8:
                         cs_stellar.max = cs_stellar.max.add(eff)
                         break
+                    case 13:
+                        cs_effect.line = cs_effect.line.add(eff.line.mul(o.mult))
+                        cs_effect.arc = cs_effect.arc.add(eff.arc.mul(o.mult))
+
+                        let rmb = eff.rmb.mul(o.mult).add(1)
+
+                        cs_effect.ring = cs_effect.ring.mul(rmb)
+                        cs_effect.moon = cs_effect.moon.mul(rmb)
+                        cs_effect.bolt = cs_effect.bolt.mul(rmb)
+                    break
                 }
 
                 if (cs_type == 0) cs_insta.total = cs_insta.total.add(o.insta)
@@ -607,6 +650,8 @@ function lineGain() {
 
     x = x.mul(tmp.darkChargeEffs.line||1)
 
+    x = x.mul(solarUpgEffect(1,4)).mul(solarUpgEffect(4,5))
+
     return x
 }
 
@@ -615,6 +660,8 @@ function arcGain() {
 
     .mul(upgEffect('constellation',5))
     .mul(getASEff('arc'))
+
+    x = x.mul(solarUpgEffect(1,9)).mul(solarUpgEffect(4,6))
 
     return x
 }
@@ -625,6 +672,8 @@ function darkChargeRate() {
     .mul(starTreeEff('ring',40)).mul(starTreeEff('ring',45))
     
     if (player.grassjump>=20) x = x.mul(getGJEffect(5))
+
+    x = x.mul(solarUpgEffect(4,7)).mul(solarUpgEffect(1,10))
 
     return x
 }
@@ -642,6 +691,8 @@ function getDCEffects() {
 }
 
 function updateConstellationTemp() {
+    tmp.maxLConstellation = player.sn.times > 0 ? 24 : 12
+
     tmp.lineGain = lineGain()
     tmp.arcGain = arcGain()
     tmp.darkChargeRate = darkChargeRate()
@@ -656,101 +707,105 @@ tmp_update.push(()=>{
 })
 
 el.update.constellation = function () {
-    for (let i = 0; i < 4; i++) {
-        tmp.el['cs_tab'+i].setDisplay(cs_tab == i)
-    }
-
-    tmp.el.dc_tab.setDisplay(player.grassjump>=16)
-
-    if (cs_tab == 0) {
-        let res = [player.constellation.line,player.constellation.arc]
-
-        for (let i = 1; i <= 24; i++) {
-            tmp.el['cs_tier_btn'+i].setDisplay(i <= cs_max_tier)
+    if (mapID == 'cs' || mapID3 == 'cs') {
+        for (let i = 0; i < 4; i++) {
+            tmp.el['cs_tab'+i].setDisplay(cs_tab == i)
         }
-
-        for (let i in CS_BUILDINGS) {
-            i = parseInt(i)
-
-            let cs = CS_BUILDINGS[i], prefix = CS_PREFIX[(cs_tier - 1) % 12 + 1]
-
-            let dis = cs_tier <= cs.max && cs_tier <= 12 && prefix && cs_tier <= cs_building_tiers_dis[i] && (i != 6 || player.grassjump>=16), div = tmp.el['cs_build_div'+i]
-
-            div.setDisplay(dis)
-
-            if (dis) {
-                tmp.el['cs_build_img'+i].changeStyle('filter',prefix[1])
-
-                let cs_type = cs.type||0
-
-                let h = `${prefix[0]+cs.title} ${cs_tier > 12 ? "MK2" : ""} [T${cs_tier}]<span style='font-size: 14px'>`
-
-                h += '<br>' + cs.desc(cs.eff(cs_tier-1))
-
-                if (cs.insta) h += cs_type == 1 ? '<br>Uses up <b class="magenta">'+format(cs.insta(cs_tier-1),0)+' Stellaris</b>' : '<br>Increase the instability by <b class="red">'+format(cs.insta(cs_tier-1),0)+'</b>'
-                
-                let cost = cs.cost(cs_tier-1), c = `<br> Cost: ${cost.format(0)}` + [' Lines',' Arcs'][cs.type||0]
-                if (res[cs.type||0].lt(cost)) c = '<span class="red">'+c+'</span>'
-                h += c
-
-                h += '</span>'
-
-                tmp.el['cs_desc'+i].setHTML(h)
-
-                div.changeStyle('height', document.getElementById('cs_desc'+i).clientHeight+'px')
+    
+        tmp.el.dc_tab.setDisplay(player.grassjump>=16)
+    
+        if (cs_tab == 0) {
+            let res = [player.constellation.line,player.constellation.arc]
+    
+            for (let i = 1; i <= 24; i++) {
+                tmp.el['cs_tier_btn'+i].setDisplay(i <= cs_max_tier)
             }
+    
+            for (let i in CS_BUILDINGS) {
+                i = parseInt(i)
+    
+                let cs = CS_BUILDINGS[i], prefix = CS_PREFIX[(cs_tier - 1) % 12 + 1]
+                let cs_type = cs.type||0
+    
+                let dis = cs_tier <= cs.max && cs_tier <= (cs_type != 1 && i != 7 ? tmp.maxLConstellation : 12) && prefix && cs_tier <= cs_building_tiers_dis[i]
+                && (i != 6 || player.grassjump>=16) && (i != 13 || hasSolarUpgrade(2,3))
+                let div = tmp.el['cs_build_div'+i]
+    
+                div.setDisplay(dis)
+    
+                if (dis) {
+                    tmp.el['cs_build_img'+i].changeStyle('filter',prefix[1])
+                    tmp.el['cs_build_img'+i].setAttr('src', `images/${cs.imgTier && cs_tier > 12 ? cs.imgTier : cs.img}.png`)
+    
+                    let h = `${prefix[0]+cs.title} ${cs_tier > 12 ? "MK2" : ""} [T${cs_tier}]<span style='font-size: 14px'>`
+    
+                    h += '<br>' + cs.desc(cs.eff(cs_tier-1))
+    
+                    if (cs.insta) h += cs_type == 1 ? '<br>Uses up <b class="magenta">'+format(cs.insta(cs_tier-1),0)+' Stellaris</b>' : '<br>Increase the instability by <b class="red">'+format(cs.insta(cs_tier-1),0)+'</b>'
+                    
+                    let cost = cs.cost(cs_tier-1), c = `<br> Cost: ${cost.format(0)}` + [' Lines',' Arcs'][cs.type||0]
+                    if (res[cs.type||0].lt(cost)) c = '<span class="red">'+c+'</span>'
+                    h += c
+    
+                    h += '</span>'
+    
+                    tmp.el['cs_desc'+i].setHTML(h)
+    
+                    div.changeStyle('height', document.getElementById('cs_desc'+i).clientHeight+'px')
+                }
+            }
+        } else if (cs_tab == 1) {
+            let h = ''
+    
+            if (cs_effect.line.gt(0)) h += `+${cs_effect.line.format(0)}/s to Lines gain.<br>`
+            if (cs_effect.arc.gt(0)) h += `+${cs_effect.arc.format(0)}/s to Arcs gain.<br>`
+            if (cs_effect.ring.gt(1)) h += `${formatMult(cs_effect.ring)} to Rings gain.<br>`
+            if (cs_effect.moon.gt(1)) h += `${formatMult(cs_effect.moon)} to Lunar Powers gain.<br>`
+            if (cs_effect.bolt.gt(1)) h += `${formatMult(cs_effect.bolt)} to Dark Charge rate.<br>`
+    
+            tmp.el.cs_effects.setHTML(h)
+        } else if (cs_tab == 2) {
+            for (let i = 0; i < MAX_PRESETS; i++) {
+                let p = player.constellation.presets[i], c = ''
+    
+                if (p.cost[0].gt(0)) c += p.cost[0].format(0) + ' Lines'
+                if (p.cost[1].gt(0)) c += (c ? ', ' : '') + p.cost[1].format(0) + ' Arcs'
+    
+                tmp.el['cs_preset_cost'+i].setHTML(c||'???')
+    
+                tmp.el['cs_preset_boost'+i].setHTML(p.boosts?'Boosts: '+p.boosts:'No Boosts')
+            }
+        } else if (cs_tab == 3) {
+            let h = `You have ${player.darkCharge.format(0)} <span class='smallAmt'>${player.darkCharge.formatGain(tmp.darkChargeRate)}</span> Dark Charge.`
+    
+            let effs = tmp.darkChargeEffs
+    
+            if (effs.charge.gt(1)) h += `<br><b class='green'>${formatMult(effs.charge)}</b> to Charge Rate.`
+            if (effs.cosmic.gt(1)) h += `<br><b class='green'>${formatMult(effs.cosmic)}</b> to Cosmic Gain.`
+            if (effs.sp.gt(1)) h += `<br><b class='green'>^${format(effs.sp,4)}</b> to SP Gain.`+effs.sp.softcapHTML(1.2)
+            if (effs.lunar.gt(1)) h += `<br><b class='green'>${formatMult(effs.lunar)}</b> to Lunar Powers Gain.`+effs.lunar.softcapHTML(1e3)
+            if (effs.line.gt(1)) h += `<br><b class='green'>${formatMult(effs.line)}</b> to Lines Gain.`+effs.line.softcapHTML(1e3)
+    
+            tmp.el.cs_dark.setHTML(h)
         }
-    } else if (cs_tab == 1) {
+    
         let h = ''
-
-        if (cs_effect.line.gt(0)) h += `+${cs_effect.line.format(0)}/s to Lines gain.<br>`
-        if (cs_effect.arc.gt(0)) h += `+${cs_effect.arc.format(0)}/s to Arcs gain.<br>`
-        if (cs_effect.ring.gt(1)) h += `${formatMult(cs_effect.ring)} to Rings gain.<br>`
-        if (cs_effect.moon.gt(1)) h += `${formatMult(cs_effect.moon)} to Lunar Powers gain.<br>`
-        if (cs_effect.bolt.gt(1)) h += `${formatMult(cs_effect.bolt)} to Dark Charge rate.<br>`
-
-        tmp.el.cs_effects.setHTML(h)
-    } else if (cs_tab == 2) {
-        for (let i = 0; i < MAX_PRESETS; i++) {
-            let p = player.constellation.presets[i], c = ''
-
-            if (p.cost[0].gt(0)) c += p.cost[0].format(0) + ' Lines'
-            if (p.cost[1].gt(0)) c += (c ? ', ' : '') + p.cost[1].format(0) + ' Arcs'
-
-            tmp.el['cs_preset_cost'+i].setHTML(c||'???')
-
-            tmp.el['cs_preset_boost'+i].setHTML(p.boosts?'Boosts: '+p.boosts:'No Boosts')
-        }
-    } else if (cs_tab == 3) {
-        let h = `You have ${player.darkCharge.format(0)} <span class='smallAmt'>${player.darkCharge.formatGain(tmp.darkChargeRate)}</span> Dark Charge.`
-
-        let effs = tmp.darkChargeEffs
-
-        if (effs.charge.gt(1)) h += `<br><b class='green'>${formatMult(effs.charge)}</b> to Charge Rate.`
-        if (effs.cosmic.gt(1)) h += `<br><b class='green'>${formatMult(effs.cosmic)}</b> to Cosmic Gain.`
-        if (effs.sp.gt(1)) h += `<br><b class='green'>^${format(effs.sp,4)}</b> to SP Gain.`+effs.sp.softcapHTML(1.2)
-        if (effs.lunar.gt(1)) h += `<br><b class='green'>${formatMult(effs.lunar)}</b> to Lunar Powers Gain.`+effs.lunar.softcapHTML(1e3)
-        if (effs.line.gt(1)) h += `<br><b class='green'>${formatMult(effs.line)}</b> to Lines Gain.`+effs.line.softcapHTML(1e3)
-
-        tmp.el.cs_dark.setHTML(h)
+        if (cs_selected) h = getConstellationImage(cs_selected) + ' Selected!'
+        tmp.el.constellation_select.setHTML(h)
+    
+        h = 'Instability: '+cs_insta.total.format(1)+' / '+cs_insta.max.format(1)
+        if (player.constellation.arcUnl) h += '<br>Stellaris: '+cs_stellar.total.format(0)+' / '+cs_stellar.max.format(0)
+    
+        if (cs_insta.total.gt(cs_insta.max) || cs_stellar.total.gt(cs_stellar.max)) h = '<b class="red">'+h+'<br>Effects no longer work!</b>'
+        tmp.el.constellation_stab.setHTML(h)
+    
+        h = player.constellation.line.format(0) + ' Lines' + (tmp.lineGain.gt(0) ? ' <span class="smallAmt">'+player.constellation.line.formatGain(tmp.lineGain)+'</span>' : '')
+        if (player.constellation.arcUnl) h += '<br>' + player.constellation.arc.format(0) + ' Arcs' + (tmp.arcGain.gt(0) ? ' <span class="smallAmt">'+player.constellation.arc.formatGain(tmp.arcGain)+'</span>' : '')
+    
+        tmp.el.constellation_amt.setHTML(h)
+    
+        tmp.el.cs_sell.setTxt('Delete Mode: '+(cs_sellMode ? "ON" : "OFF"))
     }
-
-    let h = ''
-    if (cs_selected) h = getConstellationImage(cs_selected) + ' Selected!'
-    tmp.el.constellation_select.setHTML(h)
-
-    h = 'Instability: '+cs_insta.total.format(1)+' / '+cs_insta.max.format(1)
-    if (player.constellation.arcUnl) h += '<br>Stellaris: '+cs_stellar.total.format(0)+' / '+cs_stellar.max.format(0)
-
-    if (cs_insta.total.gt(cs_insta.max) || cs_stellar.total.gt(cs_stellar.max)) h = '<b class="red">'+h+'<br>Effects no longer work!</b>'
-    tmp.el.constellation_stab.setHTML(h)
-
-    h = player.constellation.line.format(0) + ' Lines' + (tmp.lineGain.gt(0) ? ' <span class="smallAmt">'+player.constellation.line.formatGain(tmp.lineGain)+'</span>' : '')
-    if (player.constellation.arcUnl) h += '<br>' + player.constellation.arc.format(0) + ' Arcs' + (tmp.arcGain.gt(0) ? ' <span class="smallAmt">'+player.constellation.arc.formatGain(tmp.arcGain)+'</span>' : '')
-
-    tmp.el.constellation_amt.setHTML(h)
-
-    tmp.el.cs_sell.setTxt('Delete Mode: '+(cs_sellMode ? "ON" : "OFF"))
 }
 
 var cs_building_tiers_dis = new Array(CS_BUILDINGS.length).fill(1);
@@ -764,7 +819,8 @@ function checkConstellationCosts() {
 
     for (let i in CS_BUILDINGS) {
         let cs = CS_BUILDINGS[i], t = 1
-        for (let j = 2; j <= Math.min(12,cs.max); j++) {
+        let cs_type = cs.type||0
+        for (let j = 2; j <= Math.min(cs_type != 1 && i != 7 ? tmp.maxLConstellation : 12,cs.max); j++) {
             if (res[cs.type||0].lt(cs.cost(j-1).mul(0.04))) break;
 
             t = j
@@ -781,6 +837,7 @@ const PRES_BOOSTS = {
     4: 'Lunar Powers',
     6: 'Dark Charge',
     7: 'Arcs',
+    13: 'Prism',
 }
 
 function savePreset(i) {

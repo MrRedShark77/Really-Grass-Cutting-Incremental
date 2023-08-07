@@ -32,7 +32,7 @@ const STATS = {
             if (player.gTimes>0) {
                 x = Decimal.mul(upgEffect('moonstone',0),starTreeEff('speed',3)*starTreeEff('speed',10)*starTreeEff('speed',15))
             
-                if (!player.decel) x = x.mul(starTreeEff('progress',6))
+                if (!player.decel || player.hsj > 0) x = x.mul(starTreeEff('progress',6))
 
                 h += `<br>Space Multiplier: <b>${formatMult(x)}</b>`
             }
@@ -43,7 +43,7 @@ const STATS = {
 
             x = E(1)
 
-            if (player.grasshop >= 1) {
+            if (tmp.minStats.gh >= 1) {
                 x = x.mul(5).mul(getGHEffect(0))
             }
 
@@ -75,7 +75,7 @@ const STATS = {
 
             if (inChal(3) || inChal(5)) x = x.div(2)
             if (player.recel) x = x.div(2)
-            if (!player.recel) x = x.mul(upgEffect('unGrass',5))
+            if (!player.recel || player.hsj > 0) x = x.mul(upgEffect('unGrass',5))
 
             h += `<br><br>Total Exponent: <b>^${format(x)}</b> (if multiplier goes above 1)`
 
@@ -113,7 +113,7 @@ const STATS = {
             if (player.gTimes>0) {
                 x = Decimal.mul(upgEffect('moonstone',1),starTreeEff('speed',4)*starTreeEff('speed',11)*starTreeEff('speed',16)).mul(upgEffect('dm',2))
             
-                if (!player.decel) x = x.mul(starTreeEff('progress',6))
+                if (!player.decel || player.hsj > 0) x = x.mul(starTreeEff('progress',6))
 
                 h += `<br>Space Multiplier: <b>${formatMult(x)}</b>`
             }
@@ -130,7 +130,7 @@ const STATS = {
 
             x = E(1)
 
-            if (player.grasshop >= 2) {
+            if (tmp.minStats.gh >= 2) {
                 x = x.mul(5).mul(getGHEffect(1))
             }
 
@@ -160,11 +160,11 @@ const STATS = {
 
             x = Decimal.mul(upgEffect('moonstone',6),upgEffect('measure',3)).mul(getLEffect(1))
 
-            if (!player.decel && hasUpgrade('plat',10)) x = x.mul(upgEffect('plat',10,1))
+            if ((!player.decel || player.hsj > 0) && hasUpgrade('plat',10)) x = x.mul(upgEffect('plat',10,1))
 
             if (inChal(3) || inChal(5)) x = x.div(2)
             if (player.recel) x = x.div(player.lowGH<=-36?4/3:2)
-            if (!player.recel) x = x.mul(upgEffect('unGrass',5))
+            if (!player.recel || player.hsj > 0) x = x.mul(upgEffect('unGrass',5))
 
             h += `<br><br>Total Exponent: <b>^${format(x)}</b> (if multiplier goes above 1)`
 
@@ -202,7 +202,7 @@ const STATS = {
             if (player.gTimes>0) {
                 x = Decimal.mul(upgEffect('moonstone',2),starTreeEff('speed',5)*starTreeEff('speed',12)*starTreeEff('speed',17)).mul(upgEffect('dm',0))
             
-                if (!player.decel) x = x.mul(starTreeEff('progress',6))
+                if (!player.decel || player.hsj > 0) x = x.mul(starTreeEff('progress',6))
 
                 h += `<br>Space Multiplier: <b>${formatMult(x)}</b>`
             }
@@ -219,7 +219,7 @@ const STATS = {
 
             x = E(1)
 
-            if (player.grasshop >= 3) {
+            if (tmp.minStats.gh >= 3) {
                 x = x.mul(5).mul(getGHEffect(2))
             }
 
@@ -249,7 +249,7 @@ const STATS = {
 
             x = E(1).mul(getLEffect(2))
 
-            if (player.grasshop >= 7 || player.lowGH <= 4) x = x.mul(1.25)
+            if (tmp.minStats.gh >= 7 || player.lowGH <= 4) x = x.mul(1.25)
 
             if (inChal(5)) x = x.div(2)
             if (player.recel) x = x.div(2)
@@ -276,7 +276,7 @@ const STATS = {
 
             x = E(1)
 
-            if (player.grassskip>=2) x = x.add(getGSEffect(1,0))
+            if (tmp.minStats.gs>=2) x = x.add(getGSEffect(1,0))
 
             h += `<br>Base before multiplier: <b>${format(x,0)}</b>`
 
@@ -340,7 +340,7 @@ const STATS = {
 
             x = 1
 
-            if (player.grasshop >= 4) x += getGHEffect(3)
+            if (tmp.minStats.gh >= 4) x += getGHEffect(3)
 
             h += `<br>Base before multiplier: <b>${format(x,0)}</b>`
 
@@ -487,7 +487,7 @@ const STATS = {
 
             x = E(1)
 
-            if (player.grassskip >= 25) x = x.mul(getGSEffect(6,1))
+            if (tmp.minStats.gs >= 25) x = x.mul(getGSEffect(6,1))
 
             h += `<br>Milestone Multiplier: <b>${formatMult(x)}</b>`
 
@@ -654,7 +654,7 @@ const STATS = {
 
             x = 10
 
-            if (player.grassskip>0) x += getGSEffect(0,0)
+            if (tmp.minStats.gs>0) x += getGSEffect(0,0)
 
             h += `<br>Base before Multiplier: <b>${format(x,0)}</b>`
 
@@ -708,13 +708,13 @@ const STATS = {
 
             x = 1
 
-            if (player.grassskip >= 8) x += getGSEffect(2,0)
+            if (tmp.minStats.gs >= 8) x += getGSEffect(2,0)
 
             h += `<br>Base before multiplier: <b>${format(x,0)}</b>`
 
             x = 1
 
-            if (player.grassskip >= 21) x *= 2
+            if (tmp.minStats.gs >= 21) x *= 2
 
             h += `<br>Milestone Multiplier: <b>${formatMult(x)}</b>`
 
@@ -804,7 +804,7 @@ const STATS = {
             x = E(1)
 
             if (player.lowGH <= 8) x = x.mul(getAGHEffect(5))
-            if (player.grassskip >= 15) x = x.mul(getGSEffect(4,1))
+            if (tmp.minStats.gs >= 15) x = x.mul(getGSEffect(4,1))
 
             h += `<br>Milestone Multiplier: <b>${formatMult(x)}</b>`
             

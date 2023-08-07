@@ -16,6 +16,8 @@ MAIN.pp = {
         x = x.mul(upgEffect('rocket',3))
         x = x.mul(upgEffect('momentum',4))
 
+        x = x.mul(solarUpgEffect(1,1))
+
         x = x.pow(upgEffect('plat',6))
 
         if (inChal(3) || inChal(5)) x = x.root(2)
@@ -55,7 +57,7 @@ RESET.pp = {
         player.xp = E(0)
         player.level = 0
 
-        let keep_perk = order == "p" && hasUpgrade('auto',4) || order == "c" && hasUpgrade('auto',7) || order == "gh" && player.grasshop >= 10
+        let keep_perk = order == "p" && hasUpgrade('auto',4) || order == "c" && hasUpgrade('auto',7) || order == "gh" && tmp.minStats.gh >= 10
 
         if (!keep_perk) {
             player.maxPerk = 0
@@ -161,6 +163,8 @@ MAIN.ap = {
 
         x = x.mul(upgEffect('rocket',7))
         x = x.mul(upgEffect('momentum',8))
+
+        x = x.mul(solarUpgEffect(1,6))
 
         return x.floor()
     },
@@ -342,7 +346,7 @@ MAIN.np = {
 
         tmp.npGainBase = x
 
-        x = x.mul(upgEffect('dm',6)).mul(upgEffect('sfrgt',5)).mul(upgEffect('cloud',3))
+        x = x.mul(upgEffect('dm',6)).mul(upgEffect('sfrgt',5)).mul(upgEffect('cloud',3)).mul(solarUpgEffect(1,11))
 
         return x.floor()
     },
@@ -474,11 +478,11 @@ UPGS.np = {
             bulk: i => i.div(10).max(1).log(2).root(1.25).floor().toNumber()+1,
         
             effect(i) {
-                let x = 1.15**i
+                let x = Decimal.pow(1.15,i).overflow(1e300,0.5)
         
                 return x
             },
-            effDesc: x => format(x)+"x",
+            effDesc: x => format(x)+"x"+x.softcapHTML(1e300),
         },
     ],
 }

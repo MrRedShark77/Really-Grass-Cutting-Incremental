@@ -41,13 +41,16 @@
     <script src="js/features/planetoid.js"></script>
     <script src="js/features/obelisk.js"></script>
     <script src="js/features/constellation.js"></script>
+    <script src="js/features/star.js"></script>
+    <script src="js/features/supernova.js"></script>
+    <script src="js/features/solar_upgs.js"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
 <body onload="loadGame()">
     <input id="copy" style="position: absolute; top: 0; left: 0; user-select: all; visibility: hidden;">
     <div id="fog"></div>
-    <div id="app">
+    <div id="app" style="display: none;">
         <div class="table_space">
             <div id="grass_div" style="margin: 10px;">
                 <div class="table_between">
@@ -112,13 +115,18 @@
                 <button onclick="exporty()">Export</button>
                 <button onclick="window.open('https://discord.gg/Ekp8FsSwzR')">Join Discord Server</button><br>
                 <button onclick="hideUpgOption()">Hide upgrades which is maxed/purchased: <span id="hideUpgOption">OFF</span></button>
+                <button onclick="player.offline.enabled = !player.offline.enabled">Offline Progress: <span id="offlineOption">OFF</span></button>
                 <button onclick="changeGHMult()" id="multGHButton">Multi-Grasshop: <span id="multGHOption">OFF</span></button>
                 <button onclick="changeGSMult()" id="multGSButton">Multi-Grass-skip: <span id="multGSOption">OFF</span></button>
                 <br><br>
-                Really Grass Cutting Incremental - v0.4.5 - Constellation Experimental Test - Made by MrRedShark77<br>
+                Really Grass Cutting Incremental - v0.5 - Supernova Update Part 1 - Made by MrRedShark77<br>
                 The game inspired by <a href="https://www.roblox.com/games/9292879820">Grass Cutting Incremental</a><br>
+                Artist(-s): Bézier<br>
                 <b class="red">Warning! Recommended size is 1920x1080! You may change zoom!</b><br><br>
-                Endgame: Level 100,000+; Astral Prestige 5; Grass Jump 30+; Planetary Tier 37+; (projected)
+                <details>
+                    <summary>Endgame (Spoiler)</summary>
+                    Level 300,000+; Planetary Tier 85+; Supernova Tier 3-4;
+                </details>
             </div><div id="map_div_p">
                 <div style="width: 100%; height: 50%;">
                     <div class="upgs_div" id="upgs_div_perk"></div>
@@ -129,8 +137,9 @@
             </div><div id="map_div_auto">
                 <div style="width: 100%; height: 50%;">
                     <div class="upgs_div" id="upgs_div_auto"></div>
-                </div><div style="width: 100%; height: 50%;">
+                </div><div style="width: 100%; height: 50%;" class="table_center">
                     <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_formRing"></div></div>
+                    <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_timewarp"></div></div>
                 </div>
             </div><div id="map_div_pc">
                 <div style="width: 100%; height: 50%;" class="table_center">
@@ -162,7 +171,7 @@
                 </div>
             </div><div id="map_div_chal" style="overflow-y: auto;">
                 <div id="chal_unl">
-                    Reach Level 200 to unlock
+                    Crystallize once to Unlock
                 </div><div id="chal_div">
                     Click any challenge to start! Click again to exit.<br>
                     <div id="chal_table" class="table_center"></div>
@@ -187,6 +196,7 @@
                     <div style="width: 33%; height: 100%;">
                         <div class="reset_div" id="reset_div_steel"></div>
                         <div class="reset_div" id="reset_div_fun"></div>
+                        <div class="reset_div" id="reset_div_hsj"></div>
 
                         <div class="reset_div" id="reset_div_constellation"></div>
                     </div>
@@ -232,10 +242,30 @@
                 </div>
             </div><div id="map_div_rp">
                 <div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 500px; height: 100%;"><div class="reset_div" id="reset_div_rocket_part"></div></div>
-                    <div style="width: calc(100% - 500px); height: 100%;"><div class="upgs_div" id="upgs_div_momentum"></div></div>
+                    <div style="width: 500px; height: 100%;">
+                        <div class="reset_div" id="reset_div_rocket_part"></div>
+
+                        <div class="upgs_div star" id="star_div">
+                            <h3>The Star</h3><br>
+                            - Tier <b class="cyan" id="star_tier">0</b> Star -
+                            <div style="font-size: 16px;">
+                                (next tier at <span id="starnexttier">???</span>)<br><br>
+                                Your Star Growth is <b class="cyan" id="stargrowth">???</b><br>
+                                Grow Speed: <b id="growspeed">???</b>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: calc(100% - 500px); height: 100%;">
+                        <div class="upgs_div" id="upgs_div_momentum"></div>
+
+                        <div class="upgs_div" id="upgs_div_stardust"></div>
+                    </div>
                 </div><div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_gal"></div></div>
+                    <div style="width: 50%; height: 100%;">
+                        <div class="reset_div" id="reset_div_gal"></div>
+
+                        <div class="reset_div" id="reset_div_supernova"></div>
+                    </div>
                     <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_recel"></div></div>
                 </div>
             </div><div id="map_div_sc" style="position: relative;">
@@ -343,13 +373,62 @@
                     </div>
                 </div>
             </div>
+
+            <div id="map_div_star">
+                <div class="solar-upgs-bg">
+                    <div style="width: 90px; overflow-y: scroll;" id="solar_tabs"></div>
+                    <div style="width: calc(100% - 90px);">
+                        <div style="height: 100%; overflow-y: scroll;">
+                            <div id="solar_upgs_table"></div>
+                            <div style="height: 200px;"></div>
+                        </div>
+                        <div id="solar_upgs_res"></div>
+                        <div id="su_desc_div">
+                            <div id="su_title"></div>
+                            <div id="su_desc"></div><br>
+                            <button onclick="solar_upg = [null,null]">Cancel</button>
+                            <button onclick="buySolarUpgrade(solar_upg[0],solar_upg[1])">Buy 1</button>
+                            <button onclick="buyNextSolarUpgrade(solar_upg[0],solar_upg[1])">Buy Next</button>
+                            <button onclick="buyMaxSolarUpgrade(solar_upg[0],solar_upg[1])">Buy Max</button>
+                        </div>
+                    </div>
+                </div>
+            </div><div id="map_div_sm">
+                <div style="width: 100%; height: 50%;" class="solar-upgs-bg">
+                    <div id="sn_tier_div">
+                        <div>
+                            <h3>Supernova Tier</h3><br>
+                            <div id="sn_tier"><div>1</div></div>
+                        </div>
+                    </div><div id="sn_milestones"></div>
+                </div>
+                <div style="width: 100%; height: 50%;" class="table_center"></div>
+            </div>
         </div>
-        <div style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);">
+        <div id="map_name"></div>
+        <div id="map">
+            <table id="map_table"></table>
+        </div>
+        <div style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); z-index: 2;">
             <button id="lMap" onclick="switchMap(-1,0)" class="locked">◀</button>
             <button id="rMap" onclick="switchMap(1,0)" class="locked">▶</button>
             <button id="uMap" onclick="switchMap(0,-1)" class="locked">▲</button>
             <button id="dMap" onclick="switchMap(0,1)" class="locked">▼</button>
-            <button id="spaceButton" onclick="tmp.space = !tmp.space">Go to Space</button>
+            <button onclick="map_mode = !map_mode">Map</button>
+            <button onclick="player.world = 'ground'">Ground</button>
+            <button id="spaceButton" onclick="player.world = 'space'">Space</button>
+            <button id="starButton" onclick="player.world = 'star'">Star</button>
+        </div>
+        <div id="offline_box">
+            <div>
+                <h2>Offline Progress!</h2><br>
+                You were gone offline for <b id="offline_time">???</b>!
+                <div id="offline_progress">
+                    <div id="offline_bar"></div>
+                </div>
+                <span id="offline_ticks">? / ?</span> Ticks<br><br>
+                <button id="offline_skip">Skip Offline Progress</button>
+            </div>
         </div>
     </div>
 </body>

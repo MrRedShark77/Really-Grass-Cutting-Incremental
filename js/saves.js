@@ -4,6 +4,7 @@ const VER = 0.0404
 const EINF = Decimal.dInf
 const BETA = false
 const save_name = BETA ? "rgci_beta_save" : "gci_save"
+const FPS = 30
 
 Math.lerp = function (value1, value2, amount) {
 	amount = amount < 0 ? 0 : amount;
@@ -27,16 +28,6 @@ Decimal.prototype.modular=Decimal.prototype.mod=function (other){
     return this.sub(this.div(other).floor().mul(other));
 };
 
-Decimal.prototype.softcap = function (start, power, mode) {
-    var x = this.clone()
-    if (x.gte(start)) {
-        if ([0, "pow"].includes(mode)) x = x.div(start).pow(power).mul(start)
-        if ([1, "mul"].includes(mode)) x = x.sub(start).div(power).add(start)
-        if ([2, "exp"].includes(mode)) x = expMult(x.div(start), power).mul(start)
-    }
-    return x
-}
-
 function softcap(x,s,p,m) {
     if (x >= s) {
         if ([0, "pow"].includes(m)) x = (x/s)**p*s
@@ -46,12 +37,17 @@ function softcap(x,s,p,m) {
     return x
 }
 
-function scale(x, s, p, mode, rev=false) {
-    s = E(s)
-    p = E(p)
-    if (x.gte(s)) {
-        if ([0, "pow"].includes(mode)) x = rev ? x.mul(s.pow(p.sub(1))).root(p) : x.pow(p).div(s.pow(p.sub(1)))
-        if ([1, "exp"].includes(mode)) x = rev ? x.div(s).max(1).log(p).add(s) : Decimal.pow(p,x.sub(s)).mul(s)
+function scale(x, s, p, mode, rev) {
+    return x.scale(s, p, mode, rev)
+}
+
+Decimal.prototype.softcap = function (start, power, mode, dis=false) {
+    var x = this.clone()
+    if (!dis&&x.gte(start)) {
+        if ([0, "pow"].includes(mode)) x = x.div(start).max(1).pow(power).mul(start)
+        if ([1, "mul"].includes(mode)) x = x.sub(start).div(power).add(start)
+        if ([2, "exp"].includes(mode)) x = expMult(x.div(start), power).mul(start)
+        if ([3, "log"].includes(mode)) x = x.div(start).log(power).add(1).mul(start)
     }
     return x
 }
@@ -61,8 +57,13 @@ Decimal.prototype.scale = function (s, p, mode, rev=false) {
     p = E(p)
     var x = this.clone()
     if (x.gte(s)) {
-        if ([0, "pow"].includes(mode)) x = rev ? x.mul(s.pow(p.sub(1))).root(p) : x.pow(p).div(s.pow(p.sub(1)))
+        if ([0, "pow"].includes(mode)) x = rev ? x.div(s).root(p).mul(s) : x.div(s).pow(p).mul(s)
         if ([1, "exp"].includes(mode)) x = rev ? x.div(s).max(1).log(p).add(s) : Decimal.pow(p,x.sub(s)).mul(s)
+        if ([2, "dil"].includes(mode)) {
+            let s10 = s.log10()
+            x = rev ? Decimal.pow(10,x.log10().div(s10).root(p).mul(s10)) : Decimal.pow(10,x.log10().div(s10).pow(p).mul(s10))
+        }
+        if ([3, "alt_exp"].includes(mode)) x = rev ? x.div(s).max(1).log(p).add(1).mul(s) : Decimal.pow(p,x.div(s).sub(1)).mul(s)
     }
     return x
 }
@@ -98,7 +99,7 @@ function getPlayerData() {
         maxPerk: 0,
         spentPerk: 0,
 
-        plat: 0,
+        plat: E(0),
 
         pp: E(0),
         bestPP: E(0),
@@ -149,12 +150,12 @@ function getPlayerData() {
         lTimes: 0,
 
         rocket: {
-            total_fp: 0,
-            amount: 0,
+            total_fp: E(0),
+            amount: E(0),
             part: 0,
         },
 
-        momentum: 0,
+        momentum: E(0),
 
         gTimes: 0,
         gTime: 0,
@@ -225,6 +226,17 @@ function getPlayerData() {
 
         darkCharge: E(0),
 
+        stardust: E(0),
+        stargrowth: E(0),
+
+        offline: { time: 0, current: 0, enabled: true },
+        timewarp: { amt: 0, time: 0 },
+        sn: getSupernovaSave(),
+
+        hsj: 0,
+
+        world: 'ground',
+
         time: 0,
         version: VER,
     }
@@ -251,14 +263,18 @@ function loadPlayer(load) {
     if (!player.version) player.version = 0
     player = deepUndefinedAndDecimal(player, DATA)
     convertStringToDecimal()
+
+    let c = Date.now() - player.offline.current
+    player.offline.time = player.offline.time === null || c < 60000 || !player.offline.enabled ? 0 : c
+    player.offline.current = Date.now()
 }
 
 function checkVersion() {
     const DATA = getPlayerData()
 
     if (player.version < 0.0306 && player.rocket.total_fp > 0) {
-        player.rocket.total_fp = 0
-        player.rocket.amount = 0
+        player.rocket.total_fp = E(0)
+        player.rocket.amount = E(0)
         player.oil = E(0)
         player.bestOil = E(0)
         player.ap = E(0)
@@ -322,7 +338,7 @@ function checkVersion() {
         resetUpgrades('planet')
         player.planetoid.planet = E(0)
 
-        player.momentum = 0
+        player.momentum = E(0)
         resetUpgrades('momentum')
 
         player.sfgrt = E(0)
@@ -358,7 +374,7 @@ function deepUndefinedAndDecimal(obj, data) {
         let k = Object.keys(data)[x]
         if (obj[k] === null) continue
         if (obj[k] === undefined) obj[k] = data[k]
-        else {
+        else if (data[k] !== null) {
             if (Object.getPrototypeOf(data[k]).constructor.name == "Decimal") obj[k] = E(obj[k])
             else if (typeof obj[k] == 'object') deepUndefinedAndDecimal(obj[k], data[k])
         }
@@ -370,12 +386,15 @@ function convertStringToDecimal() {
     
 }
 
-function cannotSave() { return false }
+function cannotSave() { return !is_online }
 
 function save(){
+    player.offline.current = Date.now();
+
     let str = btoa(JSON.stringify(player))
     if (cannotSave() || findNaN(str, true)) return
     if (localStorage.getItem(save_name) == '') wipe()
+
     localStorage.setItem(save_name,str)
     tmp.prevSave = localStorage.getItem(save_name)
     console.log("Game Saved")
@@ -468,12 +487,26 @@ function loadGame(start=true, gotNaN=false) {
         treeCanvas()
         checkConstellationCosts()
         updateConstellation()
-        setInterval(save,60000)
-        setInterval(loop, 100/3)
         setInterval(checkNaN,1000)
         setInterval(()=>{
             checkConstellationCosts()
             updateConstellation()
+        },1000)
+
+        tmp.el.offline_box.setDisplay(false) 
+        tmp.el.map.setDisplay(false) 
+
+        updateHTML()
+
+        setTimeout(()=>{
+            tmp.el.app.setDisplay(true)
+            if (player.offline.time > 0 && hasUpgrade('auto',0)) {
+                simulateTime(player.offline.time/1e3, true)
+            } else {
+                setInterval(save,60000)
+            }
+
+            setInterval(loop,1000/FPS)
         },1000)
     }
 }
@@ -513,3 +546,60 @@ function overflow(number, start, power, meta=1){
 }
 
 Decimal.prototype.overflow = function (start, power, meta) { return overflow(this.clone(), start, power, meta) }
+
+var is_online = true
+const MAX_TICKS = 500
+
+function simulateTime(sec, start=false) {
+    let ticks = sec * FPS
+    let bonusDiff = 0
+    if (ticks > MAX_TICKS) {
+        bonusDiff = (ticks - MAX_TICKS) / FPS / MAX_TICKS
+        ticks = MAX_TICKS
+    }
+
+    is_online = false
+    let max_tick = ticks
+    tmp.el.offline_time.setHTML(formatTime(sec,0))
+
+    document.getElementById('offline_skip').onclick = ()=>{
+        clearInterval(calc_interval)
+
+        updateTemp()
+
+        let dt = (1/FPS+bonusDiff) * (ticks)
+        calc(dt)
+        
+        if (start) {
+            calcTimeWarp(dt)
+            setInterval(save,60000)
+        }
+        is_online = true
+        tmp.el.offline_box.setDisplay(false)
+    }
+
+    var calc_interval = setInterval(()=>{
+        ticks--
+
+        updateTemp()
+
+        let dt = 1/FPS+bonusDiff
+        calc(dt)
+        if (start) calcTimeWarp(dt)
+
+        tmp.el.offline_bar.changeStyle('width',Math.min(Math.max(1-ticks/max_tick,0),1)*100+"%")
+        tmp.el.offline_ticks.setHTML(max_tick-ticks + " / " + max_tick)
+
+        if (ticks <= 0) {
+            clearInterval(calc_interval)
+            if (start) {
+                setInterval(save,60000)
+            }
+            is_online = true
+            tmp.el.offline_box.setDisplay(false)
+            return
+        }
+    },1)
+
+    tmp.el.offline_box.setDisplay(true)
+}

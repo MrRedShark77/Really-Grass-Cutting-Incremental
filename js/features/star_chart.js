@@ -44,6 +44,7 @@ const SC_IDS = {
         ['',32,'','',''],
         ['',34,'','',''],
         ['',36,'','',''],
+        ['',37,'','',''],
     ],
 }
 
@@ -2285,6 +2286,18 @@ const STAR_CHART = {
             
             cost: i => 1e27,
             bulk: i => 1,
+        },{
+            branch: [36],
+
+            max: 1,
+
+            title: "Limitless Measure Upgrades",
+            desc: `Uncap <span class="green">Measure Upgrades</span>' maximum level, except Measured Observatorium and Measured XP-Exponent.`,
+
+            icon: ['Curr/Measure','Icons/Automation2'],
+            
+            cost: i => 1e30,
+            bulk: i => 1,
         },
     ],
 }
@@ -2492,7 +2505,7 @@ function buyMaxSCUpgrade(id,x) {
                 amt[x] = Math.min(amt[x] ? Math.max(amt[x],bulk) : bulk,tu.max[x])
 
                 if (id == 'reserv') player.planetoid.reserv = player.planetoid.reserv.sub(cost).max(0)
-                else if (id == 'ring' && !hasStarTree('reserv',11)) player.planetoid.ring = player.planetoid.ring.sub(cost).max(0)
+                else if (id == 'ring') {if (!hasStarTree('reserv',11) && player.sn.tier.lt(2)) player.planetoid.ring = player.planetoid.ring.sub(cost).max(0)}
 			    else player.stars = player.stars.sub(cost).max(0)
 
                 updateSCTemp()
@@ -2501,8 +2514,8 @@ function buyMaxSCUpgrade(id,x) {
     }
 }
 
-function buyMaxSCs() {
-    let id = tmp.sc_tab, sc = STAR_CHART[id]
+function buyMaxSCs(id=tmp.sc_tab) {
+    let sc = STAR_CHART[id]
     for (i in sc) if (tmp.sc_unl[id][i]) buyMaxSCUpgrade(id,i)
 }
 

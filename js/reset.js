@@ -72,6 +72,7 @@ el.update.reset = ()=> {
         updateResetHTML('gs')
         updateResetHTML('fun')
         updateResetHTML('gj')
+        updateResetHTML('hsj')
 
         updateResetHTML('planetary')
         updateResetHTML('constellation')
@@ -83,9 +84,13 @@ el.update.reset = ()=> {
         updateResetHTML('rocket_part')
         updateResetHTML('gal')
         updateResetHTML('recel')
+
+        updateResetHTML('supernova')
     }
     else if (mapID == 'auto') {
         updateResetHTML('formRing')
+
+        updateResetHTML('timewarp')
     }
 
     if (mapID2 == 'sac') {

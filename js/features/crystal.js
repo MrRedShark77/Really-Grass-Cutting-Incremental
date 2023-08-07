@@ -15,6 +15,8 @@ MAIN.crystal = {
         x = x.mul(upgEffect('rocket',4))
         x = x.mul(upgEffect('momentum',5))
 
+        x = x.mul(solarUpgEffect(1,2))
+
         x = x.pow(upgEffect('plat',7))
 
         if (inChal(5)) x = x.root(2)
@@ -205,6 +207,8 @@ MAIN.oil = {
 
         x = x.mul(starTreeEff('speed',6)*starTreeEff('speed',13)*starTreeEff('speed',18))
 
+        x = x.mul(solarUpgEffect(1,7))
+
         return x.floor()
     },
 }
@@ -381,7 +385,7 @@ MAIN.cloud = {
 
         tmp.cloudGainBase = x
 
-        x = x
+        x = x.mul(solarUpgEffect(1,12))
 
         return x.floor()
     },
