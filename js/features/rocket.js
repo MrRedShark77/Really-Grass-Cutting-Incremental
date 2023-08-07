@@ -10,7 +10,7 @@ const ROCKET = {
         let rf = player.rocket.total_fp
         let b = tmp.rf_bulk
 
-        if (b>rf) {
+        if (b.gt(rf)) {
             player.rocket.total_fp = b
 
             player.rocket.amount = player.rocket.amount.add(b.sub(rf))

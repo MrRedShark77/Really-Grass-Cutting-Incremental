@@ -17,8 +17,10 @@ RESET.decel = {
         if (player.planetoid.active) return;
         
         if (true) {
+            let aa
+
             if (player.hsj <= 0) {
-                let aa = player.unRes
+                aa = player.unRes
 
                 if (player.recel) {
                     aa.level = player.level
