@@ -53,9 +53,9 @@ const LUNAR_OB = [
 const LUNAR_OB_MODE = ['x','^']
 
 tmp_update.push(()=>{
-    let x = Decimal.pow(1.5,Math.log10(player.moonstone)).div(100).mul(starTreeEff('ring',32)).mul(starTreeEff('ring',36)).mul(getAPEff(2))
+    let x = Decimal.pow(1.5,Math.log10(player.moonstone+1)).div(100).mul(starTreeEff('ring',32)).mul(starTreeEff('ring',36)).mul(getAPEff(2))
 
-    .mul(cs_effect.moon)
+    .mul(cs_effect.moon||1)
 
     x = x.mul(tmp.darkChargeEffs.lunar||1)
 

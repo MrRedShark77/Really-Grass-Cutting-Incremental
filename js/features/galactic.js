@@ -48,7 +48,7 @@ RESET.gal = {
                 player.gTimes++
 
                 if (!hasSolarUpgrade(0,1) && player.lowGH <= 0 && player.grasshop <= 0) player.lowGH = Math.max(Math.min(player.lowGH,-player.grassskip),-60)
-                else player.lowGH = Math.max(Math.min(player.lowGH,hasSolarUpgrade(0,1) ? tmp.minStats.gs : player.grasshop),-60)
+                else player.lowGH = Math.max(Math.min(player.lowGH,hasSolarUpgrade(0,1) ? -tmp.minStats.gs : player.grasshop),-60)
 
                 player.world = 'space'
             }
