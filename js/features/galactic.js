@@ -160,7 +160,7 @@ const ASTRAL = {
 }
 
 function getASEff(id,def=1) { return tmp.astral_eff[id]||def }
-function getAPEff(id) { return Decimal.pow(AP_BONUS_BASE[id],softcap(player.astralPrestige,0.25,0)-id) }
+function getAPEff(id) { return Decimal.pow(AP_BONUS_BASE[id],softcap(player.astralPrestige,10,0.25,0)-id).max(1) }
 
 UPGS.moonstone = {
     title: "Moonstone Upgrades",

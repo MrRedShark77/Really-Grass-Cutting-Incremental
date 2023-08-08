@@ -4,8 +4,9 @@ function calc(dt) {
         return
     }
 
-    let decel = player.decel || player.hsj > 0
-    let recel = player.recel || player.hsj > 0
+    let hsj1 = player.hsj > 0
+    let decel = player.decel || hsj1
+    let recel = player.recel || hsj1
 
     let outsideNormal = (decel || recel) && player.hsj < 1
 
@@ -38,7 +39,7 @@ function calc(dt) {
         gainCurrenciesOnGrass(tmp.autocutBonus, tmp.autocutAmt / tmp.autocut * dt)
     }
 
-    if (!player.planetoid.active || player.hsj > 0) {
+    if (!player.planetoid.active || hsj1) {
         if (tmp.ppGainP > 0 && player.level >= 30 && !outsideNormal) player.pp = player.pp.add(tmp.ppGain.mul(dt*tmp.ppGainP))
         if (tmp.crystalGainP > 0 && player.level >= 100 && !outsideNormal) player.crystal = player.crystal.add(tmp.crystalGain.mul(dt*tmp.crystalGainP))
 
@@ -104,7 +105,7 @@ function calc(dt) {
 
         if (hasStarTree('auto',14)) RESET.rocket_part.reset(false,true)
 
-        if (player.autoGH && (!tmp.outsideNormal || player.hsj > 0)) {
+        if (player.autoGH && (!tmp.outsideNormal || hsj1)) {
             if (player.lowGH > -36 && !hasSolarUpgrade(0,0)) RESET.gh.reset()
             else player.grasshop = Math.max(player.grasshop,MAIN.gh.bulk())
         }
@@ -121,7 +122,7 @@ function calc(dt) {
         }
     }
 
-    for (let x in UPGS) if (tmp.upgs[x].autoUnl && !(['grass','pp','crystal'].includes(x) && outsideNormal) && !(['aGrass'].includes(x) && !outsideNormal)) if (player.autoUpg[x]) buyMaxUpgrades(x,true)
+    for (let x in UPGS) if (tmp.upgs[x].autoUnl && !(['grass','pp','crystal'].includes(x) && outsideNormal) && (hsj1 || !(['aGrass'].includes(x) && !outsideNormal))) if (player.autoUpg[x]) buyMaxUpgrades(x,true)
     player.maxPerk = Math.max(player.maxPerk, tmp.perks)
 
     if (tmp.ringGen > 0) player.planetoid.ring = player.planetoid.ring.add(tmp.ringGain.mul(dt*tmp.ringGen))
