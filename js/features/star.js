@@ -22,7 +22,7 @@ UPGS.stardust = {
             icon: ["Curr/StarGrow"],
                         
             cost: i => Decimal.pow(1.15,i).mul(10).scale(1e33,3,2),
-            bulk: i => i.div(10).max(1).log(1.15).scale(1e33,3,2,true).floor().toNumber()+1,
+            bulk: i => i.scale(1e33,3,2,true).div(10).max(1).log(1.15).floor().toNumber()+1,
         
             effect(i) {
                 let x = Decimal.pow(1.05,i)
@@ -40,7 +40,7 @@ UPGS.stardust = {
             icon: ["Curr/Stardust"],
                         
             cost: i => Decimal.pow(1.3,i).mul(25).scale(1e33,2,2),
-            bulk: i => i.div(25).max(1).log(1.3).scale(1e33,2,2,true).floor().toNumber()+1,
+            bulk: i => i.scale(1e33,2,2,true).div(25).max(1).log(1.3).floor().toNumber()+1,
         
             effect(i) {
                 let x = Decimal.pow(1.15,i)
