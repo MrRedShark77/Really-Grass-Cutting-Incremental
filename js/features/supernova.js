@@ -67,6 +67,14 @@ RESET.supernova = {
         player.constellation.arc = E(0)
         RESET.constellation.doReset(order)
 
+        resetUpgrades('stardust')
+        player.stardust = E(0)
+        player.stargrowth = E(0)
+        player.darkCharge = E(0)
+
+        player.unRes = DATA.unRes
+        player.aRes = DATA.aRes
+
         // Unnatural Realm
 
         RESET.gj.doReset(order)
