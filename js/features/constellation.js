@@ -404,7 +404,7 @@ const CS_BUILDINGS = [
         Increase rings & lunar powers gain, dark charge rate by <b class='green'>${formatMult(x.rmb.add(1))}</b>.
         `,
 
-        cost: x => E(1e4),
+        cost: x => E(1),
         eff: x => {
             const e = {}, p = cs_effect.gridPow
 
