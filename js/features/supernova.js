@@ -58,7 +58,7 @@ RESET.supernova = {
         player.planetoid.firstEnter = k.fe
         player.planetoid.planetTier = solarUpgEffect(0,6,0)
 
-        sellAllGrids(false,false)
+        sellAllGrids(false,false,true)
         updateConstellationTemp()
         updateConstellation()
         resetUpgrades('constellation')
@@ -116,12 +116,18 @@ const SUPERNOVA = {
 
         let x = Decimal.pow(5,st.sub(1)).mul(sg.div(1e7).max(1).log10().add(1).pow(st.div(4))).mul(10).mul(st)
 
-        x = x.mul(solarUpgEffect(4,3)).mul(solarUpgEffect(5,1))
+        x = x.mul(solarUpgEffect(4,3)).mul(solarUpgEffect(5,1)).mul(solarUpgEffect(6,6))
+
+        x = x.mul(tmp.sunriseEffect.ss).mul(getFormingBonus('basic',0))
+
+        .mul(getStageBonus('ss'))
 
         return x.floor()
     },
     maxFlare() {
         let x = Decimal.mul(1e4,solarUpgEffect(2,0))
+        if (player.sn.tier.gte(4)) x = x.mul(Decimal.pow(100,player.sn.tier.sub(3)))
+        x = x.mul(tmp.sunriseEffect.sfc)
         return x
     },
     get flareEarn() {
@@ -130,21 +136,38 @@ const SUPERNOVA = {
         return Decimal.pow(10,st.sub(1))
     },
     flareGain() {
-        let x = player.sn.totalSFEarn.mul(solarUpgEffect(3,4)).mul(solarUpgEffect(5,0)).mul(getASEff('sf'))
+        let x = player.sn.totalSFEarn
+        
+        .mul(solarUpgEffect(3,4))
+        .mul(solarUpgEffect(5,0))
+        .mul(solarUpgEffect(6,0))
+        
+        .mul(getASEff('sf'))
 
         return x
     },
     eclipse: {
-        req(offest = 0) { return Decimal.pow(1.05,player.sn.eclipse.sub(offest).add(1)).sub(1).mul(2000) },
-        calcBulk(res = player.sn.sr) { return res.div(2000).add(1).log(1.05).sub(player.sn.eclipse).floor() },
+        req(offest = 0) { return Decimal.pow(1.05,player.sn.eclipse.sub(offest).scale(300,2,0).add(1)).sub(1).mul(2000) },
+        calcBulk(res = player.sn.sr) { return res.div(2000).add(1).log(1.05).sub(1).scale(300,2,0,true).add(1).sub(player.sn.eclipse).floor() },
 
         get require() { return this.req() },
+        get reqBase() {
+            let e = player.sn.eclipse
+            return Decimal.pow(1.05,e.add(1).scale(300,2,0)).sub(Decimal.pow(1.05,e.scale(300,2,0))).mul(2000)
+        },
         get bulk() { return this.calcBulk() },
 
         get SRgain() {
             let x = Decimal.pow(1.15, player.stargrowth.add(1).log10()).mul(10)
-            
+
+            .mul(solarUpgEffect(3,10))
+
             .mul(solarUpgEffect(4,14))
+            .mul(solarUpgEffect(4,19))
+
+            .mul(cs_effect.ray)
+
+            .mul(getStageBonus('sr'))
 
             if (player.grassjump >= 35) x = x.mul(getGJEffect(7))
 
@@ -160,8 +183,7 @@ const SUPERNOVA = {
             - Stars and Rings are increased <b class="green">100x</b>.<br>
             - Planetarium is increased <b class="green">1,000x</b>.<br>
             `,
-        },
-        {
+        },{
             r: 2,
             desc: `
             - Unlock Eclipse, and earn Solar Rays (SR) from Supernova.<br>
@@ -169,23 +191,38 @@ const SUPERNOVA = {
             - Keep Reservatorium Ring Generation upgrades on Supernova.<br>
             - Automatically buy ring upgrades.
             `,
-        },
-        {
+        },{
             r: 3,
             desc: `
             - Unlock a new grass jump milestone.<br>
             - Keep best Anonymity/Liquefy/Normality/Vaporize on Supernova.<br>
-            - Keep rocket fuel and moonstone upgrades on Supernova.<br>
+            - Keep rocket fuel and moonstone upgrades on Supernova.
+            `,
+        },{
+            r: 4,
+            desc: `
+            - Unlock the <b class="green">Sunrise</b> reset (on bottom of supernova milestones).<br>
+            - Dark Matter Upgrades' cap is broken.<br>
+            - Solar Flares cap is increased by <b class="green">100x</b> per Supernova Tier, starting at 4.
+            `,
+        },{
+            r: 5,
+            desc: `
+            - Unlock the third obelisk.
             `,
         },
     ],
 }
 
 tmp_update.push(()=>{
+    tmp.sunriseEffect = SOLAR_OBELISK.sunriseEffect
+
     tmp.solarShardGain = SUPERNOVA.gain()
     tmp.maxSolarFlare = SUPERNOVA.maxFlare()
     tmp.flareGain = SUPERNOVA.flareGain()
     tmp.SRgain = SUPERNOVA.eclipse.SRgain
+
+    tmp.sunstoneGain = SOLAR_OBELISK.sunstoneGain
 
     for (let i in tmp.minStats) tmp.minStats[i] = getFreeStats(i)
 })
@@ -207,7 +244,12 @@ function getSupernovaSave() {
 
         sr: E(0),
         eclipse: E(0),
+        bestEclipse: E(0),
         remnant: E(0),
+        totalRemnant: E(0),
+
+        sunstone: E(0),
+        sunriseTimes: 0,
     }
     for (let i in SOLAR_UPGS) s.solarUpgs[i] = []
     return s
@@ -249,7 +291,7 @@ function calcSupernova(dt) {
     }
 
     if (hasSolarUpgrade(4,4)) {
-        let s = player.sn.triggerTime + dt
+        let s = player.sn.triggerTime + dt * solarUpgEffect(6,7)
         if (s >= 86400) {
             let w = Math.floor(s / 86400)
             player.sn.solarShard = player.sn.solarShard.add(player.sn.bestSSEarn.mul(w))
@@ -258,13 +300,30 @@ function calcSupernova(dt) {
         player.sn.triggerTime = s
     }
 
-    if (player.sn.tier.gte(2)) buyMaxSCs('ring')
+    if (player.sn.tier.gte(2)) {
+        buyMaxSCs('ring')
+        if (hasSolarUpgrade(2,10)) player.sn.sr = player.sn.sr.add(SUPERNOVA.eclipse.SRgain.mul(dt/100))
+    }
 
     if (player.sn.tier.gte(2) && player.sn.sr.gte(SUPERNOVA.eclipse.require)) {
         const b = SUPERNOVA.eclipse.bulk
         player.sn.eclipse = player.sn.eclipse.add(b).round()
-        player.sn.remnant = player.sn.remnant.add(b).round()
+        var g = b.mul(solarUpgEffect(6,2))
+        if (hasSolarUpgrade(7,1)) g = g.mul(2)
+        player.sn.totalRemnant = player.sn.totalRemnant.add(g).round()
+        player.sn.remnant = player.sn.remnant.add(g).round()
     }
+
+    if (hasSolarUpgrade(2,11)) player.sn.bestSSEarn = player.sn.bestSSEarn.max(tmp.solarShardGain)
+    if (hasSolarUpgrade(2,12)) player.sn.totalSFEarn = player.sn.totalSFEarn.add(SUPERNOVA.flareEarn.mul(dt))
+}
+
+function updateRemnant() {
+    let g = player.sn.eclipse.mul(solarUpgEffect(6,2))
+    if (hasSolarUpgrade(7,1)) g = g.mul(2)
+    g = g.sub(player.sn.totalRemnant).max(0)
+    player.sn.remnant = player.sn.remnant.add(g).round()
+    player.sn.totalRemnant = player.sn.totalRemnant.add(g).round()
 }
 
 el.update.sn = () => {

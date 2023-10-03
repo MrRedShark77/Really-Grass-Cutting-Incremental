@@ -1,5 +1,7 @@
 MAIN.crystal = {
     gain() {
+        if (hasCentralized(1)) return player.grass.floor();
+
         let l = player.tier+1
         let x = Decimal.pow(1.1+getASEff('crystal'),l).mul(l).mul(player.bestPP.div(1e7).max(1).root(3))
 

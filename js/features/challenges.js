@@ -70,7 +70,7 @@ const CHALS = [
         goalAmt: ()=>player.level,
 
         eff: i=>i/50+1,
-        effDesc: x=>"^"+format(x),
+        effDesc: x=>formatPow(x),
     },{
         unl: ()=>true,
 

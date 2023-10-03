@@ -158,6 +158,14 @@ body.planetoid #grass-image {
     height: 16px;
 }
 
+#grassOverflow {
+    color: red;
+    position: absolute;
+    top: calc(100% - 10px); right: 0px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
 #grass_canvas {
     width: calc(100% - 4px);
     height: calc(100% - 64px);
@@ -506,6 +514,7 @@ body.planetoid #level_bar {
 *::-webkit-scrollbar-thumb {
     background-color: #b6b6b6;
     border-radius: 10px;
+    border: solid 2px black;
 }
 
 .upg_ctn {
@@ -611,6 +620,7 @@ body.planetoid #level_bar {
 }
 
 #lunar_obelisk_div,
+#void_obelisk_div,
 .reset_div {
     position: relative;
     width: calc(100% - 24px);
@@ -928,6 +938,15 @@ body.planetoid #level_bar {
     border-color: #b3f0ff;
 }
 
+#void_obelisk_div {
+    width: calc(100% - 44px);
+    height: calc(100% - 44px);
+    padding: 10px;
+    background-color: #3c0053;
+    box-shadow: inset 0px 0px 30px #f6b3ff, inset 0px 0px 30px #f6b3ff;
+    border-color: #f6b3ff;
+}
+
 #lop_table {
     height: calc(100% - 144px);
     width: calc(100% - 4px);
@@ -936,11 +955,20 @@ body.planetoid #level_bar {
     overflow-y: scroll;
 }
 
-#lop_table > div {
+#lop_table > div,
+#void_table > div {
     width: 100%;
     height: 120px;
 
     margin: 5px 0px;
+}
+
+#void_table {
+    height: calc(100% - 64px);
+    width: calc(100% - 4px);
+    border: solid 2px black;
+    background-color: #272727;
+    overflow-y: scroll;
 }
 
 .lop_btn {
@@ -988,6 +1016,15 @@ body.planetoid #level_bar {
     border-radius: 10px;
 
     font-size: 14px;
+}
+
+#void_table .lop_btn {
+    border: solid 4px darkmagenta;
+    background-color: #2c003a;
+}
+
+#void_table .lop_progress {
+    background-color: #2c003a;
 }
 
 #constellation_grid > .table_center {
@@ -1410,4 +1447,334 @@ body.planetoid #level_bar {
     background: -webkit-linear-gradient(left,#00ffbf,#ff0);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.reset_div.sunrise,
+.reset_req.sunrise {
+    background-color: #fc0;
+    border-color: lightyellow;
+}
+
+.solarian-div {
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+    padding: 5px;
+    border: solid 5px yellow;
+    background: linear-gradient(45deg, black, #001, black, #001, black);
+    background-size: 500px 500px;
+    box-shadow: inset 0px 0px 30px yellow, inset 0px 0px 30px yellow;
+}
+
+#solarian_stage {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+}
+
+#stage_enemy {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 0px;
+    transform: translateY(-50%);
+}
+
+#stage_player {
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    left: 0px;
+}
+
+.progress-bar {
+    --percent: 50%;
+    
+    position: relative;
+    margin: auto;
+    width: 400px;
+    height: 30px;
+    border: solid 2px black;
+    background-color: #111;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    min-width: 0px;
+    width: var(--percent);
+    max-width: 100%;
+    background-color: limegreen;
+}
+
+.progress-bar > div {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 0px;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+#enemy_bar.progress-bar {
+    background-color: #300;
+}
+
+#attack_bar.progress-bar {
+    background-color: #033;
+}
+#attack_bar.progress-bar::after {
+    background-color: #099;
+}
+
+.stage-stat {
+    position: relative;
+    width: 300px;
+    height: 75px;
+    align-content: center;
+}
+
+.stage-stat > img {
+    position: absolute;
+    top: 0px; left: 0px;
+    width: 75px; height: 75px;
+}
+
+.stage-stat > div {
+    font-size: 24px;
+    position: absolute;
+    top: 50%; left: 80px;
+    width: 220px; max-height: 75px;
+    transform: translateY(-50%);
+    text-align: left;
+}
+
+#enemy_soul {
+    color: cyan;
+}
+
+#sol_offense {
+    color: #f44;
+}
+
+.solarian-list {
+    width: calc(100% - 40px);
+    height: calc(100% - 70px);
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin: 20px;
+    margin-top: 0px;
+}
+
+.solarian-list.forming {
+    height: calc(100% - 150px);
+}
+
+.material-div {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    margin: 5px 0px;
+}
+
+.material-div > img {
+    position: absolute;
+    top: 0px; left: 0px;
+    width: 90px; height: 90px;
+    transform: scale(1.2);
+}
+
+.material-name {
+    position: absolute;
+    bottom: 30px; right: 0px;
+    text-align: right;
+    font-size: 18px;
+    color: #888;
+}
+
+.material-amount {
+    position: absolute;
+    top: 45px; left: 90px;
+    width: calc(100% - 90px); max-height: 90px;
+    text-align: left;
+    font-size: 28px;
+    transform: translateY(-50%);
+}
+
+.material-amount > span {
+    font-size: 18px;
+    color: #888;
+}
+
+.material-div > .progress-bar {
+    position: absolute;
+    top: 90px; left: 0px;
+    width: calc(100% - 4px);
+    height: 26px;
+    background-color: #003a26;
+}
+
+.material-div > .progress-bar::after {
+    background-color: #03c07e;
+}
+
+.material-div > .progress-bar > div {
+    font-size: 18px;
+}
+
+.forming-div {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    margin: 5px 0px;
+}
+
+.forming-title {
+    position: absolute;
+    top: 0px; left: 0px;
+    width: 100%;
+    font-size: 20px;
+}
+
+.forming-div > img {
+    position: absolute;
+    top: 20px; left: 0px;
+    width: 90px; height: 90px;
+}
+
+.forming-div > button {
+    position: absolute;
+    top: 20px; right: 50px;
+    width: 288px; height: 40px;
+}
+
+.forming-div > .progress-bar {
+    position: absolute;
+    left: 100px;
+    width: calc(100% - 494px);
+    height: 31px;
+}
+
+.forming-div .f-level {
+    top: 30px;
+    background-color: #003a05;
+}
+
+.forming-div .f-level::after {
+    background-color: #03c00d;
+}
+
+.forming-div .f-rank {
+    top: 65px;
+    background-color: #00333a;
+}
+
+.forming-div .f-rank::after {
+    background-color: #03bac0;
+}
+
+.forming-res {
+    position: absolute;
+    top: 110px; left: 0px;
+    width: 100%;
+    height: 70px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    display: flex;
+    justify-content: start;
+}
+
+.forming-res > div {
+    position: relative;
+    flex-shrink: 0;
+    width: 200px;
+    height: 50px;
+}
+
+.forming-res > div > img {
+    position: absolute;
+    top: 0px; left: 0px;
+    width: 50px; height: 50px;
+}
+
+.forming-res > div > div {
+    position: absolute;
+    top: 25px; left: 50px;
+    width: calc(100% - 50px); max-height: 25px;
+    text-align: left;
+    font-size: 16px;
+    transform: translateY(-50%);
+}
+
+.forming-boost {
+    position: absolute;
+    top: 60px;
+    right: 0px;
+    width: 388px;
+    height: 50px;
+    font-size: 14px;
+}
+
+#forming_tab_table {
+    display: flex;
+    justify-content: left;
+
+    width: 100%;
+    height: 80px;
+    overflow-y: hidden;
+    overflow-x: auto;
+}
+
+#forming_tab_table > button {
+    display: block;
+    width: 20%;
+    flex-shrink: 0;
+}
+
+#fb_stats {
+    background-color: lightcoral;
+}
+#fb_stats:hover {
+    background-color: #d46363 !important;
+}
+
+#fb_basic {
+    background-color: yellow;
+}
+#fb_basic:hover {
+    background-color: gold !important;
+}
+
+#fb_collect {
+    background-color: orange;
+}
+#fb_collect:hover {
+    background-color: darkorange !important;
+}
+
+.level-color {
+    color: #00ff0d;
+}
+
+.rank-color {
+    color: #00f7ff;
+}
+
+.compression-div {
+    width: 480px;
+    height: 180px;
+    border: solid 4px white;
+    padding: 5px 10px;
+    margin: 5px;
+}
+
+.compression-div:nth-child(1) {
+    background-color: #ffd70044;
+}
+
+.compression-div:nth-child(2) {
+    background-color: #bbff0044;
 }

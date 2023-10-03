@@ -128,6 +128,14 @@ function resetTemp() {
             gh: 0,
             gs: 0,
         },
+
+        sol: {
+            cm: {},
+            form: {},
+            comp_eff: [],
+        },
+
+        grass_overflow: E(1),
     }
 
     for (let x in UPG_RES) tmp.upg_res[x] = E(0)
@@ -144,10 +152,17 @@ function resetTemp() {
     }
 
     for (let x in SOLAR_UPGS) tmp.solar_upgs_effect[x] = []
+    for (let [fi,f] of Object.entries(FORMING)) tmp.sol.form[fi] = {
+        unls: [],
+        req: [],
+        afford: [],
+        bonus: [],
+    }
 }
 
 function updateTemp() {
     tmp.lunarUnl = player.grassjump>=5
+    tmp.solarianUnl = hasSolarUpgrade(7,0)
 
     tmp.total_astral = player.astral+100*player.astralPrestige
     tmp.oilRigBase = (player.upgs.factory[7]||0)/100

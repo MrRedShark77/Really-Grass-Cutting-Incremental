@@ -60,7 +60,7 @@ const PLANETOID = {
 
         if (hasSolarUpgrade(2,1)) x = x.mul(solarUpgEffect(2,1))
 
-        x = x.mul(solarUpgEffect(3,5))
+        x = x.mul(solarUpgEffect(3,5)).mul(solarUpgEffect(1,15))
 
         x = x.pow(starTreeEff('reserv',7))
 
@@ -88,7 +88,9 @@ const PLANETOID = {
 
         if (player.planetoid.planetTier>=1) x = x.mul(getPTEffect(0))
 
-        x = x.pow(starTreeEff('reserv',6)).pow(upgEffect('stardust',3)).pow(solarUpgEffect(4,13))
+        x = x.pow(starTreeEff('reserv',6)).pow(upgEffect('stardust',3))
+        
+        .pow(solarUpgEffect(4,13)).pow(solarUpgEffect(4,18))
 
         if (hasStarTree('reserv',22)) x = x.mul(tmp.compact)
 
@@ -187,7 +189,7 @@ const PLANETOID = {
 
         if (player.planetoid.planetTier>=2) x = x.mul(getPTEffect(1))
 
-        x = x.mul(solarUpgEffect(3,7))
+        x = x.mul(solarUpgEffect(3,7)).mul(solarUpgEffect(1,16))
 
         return x.floor()
     },
@@ -207,7 +209,7 @@ const PLANETOID = {
 
         if (player.planetoid.planetTier>=2) x = x.mul(getPTEffect(1))
 
-        x = x.mul(solarUpgEffect(3,8))
+        x = x.mul(solarUpgEffect(3,8)).mul(solarUpgEffect(1,17))
 
         return x.floor()
     },
@@ -221,7 +223,7 @@ const PLANETOID = {
 
             tmp.planetGainBase = x
 
-            x = x.mul(solarUpgEffect(3,9))
+            x = x.mul(solarUpgEffect(3,9)).mul(solarUpgEffect(1,18))
 
             return x.floor()
         },
@@ -516,6 +518,9 @@ UPGS.observ = {
     title: "The Observatory",
 
     underDesc: ()=>`You have ${format(player.planetoid.observ,0)} Observatorium (${formatPercent(tmp.observChance)} grow chance)`,
+
+    autoUnl: ()=>hasSolarUpgrade(0,11),
+    noSpend: ()=>hasSolarUpgrade(0,11),
 
     ctn: [
         {
@@ -967,7 +972,7 @@ UPGS.measure = {
 
                 return x
             },
-            effDesc: x => "^"+format(x),
+            effDesc: x => formatPow(x),
         },{
             max: 1000,
 

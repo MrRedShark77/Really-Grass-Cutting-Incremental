@@ -100,4 +100,14 @@ el.update.reset = ()=> {
     else if (mapID2 == 'ap') {
         updateResetHTML('astralPrestige')
     }
+
+    if (mapID3 == 'sm') {
+        updateResetHTML('sunrise')
+
+        tmp.el.sunrise_desc.setHTML(
+            tmp.solarianUnl
+            ?`Reset eclipse, remnants, remnant upgrades, collecting, and forming for sunstone and update FM.`
+            :`Reset eclipse, remnants, and remnant upgrades for sunstone.`
+        )
+    }
 }

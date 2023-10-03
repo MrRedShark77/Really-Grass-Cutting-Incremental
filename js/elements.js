@@ -117,6 +117,13 @@ class Element {
 		new Element(id).setAttr("tooltip", input);
 	}
 
+	setProperty(name, input) {
+		this.style.setProperty(name, input);
+	}
+	static setProperty(id, name, input) {
+		new Element(id).style.setProperty(name, input);
+	}
+
 	setSize(h, w) {
 		this.el.style["min-height"] = h + "px";
 		this.el.style["min-width"] = w + "px";

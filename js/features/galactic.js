@@ -24,6 +24,7 @@ MAIN.gal = {
         if (player.sn.tier.gte(1)) x = x.mul(100)
 
         x = x.mul(solarUpgEffect(3,3))
+        .mul(solarUpgEffect(1,13))
 
         return x.floor()
     },
@@ -311,7 +312,7 @@ UPGS.moonstone = {
 
                 return x
             },
-            effDesc: x => "^"+format(x),
+            effDesc: x => formatPow(x),
         },{
             max: 10,
 
@@ -333,7 +334,7 @@ UPGS.moonstone = {
 
                 return x
             },
-            effDesc: x => "^"+format(x),
+            effDesc: x => formatPow(x),
         },
     ],
 }

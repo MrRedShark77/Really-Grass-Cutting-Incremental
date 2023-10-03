@@ -44,6 +44,8 @@
     <script src="js/features/star.js"></script>
     <script src="js/features/supernova.js"></script>
     <script src="js/features/solar_upgs.js"></script>
+    <script src="js/features/solarians.js"></script>
+    <script src="js/features/sol_compression.js"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -58,6 +60,7 @@
                     <div>
                         <span id="grassAmt"></span> <span id="grassGain"></span>
                     </div>
+                    <div id="grassOverflow"></div>
                 </div>
             </div>
         </div><div class="table_space">
@@ -119,13 +122,13 @@
                 <button onclick="changeGHMult()" id="multGHButton">Multi-Grasshop: <span id="multGHOption">OFF</span></button>
                 <button onclick="changeGSMult()" id="multGSButton">Multi-Grass-skip: <span id="multGSOption">OFF</span></button>
                 <br><br>
-                Really Grass Cutting Incremental - v0.5 - Supernova Update Part 1 - Made by MrRedShark77<br>
+                Really Grass Cutting Incremental - v0.5 - Supernova Update Part 2 - Made by MrRedShark77<br>
                 The game inspired by <a href="https://www.roblox.com/games/9292879820">Grass Cutting Incremental</a><br>
                 Artist(-s): Bézier<br>
                 <b class="red">Warning! Recommended size is 1920x1080! You may change zoom!</b><br><br>
                 <details>
                     <summary>Endgame (Spoiler)</summary>
-                    Level 320,000+; Planetary Tier 85+; Supernova Tier 3-4;
+                    Level 1,200,000+; Supernova Tier 5; Eclipse: 1,000+; Stage 20+
                 </details>
             </div><div id="map_div_p">
                 <div style="width: 100%; height: 50%;">
@@ -333,7 +336,13 @@
                             <i style="font-size: 14px; color: lightcoral">After level 200 of any lunar obelisk that includes only exponential boost, its effect will be softcapped!</i>
                         </div>
                     </div></div>
-                    <div style="width: 33.3%; height: 100%;"></div>
+                    <div style="width: 33.3%; height: 100%;"><div id="void_obelisk_div">
+                        <div id="void_table">
+                            
+                        </div><div>
+                            <i style="font-size: 14px; color: lightcoral">Centralizing currency makes its multiplier equals to grass, except grass types (results that grass is squared).</i>
+                        </div>
+                    </div></div>
                 </div>
             </div><div id="map_div_cs">
                 <div style="width: 100%; height: 100%; display: none;" class="table_center" id="cs_div">
@@ -402,7 +411,79 @@
                         </div>
                     </div><div id="sn_milestones"></div>
                 </div>
-                <div style="width: 100%; height: 50%;" class="table_center"></div>
+                <div style="width: 100%; height: 50%;" class="table_center">
+                    <div style="width: 33.3%; height: 100%;"><div class="reset_div" id="reset_div_sunrise"></div></div>
+                    <div style="width: 33.4%; height: 100%;"></div>
+                    <div style="width: 33.3%; height: 100%;"></div>
+                </div>
+            </div><div id="map_div_stage">
+                <div class="solarian-div table_center">
+                    <div style="width: 50%; height: 100%; position: relative;">
+                        <div id="solarian_stage">
+                            <h2>Stage 1</h2>
+                        </div>
+                        <div id="stage_enemy">
+                            <h2>Enemy</h2>
+                            <div class="progress-bar" id="enemy_bar"><div></div></div>
+                            <div class="table_center">
+                                <div class="stage-stat"><img src="images/Curr/Soul.png"><div id="enemy_soul">???</div></div>
+                            </div>
+                        </div>
+                        <div id="stage_player">
+                            <div class="table_center">
+                                <div class="stage-stat"><img src="images/Icons/Sword.png"><div id="sol_offense">???</div></div>
+                            </div>
+                            <div class="progress-bar" id="attack_bar"><div></div></div>
+                        </div>
+                    </div><div style="width: 50%; height: 100%;">
+                        <h2>Stage Bonuses</h2>
+                        <div id="stage_bonus"></div>
+                    </div>
+                </div>
+            </div><div id="map_div_sol">
+                <div style="width: 100%; height: 100%;" class="table_center">
+                    <div style="width: 33%; height: 100%;"><div class="solarian-div">
+                        <div style="height: 50px;"><h2>Materials/Collecting</h2></div>
+                        <div class="solarian-list" id="materials_table">
+                            <div class="material-div">
+                                <img src="images/Curr/SolCurrency1.png">
+                                <div class="material-name">Sol</div>
+                                <div class="material-amount"><b>123,456</b><br><span>(+123)</span></div>
+                                <div class="progress-bar"><div>???</div></div>
+                            </div>
+                        </div>
+                    </div></div><div style="width: 67%; height: 100%;"><div class="solarian-div">
+                        <div style="height: 50px;"><h2>Forming</h2></div>
+                        <div class="solarian-list forming" id="forming_table">
+                            <div class="forming-div">
+                                <div class="forming-title">Test</div>
+                                <img src="images/Icons/Sword.png">
+                                <div class="forming-boost">
+                                    <div>Level 0 : ???</div>
+                                    <div>Rank 0 : ???</div>
+                                </div>
+                                <button>Start</button>
+                                <div class="progress-bar f-level"><div>???</div></div>
+                                <div class="progress-bar f-rank"><div>???</div></div>
+                                <div class="forming-res"></div>
+                            </div>
+                        </div>
+                        <div id="forming_tab_table">
+                            <button>Stats</button>
+                        </div>
+                    </div></div>
+                </div>
+            </div><div id="map_div_solc">
+                <div class="solarian-div">
+                    <div style="height: 50px;"><h2>Sol Compression</h2></div>
+                    <div class="solarian-list table_center" id="solc_table">
+                        <div class="compression-div">
+                            <h3>[Tier 1]</h3> <span class="smallAmt">(x1)</span>
+                            <div>1.23e123,456,789 | 1.23e123,456,789 <span class="smallAmt">(+1.23e123,456,789/s)</span></div>
+                            <div>???</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="map_name"></div>

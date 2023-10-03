@@ -782,7 +782,7 @@ const UPGS = {
 
                     return x
                 },
-                effDesc: x => "^"+format(x),
+                effDesc: x => formatPow(x),
             },{
                 max: 25,
 
@@ -804,7 +804,7 @@ const UPGS = {
 
                     return x
                 },
-                effDesc: x => "^"+format(x),
+                effDesc: x => formatPow(x),
             },{
                 max: 100,
 
@@ -870,7 +870,7 @@ const UPGS = {
 
                     return x
                 },
-                effDesc: x => "^"+format(x),
+                effDesc: x => formatPow(x),
             },
         ],
     },
@@ -1098,6 +1098,8 @@ function updateUpgTemp(id) {
             if (hasStarTree('reserv',36) && x < 5) tu.max[x] = Infinity
         } else if (id == "measure") {
             if (hasStarTree('reserv',37) && (x == 1 || x == 2 || x == 4)) tu.max[x] = Infinity
+        } else if (id == "dm") {
+            if (player.sn.tier.gte(4)) tu.max[x] = Infinity
         }
 
         if (upg.unl?upg.unl():true) if (amt < tu.max[x]) ul++

@@ -1,5 +1,7 @@
 MAIN.pp = {
     gain() {
+        if (hasCentralized(0)) return player.grass.floor();
+
         let l = Math.max(player.level-29,0)
         let x = Decimal.pow(1.1+getASEff('pp'),l).mul(l).mul(player.bestGrass.div(1e9).max(1).root(3))
 

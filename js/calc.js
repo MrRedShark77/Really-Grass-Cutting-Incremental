@@ -146,7 +146,7 @@ function calc(dt) {
 
     for (let i = 0; i < LUNAR_OB.length; i++) {
         if (player.lunar.active.includes(i) || hasSolarUpgrade(2,4)) player.lunar.lp[i] = player.lunar.lp[i].add(tmp.LPgain.mul(dt))
-        if (player.lunar.lp[i].gte(tmp.lunar_next[i])) player.lunar.level[i] = Math.max(player.lunar.level[i],getLPLevel(i))
+        if (player.lunar.lp[i].gte(tmp.lunar_next[i])) player.lunar.level[i] = Decimal.max(player.lunar.level[i],getLPLevel(i))
     }
 
     if (player.constellation.unl) {
@@ -168,6 +168,7 @@ function calc(dt) {
     player.planetoid.bestPm = player.planetoid.bestPm.max(player.planetoid.pm)
 
     calcSupernova(dt)
+    calcSolarians(dt)
 
     MAIN.checkCutting()
 }

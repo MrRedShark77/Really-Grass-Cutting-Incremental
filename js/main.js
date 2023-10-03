@@ -1,13 +1,16 @@
 var player = {}, date = Date.now(), diff = 0;
 
 function loop() {
+    let date2 = Date.now()
     if (is_online) {
-        diff = Date.now() - date
+        diff = date2 - date
         updateTemp()
+    }
+    updateHTML()
+    if (is_online) {
+        diff += Date.now() - date2
         calc(diff/1000);
     }
-
-    updateHTML()
     
     date = Date.now();
     player.offline.current = date;
@@ -56,10 +59,18 @@ const MAIN = {
 
         if (x.lt(1)) return x
 
-        x = x.pow(chalEff(3)).pow(getLEffect(0))
+        x = x.pow(chalEff(3)).pow(getLEffect(0)).pow(getFormingBonus('basic',1))
         if (!player.recel || player.hsj > 0) x = x.pow(upgEffect('unGrass',5))
         if (inChal(3) || inChal(5)) x = x.root(2)
         if (player.recel && player.hsj <= 0) x = x.root(2)
+
+        if (hasCentralized(3)) x = x.pow(2)
+
+        if (x.gte('ee12')) {
+            let before = x
+            x = x.overflow('ee12',0.75)
+            tmp.grass_overflow = before.log10().div(x.log10())
+        } else tmp.grass_overflow = E(1)
 
         return x
     },
@@ -162,7 +173,9 @@ const MAIN = {
         if (player.recel && player.hsj <= 0) x = x.pow(player.lowGH<=-36?.75:.5)
 
         if ((!player.decel || player.hsj > 0) && hasUpgrade('plat',10)) x = x.pow(upgEffect('plat',10,1))
-        x = x.pow(upgEffect('moonstone',6)).pow(upgEffect('measure',3)).pow(getLEffect(1)).pow(upgEffect('stardust',2)).pow(solarUpgEffect(4,10))
+        x = x.pow(upgEffect('moonstone',6)).pow(upgEffect('measure',3)).pow(getLEffect(1)).pow(upgEffect('stardust',2))
+    
+        .pow(solarUpgEffect(4,10)).pow(solarUpgEffect(4,15))
 
         return x
     },
@@ -210,7 +223,9 @@ const MAIN = {
         if (inChal(5)) x = x.root(2)
         if (player.recel && player.hsj <= 0) x = x.root(2)
 
-        x = x.pow(getLEffect(2)).pow(solarUpgEffect(4,11))
+        x = x.pow(getLEffect(2))
+        
+        .pow(solarUpgEffect(4,11)).pow(solarUpgEffect(4,16))
 
         return x
     },
@@ -327,7 +342,9 @@ const MAIN = {
         if (player.lowGH <= -16) x = x.pow(1.25)
         if (player.grassjump >= 1) x = x.pow(1.25)
 
-        x = x.pow(starTreeEff('ring',31)).pow(tmp.darkChargeEffs.sp||1).pow(solarUpgEffect(4,12))
+        x = x.pow(starTreeEff('ring',31)).pow(tmp.darkChargeEffs.sp||1)
+        
+        .pow(solarUpgEffect(4,12)).pow(solarUpgEffect(4,17))
 
         return x
     },
@@ -354,6 +371,7 @@ el.update.main = ()=>{
 
     tmp.el.grassAmt.setHTML(g.format(0))
     tmp.el.grassGain.setHTML(tmp.autoCutUnlocked ? formatGain(g,(pa?tmp.planetiumGain:tmp.grassGain).div(tmp.autocut).mul(tmp.autocutBonus).mul(tmp.autocutAmt)) : "")
+    tmp.el.grassOverflow.setHTML(tmp.grass_overflow.gt(1)?`(^1/${format(tmp.grass_overflow)} to grass!)`:'')
 
     let tier_unl = !pa && player.pTimes > 0
     let astr_unl = player.gTimes > 0

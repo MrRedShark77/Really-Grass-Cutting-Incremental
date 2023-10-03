@@ -3,8 +3,8 @@ UPGS.stardust = {
 
     title: "Stardust Upgrades",
 
-    // autoUnl: ()=>hasUpgrade('auto',5),
-    // noSpend: ()=>hasUpgrade('auto',9),
+    autoUnl: ()=>hasSolarUpgrade(0,13),
+    noSpend: ()=>hasSolarUpgrade(0,13),
 
     req: ()=>player.grassjump>=30,
     reqDesc: ()=>`Reach 30 Grass-Jump to Unlock.`,
@@ -65,7 +65,7 @@ UPGS.stardust = {
         
                 return x
             },
-            effDesc: x => "^"+format(x),
+            effDesc: x => formatPow(x),
         },{
             max: 1000,
 
@@ -83,7 +83,7 @@ UPGS.stardust = {
         
                 return x
             },
-            effDesc: x => "^"+format(x),
+            effDesc: x => formatPow(x),
         },
     ],
 }
@@ -104,25 +104,34 @@ function stardustGain() {
 
 const THE_STAR = {
     get growSpeed() {
-        let x = upgEffect('stardust',0,E(1)).mul(solarUpgEffect(4,0)).mul(solarUpgEffect(5,2))
+        let x = upgEffect('stardust',0,E(1))
+        
+        .mul(solarUpgEffect(4,0))
+        .mul(solarUpgEffect(4,20))
+
+        .mul(solarUpgEffect(5,2))
+        .mul(solarUpgEffect(6,1))
 
         return x
     },
+    starGrowthReq: [E(1e7),E(1e10),E(1e13),E(1e20),E(1e27)],
     get getStarTier() {
-        let t = player.stargrowth.lt(1e7) ? E(0) : player.stargrowth.div(1e7).log(1e3).scale(2,2,0,true).add(1).floor()
+        let t = 0
+        while (player.stargrowth.gte(this.starGrowthReq[t]??EINF)) t++;
+        t = E(t)
         if (t.gte(2)) t = t.min(player.sn.eclipse.div(10).root(3).add(2).floor())
         return t
     },
     get getStarTierRequirement() {
         let st = tmp.starTier
-        return [Decimal.pow(1e3,st.scale(2,2,0)).mul(1e7), st.gte(2) ? st.sub(1).pow(3).mul(10) : E(0)]
+        return [this.starGrowthReq[st.toNumber()]??EINF, st.gte(2) ? st.sub(1).pow(3).mul(10) : E(0)]
     },
     get calcETA() {
-        let gs = tmp.growSpeed
+        let gs = tmp.growSpeed, req = this.getStarTierRequirement[0]
 
-        if (gs.lte(0)) return "Forever"
+        if (gs.lte(0) || req.gte(EINF)) return "Forever"
 
-        return formatTime(this.getStarTierRequirement[0].sub(player.stargrowth).div(tmp.growSpeed).max(0),0)
+        return formatTime(req.sub(player.stargrowth).div(tmp.growSpeed).max(0),0)
     },
 }
 

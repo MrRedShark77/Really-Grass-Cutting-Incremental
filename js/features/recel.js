@@ -177,7 +177,7 @@ UPGS.unGrass = {
 
                 return x
             },
-            effDesc: x => "^"+format(x,2),
+            effDesc: x => formatPow(x,2),
         },
     ],
 }

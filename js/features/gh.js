@@ -136,7 +136,7 @@ MAIN.agh_milestone = [
     },{
         r: -44,
         desc: `Momentum gain is increased based on rocket part at a reduced rate.`,
-        effect: ()=>Decimal.pow(1.05,player.rocket.part).mul(player.rocket.part+1).toNumber(),
+        effect: ()=>Decimal.pow(1.05,player.rocket.part).mul(player.rocket.part+1),
         effDesc: x=> format(x)+"x",
     },{
         r: -48,

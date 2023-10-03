@@ -1,5 +1,7 @@
 MAIN.steel = {
     gain() {
+        if (hasCentralized(2)) return player.grass.floor();
+
         let l = tmp.minStats.gh+1
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestCrystal.div(1e21).max(1).root(3))
 

@@ -12,6 +12,8 @@ MAIN.sac = {
 
         if (player.grassjump>=1) x = x.mul(getGJEffect(0))
 
+        x = x.mul(solarUpgEffect(1,14))
+
         return x.floor()
     },
 }
@@ -172,7 +174,7 @@ UPGS.dm = {
             icon: ["Curr/Star","Icons/Plus"],
                         
             cost: i => Decimal.pow(10,i**1.5).mul(100).ceil(),
-            bulk: i => i.div(10).max(1).log(100).root(1.5).floor().toNumber()+1,
+            bulk: i => i.div(100).max(1).log(10).root(1.5).floor().toNumber()+1,
         
             effect(i) {
                 let x = i/10
@@ -217,7 +219,7 @@ UPGS.dm = {
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
         
-                return x.toNumber()
+                return x
             },
             effDesc: x => format(x)+"x",
         },

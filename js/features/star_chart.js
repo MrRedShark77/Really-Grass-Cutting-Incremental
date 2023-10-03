@@ -1469,7 +1469,7 @@ const STAR_CHART = {
         
                 return x
             },
-            effDesc: x => "^"+format(x),
+            effDesc: x => formatPow(x),
         },
         {
             unl:()=>tmp.lunarUnl,
@@ -1849,7 +1849,7 @@ const STAR_CHART = {
         
                 return x
             },
-            effDesc: x => "^"+format(x,2),
+            effDesc: x => formatPow(x,2),
         },
         {
             branch: [0],
@@ -1869,7 +1869,7 @@ const STAR_CHART = {
         
                 return x
             },
-            effDesc: x => "^"+format(x,2),
+            effDesc: x => formatPow(x,2),
         },
 
         {
