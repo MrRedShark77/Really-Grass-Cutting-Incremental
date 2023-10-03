@@ -4,8 +4,8 @@ var mapPos = [3,3]
 var mapID2 = 'sc'
 var mapPos2 = [3,3]
 
-var mapID3 = 'sol'
-var mapPos3 = [2,2]
+var mapID3 = 'star'
+var mapPos3 = [3,3]
 
 var map_mode = false
 
