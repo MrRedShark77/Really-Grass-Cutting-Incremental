@@ -128,7 +128,7 @@ const ASTRAL = {
         x.pp = a/100
         x.crystal = a/25
         x.plat = a+1
-        x.steel = 1.1**a*a+1
+        x.steel = Decimal.pow(1.1,a).mul(a).add(1)
 
         if (player.astralPrestige>0) x.dm = getAPEff(0)
         if (player.astralPrestige>1) x.ring = getAPEff(1)
