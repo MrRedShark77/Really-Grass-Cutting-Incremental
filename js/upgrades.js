@@ -1208,6 +1208,8 @@ function updateUpgradesHTML(id) {
                 let dis = UPG_RES[upg.res][0]
                 let max = tu.max[ch]
 
+                if (typeof amt == 'number') amt = E(amt)
+
                 let h = `
                 [#${ch}] <h2>${upg.title}</h2><br>
                 Level <b class="yellow">${format(amt,0)}${Decimal.lt(max,EINF) ? ` / ${format(max,0)}` : ""}</b><br><span style='font-size: 16px'>
