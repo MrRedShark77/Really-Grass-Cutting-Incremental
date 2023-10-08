@@ -1264,7 +1264,7 @@ function updateUpgradesHTML(id) {
     }
 }
 
-function hasUpgrade(id,x) { return player.upgs[id][x].gt(0) }
+function hasUpgrade(id,x) { return player.upgs[id][x]?.gt(0) }
 function upgEffect(id,x,def=1) { return tmp.upgs[id].eff[x] || def }
 
 function resetUpgrades(id) {
