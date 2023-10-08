@@ -1112,7 +1112,7 @@ function updateUpgTemp(id) {
             if (player.sn.tier.gte(4)) tu.max[x] = EINF
         }
 
-        if (upg.unl?upg.unl():true) if (amt.lt(tu.max[x])) ul++
+        if (upg.unl?upg.unl():true) if (Decimal.lt(amt,tu.max[x])) ul++
 
         tu.cost[x] = upg.cost(amt)
         tu.bulk[x] = Decimal.gte(res,UPGS_SCOST[id][x])?Decimal.min(upg.bulk(res),tu.max[x]):E(0)

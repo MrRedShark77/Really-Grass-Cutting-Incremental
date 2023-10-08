@@ -1861,7 +1861,7 @@ function buySolarUpgrade(id,x) {
 
     if ((amt[x]??0) >= u.max) return
 
-    let cost = u.cost(amt[x])
+    let cost = u.cost(amt[x]??0)
 
     if (Decimal.gte(res.amount,cost)) {
         res.amount = res.amount.sub(cost).max(0)
