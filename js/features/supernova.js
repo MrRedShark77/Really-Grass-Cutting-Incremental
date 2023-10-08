@@ -219,8 +219,7 @@ const SUPERNOVA = {
         },{
             r: 7,
             desc: `
-            - Unlock the <b class="green">Sunset</b> reset (on bottom of supernova milestones).<br>
-            - Unlock the <b class="green">Restoration</b> in Forming tab.<br>
+            - TBA.
             `,
         },
     ],
