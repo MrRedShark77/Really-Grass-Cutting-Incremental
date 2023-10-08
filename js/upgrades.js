@@ -1242,6 +1242,7 @@ function updateUpgradesHTML(id) {
                     let upg = upgs.ctn[x]
                     let div_id = "upg_ctn_"+id+x
                     let amt = player.upgs[id][x]??E(0)
+                    if (typeof amt == 'number') amt = E(amt)
                     let maxed = amt.lt(tu.max[x])
 
                     let unlc = (upg.unl?upg.unl():true) && (player.options.hideUpgOption?maxed:true)
