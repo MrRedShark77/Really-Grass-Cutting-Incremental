@@ -41,7 +41,7 @@ const SOL_COMPRESSION = {
 function updateSolCompressionHTML() {
     const ts = tmp.sol, u = player.sol.compression_unl, cu = SOL_COMPRESSION.ctn[u]
 
-    tmp.el.solc_req.setHTML(cu ? `Reach <b class='green'>${cu.req.format(0)}</b> T${u+1} to unlock next tier.` : "")
+    tmp.el.solc_req.setHTML(cu ? `Reach <b class='green'>${cu.req.format(0)}</b> T${u} to unlock next tier.` : "")
 
     for (let i in SOL_COMPRESSION.ctn) {
         i = parseInt(i)
