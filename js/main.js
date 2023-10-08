@@ -66,9 +66,11 @@ const MAIN = {
 
         if (hasCentralized(3)) x = x.pow(2)
 
-        if (x.gte('ee12')) {
+        let o = E(player.hsj >= 2 ? 'ee13' : 'ee12')
+
+        if (x.gte(o)) {
             let before = x
-            x = x.overflow('ee12',0.75)
+            x = x.overflow(o,0.75)
             tmp.grass_overflow = before.log10().div(x.log10())
         } else tmp.grass_overflow = E(1)
 
@@ -233,7 +235,9 @@ const MAIN = {
     autoCut: ()=>hasStarTree('reserv',2)?0.01:5-(player.planetoid.active?0:upgEffect('auto',0,0)+upgEffect('plat',0,0)+starTreeEff('progress',3,0)),
     level: {
         req(i) {
-            i = E(i).scale(1e5,3,3).scale(tmp.level.scale2,2,0).scale(tmp.level.scale1,2,0)
+            i = E(i).scale(1e5,3,3)
+            
+            if (player.hsj < 2) i = i.scale(tmp.level.scale2,2,0).scale(tmp.level.scale1,2,0)
 
             if (inChal(0) || inChal(7)) i = i.mul(3)
             
@@ -248,7 +252,9 @@ const MAIN = {
 
             if (inChal(0) || inChal(7)) x = x.div(3)
 
-            return Math.floor(x.scale(tmp.level.scale1,2,0,true).scale(tmp.level.scale2,2,0,true).scale(1e5,3,3,true).toNumber()+1)
+            if (player.hsj < 2) x = x.scale(tmp.level.scale1,2,0,true).scale(tmp.level.scale2,2,0,true)
+
+            return Math.floor(x.scale(1e5,3,3,true).toNumber()+1)
         },
         cur(i) {
             return i > 0 ? this.req(i-1) : E(0) 
@@ -280,7 +286,7 @@ const MAIN = {
             return i > 0 ? this.req(i-1) : E(0) 
         },
         mult(i) {
-            let base = 2 + upgEffect('crystal',5,0) + (tmp.chargeEff[5]||0)
+            let base = Decimal.add(upgEffect('crystal',5,0),tmp.chargeEff[5]||0).add(2)
 
             //if (player.recel) base **= 0.75
 
@@ -291,7 +297,11 @@ const MAIN = {
     },
     astral: {
         req(i) {
+
             let ap = player.astralPrestige
+
+            if (player.hsj >= 2) return Decimal.pow(3,E(i+ap*100).scale(1e4,3,3))
+
             let b = Decimal.pow(10,ap*20+2)
 
             i += ap*50
@@ -304,6 +314,9 @@ const MAIN = {
         },
         bulk(i) {
             let ap = player.astralPrestige
+
+            if (player.hsj >= 2) return i.lt(1) ? 0 : Math.floor(i.log(3).scale(1e4,3,3,true).toNumber()-ap*100+1)
+
             let b = Decimal.pow(10,ap*20+2)
 
             let x = i.div(b)
@@ -357,6 +370,11 @@ const MAIN = {
         }
         if (player.sp.gte(tmp.astral.next)) {
             player.astral = Math.max(player.astral, tmp.astral.bulk)
+        }
+        if (player.hsj >= 2 && player.astral >= 100) {
+            let w = Math.floor(player.astral/100)
+            player.astralPrestige += w
+            player.astral -= 100 * w
         }
 
         if (player.planetoid.xp.gte(tmp.cosmicLevel.next)) {
@@ -434,8 +452,8 @@ tmp_update.push(()=>{
     tmp.autoCutUnlocked = hasUpgrade('auto',0)
 
     tmp.autocutBonus = upgEffect('auto',1)
-    tmp.autocutAmt = 1+upgEffect('auto',2,0)+starTreeEff('progress',1,0)
-    tmp.spawnAmt = 1+upgEffect('perk',5,0)+upgEffect('crystal',4,0)
+    tmp.autocutAmt = Decimal.add(upgEffect('auto',2,0),starTreeEff('progress',1,0)).add(1)
+    tmp.spawnAmt = Decimal.add(upgEffect('perk',5,0),upgEffect('crystal',4,0)).add(1)
 
     tmp.grassGain = MAIN.grassGain()
     tmp.XPGain = MAIN.xpGain()
@@ -452,7 +470,7 @@ tmp_update.push(()=>{
     tmp.level.threshold = 2.7**th
 
     tmp.level.scale1 = tmp.outsideNormal && player.hsj <= 0?2:200
-    tmp.level.scale1 += upgEffect('aGrass',5,0)+upgEffect('ap',5,0)
+    tmp.level.scale1 += Decimal.add(upgEffect('aGrass',5,0),upgEffect('ap',5,0)).toNumber()
     tmp.level.scale1 *= (tmp.chargeEff[2]||1) * starTreeEff('progress',4)
 
     tmp.level.scale2 = player.recel && player.hsj <= 0?5:player.decel && player.hsj <= 0?300:700
@@ -485,16 +503,19 @@ tmp_update.push(()=>{
     tmp.astral.progress = player.sp.sub(tmp.astral.cur).max(0).min(tmp.astral.next)
     tmp.astral.percent = tmp.astral.progress.div(tmp.astral.next.sub(tmp.astral.cur)).max(0).min(1).toNumber()
 
-    tmp.platGain = 1
-    if (tmp.minStats.gh >= 4) tmp.platGain += getGHEffect(3)
+    if (hasCentralized(8)) tmp.platGain = player.grass.floor();
+    else {
+        tmp.platGain = 1
+        if (tmp.minStats.gh >= 4) tmp.platGain += getGHEffect(3)
 
-    tmp.platGain *= getASEff('plat') * upgEffect('moonstone',3)
-    if (player.lowGH <= 4) tmp.platGain *= 10
-    tmp.platGain = tmp.platGain *= solarUpgEffect(3,1)
+        tmp.platGain *= getASEff('plat') * upgEffect('moonstone',3)
+        if (player.lowGH <= 4) tmp.platGain *= 10
+        tmp.platGain = tmp.platGain *= solarUpgEffect(3,1)
 
-    tmp.platGain = Decimal.mul(tmp.platGain,upgEffect('oil',4))
+        tmp.platGain = Decimal.mul(tmp.platGain,upgEffect('oil',4))
 
-    tmp.platGain = Decimal.ceil(tmp.platGain.mul(tmp.compact))
+        tmp.platGain = Decimal.ceil(tmp.platGain.mul(tmp.compact))
+    }
 
     tmp.moonstoneGain = 1
     tmp.moonstoneChance = 0.005

@@ -2,6 +2,8 @@ const SOL_COMPRESSION = {
     get mult() {
         let x = E(1)
 
+        .mul(getFormingBonus('basic',2)).mul(solarUpgEffect(9,2))
+
         return x
     },
     gain(i) {
@@ -13,31 +15,41 @@ const SOL_COMPRESSION = {
             eff(c) {
                 let x = c.div(10).add(1)
 
-                return x.softcap(1e6,0.5,0)
+                return x.softcap(1e6,0.5,0,hasSolarUpgrade(7,8)).overflow(1e30,0.5)
             },
-            effDesc: x => `<b class='green'>${formatMult(x)}</b> Offense`+x.softcapHTML(1e6),
+            effDesc: x => `<b class='green'>${formatMult(x)}</b> Offense`+x.softcapHTML(1e6,hasSolarUpgrade(7,8)),
         },{
             eff(c) {
                 let x = c.div(10).add(1)
 
-                return x.softcap(1e3,0.5,0)
+                return x.softcap(1e3,0.5,0,hasSolarUpgrade(7,8)).overflow(1e25,0.5)
             },
-            effDesc: x => `<b class='green'>${formatMult(x)}</b> Collecting, Forming, & Soul`+x.softcapHTML(1e3),
+            effDesc: x => `<b class='green'>${formatMult(x)}</b> Collecting, Forming, & Soul`+x.softcapHTML(1e3,hasSolarUpgrade(7,8)),
             req: E(1000),
+        },{
+            eff(c) {
+                let x = c.div(1000).add(1).root(3)
+
+                return x
+            },
+            effDesc: x => `<b class='green'>${formatMult(x)}</b> Mana`,
+            req: E(1e8),
         },
     ],
 }
 
 function updateSolCompressionHTML() {
-    const ts = tmp.sol
+    const ts = tmp.sol, u = player.sol.compression_unl, cu = SOL_COMPRESSION.ctn[u]
+
+    tmp.el.solc_req.setHTML(cu ? `Reach <b class='green'>${cu.req.format(0)}</b> T${u+1} to unlock next tier.` : "")
 
     for (let i in SOL_COMPRESSION.ctn) {
         i = parseInt(i)
 
         let el_id = 'solc_'+i
 
-        tmp.el[el_id+"_div"].setDisplay(i<player.sol.compression_unl)
-        if (i<player.sol.compression_unl) {
+        tmp.el[el_id+"_div"].setDisplay(i<u)
+        if (i<u) {
             const SC = SOL_COMPRESSION.ctn[i]
 
             tmp.el[el_id+"_mult"].setHTML(`(${formatMult(ts.compression_mult)})`)
@@ -50,7 +62,7 @@ function updateSolCompressionHTML() {
 function getSolCompressionEffect(i,def=1) { return tmp.sol.comp_eff[i] ?? def }
 
 el.setup.sol_compression = () => {
-    let h = ""
+    let h = ``
 
     for (let i in SOL_COMPRESSION.ctn) {
         h += `
@@ -63,4 +75,9 @@ el.setup.sol_compression = () => {
     }
 
     new Element('solc_table').setHTML(h)
+}
+
+function assignCompression(no_spend=false) {
+    player.sol.active_compression = player.sol.active_compression.map((x,i)=>x.add(player.sol.compression[i]))
+    if (!no_spend) player.sol.compression = player.sol.compression.map(x=>E(0))
 }

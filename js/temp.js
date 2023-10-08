@@ -135,6 +135,8 @@ function resetTemp() {
             comp_eff: [],
         },
 
+        starBonus: [],
+
         grass_overflow: E(1),
     }
 

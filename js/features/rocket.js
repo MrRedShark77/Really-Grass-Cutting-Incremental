@@ -229,7 +229,7 @@ UPGS.rocket = {
             icon: ['Curr/Fun'],
             
             cost: i => 5,
-            bulk: i => Math.floor(i/5),
+            bulk: i => i.div(5).floor(),
 
             effect(i) {
                 let x = E(i*0.01+1)
@@ -251,7 +251,7 @@ UPGS.rocket = {
             icon: ['Curr/Star'],
             
             cost: i => 100,
-            bulk: i => Math.floor(i/100),
+            bulk: i => i.div(100).floor(),
 
             effect(i) {
                 let x = E(i*0.025+1)
@@ -523,8 +523,8 @@ UPGS.momentum = {
             res: "momentum",
             icon: ['Curr/Grass'],
             
-            cost: i => Math.ceil(1.1**i*10),
-            bulk: i => Math.floor(Math.logBase(Math.max(1,i/10),1.1))+1,
+            cost: i => Decimal.pow(1.1,i).mul(10).ceil(),
+            bulk: i => i.div(10).max(1).log(1.1).add(1).floor(),
 
             effect(i) {
                 let x = Decimal.pow(2,i)
@@ -543,8 +543,8 @@ UPGS.momentum = {
             res: "momentum",
             icon: ['Icons/XP'],
             
-            cost: i => Math.ceil(1.1**i*10),
-            bulk: i => Math.floor(Math.logBase(Math.max(1,i/10),1.1))+1,
+            cost: i => Decimal.pow(1.1,i).mul(10).ceil(),
+            bulk: i => i.div(10).max(1).log(1.1).add(1).floor(),
 
             effect(i) {
                 let x = Decimal.pow(2,i)
@@ -563,8 +563,8 @@ UPGS.momentum = {
             res: "momentum",
             icon: ['Icons/Charge'],
             
-            cost: i => Math.ceil(1.25**i*25),
-            bulk: i => Math.floor(Math.logBase(Math.max(1,i/25),1.25))+1,
+            cost: i => Decimal.pow(1.25,i).mul(25).ceil(),
+            bulk: i => i.div(25).max(1).log(1.25).add(1).floor(),
 
             effect(i) {
                 let x = Decimal.pow(1.5,i)
@@ -597,7 +597,7 @@ el.update.rocket = ()=>{
 }
 
 function updateRocketTemp() {
-    let cheap = Decimal.mul(starTreeEff('progress',9,1),starTreeEff('progress',11,1)).mul(getLEffect(5))
+    let cheap = hasCentralized(7) ? player.grass.max(1).floor() : Decimal.mul(starTreeEff('progress',9,1),starTreeEff('progress',11,1)).mul(getLEffect(5))
     
     let rf = Decimal.div(player.rocket.total_fp,cheap)
     let b = hasSolarUpgrade(2,2) ? E(1) : Decimal.pow(RF_COST_POW,rf).mul(tmp.rf_base_mult)
@@ -613,8 +613,8 @@ tmp_update.push(()=>{
     let rp = player.rocket.part, req, mult = E(1), bulk = 1
 
     if (hasSolarUpgrade(2,2)) {
-        req = [Decimal.pow(10, rp**1.5).mul(1e60), Decimal.mul(rp+1,10).scale(100,3,3).pow(2)]
-        bulk = player.rocket.total_fp.root(2).scale(100,3,3,true).div(10).min(player.steel.div(10).max(1).log10().pow(1.5).add(1)).sub(rp).max(0).floor().toNumber()
+        req = [Decimal.pow(10, rp**1.5).mul(1e60), Decimal.mul(rp+1,10).scale(1e6,2,2).scale(100,3,3).pow(2)]
+        bulk = player.rocket.total_fp.root(2).scale(100,3,3,true).scale(1e6,2,2,true).div(10).min(player.steel.div(10).max(1).log10().pow(1.5).add(1)).sub(rp).max(0).floor().toNumber()
     } else {
         if (rp > 50) rp = (rp/50)**2.5*50
         req = [Decimal.pow(4+rp/2,rp).mul(1e60),player.rocket.part>9&&player.gTimes==0?1/0:Math.ceil(15*rp)+15]

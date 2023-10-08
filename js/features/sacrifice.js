@@ -84,7 +84,7 @@ UPGS.dm = {
             icon: ["Icons/TP"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1).ceil(),
-            bulk: i => i.div(1).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i+1)
@@ -102,7 +102,7 @@ UPGS.dm = {
             icon: ["Icons/Charge"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1).ceil(),
-            bulk: i => i.div(1).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i+1)
@@ -120,7 +120,7 @@ UPGS.dm = {
             icon: ["Icons/XP"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1).ceil(),
-            bulk: i => i.div(1).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i+1)
@@ -138,7 +138,7 @@ UPGS.dm = {
             icon: ["Icons/SP"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1).ceil(),
-            bulk: i => i.div(1).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i+1)
@@ -156,7 +156,7 @@ UPGS.dm = {
             icon: ["Curr/Star"],
                         
             cost: i => Decimal.pow(1.25,i).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(10).max(1).log(1.25).floor().add(1),
         
             effect(i) {
                 let x = i/2+1
@@ -174,7 +174,7 @@ UPGS.dm = {
             icon: ["Curr/Star","Icons/Plus"],
                         
             cost: i => Decimal.pow(10,i**1.5).mul(100).ceil(),
-            bulk: i => i.div(100).max(1).log(10).root(1.5).floor().toNumber()+1,
+            bulk: i => i.div(100).max(1).log(10).root(1.5).floor().add(1),
         
             effect(i) {
                 let x = i/10
@@ -194,7 +194,7 @@ UPGS.dm = {
             icon: ["Curr/Normality"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1e10).ceil(),
-            bulk: i => i.div(1e10).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e10).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
@@ -214,7 +214,7 @@ UPGS.dm = {
             icon: ["Curr/Momentum"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1e11).ceil(),
-            bulk: i => i.div(1e11).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e11).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)

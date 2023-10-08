@@ -2,18 +2,22 @@ const SOLARIANS = {
     get offense() {
         let x = player.sol.fight_mult
         
-        .mul(getFormingBonus('stats',0))
+        .mul(getFormingBonus('stats',0)).mul(getFormingBonus('stats',2))
         .mul(solarUpgEffect(6,5))
         .mul(solarUpgEffect(5,3))
+        .mul(solarUpgEffect(9,1))
 
         .mul(getSolCompressionEffect(0))
+        .mul(getFormingBonus('restore',3))
+
+        .mul(getStarBonus(7))
 
         return x
     },
 
     enemy: {
         get max_health() {
-            let x = Decimal.pow(10,player.sol.stage.scale(14,2,0)).mul(1e3)
+            let x = Decimal.pow(10,player.sol.stage.scale(14,hasSolarUpgrade(7,5)?1.75:2,0)).mul(1e3)
 
             return x
         },
@@ -22,7 +26,7 @@ const SOLARIANS = {
 
             let x = Decimal.pow(1.1,s).mul(s.add(1))
 
-            .mul(getSolCompressionEffect(1))
+            .mul(getSolCompressionEffect(1)).mul(solarUpgEffect(9,0))
 
             if (hasSolarUpgrade(7,2)) x = x.mul(2)
 
@@ -38,6 +42,7 @@ const SOLARIANS = {
         e.sunstone = Decimal.pow(3,s)
 
         if (s.gte(10)) e.ss = Decimal.pow(3,s.sub(9))
+        // if (s.gte(15)) e.form = Decimal.pow(2,s.min(30).sub(14))
 
         return e
     },
@@ -51,19 +56,44 @@ const SOLARIANS = {
     get collectingMult() {
         let x = E(1)
 
-        x = x.mul(solarUpgEffect(8,0)).mul(solarUpgEffect(5,4))
+        x = x.mul(solarUpgEffect(8,0)).mul(solarUpgEffect(5,4)).mul(solarUpgEffect(8,7))
 
-        .mul(getSolCompressionEffect(1))
+        .mul(getSolCompressionEffect(1)).mul(getFormingBonus('restore',1))
 
         return x
     },
     get formingMult() {
         let x = E(1)
 
-        x = x.mul(solarUpgEffect(8,1)).mul(solarUpgEffect(5,5))
+        x = x.mul(solarUpgEffect(8,1)).mul(solarUpgEffect(8,5)).mul(solarUpgEffect(5,5)).mul(solarUpgEffect(8,8))
 
-        .mul(getSolCompressionEffect(1))
+        .mul(getSolCompressionEffect(1)).mul(getFormingBonus('restore',2))
 
+        if (hasSolarUpgrade(7,4)) x = x.mul(solarUpgEffect(7,4))
+
+        return x
+    },
+    get restoreMult() {
+        let x = E(1)
+
+        x = x.mul(solarUpgEffect(9,4))
+
+        if (hasSolarUpgrade(7,7)) x = x.mul(solarUpgEffect(7,7))
+
+        return x
+    },
+
+    get manaGain() {
+        let c = tmp.sol.collectingMult.div(1e9)
+
+        if (player.sol.bestStage.lt(20) && c.lt(1)) return E(0)
+
+        let x = c.root(3)
+
+        .mul(getSolCompressionEffect(2)).mul(getFormingBonus('restore',0))
+
+        .mul(solarUpgEffect(9,3))
+        
         return x
     },
 }
@@ -116,8 +146,96 @@ const SOL_MATERIALS = {
 
             x = x.mul(solarUpgEffect(8,4))
 
+            .mul(getFormingBonus('collect',2))
+
             return x
         },
+    },
+    fragment: {
+        unl: ()=>player.sol.bestStage.gte(20),
+
+        name: "Fragments",
+        collected: true,
+        icon: "Curr/SolCurrency4",
+        req: E(1e10),
+
+        get mult() {
+            let x = E(1)
+
+            x = x.mul(solarUpgEffect(8,6))
+
+            .mul(getFormingBonus('collect',3))
+
+            return x
+        },
+    },
+    essence: {
+        unl: ()=>player.sol.bestStage.gte(50),
+
+        name: "Grass Essence",
+        collected: true,
+        icon: "Curr/GrassEssence",
+        req: E(1e35),
+
+        get mult() {
+            let x = E(1)
+
+            x = x.mul(solarUpgEffect(9,5))
+
+            return x
+        },
+    },
+
+    soul: {
+        name: "Souls",
+        display: true,
+        icon: "Curr/Soul",
+
+        get amount() { return player.sol.soul },
+        set amount(v) { return player.sol.soul = v },
+    },
+    divine: {
+        unl: ()=>player.sn.sunsetTimes>0,
+        
+        name: "Divine Souls",
+        display: true,
+        icon: "Curr/DivineSoul",
+
+        get amount() { return player.sol.divineSoul },
+        set amount(v) { return player.sol.divineSoul = v },
+    },
+    mana: {
+        unl: ()=>player.sol.bestStage.gte(20),
+
+        name: "Mana<br><span style='font-size: 12px'>(based on collecting speed)</span>",
+        display: true,
+        icon: "Curr/Mana",
+
+        get amount() { return player.sol.mana },
+        set amount(v) { return player.sol.mana = v },
+
+        get gain() { return tmp.sol.manaGain },
+    },
+    dark: {
+        unl: ()=>player.sn.sunsetTimes>0,
+
+        name: "Mana<br><span style='font-size: 12px'>(based on collecting speed)</span>",
+        display: true,
+        icon: "Curr/Darkness",
+
+        get amount() { return player.sol.darkness },
+        set amount(v) { return player.sol.darkness = v }
+    },
+
+    sun: {
+        icon: "Curr/Sunstone",
+        get amount() { return player.sn.sunstone },
+        set amount(v) { return player.sn.sunstone = v },
+    },
+    sf: {
+        icon: "Curr/SolarFlare",
+        get amount() { return player.sn.solarFlare },
+        set amount(v) { return player.sn.solarFlare = v },
     },
 }
 
@@ -150,6 +268,20 @@ const FORMING = {
                 ],
                 rankMult: 5,
                 bonus: b => b.add(1),
+            },{
+                unl: ()=>player.sol.bestStage.gte(20),
+
+                title: "Soul'ed Offense",
+                icon: "Icons/Sword",
+
+                req: [1e9,10],
+                rankReq: [100,10],
+                materials: [
+                    ['soul',1e6,10],
+                ],
+                rankMult: 5,
+                bonus: b => b.add(1),
+                // bonusDesc: x => formatMult(x),
             },
         ],
     },
@@ -185,6 +317,19 @@ const FORMING = {
                 rankMult: 2,
                 bonus: b => b.div(100).add(1),
                 bonusDesc: x => formatPow(x),
+            },{
+                unl: ()=>hasSolarUpgrade(7,3),
+
+                title: "Compression",
+                icon: "Curr/SolCurrency1a",
+
+                req: [1e6,5,1.1],
+                rankReq: [25],
+                materials: [
+                    ['sol',1e6,5,1.1],
+                ],
+                rankMult: 2,
+                bonus: (b,l,r) => Decimal.pow(1.03,l).mul(Decimal.pow(5,r)),
             },
         ],
     },
@@ -199,7 +344,7 @@ const FORMING = {
                 req: [1e6,4,1.25],
                 rankReq: [10],
                 materials: [
-                    ['stone',100,2,1.1],
+                    ['stone',100,3,1.2],
                 ],
                 rankMult: 2,
                 bonus: b => b.add(1),
@@ -213,11 +358,149 @@ const FORMING = {
                 req: [1e7,4,1.25],
                 rankReq: [10],
                 materials: [
-                    ['stone',1090,2,1.1],
+                    ['stone',1000,3,1.2],
                 ],
                 rankMult: 2,
                 bonus: b => b.add(1),
                 // bonusDesc: x => formatMult(x),
+            },{
+                unl: ()=>player.sol.bestStage.gte(15),
+
+                title: "Portal Stones Collection",
+                icon: "Curr/SolCurrency3",
+
+                req: [1e12,4,1.25],
+                rankReq: [10],
+                materials: [
+                    ['sol',1e12,3,1.2],
+                    ['fragment',1,3,1.2],
+                ],
+                rankMult: 2,
+                bonus: b => b.add(1),
+                // bonusDesc: x => formatMult(x),
+            },{
+                unl: ()=>player.sol.bestStage.gte(50),
+
+                title: "Fragments Collection",
+                icon: "Curr/SolCurrency4",
+
+                req: [1e45,4,1.25],
+                rankReq: [10],
+                materials: [
+                    ['mana',1e21,3,1.2],
+                    ['essence',100,3,1.2],
+                ],
+                rankMult: 2,
+                bonus: b => b.add(1),
+                // bonusDesc: x => formatMult(x),
+            },
+        ],
+    },
+    restore: {
+        unl: ()=>player.sn.tier.gte(6),
+        name: "Restoration",
+        get mult() { return tmp.sol.restoreMult },
+        ctn: [
+            {
+                title: "Road to Success (Mana)",
+                icon: "Curr/Mana",
+
+                req: [1,10],
+                rankReq: [100],
+                materials: [
+                    ['fragment',1e9,4,1.05],
+                    ['mana',1e6,4,1.05],
+                ],
+                rankMult: 5,
+                bonus: b => b.div(10).add(1),
+            },{
+                title: "Trees of Recollection (Collecting)",
+                icon: "Icons/Collect",
+
+                req: [10,10],
+                rankReq: [100],
+                materials: [
+                    ['sol',1e30,5,1.05],
+                    ['log',1e30,5,1.05],
+                    ['sf',1e30,5,1.05],
+                    ['mana',1e9,5,1.05],
+                ],
+                rankMult: 10,
+                bonus: b => b.add(1),
+            },{
+                title: "Blocks of Creation (Forming)",
+                icon: "Icons/Form",
+
+                req: [10,10],
+                rankReq: [100],
+                materials: [
+                    ['sun',1e15,5,1.05],
+                    ['sf',1e30,5,1.05],
+                    ['mana',1e9,5,1.05],
+                ],
+                rankMult: 10,
+                bonus: b => b.add(1),
+            },{
+                title: "The Best Defense (Offense)",
+                icon: "Icons/Sword",
+
+                req: [100,10],
+                rankReq: [100],
+                materials: [
+                    ['soul',1e15,5,1.05],
+                    ['mana',1e12,5,1.05],
+                ],
+                rankMult: 10,
+                bonus: b => b.add(1),
+            },
+        ],
+    },
+    dark: {
+        unl: ()=>player.sn.sunsetTimes>0,
+        name: "Darkness",
+        get mult() { return tmp.sol.restoreMult },
+        ctn: [
+            {
+                title: "Glimmer of Hope* (Divine Souls)",
+                icon: "Curr/DivineSoul",
+
+                req: [10,10],
+                rankReq: [100],
+                materials: [
+                    ['dark',1e6,10,1.1],
+                    ['mana',1e9,10,1.1],
+                    ['sf',1e27,10,1.1],
+                ],
+                rankMult: 5,
+                bonus: b => b.div(10).add(1),
+            },{
+                unl: ()=>player.sol.bestStage.gte(50),
+
+                title: "A Bright Star (Star Growth)",
+                icon: "Curr/StarGrow",
+
+                req: [100,10],
+                rankReq: [10],
+                materials: [
+                    ['dark',1e12,10,1.1],
+                    ['essence',100,10,1.1],
+                    ['sf',1e30,10,1.1],
+                ],
+                rankMult: 10,
+                bonus: b => b.add(1),
+            },{
+                title: "Omega Star (Scaled Eclipse)",
+                icon: "Icons/SR",
+
+                req: [1000,10],
+                rankReq: [100],
+                materials: [
+                    ['dark',1e18,100,1.2],
+                    ['mana',1e21,100,1.2],
+                ],
+                rankMult: 2,
+                bonus: b => b,
+                bonusDesc: x => "+"+format(x,0)+" later",
             },
         ],
     },
@@ -274,11 +557,12 @@ function calcSolarians(dt) {
         const ft = ts.form[fi]
         if (ft.unl) {
             const pf = player.sol.form[fi]
+            const mult = f.mult ?? ts.formingMult
             for (let [i,fc] of Object.entries(f.ctn)) if (ft.unls[i]) {
                 const p = pf[i]
                 const [value,l,r,active] = p
                 if (!active) continue
-                p[0] = p[0].add(ts.formingMult.mul(dt))
+                p[0] = p[0].add(mult.mul(dt))
                 const [l0,la] = [fc.rankReq[0],fc.rankReq[1]??0], lc = SOL_FORMULAS.getCurrentLevel(l,r,l0,la)
                 if (ft.afford[i]) {
                     let bulk = Math.max(Math.min(
@@ -309,6 +593,8 @@ function calcSolarians(dt) {
 
         if (u<SOL_COMPRESSION.ctn.length && player.sol.compression[u-1].gte(SOL_COMPRESSION.ctn[u].req)) player.sol.compression_unl++
     }
+
+    player.sol.mana = player.sol.mana.add(tmp.sol.manaGain.mul(dt))
 }
 
 function setupSolarianStage() {
@@ -327,6 +613,10 @@ function getSolarianSave() {
         compression: [],
         active_compression: [],
         compression_unl: 1,
+
+        mana: E(0),
+        divineSoul: E(0),
+        darkness: E(0),
     }
     for (let id of COLLECTED_MATERIALS) s.materials[id] = [E(0), E(0)]
     for (let [fi,f] of Object.entries(FORMING)) {
@@ -354,6 +644,9 @@ function updateSolarianTemp() {
     ts.offense = SOLARIANS.offense
     ts.collectingMult = SOLARIANS.collectingMult
     ts.formingMult = SOLARIANS.formingMult
+    ts.restoreMult = SOLARIANS.restoreMult
+
+    ts.manaGain = SOLARIANS.manaGain
 
     ts.attack_speed = ts.offense.gte(ts.enemy_max_health) ? ts.offense.div(ts.enemy_max_health).log10().add(1).mul(2).toNumber() : 1
 
@@ -363,9 +656,8 @@ function updateSolarianTemp() {
 
 function getStageBonus(id,def=1) { return tmp.sol.stageBonus?.[id]??def }
 
-tmp_update.push(()=>{
+function updateCFTemp() {
     const ts = tmp.sol
-    updateSolarianTemp()
 
     for (let id of COLLECTED_MATERIALS) {
         const s = SOL_MATERIALS[id]
@@ -383,7 +675,7 @@ tmp_update.push(()=>{
                 ft.unls[i] = unl
                 if (unl) {
                     const [value,l,r,active] = pf[i]
-                    ft.bonus[i] = fc.bonus(SOL_FORMULAS.bonus(l,r,fc.rankMult,fc.rankReq[0],fc.rankReq[1]))
+                    ft.bonus[i] = fc.bonus(SOL_FORMULAS.bonus(l,r,fc.rankMult,fc.rankReq[0],fc.rankReq[1]),l,r)
                     let req = ft.req[i] = SOL_FORMULAS.getCost(l,r,fc.req[0],fc.req[1],fc.req[2])
                     let afford = value.gte(req)
                     if (afford) for (let mi in fc.materials) {
@@ -404,6 +696,11 @@ tmp_update.push(()=>{
             ft.afford = []
         }
     }
+}
+
+tmp_update.push(()=>{
+    updateSolarianTemp()
+    updateCFTemp()
 })
 
 const SOL_FORMULAS = {
@@ -464,24 +761,38 @@ el.update.solarians = () => {
         `
 
         if (bonus.ss) t += `<br>Solar Shards: <b class='green'>${formatMult(bonus.ss,0)}</b>`
+        if (bonus.form) t += `<br>Forming Speed: <b class='green'>${formatMult(bonus.form,0)}</b>`
 
         tmp.el.stage_bonus.setHTML(t)
     } else if (mapID3 == 'sol') {
-        for (let id of COLLECTED_MATERIALS) {
-            let s = SOL_MATERIALS[id], el_id = `material_${id}`, m = player.sol.materials[id];
+        for (let [id,s] of Object.entries(SOL_MATERIALS)) {
+            let el_id = `material_${id}`
 
-            let unl = !s.unl || s.unl()
-            tmp.el[el_id+'_div'].setDisplay(unl)
+            if (s.collected) {
+                let unl = !s.unl || s.unl()
+                tmp.el[el_id+'_div'].setDisplay(unl)
 
-            if (!unl) continue;
+                if (!unl) continue;
 
-            tmp.el[el_id+'_amt'].setHTML(`
-            <b>${m[0].format(0)}</b><br>
-            <span>${formatMult(ts.cm[id],0)}</span>
-            `)
-            let collect = tmp.el[el_id+'_collect']
-            collect.setProperty('--percent',ts.collectingMult.gte(s.req)?"100%":m[1].div(s.req).max(0).min(1).mul(100)+'%')
-            collect.setHTML(`<div>${ts.collectingMult.gte(s.req) ? "+"+ts.collectingMult.div(s.req).mul(ts.cm[id]).format()+"/s" : formatTime(s.req.sub(m[1]).div(ts.collectingMult).max(0))}</div>`)
+                let m = player.sol.materials[id];
+
+                tmp.el[el_id+'_amt'].setHTML(`
+                <b>${m[0].format(0)}</b><br>
+                <span>${formatMult(ts.cm[id],0)}</span>
+                `)
+                let collect = tmp.el[el_id+'_collect']
+                collect.setProperty('--percent',ts.collectingMult.gte(s.req)?"100%":m[1].div(s.req).max(0).min(1).mul(100)+'%')
+                collect.setHTML(`<div>${ts.collectingMult.gte(s.req) ? "+"+ts.collectingMult.div(s.req).mul(ts.cm[id]).format()+"/s" : formatTime(s.req.sub(m[1]).div(ts.collectingMult).max(0))}</div>`)
+            } else if (s.display) {
+                let unl = !s.unl || s.unl()
+                tmp.el[el_id+'_div'].setDisplay(unl)
+
+                if (!unl) continue;
+
+                let amt = s.amount, gain = s.gain
+
+                tmp.el[el_id+'_amt'].setHTML(`<b>${amt.format(0)}</b>`+(gain?`<br><span>${formatGain(amt,gain)}</span>`:""))
+            }
         }
 
         for (let [fi,f] of Object.entries(FORMING)) {
@@ -492,6 +803,7 @@ el.update.solarians = () => {
 
             const pf = player.sol.form[fi]
             const ft = ts.form[fi]
+            const mult = f.mult ?? ts.formingMult
 
             if (unl) for (let [i,fc] of Object.entries(f.ctn)) {
                 let id = `f_${fi}_${i}`
@@ -517,7 +829,7 @@ el.update.solarians = () => {
                 const req = ft.req[i]
 
                 l_el.setProperty('--percent',value.div(req).max(0).min(1).mul(100)+'%')
-                l_el.setHTML(active&&(value.lt(req)||ft.afford[i])?`<div>${ts.formingMult.gte(req)&&bl==1?"+"+ts.formingMult.div(req).format()+"/s":formatTime(req.sub(value).div(ts.formingMult).max(0))}</div>`:`<div>${format(value,0)} / ${format(req,0)}</div>`)
+                l_el.setHTML(active&&(value.lt(req)||ft.afford[i])?`<div>${mult.gte(req)&&bl==1?"+"+mult.div(req).format()+"/s":formatTime(req.sub(value).div(mult).max(0))}</div>`:`<div>${format(value,0)} / ${format(req,0)}</div>`)
 
                 const [l0,la] = [fc.rankReq[0],fc.rankReq[1]??0], lc = SOL_FORMULAS.getCurrentLevel(l,r,l0,la)
 
@@ -535,16 +847,21 @@ el.update.solarians = () => {
 el.setup.solarians = () => {
     let h = ""
 
-    for (let id of COLLECTED_MATERIALS) {
-        let s = SOL_MATERIALS[id]
-        h += `
+    for (let [id,s] of Object.entries(SOL_MATERIALS)) {
+        h += s.collected ? `
         <div class="material-div" id="material_${id}_div">
             <img src="images/${s.icon}.png">
             <div class="material-name">${s.name}</div>
             <div class="material-amount" id="material_${id}_amt"><b>0</b><br><span>x1</span></div>
             <div class="progress-bar" id="material_${id}_collect"><div>???</div></div>
         </div>
-        `
+        ` : s.display ? `
+        <div class="material-div display" id="material_${id}_div">
+            <img src="images/${s.icon}.png">
+            <div class="material-name">${s.name}</div>
+            <div class="material-amount" id="material_${id}_amt"><b>0</b><br><span>(+1/s)</span></div>
+        </div>
+        ` : ""
     }
 
     new Element('materials_table').setHTML(h)
@@ -587,6 +904,12 @@ function resetMaterials(keep=[]) {
     COLLECTED_MATERIALS.forEach(x=>{if (!keep.includes(x)) player.sol.materials[x] = [E(0),E(0)]})
 }
 
-function resetForming(id,keep=[]) {
-    for (let x = 0; x < FORMING[id].ctn.length; x++) if (!keep.includes(x)) player.sol.form[id][x] = [E(0),0,0]
+function resetForming(id,list=[],reset=false,decrease) {
+    for (let x = 0; x < FORMING[id].ctn.length; x++) if ((reset ? list.includes(x) : !list.includes(x)) && (decrease === undefined || decrease > 0)) {
+        if (decrease === undefined) player.sol.form[id][x] = [E(0),0,0]
+        else {
+            const r = Math.max(player.sol.form[id][x][2] - decrease,0), s = FORMING[id].ctn[x].rankReq
+            player.sol.form[id][x] = [E(0),SOL_FORMULAS.getSumLevelFromRank(r,...s),r]
+        }
+    }
 }

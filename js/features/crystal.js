@@ -196,6 +196,8 @@ UPGS.crystal = {
 
 MAIN.oil = {
     gain() {
+        if (hasCentralized(5)) return player.grass.floor();
+
         let l = player.tier
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestAP.div(1e12).max(1).root(3))
 

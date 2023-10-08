@@ -381,10 +381,11 @@ MAIN.hsj = {
     get amount() { return player.hsj },
     set amount(v) { return player.hsj = v },
 
-    get require() { return [10000][this.amount] || Infinity },
+    get require() { return [10000,1.2e6][this.amount] || Infinity },
     get desc() {
         return [
             `Doing this will allow you to use upgrades, generate currencies, and auto grasshop/skip/jump from all three realms at the same time.`,
+            `Almost remove all scalings from Level and Astral Prestige. Grass Overflow starts ^10 later. You can automatically do an Astral Prestige.`,
         ][this.amount] || "Say Nothing!"
     },
 }

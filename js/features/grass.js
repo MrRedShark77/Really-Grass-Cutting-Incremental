@@ -43,6 +43,8 @@ function removeGrass(i,auto=false) {
 }
 
 function gainCurrenciesOnGrass(bonus=1, mult=1) {
+    // console.log(format(tmp.XPGain.mul(bonus).mul(mult),0))
+
     if (player.planetoid.active) {
         player.planetoid.pm = player.planetoid.pm.add(tmp.planetiumGain.mul(mult))
         player.planetoid.xp = player.planetoid.xp.add(tmp.cosmicGain.mul(mult))

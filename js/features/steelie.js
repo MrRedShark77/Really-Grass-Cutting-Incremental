@@ -38,6 +38,8 @@ MAIN.steel = {
     },
     charger: {
         gain() {
+            if (hasCentralized(6)) return player.grass.floor();
+
             let x = E(upgEffect('factory',2)).mul(getGHEffect(9)).mul(upgEffect('factory',3)).mul(upgEffect('factory',4)).mul(upgEffect('factory',5)).mul(upgEffect('factory',6)).mul(upgEffect('factory',7))
 
             x = x.mul(upgEffect('gen',2)).mul(upgEffect('gen',3)).mul(chalEff(7))
@@ -280,7 +282,7 @@ UPGS.factory = {
             icon: ["Icons/Foundry"],
                         
             cost: i => Decimal.pow(1.2,i).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(10).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = i/10+1
@@ -298,7 +300,7 @@ UPGS.factory = {
             icon: ["Icons/Generator"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1e6).ceil(),
-            bulk: i => i.div(1e6).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e6).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = i/10+1
@@ -316,7 +318,7 @@ UPGS.factory = {
             icon: ["Icons/Charger"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1e7).ceil(),
-            bulk: i => i.div(1e7).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e7).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = i/10+1
@@ -334,7 +336,7 @@ UPGS.factory = {
             icon: ["Icons/Assemblerv2"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1e15).ceil(),
-            bulk: i => i.div(1e15).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e15).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = i/10+1
@@ -352,7 +354,7 @@ UPGS.factory = {
             icon: ["Icons/Decelerate Badge"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1e38).ceil(),
-            bulk: i => i.div(1e38).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e38).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = i/10+1
@@ -370,7 +372,7 @@ UPGS.factory = {
             icon: ["Icons/Refinery"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1e57).ceil(),
-            bulk: i => i.div(1e57).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e57).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = i/10+1
@@ -388,7 +390,7 @@ UPGS.factory = {
             icon: ["Icons/LaunchPad"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1e61).ceil(),
-            bulk: i => i.div(1e61).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e61).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = i/10+1
@@ -406,7 +408,7 @@ UPGS.factory = {
             icon: ["Icons/OilRigAlt"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1e63).ceil(),
-            bulk: i => i.div(1e63).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e63).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = i/10+1
@@ -426,6 +428,7 @@ UPGS.foundry = {
     underDesc: ()=>`<b class="green">${tmp.foundryEff.format()}x</b> <span style="font-size:14px;">to Steel multiplier based on time since last steelie (max 1 hour)</span>`,
 
     autoUnl: ()=>hasStarTree('auto',6),
+    noSpend: ()=>hasStarTree('auto',6),
 
     ctn: [
         {
@@ -438,7 +441,7 @@ UPGS.foundry = {
             icon: ["Curr/Steel2"],
                         
             cost: i => Decimal.pow(1.25,i).mul(1e84).ceil(),
-            bulk: i => i.div(1e84).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(1e84).max(1).log(1.25).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.1,Math.floor(i/25)).mul(i/10+1)
@@ -456,7 +459,7 @@ UPGS.foundry = {
             icon: ["Curr/Steel2"],
                         
             cost: i => Decimal.pow(1.25,i).mul(1e51).ceil(),
-            bulk: i => i.div(1e51).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(1e51).max(1).log(1.25).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.1,Math.floor(i/25)).mul(i/10+1)
@@ -474,7 +477,7 @@ UPGS.foundry = {
             icon: ["Curr/Steel2"],
                         
             cost: i => Decimal.pow(1.25,i).mul(1e3).ceil(),
-            bulk: i => i.div(1e3).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(1e3).max(1).log(1.25).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.1,Math.floor(i/25)).mul(i/10+1)
@@ -506,7 +509,7 @@ UPGS.gen = {
             icon: ["Curr/Prestige"],
                         
             cost: i => Decimal.pow(1.15,i).mul(1e4).ceil(),
-            bulk: i => i.div(1e4).max(1).log(1.15).floor().toNumber()+1,
+            bulk: i => i.div(1e4).max(1).log(1.15).floor().add(1),
         
             effect(i) {
                 let x = i/100
@@ -524,7 +527,7 @@ UPGS.gen = {
             icon: ["Curr/Crystal"],
                         
             cost: i => Decimal.pow(1.15,i).mul(1e5).ceil(),
-            bulk: i => i.div(1e5).max(1).log(1.15).floor().toNumber()+1,
+            bulk: i => i.div(1e5).max(1).log(1.15).floor().add(1),
         
             effect(i) {
                 let x = i/100
@@ -544,7 +547,7 @@ UPGS.gen = {
             icon: ["Curr/Charge"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1e57).ceil(),
-            bulk: i => i.div(1e57).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e57).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/10+1)
@@ -564,7 +567,7 @@ UPGS.gen = {
             icon: ["Curr/Charge"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1e27).ceil(),
-            bulk: i => i.div(1e27).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e27).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/10+1)

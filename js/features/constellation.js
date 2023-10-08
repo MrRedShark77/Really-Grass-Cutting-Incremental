@@ -57,7 +57,7 @@ UPGS.constellation = {
             icon: ['Curr/Planetoid'],
                 
             cost: i => Decimal.pow(1.25,i).mul(5).ceil(),
-            bulk: i => i.div(5).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(5).max(1).log(1.25).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
@@ -75,7 +75,7 @@ UPGS.constellation = {
             icon: ['Icons/XP'],
                 
             cost: i => Decimal.pow(1.25,i).mul(1e3).ceil(),
-            bulk: i => i.div(1e3).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(1e3).max(1).log(1.25).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(2,i)
@@ -93,7 +93,7 @@ UPGS.constellation = {
             icon: ['Curr/Lines'],
                 
             cost: i => Decimal.pow(2,i).mul(1e4).ceil(),
-            bulk: i => i.div(1e4).max(1).log(2).floor().toNumber()+1,
+            bulk: i => i.div(1e4).max(1).log(2).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.25,i)
@@ -122,7 +122,7 @@ UPGS.constellation = {
             icon: ['Curr/Planetoid'],
                 
             cost: i => Decimal.pow(1.25,i).mul(5).ceil(),
-            bulk: i => i.div(5).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(5).max(1).log(1.25).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
@@ -140,7 +140,7 @@ UPGS.constellation = {
             icon: ['Curr/Arcs'],
                 
             cost: i => Decimal.pow(2,i).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(2).floor().toNumber()+1,
+            bulk: i => i.div(10).max(1).log(2).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.2,i)
@@ -158,7 +158,7 @@ UPGS.constellation = {
             icon: ['Icons/XP'],
                 
             cost: i => Decimal.pow(1.25,i).mul(1e3).ceil(),
-            bulk: i => i.div(1e3).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(1e3).max(1).log(1.25).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(2,i)
@@ -177,12 +177,12 @@ UPGS.constellation = {
             icon: ['Icons/PrismUpgrade',"Icons/StarSpeed"],
                 
             cost: i => Decimal.pow(100,i**1.25).mul(1e6).ceil(),
-            bulk: i => i.div(1e6).max(1).log(100).root(1.25).floor().toNumber()+1,
+            bulk: i => i.div(1e6).max(1).log(100).root(1.25).floor().add(1),
 
             effect(i) {
                 let x = i
 
-                return x
+                return x.toNumber()
             },
             effDesc: x => "+"+format(x,0),
         },
@@ -421,7 +421,7 @@ const CS_BUILDINGS = [
         max: 12,
         cap: 1,
 
-        desc: x => `Boost the power of Final Prism by <b class='green'>${formatPow(x.add(1))}</b>. The effect after boost caps at <b class='red'>3</b>.`,
+        desc: x => `Boost the power of Final Prism by <b class='green'>${formatPow(x.add(1))}</b>.`+(hasSolarUpgrade(2,15)?'':` The effect after boost caps at <b class='red'>3</b>.`),
 
         cost: x => Decimal.pow(1e25,x**1.25*(Math.max(x-3,0)**2/10+1)).mul(1e150).round(),
         eff: x => E(x/10+.1).add(1).softcap(1.4,1/3,0).sub(1),
@@ -695,7 +695,8 @@ function checkGrid(update) {
                         cs_effect.boostPow = cs_effect.boostPow.add(eff.mul(o.mult))
                         break
                     case 15:
-                        cs_effect.gridPow = cs_effect.gridPow.mul(eff.mul(o.mult).add(1)).min(3)
+                        cs_effect.gridPow = cs_effect.gridPow.mul(eff.mul(o.mult).add(1))
+                        if (!hasSolarUpgrade(2,15)) cs_effect.gridPow = cs_effect.gridPow.min(3)
                         break
                     case 17:
                         cs_effect.starPow = cs_effect.starPow.mul(eff.mul(o.mult).add(1))

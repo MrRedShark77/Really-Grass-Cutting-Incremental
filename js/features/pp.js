@@ -101,7 +101,7 @@ UPGS.pp = {
             icon: ["Curr/Grass"],
                         
             cost: i => Decimal.pow(1.25,scale(E(i),1e6,2,0)).mul(1).ceil(),
-            bulk: i => i.div(1).max(1).log(1.25).scale(1e6,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(1).max(1).log(1.25).scale(1e6,2,0,true).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
@@ -119,7 +119,7 @@ UPGS.pp = {
             icon: ["Icons/XP"],
                         
             cost: i => Decimal.pow(1.3,scale(E(i),1e6,2,0)).mul(3).ceil(),
-            bulk: i => i.div(3).max(1).log(1.3).scale(1e6,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(3).max(1).log(1.3).scale(1e6,2,0,true).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
@@ -137,7 +137,7 @@ UPGS.pp = {
             icon: ["Icons/TP"],
                         
             cost: i => Decimal.pow(1.5,scale(E(i),1e6,2,0)).mul(50).ceil(),
-            bulk: i => i.div(50).max(1).log(1.5).scale(1e6,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(50).max(1).log(1.5).scale(1e6,2,0,true).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(2,Math.floor(i/25)).mul(i+1)
@@ -153,6 +153,8 @@ UPGS.pp = {
 
 MAIN.ap = {
     gain() {
+        if (hasCentralized(4)) return player.grass.floor();
+
         let l = Math.max(player.level-29,0)
         let x = Decimal.pow(1.1,l).mul(l).mul(player.aBestGrass.div(1e18).max(1).root(3))
 
@@ -237,7 +239,7 @@ UPGS.ap = {
             icon: ["Curr/Grass"],
                         
             cost: i => Decimal.pow(1.2,scale(E(i),1e5,2,0)).mul(2).ceil(),
-            bulk: i => i.div(2).max(1).log(1.2).scale(1e5,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(2).max(1).log(1.2).scale(1e5,2,0,true).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
@@ -255,7 +257,7 @@ UPGS.ap = {
             icon: ['Curr/Charge'],
             
             cost: i => Decimal.pow(1.2,scale(E(i),1e5,2,0)).mul(3).ceil(),
-            bulk: i => i.div(3).max(1).log(1.2).scale(1e5,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(3).max(1).log(1.2).scale(1e5,2,0,true).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/10+1).softcap(1e12,0.25,0)
@@ -273,7 +275,7 @@ UPGS.ap = {
             icon: ['Icons/XP'],
             
             cost: i => Decimal.pow(1.25,scale(E(i),1e5,2,0)).mul(5).ceil(),
-            bulk: i => i.div(5).max(1).log(1.25).scale(1e5,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(5).max(1).log(1.25).scale(1e5,2,0,true).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
@@ -291,7 +293,7 @@ UPGS.ap = {
             icon: ['Icons/TP'],
             
             cost: i => Decimal.pow(1.35,scale(E(i),1e5,2,0)).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.35).scale(1e5,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(10).max(1).log(1.35).scale(1e5,2,0,true).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
@@ -309,7 +311,7 @@ UPGS.ap = {
             icon: ['Icons/MoreGrass'],
             
             cost: i => Decimal.pow(1.25,i).mul(50).ceil(),
-            bulk: i => i.div(50).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(50).max(1).log(1.25).floor().add(1),
 
             effect(i) {
                 let x = i*10
@@ -327,7 +329,7 @@ UPGS.ap = {
             icon: ['Icons/XP','Icons/Plus'],
             
             cost: i => Decimal.pow(3,i**1.2).mul(1e5).ceil(),
-            bulk: i => i.div(1e5).max(1).log(3).root(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e5).max(1).log(3).root(1.2).floor().add(1),
 
             effect(i) {
                 let x = i
@@ -423,7 +425,7 @@ UPGS.np = {
             icon: ["Curr/Grass"],
                         
             cost: i => Decimal.pow(1.2,i).mul(1).ceil(),
-            bulk: i => i.div(1).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
@@ -441,7 +443,7 @@ UPGS.np = {
             icon: ["Icons/SP"],
                         
             cost: i => Decimal.pow(1.2,i).mul(2).ceil(),
-            bulk: i => i.div(2).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(2).max(1).log(1.2).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
@@ -459,7 +461,7 @@ UPGS.np = {
             icon: ["Curr/DarkMatter"],
                         
             cost: i => Decimal.pow(1.35,i).mul(5).ceil(),
-            bulk: i => i.div(5).max(1).log(1.35).floor().toNumber()+1,
+            bulk: i => i.div(5).max(1).log(1.35).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
@@ -477,7 +479,7 @@ UPGS.np = {
             icon: ["Curr/Momentum"],
                         
             cost: i => Decimal.pow(2,i**1.25).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(2).root(1.25).floor().toNumber()+1,
+            bulk: i => i.div(10).max(1).log(2).root(1.25).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.15,i).overflow(1e300,0.5)

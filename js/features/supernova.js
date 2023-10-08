@@ -147,13 +147,13 @@ const SUPERNOVA = {
         return x
     },
     eclipse: {
-        req(offest = 0) { return Decimal.pow(1.05,player.sn.eclipse.sub(offest).scale(300,2,0).add(1)).sub(1).mul(2000) },
-        calcBulk(res = player.sn.sr) { return res.div(2000).add(1).log(1.05).sub(1).scale(300,2,0,true).add(1).sub(player.sn.eclipse).floor() },
+        req(offest = 0) { return Decimal.pow(1.05,player.sn.eclipse.sub(offest).scale(tmp.scale_eclipse,2,0).add(1)).sub(1).mul(2000) },
+        calcBulk(res = player.sn.sr) { return res.div(2000).add(1).log(1.05).sub(1).scale(tmp.scale_eclipse,2,0,true).add(1).sub(player.sn.eclipse).floor() },
 
         get require() { return this.req() },
         get reqBase() {
             let e = player.sn.eclipse
-            return Decimal.pow(1.05,e.add(1).scale(300,2,0)).sub(Decimal.pow(1.05,e.scale(300,2,0))).mul(2000)
+            return Decimal.pow(1.05,e.add(1).scale(tmp.scale_eclipse,2,0)).sub(Decimal.pow(1.05,e.scale(tmp.scale_eclipse,2,0))).mul(2000)
         },
         get bulk() { return this.calcBulk() },
 
@@ -210,6 +210,18 @@ const SUPERNOVA = {
             desc: `
             - Unlock the third obelisk.
             `,
+        },{
+            r: 6,
+            desc: `
+            - Unlock the <b class="green">Sunset</b> reset (on bottom of supernova milestones).<br>
+            - Unlock the <b class="green">Restoration</b> in Forming tab.<br>
+            `,
+        },{
+            r: 7,
+            desc: `
+            - Unlock the <b class="green">Sunset</b> reset (on bottom of supernova milestones).<br>
+            - Unlock the <b class="green">Restoration</b> in Forming tab.<br>
+            `,
         },
     ],
 }
@@ -217,12 +229,15 @@ const SUPERNOVA = {
 tmp_update.push(()=>{
     tmp.sunriseEffect = SOLAR_OBELISK.sunriseEffect
 
+    tmp.scale_eclipse = Decimal.add(300,getFormingBonus('dark',2,0))
+
     tmp.solarShardGain = SUPERNOVA.gain()
     tmp.maxSolarFlare = SUPERNOVA.maxFlare()
     tmp.flareGain = SUPERNOVA.flareGain()
     tmp.SRgain = SUPERNOVA.eclipse.SRgain
 
     tmp.sunstoneGain = SOLAR_OBELISK.sunstoneGain
+    tmp.divineSoulGain = SOLAR_OBELISK.divineSoulGain
 
     for (let i in tmp.minStats) tmp.minStats[i] = getFreeStats(i)
 })
@@ -250,6 +265,8 @@ function getSupernovaSave() {
 
         sunstone: E(0),
         sunriseTimes: 0,
+
+        sunsetTimes: 0,
     }
     for (let i in SOLAR_UPGS) s.solarUpgs[i] = []
     return s

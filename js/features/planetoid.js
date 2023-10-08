@@ -109,7 +109,7 @@ const PLANETOID = {
             if (x.lt(1)) return 0
             x = x.log(tmp.cosmicLevel.threshold).root(.87).scale(200,2,0,true)
 
-            return Math.floor(x.toNumber()+1)
+            return Math.floor(x.add(1))
         },
         cur(i) {
             return i > 0 ? this.req(i-1) : E(0) 
@@ -426,7 +426,7 @@ UPGS.planetarium = {
             icon: ['Icons/Speed'],
             
             cost: i => Decimal.pow(1.5,i).mul(1000).ceil(),
-            bulk: i => i.div(1000).max(1).log(1.5).floor().toNumber()+1,
+            bulk: i => i.div(1000).max(1).log(1.5).floor().add(1),
 
             effect(i) {
                 let x = i/5+1
@@ -444,7 +444,7 @@ UPGS.planetarium = {
             icon: ['Curr/Planetoid'],
             
             cost: i => Decimal.pow(1.25,i).mul(5000).ceil(),
-            bulk: i => i.div(5000).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(5000).max(1).log(1.25).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(2,Math.floor(i/25)).mul(i+1)
@@ -462,7 +462,7 @@ UPGS.planetarium = {
             icon: ['Icons/XP2'],
             
             cost: i => Decimal.pow(1.25,i).mul(25000).ceil(),
-            bulk: i => i.div(25000).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(25000).max(1).log(1.25).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(2,Math.floor(i/25)).mul(i+1)
@@ -480,7 +480,7 @@ UPGS.planetarium = {
             icon: ['Icons/Range'],
             
             cost: i => Decimal.pow(2.5,i).mul(1e5).ceil(),
-            bulk: i => i.div(1e5).max(1).log(2.5).floor().toNumber()+1,
+            bulk: i => i.div(1e5).max(1).log(2.5).floor().add(1),
 
             effect(i) {
                 let x = i*10
@@ -500,7 +500,7 @@ UPGS.planetarium = {
             icon: ["Curr/Stardust"],
                         
             cost: i => Decimal.pow(10,i).mul('1e360'),
-            bulk: i => i.div('1e360').max(1).log(10).floor().toNumber()+1,
+            bulk: i => i.div('1e360').max(1).log(10).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.025,i)
@@ -753,7 +753,7 @@ UPGS.astro = {
             icon: ['Curr/Planetoid'],
             
             cost: i => Decimal.pow(1.2,i).mul(1).ceil(),
-            bulk: i => i.div(1).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
@@ -771,7 +771,7 @@ UPGS.astro = {
             icon: ['Curr/Ring'],
             
             cost: i => Decimal.pow(1.3,i).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.3).floor().toNumber()+1,
+            bulk: i => i.div(10).max(1).log(1.3).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
@@ -789,7 +789,7 @@ UPGS.astro = {
             icon: ['Icons/Speed'],
             
             cost: i => Decimal.pow(1.3,i).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.3).floor().toNumber()+1,
+            bulk: i => i.div(10).max(1).log(1.3).floor().add(1),
 
             effect(i) {
                 let x = i/5+1
@@ -807,7 +807,7 @@ UPGS.astro = {
             icon: ['Icons/XP'],
             
             cost: i => Decimal.pow(1.2,i).mul(100).ceil(),
-            bulk: i => i.div(100).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(100).max(1).log(1.2).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
@@ -825,7 +825,7 @@ UPGS.astro = {
             icon: ['Icons/Compaction'],
             
             cost: i => Decimal.pow(1.2,i).mul(1e6).ceil(),
-            bulk: i => i.div(1e6).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(1e6).max(1).log(1.2).floor().add(1),
 
             effect(i) {
                 let x = i/4+1
@@ -845,7 +845,7 @@ UPGS.astro = {
             icon: ["Curr/Stardust"],
                         
             cost: i => Decimal.pow(10,i).mul('1e120'),
-            bulk: i => i.div('1e120').max(1).log(10).floor().toNumber()+1,
+            bulk: i => i.div('1e120').max(1).log(10).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.025,i)
@@ -929,7 +929,7 @@ UPGS.measure = {
             icon: ['Curr/Planetoid'],
             
             cost: i => Decimal.pow(1.2,i).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(10).max(1).log(1.2).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
@@ -947,7 +947,7 @@ UPGS.measure = {
             icon: ['Curr/Ring'],
             
             cost: i => Decimal.pow(1.25,i).mul(100).ceil(),
-            bulk: i => i.div(100).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(100).max(1).log(1.25).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
@@ -965,7 +965,7 @@ UPGS.measure = {
             icon: ['Icons/XP',"Icons/Exponent"],
             
             cost: i => Decimal.pow(10,i**1.25).mul(1e4).ceil(),
-            bulk: i => i.div(1e4).max(1).log(10).root(1.25).floor().toNumber()+1,
+            bulk: i => i.div(1e4).max(1).log(10).root(1.25).floor().add(1),
 
             effect(i) {
                 let x = i/10+1
@@ -983,7 +983,7 @@ UPGS.measure = {
             icon: ['Curr/Observatorium'],
             
             cost: i => Decimal.pow(1.25,i).mul(1e6).ceil(),
-            bulk: i => i.div(1e6).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(1e6).max(1).log(1.25).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/10+1)
@@ -1003,7 +1003,7 @@ UPGS.measure = {
             icon: ["Curr/Stardust"],
                         
             cost: i => Decimal.pow(10,i).mul('1e60'),
-            bulk: i => i.div('1e60').max(1).log(10).floor().toNumber()+1,
+            bulk: i => i.div('1e60').max(1).log(10).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.025,i)
@@ -1075,7 +1075,7 @@ UPGS.planet = {
             icon: ['Curr/Planetoid'],
             
             cost: i => Decimal.pow(1.2,i).mul(3).ceil(),
-            bulk: i => i.div(3).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(3).max(1).log(1.2).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
@@ -1093,7 +1093,7 @@ UPGS.planet = {
             icon: ['Curr/Observatorium'],
             
             cost: i => Decimal.pow(1.2,i).mul(3).ceil(),
-            bulk: i => i.div(3).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(3).max(1).log(1.2).floor().add(1),
 
             effect(i) {
                 let x = i/2+1
@@ -1111,7 +1111,7 @@ UPGS.planet = {
             icon: ['Icons/XP'],
             
             cost: i => Decimal.pow(1.2,i).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(10).max(1).log(1.2).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
@@ -1131,7 +1131,7 @@ UPGS.planet = {
             icon: ["Curr/Stardust"],
                         
             cost: i => Decimal.pow(10,i).mul('1e30'),
-            bulk: i => i.div('1e30').max(1).log(10).floor().toNumber()+1,
+            bulk: i => i.div('1e30').max(1).log(10).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.025,i)

@@ -220,7 +220,7 @@ RESET.sunrise = {
     title: `Sunrise`,
     resetBtn: `Rise the Sun!!!`,
 
-    reset(force=false) {
+    reset(force=false,lyr=0) {
         if (player.sn.eclipse.gte(100)||force) {
             if (!force) {
                 player.sn.sunriseTimes++
@@ -239,14 +239,19 @@ RESET.sunrise = {
             }
 
             if (tmp.solarianUnl) {
-                player.sol.active_compression = player.sol.active_compression.map((x,i)=>x.add(player.sol.compression[i]))
-                player.sol.compression = player.sol.compression.map(x=>E(0))
+                assignCompression()
 
                 player.sol.stage = E(0)
                 resetMaterials()
-                resetForming('stats')
-                resetForming('collect')
+
+                const d = lyr == 0 && hasSolarUpgrade(9,6) ? solarUpgEffect(9,6,undefined) : undefined
+
+                resetForming('stats',[],false,d)
+                resetForming('collect',[],false,d)
+
                 setupSolarianStage()
+
+                updateCFTemp()
             }
 
             player.sn.eclipse = E(0)
@@ -259,6 +264,53 @@ RESET.sunrise = {
             if (hasSolarUpgrade(2,14)) keep.push(0,1,2,3,4,5)
 
             resetSolarUpgrades(5,keep)
+        }
+    },
+}
+
+RESET.sunset = {
+    unl: ()=>player.sn.tier.gte(6),
+
+    req: ()=>player.sol.stage.gte(40),
+    reqDesc: ()=>`Reach Stage 40`,
+
+    resetDesc: `
+    <span id="sunrise_desc">
+    Reset everything does sunrise as well as Souls, Soul Upgrades, Sol Compaction, FM, and Darkness Upgrades (marked with *). Convert Mana into Darkness at full rate. Gain more divine souls based on soul, starting at 1 Qt.
+    <br><br>
+    First Sunset unlocks Darkness in Forming tab and Divine Soul Upgrades Chart.
+    </span>
+    `,
+    resetGain: ()=> `
+    Gain <b class="cyan">${tmp.divineSoulGain.format(0)}</b> Divine Souls and <b class="darkblue">${player.sol.mana.format(0)}</b> Darkness.
+    `,
+
+    title: `Sunset`,
+    resetBtn: `Set the Sun down!!!`,
+
+    reset(force=false) {
+        if (player.sol.stage.gte(40)||force) {
+            if (!force) {
+                player.sn.sunsetTimes++
+
+                player.sol.divineSoul = player.sol.divineSoul.add(tmp.divineSoulGain)
+                player.sol.darkness = player.sol.darkness.add(player.sol.mana)
+            }
+
+            player.sol.compression = player.sol.compression.map(x=>E(0))
+            player.sol.active_compression = player.sol.active_compression.map(x=>E(0))
+            player.sol.compression_unl = 1
+
+            player.sol.mana = E(1)
+
+            resetForming('basic',[2],true)
+            resetForming('dark',[0],true)
+            resetSolarUpgrades(8,[0,1,5],true)
+
+            player.sol.fight_mult = E(1)
+            player.sol.soul = E(1)
+
+            RESET.sunrise.reset(true,1)
         }
     },
 }
@@ -279,7 +331,14 @@ const SOLAR_OBELISK = {
         eff.sfc = Decimal.pow(1.05,be)
 
         return eff
-    }
+    },
+    get divineSoulGain() {
+        let x = player.sol.soul.div(1e18).max(1).root(12).mul(10)
+
+        .mul(getFormingBonus('dark',0))
+
+        return x
+    },
 }
 
 // Void Obelisk
@@ -305,6 +364,31 @@ const VOID_OBELISK = [
         get amount() { return player.grass },
         limit: E('e1e11'),
         icon: "Curr/AntiGrass",
+    },{
+        name: "Anonymity Points",
+        get amount() { return player.ap },
+        limit: E('e3e13'),
+        icon: "Curr/Anonymity",
+    },{
+        name: "Oil",
+        get amount() { return player.oil },
+        limit: E('e6e13'),
+        icon: "Curr/Oil",
+    },{
+        name: "Charge",
+        get amount() { return player.chargeRate },
+        limit: E('e5e13'),
+        icon: "Curr/Charge",
+    },{
+        name: "Rocket Fuel",
+        get amount() { return player.rocket.amount },
+        limit: E('e2700'),
+        icon: "Curr/RocketFuel",
+    },{
+        name: "Platinum",
+        get amount() { return player.plat },
+        limit: E('e5e10'),
+        icon: "Curr/Platinum",
     },
 ]
 

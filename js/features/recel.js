@@ -80,7 +80,7 @@ UPGS.unGrass = {
             icon: ['Icons/Speed'],
             
             cost: i => Decimal.pow(1.75,i).mul(1e3).ceil(),
-            bulk: i => i.div(1e3).max(1).log(1.75).floor().toNumber()+1,
+            bulk: i => i.div(1e3).max(1).log(1.75).floor().add(1),
 
             effect(i) {
                 let x = i*.4+1
@@ -98,7 +98,7 @@ UPGS.unGrass = {
             icon: ['Icons/MoreGrass'],
             
             cost: i => Decimal.pow(1.75,i).mul(1e5).ceil(),
-            bulk: i => i.div(1e5).max(1).log(1.75).floor().toNumber()+1,
+            bulk: i => i.div(1e5).max(1).log(1.75).floor().add(1),
 
             effect(i) {
                 let x = i*.1+1
@@ -116,7 +116,7 @@ UPGS.unGrass = {
             icon: ['Icons/SP'],
             
             cost: i => Decimal.pow(1.25,i).mul(1e6).ceil(),
-            bulk: i => i.div(1e6).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(1e6).max(1).log(1.25).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/2+1)
@@ -134,7 +134,7 @@ UPGS.unGrass = {
             icon: ['Icons/Compaction'],
             
             cost: i => Decimal.pow(2,i).mul(1e8).ceil(),
-            bulk: i => i.div(1e8).max(1).log(2).floor().toNumber()+1,
+            bulk: i => i.div(1e8).max(1).log(2).floor().add(1),
 
             effect(i) {
                 let x = i+1
@@ -152,7 +152,7 @@ UPGS.unGrass = {
             icon: ['Curr/Fun'],
             
             cost: i => Decimal.pow(1.25,i).mul(1e9).ceil(),
-            bulk: i => i.div(1e9).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(1e9).max(1).log(1.25).floor().add(1),
 
             effect(i) {
                 let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/2+1)
@@ -170,7 +170,7 @@ UPGS.unGrass = {
             icon: ['Icons/Placeholder','Icons/Exponent'],
             
             cost: i => Decimal.pow(10,i**1.25).mul(1e15).ceil(),
-            bulk: i => i.div(1e15).max(1).log(10).root(1.25).floor().toNumber()+1,
+            bulk: i => i.div(1e15).max(1).log(10).root(1.25).floor().add(1),
 
             effect(i) {
                 let x = i/100+1

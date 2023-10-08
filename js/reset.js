@@ -103,6 +103,7 @@ el.update.reset = ()=> {
 
     if (mapID3 == 'sm') {
         updateResetHTML('sunrise')
+        updateResetHTML('sunset')
 
         tmp.el.sunrise_desc.setHTML(
             tmp.solarianUnl

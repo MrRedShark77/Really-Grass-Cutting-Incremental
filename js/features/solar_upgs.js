@@ -262,6 +262,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
+                unl: ()=>!hasCentralized(6),
                 max: 100,
                 title: "Solar Powered",
                 get desc() {return `Increase charge rate by <b class="green">${formatMult(1e10)}</b> per squared level.`},
@@ -277,6 +278,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
+                unl: ()=>!hasCentralized(4),
                 max: 100,
                 title: "Solar Powered Anonymity",
                 get desc() {return `Increase anonymity points gain by <b class="green">${formatMult(1e100)}</b> per squared level.`},
@@ -292,6 +294,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
+                unl: ()=>!hasCentralized(5),
                 max: 100,
                 title: "Solar Powered Oil",
                 get desc() {return `Increase oil gain by <b class="green">${formatMult(1e100)}</b> per squared level.`},
@@ -601,6 +604,13 @@ const SOLAR_UPGS = [
                 desc: `Keep first six Remnant Upgrades on reset.`,
                 icon: ['Curr/Remnant'],
                 cost: i => 1e21,
+            },{
+                title: "No Grid Effect Cap",
+                desc: `Grid's Effect no longer has cap.`,
+                icon: ['Icons/GridUpgrade','Icons/Infinite'],
+                cost: i => 1e75,
+                require() { return player.sol.bestStage.gte(75) },
+                req_txt: `Stage 75`,
             },
         ],
     },{
@@ -1317,6 +1327,48 @@ const SOLAR_UPGS = [
                 desc: `Unlock the <b class="green">Sol Compression</b> (on bottom of solarian stage).`,
                 icon: ['Curr/SolCurrency1a'],
                 cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,3),
+                title: "Forming Being Collector",
+                desc: `Collector speed boosts Forming speed slightly.`,
+                icon: ['Icons/Form'],
+                cost: i => 1,
+                effect(i) {
+                    let x = tmp.sol.collectingMult?.root(3) ?? E(1)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                unl: () => hasSolarUpgrade(7,3),
+                title: "Reduced Enemy I",
+                desc: `Reduce Enemy's health scaling by <b class="green">20%</b>.`,
+                icon: ['Curr/EvilSolarian'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,4) && hasSolarUpgrade(7,5),
+                title: "Further Soul",
+                desc: `Unlock two more Soul upgrades.`,
+                icon: ['Curr/Soul'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,6),
+                title: "Restoration Being Forming",
+                desc: `Restoration speed boosts Restoring speed very slightly, starting at 1e50.`,
+                icon: ['Icons/Placeholder'],
+                cost: i => 1,
+                effect(i) {
+                    let x = tmp.sol.formingMult ?? E(1)
+                        
+                    return expMult(x.div(1e50).max(1),0.5)
+                },
+                effDesc: x => formatMult(x),
+            },{
+                unl: () => hasSolarUpgrade(7,6),
+                title: "No Softcap Compression I",
+                desc: `The effects of Compression T1-2 no longer have first softcap.`,
+                icon: ['Curr/SolCurrency1a','Icons/Infinite'],
+                cost: i => 1,
             },
         ],
     },{
@@ -1388,7 +1440,7 @@ const SOLAR_UPGS = [
                 desc: `Portal Stone's multiplier is <b class="green">doubled</b> every level.`,
                 icon: ['Curr/SolCurrency3'],
                 require() { return player.sol.bestStage.gte(10) },
-                req_txt: `Stage 3`,
+                req_txt: `Stage 8`,
                 cost: i => Decimal.pow(8,i).mul(1000).ceil(),
                 bulk: i => i.div(1000).log(8).floor().toNumber()+1,
                 effect(i) {
@@ -1397,6 +1449,168 @@ const SOLAR_UPGS = [
                     return x
                 },
                 effDesc: x => formatMult(x,0),
+            },{
+                max: 1000,
+                title: "Forming II",
+                desc: `Increase forming speed by <b class="green">+100%</b> per level.`,
+                icon: ['Icons/Form'],
+                costOnce: true,
+                cost: i => 1e4,
+                effect(i) {
+                    let x = 1+i
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 3,
+                title: "Fragment",
+                desc: `Fragment's multiplier is <b class="green">doubled</b> every level.`,
+                icon: ['Curr/SolCurrency4'],
+                require() { return player.sol.bestStage.gte(20) },
+                req_txt: `Stage 20`,
+                cost: i => Decimal.pow(10,i).mul(1e8).ceil(),
+                bulk: i => i.div(1e8).log(10).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(2,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x,0),
+            },{
+                unl: () => hasSolarUpgrade(7,6),
+                max: 1000,
+                title: "Collector II",
+                desc: `Increase collection speed by <b class="green">+20%</b> compounding per level.`,
+                icon: ['Icons/Collect'],
+                cost: i => Decimal.pow(1.5,i**1.1).mul(1e25).ceil(),
+                bulk: i => i.div(1e25).log(1.5).root(1.1).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(1.2,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                unl: () => hasSolarUpgrade(7,6),
+                max: 1000,
+                title: "Forming II",
+                desc: `Increase forming speed by <b class="green">+20%</b> compounding per level.`,
+                icon: ['Icons/Form'],
+                cost: i => Decimal.pow(1.5,i**1.1).mul(1e25).ceil(),
+                bulk: i => i.div(1e25).log(1.5).root(1.1).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(1.2,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },
+        ],
+    },{
+        title: "Divine Soul Upgrades",
+        tab: ['Curr/DivineSoul','lightblue'],
+        res: "divineSoul",
+
+        require() { return player.sn.sunsetTimes>0 },
+        req_txt: `First Sunset`,
+
+        ctn: [
+            {
+                max: 1000,
+                title: "Souls I",
+                desc: `Increase soul dropped by <b class="green">+10%</b> per level.`,
+                icon: ['Curr/Soul'],
+                costOnce: true,
+                cost: i => 1,
+                effect(i) {
+                    let x = 1+i/10
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Offense I",
+                desc: `Increase offense multiplier by <b class="green">+100%</b> per level.`,
+                icon: ['Icons/Sword'],
+                costOnce: true,
+                cost: i => 1,
+                effect(i) {
+                    let x = 1+i
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Compression I",
+                desc: `Increase compression speed by <b class="green">+100%</b> per level.`,
+                icon: ['Curr/SolCurrency1a'],
+                costOnce: true,
+                cost: i => 1,
+                effect(i) {
+                    let x = 1+i
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Mana Generation I",
+                desc: `Increase mana generated by <b class="green">+10%</b> per level.`,
+                icon: ['Curr/Mana'],
+                costOnce: true,
+                cost: i => 1,
+                effect(i) {
+                    let x = 1+i/10
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Restore I",
+                desc: `Increase restore speed by <b class="green">+10%</b> per level.`,
+                icon: ['Icons/Placeholder'],
+                costOnce: true,
+                cost: i => 1,
+                effect(i) {
+                    let x = 1+i/10
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 5,
+                title: "Grass Essence I",
+                desc: `Grass Essence's multiplier is <b class="green">doubled</b> every level.`,
+                icon: ['Curr/GrassEssence'],
+                require() { return player.sol.bestStage.gte(50) },
+                req_txt: `Stage 50`,
+                cost: i => Decimal.pow(10,i).mul(100).ceil(),
+                bulk: i => i.div(100).log(10).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(2,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x,0),
+            },{
+                max: 6,
+                title: "Keep Rank",
+                desc: `Only lose up to ranks on sunrise.`,
+                icon: ['Curr/Sunstone'],
+                require() { return player.sol.bestStage.gte(60) },
+                req_txt: `Stage 60`,
+                cost: i => Decimal.pow(25,i).mul(1e3).ceil(),
+                bulk: i => i.div(1e3).log(25).floor().toNumber()+1,
+                effect(i) {
+                    let x = i == 0 ? Infinity : 12 - 2 * i
+                        
+                    return x
+                },
+                effDesc: x => "-"+format(x,0),
             },
         ],
     },
@@ -1488,6 +1702,17 @@ const SU_RES = {
         set amount(v) { player.sol.soul = v },
 
         get html() { return `Souls: ${this.amount.format(0)}` },
+    },
+    divineSoul: {
+        name: "Divine Soul",
+
+        base: "Bases/CentralizeBase",
+        icon: "Curr/DivineSoul",
+
+        get amount() { return player.sol.divineSoul },
+        set amount(v) { player.sol.divineSoul = v },
+
+        get html() { return `Divine Souls: ${this.amount.format(0)}` },
     },
 }
 

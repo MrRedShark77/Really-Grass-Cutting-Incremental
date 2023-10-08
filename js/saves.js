@@ -397,7 +397,7 @@ function deepUndefinedAndDecimal(obj, data) {
 }
 
 function convertStringToDecimal() {
-    
+    for (let x in UPGS) player.upgs[x] = player.upgs[x].map(a => E(a))
 }
 
 function cannotSave() { return !is_online }

@@ -122,13 +122,13 @@
                 <button onclick="changeGHMult()" id="multGHButton">Multi-Grasshop: <span id="multGHOption">OFF</span></button>
                 <button onclick="changeGSMult()" id="multGSButton">Multi-Grass-skip: <span id="multGSOption">OFF</span></button>
                 <br><br>
-                Really Grass Cutting Incremental - v0.5.1 - Supernova Update Part 2 - Made by MrRedShark77<br>
+                Really Grass Cutting Incremental - v0.5.1.1 - Made by MrRedShark77<br>
                 The game inspired by <a href="https://www.roblox.com/games/9292879820">Grass Cutting Incremental</a><br>
                 Artist(-s): Bézier<br>
                 <b class="red">Warning! Recommended size is 1920x1080! You may change zoom!</b><br><br>
                 <details>
                     <summary>Endgame (Spoiler)</summary>
-                    Level 1,200,000+; Supernova Tier 5; Eclipse: 1,000+; Stage 20+
+                    Level 6,700,000+; Supernova Tier 7; Eclipse: 2,500+; Stage 75+
                 </details>
             </div><div id="map_div_p">
                 <div style="width: 100%; height: 50%;">
@@ -413,7 +413,7 @@
                 </div>
                 <div style="width: 100%; height: 50%;" class="table_center">
                     <div style="width: 33.3%; height: 100%;"><div class="reset_div" id="reset_div_sunrise"></div></div>
-                    <div style="width: 33.4%; height: 100%;"></div>
+                    <div style="width: 33.4%; height: 100%;"><div class="reset_div" id="reset_div_sunset"></div></div>
                     <div style="width: 33.3%; height: 100%;"></div>
                 </div>
             </div><div id="map_div_stage">
@@ -476,13 +476,30 @@
             </div><div id="map_div_solc">
                 <div class="solarian-div">
                     <div style="height: 50px;"><h2>Sol Compression</h2></div>
-                    <div class="solarian-list table_center" id="solc_table">
+                    <div class="solarian-list forming table_center" id="solc_table">
                         <div class="compression-div">
                             <h3>[Tier 1]</h3> <span class="smallAmt">(x1)</span>
                             <div>1.23e123,456,789 | 1.23e123,456,789 <span class="smallAmt">(+1.23e123,456,789/s)</span></div>
                             <div>???</div>
                         </div>
                     </div>
+                    <div id='solc_req'></div>
+                </div>
+            </div><div id="map_div_adv">
+                <div class="solarian-div">
+                    <div style="height: 50px;"><h2>Advanced Star</h2></div>
+                    <div class="solarian-list forming table_left" id="adv_star_table">
+                        <div class="star-milestone">
+                            <div class="sm-tier">6</div>
+                            <div class="sm-bonus">x??? to something</div>
+                            <div class="sm-req">
+                                ??? Star Growth<br>
+                                ??? Eclipse<br>
+                                ??? Mana<br>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="star_btn" onclick="increaseStar()">Increase The Star</button>
                 </div>
             </div>
         </div>
