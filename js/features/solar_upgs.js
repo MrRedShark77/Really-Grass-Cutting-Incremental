@@ -1354,7 +1354,7 @@ const SOLAR_UPGS = [
             },{
                 unl: () => hasSolarUpgrade(7,6),
                 title: "Restoration Being Forming",
-                desc: `Restoration speed boosts Restoring speed very slightly, starting at 1e50.`,
+                desc: `Forming speed boosts Restoring speed very slightly, starting at 1e50.`,
                 icon: ['Icons/Placeholder'],
                 cost: i => 1,
                 effect(i) {
