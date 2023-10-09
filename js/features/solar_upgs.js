@@ -1698,7 +1698,7 @@ const SU_RES = {
         base: "Bases/CentralizeBase",
         icon: "Curr/Soul",
 
-        get amount() { return player.sol.soul },
+        get amount() { return player.sol.soul.round() },
         set amount(v) { player.sol.soul = v },
 
         get html() { return `Souls: ${this.amount.format(0)}` },
@@ -1709,7 +1709,7 @@ const SU_RES = {
         base: "Bases/CentralizeBase",
         icon: "Curr/DivineSoul",
 
-        get amount() { return player.sol.divineSoul },
+        get amount() { return player.sol.divineSoul.round() },
         set amount(v) { player.sol.divineSoul = v },
 
         get html() { return `Divine Souls: ${this.amount.format(0)}` },

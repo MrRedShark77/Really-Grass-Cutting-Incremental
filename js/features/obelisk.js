@@ -170,7 +170,7 @@ el.update.obelisk = () => {
                 `)
 
                 let nl = tmp.lunar_next[i]
-                let p = l[5]==0?Decimal.pow(lvl,2).sub(lvl).mul(l[3]/2).add(lvl.mul(l[2])):Decimal.pow(l[3],lvl).sub(1).mul(l[2]/(l[3]-1))
+                let p = l[5]==0?Decimal.pow(lvl,2).sub(lvl).mul(l[3]/2).add(Decimal.mul(lvl,l[2])):Decimal.pow(l[3],lvl).sub(1).mul(l[2]/(l[3]-1))
 
                 tmp.el[id+'amt'].setHTML(`${player.lunar.lp[i].sub(p).max(0).min(nl).format(0)} / ${nl.format(0)}`)
                 tmp.el[id+'btn'].changeStyle('border-color',player.lunar.active.includes(i)?'lime':'white')
