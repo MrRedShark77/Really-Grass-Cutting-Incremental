@@ -219,7 +219,7 @@ const SOL_MATERIALS = {
     dark: {
         unl: ()=>player.sn.sunsetTimes>0,
 
-        name: "Mana<br><span style='font-size: 12px'>(based on collecting speed)</span>",
+        name: "Darkness<br><span style='font-size: 12px'>(convert mana into darkness on sunset)</span>",
         display: true,
         icon: "Curr/Darkness",
 

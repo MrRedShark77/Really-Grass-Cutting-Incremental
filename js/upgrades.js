@@ -910,7 +910,7 @@ function buyUpgrade(id,x) {
     let res = tmp.upg_res[resDis]
     let amt = player.upgs[id]
 
-    if ((amt[x]??E(0)).lt(tu.max[x])) if (Decimal.gte(res,tu.cost[x])) {
+    if (Decimal.lt(amt[x]??0,tu.max[x])) if (Decimal.gte(res,tu.cost[x])) {
         let [p,q] = UPG_RES[resDis][1]()
 
         if (resDis == 'perk') {
@@ -987,6 +987,8 @@ function buyNextUpgrade(id,x) {
 	let amt = player.upgs[id]
 	let amt2 = amt[x]??E(0)
 
+    if (typeof amt2 == 'number') amt2 = E(amt2)
+
     let max = tu.max[x]
 
 	if (amt2.lt(max) && Decimal.gte(res2,tu.cost[x])) {
@@ -1031,6 +1033,8 @@ function buyMaxUpgrade(id,x,auto=false) {
         if (auto && !tu.noSpend) res = numInc ? Math.ceil(res / tu.unlLength) : res.div(tu.unlLength).ceil()
         let amt = player.upgs[id]
         let amt2 = amt[x]??E(0)
+
+        if (typeof amt2 == 'number') amt2 = E(amt2)
 
         let max = tu.max[x]
 
