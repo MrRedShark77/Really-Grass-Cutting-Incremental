@@ -733,7 +733,7 @@ tmp_update.push(()=>{
     if (tmp.minStats.gh >= 20) tmp.chargeOoM++
     if (tmp.minStats.gh >= 24) tmp.chargeOoM += getGHEffect(12,0)
     if (player.lowGH <= -4) tmp.chargeOoM += getAGHEffect(8,0)
-    tmp.chargeOoM += upgEffect('sfrgt',3,0)
+    tmp.chargeOoM = Decimal.add(tmp.chargeOoM,upgEffect('sfrgt',3,0))
 
     for (let x = 0; x < ms.charger.effs.length; x++) {
         let ce = ms.charger.effs[x]
@@ -747,7 +747,7 @@ function calcChargeAmountFromOoM(charge, req, oom=tmp.chargeOoM) {
 
     if (tmp.beyondOoM) {
         let rl = Number(req.log10().round())
-        if (oom >= rl) oom = (oom-rl+1)**0.6+rl-1
+        if (oom.gte(rl)) oom = oom.sub(rl).add(1).pow(.6).add(rl-1)
 
         r = req.div(Decimal.pow(10,oom))
     } else {
