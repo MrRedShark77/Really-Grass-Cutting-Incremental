@@ -1819,6 +1819,10 @@ body.planetoid #level_bar {
     background-color: #00f7ff44;
 }
 
+.compression-div:nth-child(4) {
+    background-color: #a7fcff44;
+}
+
 #star_btn {
     width: 400px;
     height: 80px;

@@ -1,5 +1,7 @@
 MAIN.sac = {
     dmGain() {
+        if (hasCentralized(12)) return player.grass.floor();
+
         let a = Math.max(1,tmp.total_astral-44)
 
         let x = player.stars.div(1e18).max(1).root(2).mul(Decimal.pow(1.1,a-1).mul(a))

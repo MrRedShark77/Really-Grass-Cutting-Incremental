@@ -30,10 +30,18 @@ const SOL_COMPRESSION = {
             eff(c) {
                 let x = c.div(1000).add(1).root(3)
 
-                return x
+                return x.overflow(1e18,0.5)
             },
             effDesc: x => `<b class='green'>${formatMult(x)}</b> Mana`,
             req: E(1e8),
+        },{
+            eff(c) {
+                let x = c.div(1e55).add(1).log10().add(1)
+
+                return x
+            },
+            effDesc: x => `<b class='green'>${formatMult(x)}</b> Divine Souls`,
+            req: E(1e55),
         },
     ],
 }

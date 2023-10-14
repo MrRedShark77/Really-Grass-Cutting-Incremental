@@ -1,5 +1,7 @@
 MAIN.gal = {
     gain() {
+        if (hasCentralized(9)) return player.grass.floor();
+
         let y = 10
 
         if (tmp.minStats.gs>0) y += getGSEffect(0,0)

@@ -211,6 +211,14 @@ const ADV_STAR = [
         req: [1e42,1500,1e18],
         bonus: x => x.div(1e40).max(1).pow(2),
         bonusDesc: x => `<b class='darkgreen'>${formatMult(x)}</b> Offense`,
+    },{
+        req: [1e51,5500,1e72],
+        bonus: x => x.div(1e50).max(1).pow(2),
+        bonusDesc: x => `<b class='darkgreen'>${formatMult(x)}</b> Collecting & Forming`,
+    },{
+        req: [1e58,12500,1e93],
+        bonus: x => x.div(1e55).max(1).log10().root(2).div(10).add(1),
+        bonusDesc: x => `<b class='darkgreen'>${formatPow(x)}</b> Line & Solar Flare`,
     },
 ]
 

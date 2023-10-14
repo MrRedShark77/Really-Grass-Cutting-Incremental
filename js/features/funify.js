@@ -1,5 +1,7 @@
 MAIN.fun = {
     gain() {
+        if (hasCentralized(10)) return player.grass.floor();
+
         let l = tmp.minStats.gs+1
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestOil.div(1e42).max(1).root(3))
 
@@ -20,6 +22,8 @@ MAIN.fun = {
         return x.floor()
     },
     SFRGTgain() {
+        if (hasCentralized(11)) return player.grass.floor();
+
         let x = E(1)
 
         x = x.mul(upgEffect('funnyMachine',1))

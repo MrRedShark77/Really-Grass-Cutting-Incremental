@@ -310,6 +310,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
+                unl: ()=>!hasCentralized(10),
                 max: 100,
                 title: "Solar Powered Fun",
                 get desc() {return `Increase fun gain by <b class="green">${formatMult(1e10)}</b> per squared level.`},
@@ -385,6 +386,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
+                unl: ()=>!hasCentralized(9),
                 max: 100,
                 title: "Solar Powered Stars",
                 get desc() {return `Increase stars gain by <b class="green">${formatMult(1e100)}</b> per squared level.`},
@@ -400,6 +402,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
+                unl: ()=>!hasCentralized(12),
                 max: 100,
                 title: "Solar Powered Dark Matter",
                 get desc() {return `Increase dark matter gain by <b class="green">${formatMult(1e100)}</b> per squared level.`},
@@ -415,7 +418,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 100,
+                max: 1000,
                 title: "Solar Powered Planetarium",
                 get desc() {return `Increase planetarium gain by <b class="green">${formatMult(1e10)}</b> per squared level.`},
                 icon: ['Curr/Planetoid'],
@@ -430,7 +433,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 100,
+                max: 1000,
                 title: "Solar Powered Astro",
                 get desc() {return `Increase astro gain by <b class="green">${formatMult(1e10)}</b> per squared level.`},
                 icon: ['Curr/Astrolabe'],
@@ -445,7 +448,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 100,
+                max: 1000,
                 title: "Solar Powered Measure",
                 get desc() {return `Increase measure gain by <b class="green">${formatMult(1e10)}</b> per squared level.`},
                 icon: ['Curr/Measure'],
@@ -460,7 +463,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 100,
+                max: 1000,
                 title: "Solar Powered Planet",
                 get desc() {return `Increase planets gain by <b class="green">${formatMult(1e10)}</b> per squared level.`},
                 icon: ['Curr/Planet'],
@@ -470,6 +473,21 @@ const SOLAR_UPGS = [
                 bulk: i => i.div(1e8).log(6).floor().toNumber()+1,
                 effect(i) {
                     let x = Decimal.pow(1e10,i**2)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Solar Powered Lunar Power",
+                get desc() {return `Increase lunar power gain by <b class="green">${formatMult(1e100)}</b> per squared level.`},
+                icon: ['Curr/Lunar'],
+                require() { return player.sol.bestStage.gte(100) },
+                req_txt: `Stage 100`,
+                cost: i => Decimal.pow(10,i).mul(1e150),
+                bulk: i => i.div(1e150).log(10).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(1e100,i**2)
                         
                     return x
                 },
@@ -611,6 +629,13 @@ const SOLAR_UPGS = [
                 cost: i => 1e75,
                 require() { return player.sol.bestStage.gte(75) },
                 req_txt: `Stage 75`,
+            },{
+                require() { return player.sol.bestStage.gte(100) },
+                req_txt: `Stage 100`,
+                title: "Remnant Keeper II",
+                desc: `Keep 7-8th Remnant Upgrades on reset.`,
+                icon: ['Curr/Remnant'],
+                cost: i => 1e121,
             },
         ],
     },{
@@ -1166,6 +1191,34 @@ const SOLAR_UPGS = [
                     return x
                 },
                 effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Divine Soul Remnants",
+                desc: `Increase divine soul gained by <b class="green">+10%</b> per level.`,
+                icon: ['Curr/DivineSoul'],
+                unl: () => player.sn.tier.gte(8),
+                cost: i => Decimal.pow(1.2,i).mul(1e4).ceil(),
+                bulk: i => i.div(1e4).log(1.2).floor().toNumber()+1,
+                effect(i) {
+                    let x = 1+i/10
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Restoration Remnants",
+                desc: `Increase restoring speed by <b class="green">+10%</b> compounding per level.`,
+                icon: ['Icons/Placeholder'],
+                unl: () => player.sn.tier.gte(8),
+                cost: i => Decimal.pow(1.2,i).mul(1e4).ceil(),
+                bulk: i => i.div(1e4).log(1.2).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(1.1,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
             },
         ],
     },{
@@ -1292,6 +1345,24 @@ const SOLAR_UPGS = [
                     return x
                 },
                 effDesc: x => formatMult(x,0),
+            },{
+                unl: ()=>player.sn.tier.gte(8),
+                max: 1000,
+    
+                title: "Solar Final Prism Upgrade",
+                desc: `Increase Final Prism's tier again.`,
+
+                icon: ['Icons/PrismUpgrade',"Icons/StarSpeed"],
+                    
+                cost: i => Decimal.pow(1.5,i**1.1).mul(1e45).ceil(),
+                bulk: i => i.div(1e45).max(1).log(1.5).root(1.1).floor().add(1),
+    
+                effect(i) {
+                    let x = i
+    
+                    return x
+                },
+                effDesc: x => "+"+format(x,0),
             },
         ],
     },{
@@ -1369,6 +1440,30 @@ const SOLAR_UPGS = [
                 desc: `The effects of Compression T1-2 no longer have first softcap.`,
                 icon: ['Curr/SolCurrency1a','Icons/Infinite'],
                 cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,7) && hasSolarUpgrade(7,8),
+                title: "Soul Absorber",
+                desc: `Passively generate souls based on the current stages reward at <b class="green">1%</b> rate.`,
+                icon: ['Curr/Soul'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,9),
+                title: "Auto Compression",
+                desc: `Automatically level compression equal to <b class="green">1%</b> of your current compressed sol (of that tier) per second.`,
+                icon: ['Curr/SolCurrency1a','Icons/Automation2'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,9),
+                title: "Better Remnant",
+                desc: `Increase remnants earned by <b class="green">+5%</b> compounding per square-rooted current eclipse, starting at 1,000.`,
+                icon: ['Curr/Remnant'],
+                cost: i => 1,
+                effect(i) {
+                    let x = Decimal.pow(1.05,player.sn.eclipse.sub(1000).max(0).root(2))
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
             },
         ],
     },{
@@ -1494,7 +1589,7 @@ const SOLAR_UPGS = [
             },{
                 unl: () => hasSolarUpgrade(7,6),
                 max: 1000,
-                title: "Forming II",
+                title: "Forming III",
                 desc: `Increase forming speed by <b class="green">+20%</b> compounding per level.`,
                 icon: ['Icons/Form'],
                 cost: i => Decimal.pow(1.5,i**1.1).mul(1e25).ceil(),
@@ -1611,6 +1706,36 @@ const SOLAR_UPGS = [
                     return x
                 },
                 effDesc: x => "-"+format(x,0),
+            },{
+                max: 10,
+                title: "Offense Exponent",
+                desc: `Increase fighting offense by <b class="green">+^0.05</b> per level.`,
+                icon: ['Icons/Sword','Icons/Exponent'],
+                require() { return player.sol.bestStage.gte(75) },
+                req_txt: `Stage 75`,
+                cost: i => Decimal.pow(100,i).mul(1e5).ceil(),
+                bulk: i => i.div(1e5).log(100).floor().toNumber()+1,
+                effect(i) {
+                    let x = i/20+1
+                        
+                    return x
+                },
+                effDesc: x => formatPow(x),
+            },{
+                max: 10,
+                title: "Solar Ray Exponent",
+                desc: `Increase fighting offense by <b class="green">+^0.1</b> per level.`,
+                icon: ['Icons/SR','Icons/Exponent'],
+                require() { return player.sol.bestStage.gte(100) },
+                req_txt: `Stage 100`,
+                cost: i => Decimal.pow(10,i).mul(1e9).ceil(),
+                bulk: i => i.div(1e9).log(10).floor().toNumber()+1,
+                effect(i) {
+                    let x = i/10+1
+                        
+                    return x
+                },
+                effDesc: x => formatPow(x),
             },
         ],
     },
@@ -1668,7 +1793,9 @@ const SU_RES = {
         get amount() { return player.sn.remnant },
         set amount(v) { player.sn.remnant = v },
 
-        get html() { return `Remnants: ${this.amount.format(0)}<br>Eclipse ${player.sn.eclipse.format(0)} | Solar Rays: ${player.sn.sr.sub(SUPERNOVA.eclipse.req(1)).max(0).format(0)} / ${SUPERNOVA.eclipse.reqBase.format(0)}` },
+        get html() { return `
+        Remnants: ${this.amount.format(0) + (player.sn.tier.gte(8) ? " " + this.amount.formatGain(player.sn.totalRemnant.div(100)) : "")}
+        <br>Eclipse ${player.sn.eclipse.format(0)} | Solar Rays: ${player.sn.sr.sub(SUPERNOVA.eclipse.req(1)).max(0).format(0)} / ${SUPERNOVA.eclipse.reqBase.format(0)}` },
     },
     sunstone: {
         name: "Sunstone",

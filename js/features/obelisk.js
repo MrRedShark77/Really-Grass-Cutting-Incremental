@@ -59,7 +59,7 @@ tmp_update.push(()=>{
 
     x = x.mul(tmp.darkChargeEffs.lunar||1)
 
-    x = x.mul(solarUpgEffect(4,2))
+    x = x.mul(solarUpgEffect(4,2)).mul(solarUpgEffect(1,19))
 
     tmp.LPgain = x
 
@@ -254,14 +254,17 @@ RESET.sunrise = {
                 updateCFTemp()
             }
 
-            player.sn.eclipse = E(0)
-            player.sn.sr = E(0)
-            player.sn.remnant = E(0)
-            player.sn.totalRemnant = E(0)
+            if (player.sn.tier.lt(8)) {
+                player.sn.eclipse = E(0)
+                player.sn.sr = E(0)
+                player.sn.remnant = E(0)
+                player.sn.totalRemnant = E(0)
+            }
 
             let keep = []
 
             if (hasSolarUpgrade(2,14)) keep.push(0,1,2,3,4,5)
+            if (hasSolarUpgrade(2,16)) keep.push(6,7)
 
             resetSolarUpgrades(5,keep)
         }
@@ -337,58 +340,82 @@ const SOLAR_OBELISK = {
 
         .mul(getFormingBonus('dark',0))
 
-        return x
+        .mul(getSolCompressionEffect(3))
+
+        .mul(solarUpgEffect(5,6))
+
+        return x.softcap(1e9,0.5,0)
     },
 }
 
 // Void Obelisk
 
 const VOID_OBELISK = [
-    {
+    { // 0
         name: "Prestige Points",
         get amount() { return player.pp },
         limit: E('e8.4e8'),
         icon: "Curr/Prestige",
-    },{
+    },{ // 1
         name: "Crystal",
         get amount() { return player.crystal },
         limit: E('e2.9e9'),
         icon: "Curr/Crystal",
-    },{
+    },{ // 2
         name: "Steel",
         get amount() { return player.steel },
         limit: E('e1.5e10'),
         icon: "Curr/Steel2",
-    },{
+    },{ // 3
         name: "Anti-Grass",
         get amount() { return player.grass },
         limit: E('e1e11'),
         icon: "Curr/AntiGrass",
-    },{
+    },{ // 4
         name: "Anonymity Points",
         get amount() { return player.ap },
         limit: E('e3e13'),
         icon: "Curr/Anonymity",
-    },{
+    },{ // 5
         name: "Oil",
         get amount() { return player.oil },
         limit: E('e6e13'),
         icon: "Curr/Oil",
-    },{
+    },{ // 6
         name: "Charge",
         get amount() { return player.chargeRate },
         limit: E('e5e13'),
         icon: "Curr/Charge",
-    },{
+    },{ // 7
         name: "Rocket Fuel",
         get amount() { return player.rocket.amount },
         limit: E('e2700'),
         icon: "Curr/RocketFuel",
-    },{
+    },{ // 8
         name: "Platinum",
         get amount() { return player.plat },
         limit: E('e5e10'),
         icon: "Curr/Platinum",
+    },{ // 9
+        name: "Stars",
+        get amount() { return player.stars },
+        limit: E('e2e12'),
+        icon: "Curr/Star",
+    },{ // 10
+        name: "Fun",
+        get amount() { return player.fun },
+        limit: E('e1.5e27'),
+        icon: "Curr/Fun",
+    },{ // 11
+        name: "SFRGT",
+        get amount() { return player.SFRGT },
+        limit: E('e1e30'),
+        icon: "Curr/SuperFun",
+    },{ // 12
+        name: "Dark Matter",
+        get amount() { return player.dm },
+        limit: E('e1e33'),
+        icon: "Curr/DarkMatter",
     },
 ]
 
@@ -397,6 +424,11 @@ function hasCentralized(i) { return player.centralized.includes(i) }
 function activeVoid(i) {
     let l = VOID_OBELISK[i]
     if (!hasCentralized(i) && l.amount.gte(l.limit)) {
+        if (i == 12) {
+            alert("Coming Soon!")
+            return
+        }
+
         player.centralized.push(i)
         player.singularity++
         updateTemp()

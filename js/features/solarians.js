@@ -12,12 +12,14 @@ const SOLARIANS = {
 
         .mul(getStarBonus(7))
 
+        x = x.pow(solarUpgEffect(9,7))
+
         return x
     },
 
     enemy: {
         get max_health() {
-            let x = Decimal.pow(10,player.sol.stage.scale(14,hasSolarUpgrade(7,5)?1.75:2,0)).mul(1e3)
+            let x = Decimal.pow(10,player.sol.stage.scale(99,3,0).scale(14,hasSolarUpgrade(7,5)?1.75:2,0)).mul(1e3)
 
             return x
         },
@@ -37,12 +39,12 @@ const SOLARIANS = {
     get stageBonus() {
         let e = {}, s = player.sol.stage
 
-        e.fm = Decimal.pow(3,s)
+        e.fm = Decimal.pow(3,s.min(100))
         e.sr = Decimal.pow(5,s)
         e.sunstone = Decimal.pow(3,s)
 
         if (s.gte(10)) e.ss = Decimal.pow(3,s.sub(9))
-        // if (s.gte(15)) e.form = Decimal.pow(2,s.min(30).sub(14))
+        if (s.gte(75)) e.sf = Decimal.pow(2,s.sub(74))
 
         return e
     },
@@ -60,6 +62,8 @@ const SOLARIANS = {
 
         .mul(getSolCompressionEffect(1)).mul(getFormingBonus('restore',1))
 
+        .mul(getStarBonus(8))
+
         return x
     },
     get formingMult() {
@@ -71,12 +75,14 @@ const SOLARIANS = {
 
         if (hasSolarUpgrade(7,4)) x = x.mul(solarUpgEffect(7,4))
 
+        .mul(getStarBonus(8))
+
         return x
     },
     get restoreMult() {
         let x = E(1)
 
-        x = x.mul(solarUpgEffect(9,4))
+        x = x.mul(solarUpgEffect(9,4)).mul(solarUpgEffect(5,7))
 
         if (hasSolarUpgrade(7,7)) x = x.mul(solarUpgEffect(7,7))
 
@@ -193,6 +199,8 @@ const SOL_MATERIALS = {
 
         get amount() { return player.sol.soul },
         set amount(v) { return player.sol.soul = v },
+
+        get gain() { return tmp.sol.soul_rate > 0 ? tmp.sol.soul_gain.mul(tmp.sol.soul_rate) : undefined },
     },
     divine: {
         unl: ()=>player.sn.sunsetTimes>0,
@@ -315,8 +323,8 @@ const FORMING = {
                     ['stone',1,3,1.1],
                 ],
                 rankMult: 2,
-                bonus: b => b.div(100).add(1),
-                bonusDesc: x => formatPow(x),
+                bonus: b => b.div(100).add(1).overflow(5e4,0.25),
+                bonusDesc: x => formatPow(x)+x.softcapHTML(5e4),
             },{
                 unl: ()=>hasSolarUpgrade(7,3),
 
@@ -479,12 +487,12 @@ const FORMING = {
                 title: "A Bright Star (Star Growth)",
                 icon: "Curr/StarGrow",
 
-                req: [100,10],
+                req: [100,5],
                 rankReq: [10],
                 materials: [
-                    ['dark',1e12,10,1.1],
-                    ['essence',100,10,1.1],
-                    ['sf',1e30,10,1.1],
+                    ['dark',1e12,5,1.1],
+                    ['essence',100,5,1.1],
+                    ['sf',1e30,5,1.1],
                 ],
                 rankMult: 10,
                 bonus: b => b.add(1),
@@ -539,6 +547,10 @@ function calcSolarians(dt) {
 
     player.sol.bestStage = player.sol.bestStage.max(player.sol.stage)
 
+    player.sol.mana = player.sol.mana.add(tmp.sol.manaGain.mul(dt))
+
+    player.sol.soul = player.sol.soul.add(ts.soul_gain.mul(tmp.sol.soul_rate*dt))
+
     for (let id of COLLECTED_MATERIALS) {
         const s = SOL_MATERIALS[id]
         let unl = !s.unl || s.unl()
@@ -585,16 +597,15 @@ function calcSolarians(dt) {
     }
 
     if (hasSolarUpgrade(7,3)) {
-        let u = player.sol.compression_unl
+        let u = player.sol.compression_unl, s10 = hasSolarUpgrade(7,10)
 
         for (let i in SOL_COMPRESSION.ctn) {
             player.sol.compression[i] = player.sol.compression[i].add(SOL_COMPRESSION.gain(parseInt(i)).mul(dt))
+            if (s10) player.sol.active_compression[i] = player.sol.active_compression[i].add(player.sol.compression[i].mul(dt/100))
         }
 
         if (u<SOL_COMPRESSION.ctn.length && player.sol.compression[u-1].gte(SOL_COMPRESSION.ctn[u].req)) player.sol.compression_unl++
     }
-
-    player.sol.mana = player.sol.mana.add(tmp.sol.manaGain.mul(dt))
 }
 
 function setupSolarianStage() {
@@ -645,6 +656,8 @@ function updateSolarianTemp() {
     ts.collectingMult = SOLARIANS.collectingMult
     ts.formingMult = SOLARIANS.formingMult
     ts.restoreMult = SOLARIANS.restoreMult
+
+    ts.soul_rate = hasSolarUpgrade(7,9) ? 0.01 : 0
 
     ts.manaGain = SOLARIANS.manaGain
 
@@ -762,6 +775,7 @@ el.update.solarians = () => {
 
         if (bonus.ss) t += `<br>Solar Shards: <b class='green'>${formatMult(bonus.ss,0)}</b>`
         if (bonus.form) t += `<br>Forming Speed: <b class='green'>${formatMult(bonus.form,0)}</b>`
+        if (bonus.sf) t += `<br>Solar Flares: <b class='green'>${formatMult(bonus.sf,0)}</b>`
 
         tmp.el.stage_bonus.setHTML(t)
     } else if (mapID3 == 'sol') {
@@ -905,11 +919,12 @@ function resetMaterials(keep=[]) {
 }
 
 function resetForming(id,list=[],reset=false,decrease) {
+    let ff = player.sol.form[id]
     for (let x = 0; x < FORMING[id].ctn.length; x++) if ((reset ? list.includes(x) : !list.includes(x)) && (decrease === undefined || decrease > 0)) {
-        if (decrease === undefined) player.sol.form[id][x] = [E(0),0,0]
+        if (decrease === undefined) ff[x] = [E(0),0,0,ff[x][3]]
         else {
-            const r = Math.max(player.sol.form[id][x][2] - decrease,0), s = FORMING[id].ctn[x].rankReq
-            player.sol.form[id][x] = [E(0),SOL_FORMULAS.getSumLevelFromRank(r,...s),r]
+            const r = Math.max(ff[x][2] - decrease,0), s = FORMING[id].ctn[x].rankReq
+            ff[x] = [E(0),SOL_FORMULAS.getSumLevelFromRank(r,...s),r,ff[x][3]]
         }
     }
 }

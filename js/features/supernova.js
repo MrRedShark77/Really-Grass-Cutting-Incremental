@@ -144,6 +144,10 @@ const SUPERNOVA = {
         
         .mul(getASEff('sf'))
 
+        .mul(getStageBonus('sf'))
+
+        x = x.pow(getStarBonus(9))
+
         return x
     },
     eclipse: {
@@ -156,6 +160,15 @@ const SUPERNOVA = {
             return Decimal.pow(1.05,e.add(1).scale(tmp.scale_eclipse,2,0)).sub(Decimal.pow(1.05,e.scale(tmp.scale_eclipse,2,0))).mul(2000)
         },
         get bulk() { return this.calcBulk() },
+        get remnantGain() {
+            let x = E(1)
+            
+            x = x.mul(solarUpgEffect(6,2))
+            if (hasSolarUpgrade(7,1)) x = x.mul(2)
+            if (hasSolarUpgrade(7,11)) x = x.mul(solarUpgEffect(7,11))
+
+            return x
+        },
 
         get SRgain() {
             let x = Decimal.pow(1.15, player.stargrowth.add(1).log10()).mul(10)
@@ -170,6 +183,8 @@ const SUPERNOVA = {
             .mul(getStageBonus('sr'))
 
             if (player.grassjump >= 35) x = x.mul(getGJEffect(7))
+
+            x = x.pow(solarUpgEffect(9,8))
 
             return x.floor()
         }
@@ -217,9 +232,11 @@ const SUPERNOVA = {
             - Unlock the <b class="green">Restoration</b> in Forming tab.<br>
             `,
         },{
-            r: 7,
+            r: 8,
             desc: `
-            - TBA.
+            - Passively generate sunstone (based on current stage) and remnants (based on total remnants from Eclipse) at <b class="green">1%</b> rate.<br>
+            - Unlock more remnant and sunstone upgrades.<br>
+            - Eclipse no longer gets reset.
             `,
         },
     ],
@@ -234,6 +251,7 @@ tmp_update.push(()=>{
     tmp.maxSolarFlare = SUPERNOVA.maxFlare()
     tmp.flareGain = SUPERNOVA.flareGain()
     tmp.SRgain = SUPERNOVA.eclipse.SRgain
+    tmp.remnantGain = SUPERNOVA.eclipse.remnantGain
 
     tmp.sunstoneGain = SOLAR_OBELISK.sunstoneGain
     tmp.divineSoulGain = SOLAR_OBELISK.divineSoulGain
@@ -324,10 +342,17 @@ function calcSupernova(dt) {
     if (player.sn.tier.gte(2) && player.sn.sr.gte(SUPERNOVA.eclipse.require)) {
         const b = SUPERNOVA.eclipse.bulk
         player.sn.eclipse = player.sn.eclipse.add(b).round()
-        var g = b.mul(solarUpgEffect(6,2))
-        if (hasSolarUpgrade(7,1)) g = g.mul(2)
-        player.sn.totalRemnant = player.sn.totalRemnant.add(g).round()
+
+        let g = tmp.remnantGain.mul(b)
+        if (player.sn.tier.lt(8)) player.sn.totalRemnant = player.sn.totalRemnant.add(g).round()
         player.sn.remnant = player.sn.remnant.add(g).round()
+    }
+
+    if (player.sn.tier.gte(8)) {
+        player.sn.totalRemnant = player.sn.eclipse.mul(tmp.remnantGain)
+
+        player.sn.remnant = player.sn.remnant.add(player.sn.totalRemnant.mul(dt/100))
+        player.sn.sunstone = player.sn.sunstone.add(tmp.sunstoneGain.mul(dt/100))
     }
 
     if (hasSolarUpgrade(2,11)) player.sn.bestSSEarn = player.sn.bestSSEarn.max(tmp.solarShardGain)
@@ -335,8 +360,9 @@ function calcSupernova(dt) {
 }
 
 function updateRemnant() {
-    let g = player.sn.eclipse.mul(solarUpgEffect(6,2))
-    if (hasSolarUpgrade(7,1)) g = g.mul(2)
+    if (player.sn.tier.gte(8)) return
+
+    let g = player.sn.eclipse.mul(SUPERNOVA.eclipse.remnantGain)
     g = g.sub(player.sn.totalRemnant).max(0)
     player.sn.remnant = player.sn.remnant.add(g).round()
     player.sn.totalRemnant = player.sn.totalRemnant.add(g).round()

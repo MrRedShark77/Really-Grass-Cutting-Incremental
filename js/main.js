@@ -235,7 +235,7 @@ const MAIN = {
     autoCut: ()=>hasStarTree('reserv',2)?0.01:5-(player.planetoid.active?0:upgEffect('auto',0,0)+upgEffect('plat',0,0)+starTreeEff('progress',3,0)),
     level: {
         req(i) {
-            i = E(i).scale(1e5,3,3)
+            i = E(i).scale(player.hsj>=3 ? 1e6 : 1e5,3,3)
             
             if (player.hsj < 2) i = i.scale(tmp.level.scale2,2,0).scale(tmp.level.scale1,2,0)
 
@@ -254,7 +254,7 @@ const MAIN = {
 
             if (player.hsj < 2) x = x.scale(tmp.level.scale1,2,0,true).scale(tmp.level.scale2,2,0,true)
 
-            return Math.floor(x.scale(1e5,3,3,true).toNumber()+1)
+            return Math.floor(x.scale(player.hsj>=3 ? 1e6 : 1e5,3,3,true).toNumber()+1)
         },
         cur(i) {
             return i > 0 ? this.req(i-1) : E(0) 
@@ -300,7 +300,7 @@ const MAIN = {
 
             let ap = player.astralPrestige
 
-            if (player.hsj >= 2) return Decimal.pow(3,E(i+ap*100).scale(1e4,3,3))
+            if (player.hsj >= 2) return Decimal.pow(3,E(i+ap*100).scale(player.hsj>=3 ? 1e5 : 1e4,3,3))
 
             let b = Decimal.pow(10,ap*20+2)
 
@@ -315,7 +315,7 @@ const MAIN = {
         bulk(i) {
             let ap = player.astralPrestige
 
-            if (player.hsj >= 2) return i.lt(1) ? 0 : Math.floor(i.log(3).scale(1e4,3,3,true).toNumber()-ap*100+1)
+            if (player.hsj >= 2) return i.lt(1) ? 0 : Math.floor(i.log(3).scale(player.hsj>=3 ? 1e5 : 1e4,3,3,true).toNumber()-ap*100+1)
 
             let b = Decimal.pow(10,ap*20+2)
 

@@ -775,6 +775,8 @@ function lineGain() {
 
     x = x.mul(solarUpgEffect(1,4)).mul(solarUpgEffect(4,5))
 
+    x = x.pow(getStarBonus(9))
+
     return x
 }
 
@@ -817,7 +819,7 @@ function updateConstellationTemp() {
     tmp.constStarStrong = hasSolarUpgrade(2,13)
 
     tmp.maxLConstellation = player.sn.times > 0 ? 24 : 12
-    tmp.FP_tier = upgEffect('constellation',7,0)
+    tmp.FP_tier = upgEffect('constellation',7,0) + solarUpgEffect(6,8,0)
     tmp.constellationCap = []
 
     tmp.lineGain = lineGain()
