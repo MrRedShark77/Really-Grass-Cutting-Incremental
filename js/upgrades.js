@@ -914,7 +914,7 @@ function buyUpgrade(id,x) {
         let [p,q] = UPG_RES[resDis][1]()
 
         if (resDis == 'perk') {
-            player.spentPerk += tu.cost[x].toNumber()
+            player.spentPerk += Number(tu.cost[x])
             tmp.perkUnspent = Math.max(player.maxPerk-player.spentPerk,0)
         }
         else if (!tu.noSpend) p[q] = isResNumber.includes(resDis) ? Math.max(p[q]-tu.cost[x],0) : p[q].sub(tu.cost[x]).max(0)
@@ -1004,7 +1004,7 @@ function buyNextUpgrade(id,x) {
 
 			amt[x] = Decimal.min(amt[x] ? costOnce ? amt[x].add(bulk) : amt[x].max(bulk) : bulk,max)
 			if (resDis == 'perk') {
-				player.spentPerk += cost.toNumber()
+				player.spentPerk += Number(cost)
 				tmp.perkUnspent = Math.max(player.maxPerk-player.spentPerk,0)
 			}
 			else if (!tu.noSpend) p[q] = numInc ? Math.max(p[q]-cost,0) : p[q].sub(cost).max(0)
@@ -1050,7 +1050,7 @@ function buyMaxUpgrade(id,x,auto=false) {
 
                 amt[x] = Decimal.min(amt[x] ? costOnce ? amt[x].add(bulk) : amt[x].max(bulk) : bulk,max)
                 if (resDis == 'perk') {
-                    player.spentPerk += cost.toNumber()
+                    player.spentPerk += Number(cost)
                     tmp.perkUnspent = Math.max(player.maxPerk-player.spentPerk,0)
                 }
                 else if (!tu.noSpend) p[q] = numInc ? Math.max(p[q]-cost,0) : p[q].sub(cost).max(0)
