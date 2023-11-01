@@ -1,3 +1,5 @@
+function E(x){return new Decimal(x)};
+
 const ST_NAMES = [
 	null, [
 		["","U","D","T","Qa","Qt","Sx","Sp","Oc","No"],
@@ -378,12 +380,72 @@ function formatTime(ex,acc=0,type="s") {
     return (ex.gte(10)||type!="m" ?"":"0")+format(ex,acc)+(type=='s'?"s":"")
 }
 
-function formatReduction(ex) { ex = E(ex); return format(E(1).sub(ex).mul(100))+"%" }
+function formatReduction(ex,acc) { return Decimal.sub(1,ex).mul(100).format(acc)+"%" }
 
-function formatPercent(ex) { ex = E(ex); return format(ex.mul(100))+"%" }
+function formatPercent(ex,acc) { return Decimal.mul(ex,100).format(acc)+"%" }
 
-function formatMult(ex,acc=2) { ex = E(ex); return ex.gte(1)?"×"+ex.format(acc):"/"+ex.pow(-1).format(acc)}
+function formatMult(ex,acc) { return Decimal.gte(ex,1)?"×"+format(ex,acc):"/"+Decimal.pow(ex,-1).format(acc)}
 
-function formatPow(ex,acc=2) { ex = E(ex); return "^"+ex.format(acc) }
+function formatPow(ex,acc) { return "^"+format(ex,acc) }
 
 function expMult(a,b,base=10) { return Decimal.gte(a,10) ? Decimal.pow(base,Decimal.log(a,base).pow(b)) : E(a) }
+
+Decimal.prototype.clone = function() {
+  return this
+}
+
+Decimal.prototype.modular=Decimal.prototype.mod=function (other){
+  other=E(other);
+  if (other.eq(0)) return E(0);
+  if (this.sign*other.sign==-1) return this.abs().mod(other.abs()).neg();
+  if (this.sign==-1) return this.abs().mod(other.abs());
+  return this.sub(this.div(other).floor().mul(other));
+};
+
+function softcap(x,s,p,m) {
+  if (x >= s) {
+      if ([0, "pow"].includes(m)) x = (x/s)**p*s
+      if ([1, "mul"].includes(m)) x = (x-s)/p+s
+      if ([2, "pow2"].includes(m)) x = (x-s+1)**p+s-1
+  }
+  return x
+}
+
+function scale(x, s, p, mode, rev) {
+  return x.scale(s, p, mode, rev)
+}
+
+Decimal.prototype.softcap = function (start, power, mode, dis=false) {
+  var x = this.clone()
+  if (!dis&&x.gte(start)) {
+      if ([0, "pow"].includes(mode)) x = x.div(start).max(1).pow(power).mul(start)
+      if ([1, "mul"].includes(mode)) x = x.sub(start).div(power).add(start)
+      if ([2, "exp"].includes(mode)) x = expMult(x.div(start), power).mul(start)
+      if ([3, "log"].includes(mode)) x = x.div(start).log(power).add(1).mul(start)
+  }
+  return x
+}
+
+Decimal.prototype.scale = function (s, p, mode, rev=false) {
+  s = E(s)
+  p = E(p)
+  var x = this.clone()
+  if (x.gte(s)) {
+      if ([0, "pow"].includes(mode)) x = rev ? x.div(s).root(p).mul(s) : x.div(s).pow(p).mul(s)
+      if ([1, "exp"].includes(mode)) x = rev ? x.div(s).max(1).log(p).add(s) : Decimal.pow(p,x.sub(s)).mul(s)
+      if ([2, "dil"].includes(mode)) {
+          let s10 = s.log10()
+          x = rev ? Decimal.pow(10,x.log10().div(s10).root(p).mul(s10)) : Decimal.pow(10,x.log10().div(s10).pow(p).mul(s10))
+      }
+      if ([3, "alt_exp"].includes(mode)) x = rev ? x.div(s).max(1).log(p).add(1).mul(s) : Decimal.pow(p,x.div(s).sub(1)).mul(s)
+  }
+  return x
+}
+
+function softcapHTML(x, start) { return E(x).gte(start)?` <span class='soft'>(softcapped)</span>`:"" }
+
+Decimal.prototype.softcapHTML = function (start) { return softcapHTML(this.clone(), start) }
+
+Decimal.prototype.format = function (acc=2, max=9) { return format(this.clone(), acc, max) }
+
+Decimal.prototype.formatGain = function (gain, mass=false) { return formatGain(this.clone(), gain, mass) }

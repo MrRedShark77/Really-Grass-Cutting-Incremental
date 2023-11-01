@@ -135,6 +135,8 @@ function resetTemp() {
             comp_eff: [],
         },
 
+        lun: {},
+
         starBonus: [],
 
         grass_overflow: E(1),
@@ -165,6 +167,7 @@ function resetTemp() {
 function updateTemp() {
     tmp.lunarUnl = player.grassjump>=5
     tmp.solarianUnl = hasSolarUpgrade(7,0)
+    tmp.lunarianUnl = hasSolarUpgrade(7,12)
 
     tmp.total_astral = player.astral+100*player.astralPrestige
     tmp.oilRigBase = (player.upgs.factory[7]||0)/100

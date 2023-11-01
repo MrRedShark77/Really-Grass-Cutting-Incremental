@@ -356,6 +356,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
+                unl: ()=>!hasCentralized(15),
                 max: 100,
                 title: "Solar Powered Normality",
                 get desc() {return `Increase normality points gain by <b class="green">${formatMult(1e100)}</b> per squared level.`},
@@ -1209,7 +1210,7 @@ const SOLAR_UPGS = [
                 max: 1000,
                 title: "Restoration Remnants",
                 desc: `Increase restoring speed by <b class="green">+10%</b> compounding per level.`,
-                icon: ['Icons/Placeholder'],
+                icon: ['Icons/Restore'],
                 unl: () => player.sn.tier.gte(8),
                 cost: i => Decimal.pow(1.2,i).mul(1e4).ceil(),
                 bulk: i => i.div(1e4).log(1.2).floor().toNumber()+1,
@@ -1426,7 +1427,7 @@ const SOLAR_UPGS = [
                 unl: () => hasSolarUpgrade(7,6),
                 title: "Restoration Being Forming",
                 desc: `Forming speed boosts Restoring speed very slightly, starting at 1e50.`,
-                icon: ['Icons/Placeholder'],
+                icon: ['Icons/Restore'],
                 cost: i => 1,
                 effect(i) {
                     let x = tmp.sol.formingMult ?? E(1)
@@ -1464,6 +1465,36 @@ const SOLAR_UPGS = [
                     return x
                 },
                 effDesc: x => formatMult(x),
+            },{
+                unl: () => hasSolarUpgrade(7,10) && hasSolarUpgrade(7,11) && hasCentralized(12),
+                title: "Lunarian",
+                desc: `Unlock the <b class='green'>Lunarian</b> features, including the Lunarian Map (bottom) & Inventory (bottom-right).`,
+                icon: ['Curr/Lunarian'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,12),
+                title: "Less Grass Softcap I",
+                desc: `The softcap of 'Grass Exponent' Forming is <b class='green'>50%</b> weaker.`,
+                icon: ['Curr/Grass'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,13),
+                title: "Luanrian Offense",
+                desc: `Lunarian Damage provides an exponential boost to Offense.`,
+                icon: ['Icons/LunarSword'],
+                cost: i => 1,
+                effect(i) {
+                    let x = getStartingStats().damage.max(1).log10().div(4).add(1)
+                        
+                    return x
+                },
+                effDesc: x => formatPow(x),
+            },{
+                unl: () => hasSolarUpgrade(7,13),
+                title: "Squared Soul",
+                desc: `<b class='green'>Square</b> Soul dropped.`,
+                icon: ['Curr/Soul'],
+                cost: i => 1,
             },
         ],
     },{
@@ -1667,7 +1698,7 @@ const SOLAR_UPGS = [
                 max: 1000,
                 title: "Restore I",
                 desc: `Increase restore speed by <b class="green">+10%</b> per level.`,
-                icon: ['Icons/Placeholder'],
+                icon: ['Icons/Restore'],
                 costOnce: true,
                 cost: i => 1,
                 effect(i) {
@@ -1724,7 +1755,7 @@ const SOLAR_UPGS = [
             },{
                 max: 10,
                 title: "Solar Ray Exponent",
-                desc: `Increase fighting offense by <b class="green">+^0.1</b> per level.`,
+                desc: `Increase SR gain by <b class="green">+^0.1</b> per level.`,
                 icon: ['Icons/SR','Icons/Exponent'],
                 require() { return player.sol.bestStage.gte(100) },
                 req_txt: `Stage 100`,
@@ -1738,7 +1769,122 @@ const SOLAR_UPGS = [
                 effDesc: x => formatPow(x),
             },
         ],
-    },
+    },{
+        title: "Lunarian Soul Upgrades",
+        tab: ['Curr/LunarianSoul','orange'],
+        res: "lunar_soul",
+
+        require() { return tmp.lunarianUnl },
+        req_txt: `???`,
+
+        ctn: [
+            {
+                max: 1000,
+                title: "Souls II",
+                desc: `Increase soul dropped by <b class="green">x2</b> per level.`,
+                icon: ['Curr/Soul'],
+                cost: i => Decimal.pow(1.25,i).mul(10).ceil(),
+                bulk: i => i.div(10).log(1.25).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(2,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Compression II",
+                desc: `Increase compression speed by <b class="green">x10</b> per level.`,
+                icon: ['Curr/SolCurrency1a'],
+                cost: i => Decimal.pow(1.25,i).mul(10).ceil(),
+                bulk: i => i.div(10).log(1.25).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(10,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Mana Generation II",
+                desc: `Increase mana generated by <b class="green">x5</b> per level.`,
+                icon: ['Curr/Mana'],
+                cost: i => Decimal.pow(1.25,i).mul(10).ceil(),
+                bulk: i => i.div(10).log(1.25).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(5,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Lunarian Collector",
+                desc: `Increase collection speed by <b class="green">x3</b> per level.`,
+                icon: ['Icons/Collect'],
+                cost: i => Decimal.pow(1.25,i).mul(10).ceil(),
+                bulk: i => i.div(10).log(1.25).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(3,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Lunarian Forming",
+                desc: `Increase forming speed by <b class="green">x3</b> per level.`,
+                icon: ['Icons/Form'],
+                cost: i => Decimal.pow(1.25,i).mul(10).ceil(),
+                bulk: i => i.div(10).log(1.25).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(3,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Lunarian Restoration",
+                desc: `Increase restore speed by <b class="green">x1.5</b> per level.`,
+                icon: ['Icons/Restore'],
+                cost: i => Decimal.pow(1.25,i).mul(10).ceil(),
+                bulk: i => i.div(10).log(1.25).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(1.5,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Divine Souls I",
+                desc: `Increase divine soul gain by <b class="green">x1.2</b> per level.`,
+                icon: ['Curr/DivineSoul'],
+                cost: i => Decimal.pow(1.25,i).mul(100).ceil(),
+                bulk: i => i.div(100).log(1.25).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(1.2,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                max: 1000,
+                title: "Funding",
+                desc: `Increase funding speed by <b class="green">x1.1</b> per level.`,
+                icon: ['Icons/Fund'],
+                cost: i => Decimal.pow(1.25,i).mul(100).ceil(),
+                bulk: i => i.div(100).log(1.25).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(1.1,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },
+        ],
+    }
 ]
 
 for (let x of SOLAR_UPGS) for (let y of x.ctn) y.max = y.max ?? 1
@@ -1840,6 +1986,17 @@ const SU_RES = {
         set amount(v) { player.sol.divineSoul = v },
 
         get html() { return `Divine Souls: ${this.amount.format(0)}` },
+    },
+    lunar_soul: {
+        name: "Lunarian Soul",
+
+        base: "Bases/LunarianBase",
+        icon: "Curr/LunarianSoul",
+
+        get amount() { return LUNAR_MATERIALS.l_soul.amount },
+        set amount(v) { LUNAR_MATERIALS.l_soul.amount = v },
+
+        get html() { return `Lunarian Souls: ${this.amount.format(0)}` },
     },
 }
 

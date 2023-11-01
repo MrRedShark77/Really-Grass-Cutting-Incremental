@@ -345,6 +345,8 @@ UPGS.ap = {
 
 MAIN.np = {
     gain() {
+        if (hasCentralized(15)) return player.grass.floor();
+
         let l = Math.max(player.level-49,0)
         let x = Decimal.pow(1.05,l).mul(l).mul(player.unBestGrass.div(1e33).max(1).root(5))
 

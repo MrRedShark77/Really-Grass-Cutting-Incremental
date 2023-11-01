@@ -505,6 +505,7 @@ body.planetoid #level_bar {
 
 *::-webkit-scrollbar {
     width: 10px;
+    height: 10px;
 }
 
 *::-webkit-scrollbar-track {
@@ -1791,6 +1792,13 @@ body.planetoid #level_bar {
     background-color: #4b004b !important;
 }
 
+#fb_fund {
+    background-color: #00804f;
+}
+#fb_fund:hover {
+    background-color: #30b884 !important;
+}
+
 .level-color {
     color: #00ff0d;
 }
@@ -1823,9 +1831,13 @@ body.planetoid #level_bar {
     background-color: #a7fcff44;
 }
 
+.compression-div:nth-child(5) {
+    background-color: #fdff6d44;
+}
+
 #star_btn {
     width: 400px;
-    height: 80px;
+    height: 80px
 }
 
 .star-milestone {
@@ -1874,4 +1886,143 @@ body.planetoid #level_bar {
     width: calc(100% - 10px);
     text-align: left;
     font-size: 14px;
+}
+
+#collecting_tab_table {
+    display: flex;
+    justify-content: center;
+
+    width: 100%;
+    height: 80px;
+}
+
+#collecting_tab_table > button {
+    display: block;
+    width: 100%;
+}
+
+#l_map_tabs {
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+#l_map_tabs > button {
+    margin: 0px;
+    display: block;
+    width: 100%;
+    height: 80px;
+}
+
+#lunarian_map {
+    position: absolute;
+    height: 100%;
+    right: 0px;
+}
+
+#lunarian_map_desc {
+    position: relative;
+    width: 100%; height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+#lunarian_buttons {
+    min-height: 50px;
+}
+
+.lunar_di {
+    display: inline-block;
+    margin: 5px;
+    background-color: #fff1;
+}
+
+.lunar_di > img {
+    width: 100px; height: 100px;
+    filter: brightness(0);
+}
+
+.lunar_di.discovered > img {
+    filter: brightness(1);
+}
+
+#lunar_inventory {
+    display: flex;
+    justify-content: start;
+    flex-flow: row wrap;
+    width: 100%;
+    max-height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.lunar-item {
+    position: relative;
+    width: 410px;
+    height: 160px;
+    margin: 5px;
+    border: solid 2px white;
+    border-radius: 10px;
+    background-color: black;
+}
+
+.lunar-item > img {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 140px;
+    height: 140px;
+}
+
+.item-level {
+    position: absolute;
+    top: 140px;
+    left: 0px;
+    width: 140px;
+    height: 20px;
+    font-size: 14px;
+}
+
+.item-upgrade {
+    position: absolute;
+    top: 140px;
+    left: 150px;
+    width: 250px;
+    height: 20px;
+    font-size: 14px;
+    background-color: green;
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+.item-upgrade.locked {
+    background-color: darkred;
+    cursor: default;
+}
+
+.item-upgrade.maxed {
+    background-color: mediumvioletred;
+    cursor: default;
+}
+
+.item-name {
+    position: absolute;
+    top: 0px;
+    left: 140px;
+    width: 270px;
+    height: 20px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.item-desc {
+    position: absolute;
+    top: 20px;
+    left: 140px;
+    width: 270px;
+    height: 120px;
+    text-align: left;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    font-size: 12px;
 }

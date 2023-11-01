@@ -219,7 +219,11 @@ const ADV_STAR = [
         req: [1e58,12500,1e93],
         bonus: x => x.div(1e55).max(1).log10().root(2).div(10).add(1),
         bonusDesc: x => `<b class='darkgreen'>${formatPow(x)}</b> Line & Solar Flare`,
-    },
+    },{
+        req: [1e81,50000,1e220],
+        bonus: x => expMult(x.div(1e80).add(1),0.5),
+        bonusDesc: x => `<b class='darkgreen'>${formatMult(x)}</b> Divine Soul`
+    }
 ]
 
 el.setup.star = ()=>{

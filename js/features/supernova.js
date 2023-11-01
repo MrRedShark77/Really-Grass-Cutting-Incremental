@@ -144,7 +144,7 @@ const SUPERNOVA = {
         
         .mul(getASEff('sf'))
 
-        .mul(getStageBonus('sf'))
+        .mul(getStageBonus('sf')).mul(getSolCompressionEffect(4))
 
         x = x.pow(getStarBonus(9))
 
@@ -238,7 +238,13 @@ const SUPERNOVA = {
             - Unlock more remnant and sunstone upgrades.<br>
             - Eclipse no longer gets reset.
             `,
-        },
+        },/*{
+            r: 10,
+            desc: `
+            - Unlock the <b class="green">Twilight</b> reset (on bottom of supernova milestones).<br>
+            - Unlock more soul and divine soul upgrades.<br>
+            `,
+        },*/
     ],
 }
 

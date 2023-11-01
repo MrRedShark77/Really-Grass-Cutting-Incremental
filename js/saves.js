@@ -1,5 +1,3 @@
-function E(x){return new Decimal(x)};
-
 const VER = 0.0501
 const EINF = Decimal.dInf
 const BETA = false
@@ -15,66 +13,6 @@ Math.lerp = function (value1, value2, amount) {
 Math.logBase = function (value, base) {
     return Math.log(value) / Math.log(base);
 }
-
-Decimal.prototype.clone = function() {
-    return this
-}
-
-Decimal.prototype.modular=Decimal.prototype.mod=function (other){
-    other=E(other);
-    if (other.eq(0)) return E(0);
-    if (this.sign*other.sign==-1) return this.abs().mod(other.abs()).neg();
-    if (this.sign==-1) return this.abs().mod(other.abs());
-    return this.sub(this.div(other).floor().mul(other));
-};
-
-function softcap(x,s,p,m) {
-    if (x >= s) {
-        if ([0, "pow"].includes(m)) x = (x/s)**p*s
-        if ([1, "mul"].includes(m)) x = (x-s)/p+s
-        if ([2, "pow2"].includes(m)) x = (x-s+1)**p+s-1
-    }
-    return x
-}
-
-function scale(x, s, p, mode, rev) {
-    return x.scale(s, p, mode, rev)
-}
-
-Decimal.prototype.softcap = function (start, power, mode, dis=false) {
-    var x = this.clone()
-    if (!dis&&x.gte(start)) {
-        if ([0, "pow"].includes(mode)) x = x.div(start).max(1).pow(power).mul(start)
-        if ([1, "mul"].includes(mode)) x = x.sub(start).div(power).add(start)
-        if ([2, "exp"].includes(mode)) x = expMult(x.div(start), power).mul(start)
-        if ([3, "log"].includes(mode)) x = x.div(start).log(power).add(1).mul(start)
-    }
-    return x
-}
-
-Decimal.prototype.scale = function (s, p, mode, rev=false) {
-    s = E(s)
-    p = E(p)
-    var x = this.clone()
-    if (x.gte(s)) {
-        if ([0, "pow"].includes(mode)) x = rev ? x.div(s).root(p).mul(s) : x.div(s).pow(p).mul(s)
-        if ([1, "exp"].includes(mode)) x = rev ? x.div(s).max(1).log(p).add(s) : Decimal.pow(p,x.sub(s)).mul(s)
-        if ([2, "dil"].includes(mode)) {
-            let s10 = s.log10()
-            x = rev ? Decimal.pow(10,x.log10().div(s10).root(p).mul(s10)) : Decimal.pow(10,x.log10().div(s10).pow(p).mul(s10))
-        }
-        if ([3, "alt_exp"].includes(mode)) x = rev ? x.div(s).max(1).log(p).add(1).mul(s) : Decimal.pow(p,x.div(s).sub(1)).mul(s)
-    }
-    return x
-}
-
-Decimal.prototype.format = function (acc=2, max=9) { return format(this.clone(), acc, max) }
-
-Decimal.prototype.formatGain = function (gain, mass=false) { return formatGain(this.clone(), gain, mass) }
-
-function softcapHTML(x, start) { return E(x).gte(start)?` <span class='soft'>(softcapped)</span>`:"" }
-
-Decimal.prototype.softcapHTML = function (start) { return softcapHTML(this.clone(), start) }
 
 function randint(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
@@ -228,6 +166,7 @@ function getPlayerData() {
         singularity: 0,
 
         sol: getSolarianSave(),
+        lun: getLunarianSave(),
 
         darkCharge: E(0),
 
@@ -398,6 +337,9 @@ function deepUndefinedAndDecimal(obj, data) {
 
 function convertStringToDecimal() {
     for (let x in UPGS) player.upgs[x] = player.upgs[x].map(a => E(a))
+
+    fastDecimalCheck(player.lun.res)
+    fastDecimalCheck(player.lun.items)
 }
 
 function cannotSave() { return !is_online }

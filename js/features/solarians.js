@@ -14,6 +14,8 @@ const SOLARIANS = {
 
         x = x.pow(solarUpgEffect(9,7))
 
+        if (hasSolarUpgrade(7,14)) x = x.pow(solarUpgEffect(7,14))
+
         return x
     },
 
@@ -28,9 +30,11 @@ const SOLARIANS = {
 
             let x = Decimal.pow(1.1,s).mul(s.add(1))
 
-            .mul(getSolCompressionEffect(1)).mul(solarUpgEffect(9,0))
+            .mul(getSolCompressionEffect(1)).mul(solarUpgEffect(9,0)).mul(solarUpgEffect(10,0))
 
             if (hasSolarUpgrade(7,2)) x = x.mul(2)
+
+            if (hasSolarUpgrade(7,15)) x = x.pow(2)
 
             return x.floor()
         },
@@ -62,7 +66,7 @@ const SOLARIANS = {
 
         .mul(getSolCompressionEffect(1)).mul(getFormingBonus('restore',1))
 
-        .mul(getStarBonus(8))
+        .mul(getStarBonus(8)).mul(solarUpgEffect(10,3))
 
         return x
     },
@@ -75,16 +79,23 @@ const SOLARIANS = {
 
         if (hasSolarUpgrade(7,4)) x = x.mul(solarUpgEffect(7,4))
 
-        .mul(getStarBonus(8))
+        .mul(getStarBonus(8)).mul(solarUpgEffect(10,4))
 
         return x
     },
     get restoreMult() {
         let x = E(1)
 
-        x = x.mul(solarUpgEffect(9,4)).mul(solarUpgEffect(5,7))
+        x = x.mul(solarUpgEffect(9,4)).mul(solarUpgEffect(5,7)).mul(solarUpgEffect(10,5))
 
         if (hasSolarUpgrade(7,7)) x = x.mul(solarUpgEffect(7,7))
+
+        return x
+    },
+    get fundMult() {
+        let x = E(1)
+        
+        x = x.mul(solarUpgEffect(10,7))
 
         return x
     },
@@ -98,7 +109,7 @@ const SOLARIANS = {
 
         .mul(getSolCompressionEffect(2)).mul(getFormingBonus('restore',0))
 
-        .mul(solarUpgEffect(9,3))
+        .mul(solarUpgEffect(9,3)).mul(solarUpgEffect(10,2))
         
         return x
     },
@@ -323,7 +334,7 @@ const FORMING = {
                     ['stone',1,3,1.1],
                 ],
                 rankMult: 2,
-                bonus: b => b.div(100).add(1).overflow(5e4,0.25),
+                bonus: b => b.div(100).add(1).overflow(5e4,hasSolarUpgrade(7,13)?0.5:0.25),
                 bonusDesc: x => formatPow(x)+x.softcapHTML(5e4),
             },{
                 unl: ()=>hasSolarUpgrade(7,3),
@@ -512,6 +523,38 @@ const FORMING = {
             },
         ],
     },
+    fund: {
+        unl: ()=>tmp.lunarianUnl,
+        name: "Funding",
+        get mult() { return tmp.sol.fundMult },
+        ctn: [
+            {
+                title: "Lunarian Offense",
+                icon: "Icons/LunarSword",
+
+                req: [1,10],
+                rankReq: [100,10],
+                materials: [
+                    ['l_curr1',1,2],
+                ],
+                rankMult: 3,
+                bonus: b => b.div(100).add(1),
+                bonusDesc: x => "+"+formatPercent(x.sub(1),0),
+            },{
+                title: "Lunarians",
+                icon: "Curr/Lunarian",
+
+                req: [1,10],
+                rankReq: [100,10],
+                materials: [
+                    ['l_curr1',1,2],
+                ],
+                rankMult: 3,
+                bonus: b => b,
+                bonusDesc: x => "+"+format(x,0),
+            },
+        ],
+    },
 }
 
 const COLLECTED_MATERIALS = Object.entries(SOL_MATERIALS).filter(x => x[1].collected).map(x => x[0])
@@ -524,6 +567,7 @@ COLLECTED_MATERIALS.forEach(x=>Object.defineProperty(SOL_MATERIALS[x],'amount',{
 var enemy_health = EINF
 var attack_time = E(0)
 var form_tab = 'stats'
+var collect_tab = 0
 
 function calcSolarians(dt) {
     if (!hasSolarUpgrade(7,0)) return;
@@ -578,14 +622,14 @@ function calcSolarians(dt) {
                 const [l0,la] = [fc.rankReq[0],fc.rankReq[1]??0], lc = SOL_FORMULAS.getCurrentLevel(l,r,l0,la)
                 if (ft.afford[i]) {
                     let bulk = Math.max(Math.min(
-                        ...fc.materials.map(x=>SOL_FORMULAS.getLevelBulk(l,r,l0,SOL_MATERIALS[x[0]].amount,x[1],x[2],x[3],la)),
+                        ...fc.materials.map(x=>SOL_FORMULAS.getLevelBulk(l,r,l0,getSMaterial(x[0]).amount,x[1],x[2],x[3],la)),
                         SOL_FORMULAS.getLevelBulk(l,r,l0,value,fc.req[0],fc.req[1],fc.req[2],la)
                     ),0)
                     if (bulk>0) {
                         ft.afford[i]=false
                         p[0] = p[0].sub(SOL_FORMULAS.getBulkedCost(bulk,l,r,l0,fc.req[0],fc.req[1],fc.req[2],la)).max(0)
                         fc.materials.forEach(x=>{
-                            let m = SOL_MATERIALS[x[0]]
+                            let m = getSMaterial(x[0])
                             m.amount = m.amount.sub(SOL_FORMULAS.getBulkedCost(bulk,l,r,l0,x[1],x[2],x[3],la)).max(0)
                         })
                         p[1] += bulk
@@ -607,6 +651,8 @@ function calcSolarians(dt) {
         if (u<SOL_COMPRESSION.ctn.length && player.sol.compression[u-1].gte(SOL_COMPRESSION.ctn[u].req)) player.sol.compression_unl++
     }
 }
+
+function getSMaterial(id) { return SOL_MATERIALS[id] || LUNAR_MATERIALS[id] }
 
 function setupSolarianStage() {
     updateSolarianTemp()
@@ -656,6 +702,7 @@ function updateSolarianTemp() {
     ts.collectingMult = SOLARIANS.collectingMult
     ts.formingMult = SOLARIANS.formingMult
     ts.restoreMult = SOLARIANS.restoreMult
+    ts.fundMult = SOLARIANS.fundMult
 
     ts.soul_rate = hasSolarUpgrade(7,9) ? 0.01 : 0
 
@@ -693,7 +740,7 @@ function updateCFTemp() {
                     let afford = value.gte(req)
                     if (afford) for (let mi in fc.materials) {
                         const m = fc.materials[mi]
-                        if (SOL_MATERIALS[m[0]].amount.lt(SOL_FORMULAS.getCost(l,r,m[1],m[2],m[3]))) {
+                        if (getSMaterial(m[0]).amount.lt(SOL_FORMULAS.getCost(l,r,m[1],m[2],m[3]))) {
                             afford = false
                             break
                         }
@@ -779,7 +826,11 @@ el.update.solarians = () => {
 
         tmp.el.stage_bonus.setHTML(t)
     } else if (mapID3 == 'sol') {
-        for (let [id,s] of Object.entries(SOL_MATERIALS)) {
+        tmp.el.collect_tab_btn1.setDisplay(tmp.lunarianUnl)
+
+        for (let t = 0; t < 2; t++) tmp.el['collecting_tab'+t].setDisplay(collect_tab === t)
+
+        if (collect_tab === 0) for (let [id,s] of Object.entries(SOL_MATERIALS)) {
             let el_id = `material_${id}`
 
             if (s.collected) {
@@ -808,6 +859,18 @@ el.update.solarians = () => {
                 tmp.el[el_id+'_amt'].setHTML(`<b>${amt.format(0)}</b>`+(gain?`<br><span>${formatGain(amt,gain)}</span>`:""))
             }
         }
+        else if (collect_tab === 1) for (let [id,s] of Object.entries(LUNAR_MATERIALS)) {
+            let el_id = `lunar_material_${id}`
+
+            let unl = !s.unl || s.unl()
+            tmp.el[el_id+'_div'].setDisplay(unl)
+
+            if (!unl) continue;
+
+            let amt = s.amount, gain = s.gain
+
+            tmp.el[el_id+'_amt'].setHTML(`<b>${amt.format(0)}</b>`+(gain?`<br><span>${formatGain(amt,gain)}</span>`:""))
+        }
 
         for (let [fi,f] of Object.entries(FORMING)) {
             let unl = !f.unl || f.unl()
@@ -834,7 +897,7 @@ el.update.solarians = () => {
 
                 for (let mi in fc.materials) {
                     const m = fc.materials[mi], cost = SOL_FORMULAS.getCost(l,r,m[1],m[2],m[3])
-                    tmp.el[id+'_m_'+mi].setHTML(`<b class="${SOL_MATERIALS[m[0]].amount.gte(cost) ? "green" : "red"}">${format(cost,0)}</b>`)
+                    tmp.el[id+'_m_'+mi].setHTML(`<b class="${getSMaterial(m[0]).amount.gte(cost) ? "green" : "red"}">${format(cost,0)}</b>`)
                 }
 
                 const [l_el, r_el] = [tmp.el[id+'_level'],tmp.el[id+'_rank']]
@@ -859,7 +922,7 @@ el.update.solarians = () => {
 }
 
 el.setup.solarians = () => {
-    let h = ""
+    let h = "<div id='collecting_tab0'>"
 
     for (let [id,s] of Object.entries(SOL_MATERIALS)) {
         h += s.collected ? `
@@ -878,6 +941,20 @@ el.setup.solarians = () => {
         ` : ""
     }
 
+    h += "</div><div id='collecting_tab1'>"
+
+    for (let [id,s] of Object.entries(LUNAR_MATERIALS)) {
+        h += `
+        <div class="material-div display" id="lunar_material_${id}_div">
+            <img src="images/${s.icon}.png">
+            <div class="material-name">${s.name}</div>
+            <div class="material-amount" id="lunar_material_${id}_amt"><b>0</b><br><span>(+1/s)</span></div>
+        </div>
+        `
+    }
+
+    h += "</div>"
+
     new Element('materials_table').setHTML(h)
 
     h = ["",""]
@@ -889,7 +966,7 @@ el.setup.solarians = () => {
             let id = `f_${fi}_${i}`
             let mh = ''
             for (let [mi,m] of Object.entries(fc.materials)) mh += `<div>
-                <img src="images/${SOL_MATERIALS[m[0]].icon}.png">
+                <img src="images/${getSMaterial(m[0]).icon}.png">
                 <div id="${id}_m_${mi}">???</div>
             </div>`
             h[0] += `

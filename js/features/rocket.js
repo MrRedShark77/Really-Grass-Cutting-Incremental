@@ -627,14 +627,17 @@ tmp_update.push(()=>{
 
     updateRocketTemp()
 
-    let m = E(1)
-    if (player.lowGH <= -28) m = m.add(getAGHEffect(14))
-
-    m = m.mul(upgEffect('np',3)).mul(upgEffect('dm',7))
-
-    if (player.lowGH <= -44) m = m.mul(getAGHEffect(18))
-
-    if (player.grassjump>=2) m = m.mul(getGJEffect(1))
-
-    tmp.momentumGain = Decimal.ceil(m)
+    if (hasCentralized(13)) tmp.momentumGain = player.grass.floor()
+    else {
+        let m = E(1)
+        if (player.lowGH <= -28) m = m.add(getAGHEffect(14))
+    
+        m = m.mul(upgEffect('np',3)).mul(upgEffect('dm',7))
+    
+        if (player.lowGH <= -44) m = m.mul(getAGHEffect(18))
+    
+        if (player.grassjump>=2) m = m.mul(getGJEffect(1))
+    
+        tmp.momentumGain = Decimal.ceil(m)
+    }
 })

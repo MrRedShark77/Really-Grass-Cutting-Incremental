@@ -342,7 +342,7 @@ const SOLAR_OBELISK = {
 
         .mul(getSolCompressionEffect(3))
 
-        .mul(solarUpgEffect(5,6))
+        .mul(solarUpgEffect(5,6)).mul(solarUpgEffect(10,6)).mul(getStarBonus(10))
 
         return x.softcap(1e9,0.5,0)
     },
@@ -416,6 +416,21 @@ const VOID_OBELISK = [
         get amount() { return player.dm },
         limit: E('e1e33'),
         icon: "Curr/DarkMatter",
+    },{ // 13
+        name: "Momentum",
+        get amount() { return player.momentum },
+        limit: E('e5e35'),
+        icon: "Curr/Momentum",
+    },{ // 14
+        name: "Unnatural Grass",
+        get amount() { return player.grass },
+        limit: E('e1e38'),
+        icon: "Curr/UGrass",
+    },{ // 15
+        name: "Normality Points",
+        get amount() { return player.np },
+        limit: E('e1e43'),
+        icon: "Curr/Normality",
     },
 ]
 
@@ -424,10 +439,12 @@ function hasCentralized(i) { return player.centralized.includes(i) }
 function activeVoid(i) {
     let l = VOID_OBELISK[i]
     if (!hasCentralized(i) && l.amount.gte(l.limit)) {
+        /*
         if (i == 12) {
             alert("Coming Soon!")
             return
         }
+        */
 
         player.centralized.push(i)
         player.singularity++

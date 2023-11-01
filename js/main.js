@@ -65,6 +65,7 @@ const MAIN = {
         if (player.recel && player.hsj <= 0) x = x.root(2)
 
         if (hasCentralized(3)) x = x.pow(2)
+        if (hasCentralized(14)) x = x.pow(2)
 
         let o = E(player.hsj >= 2 ? 'ee13' : 'ee12')
 
@@ -394,12 +395,12 @@ el.update.main = ()=>{
     let tier_unl = !pa && player.pTimes > 0
     let astr_unl = player.gTimes > 0
 
-    tmp.el.level.setHTML(`Level <b class="cyan">${format(pa?player.planetoid.level:player.level,0)}</b>`+(player.level>=10000?"":` (${formatPercent(pa ? tmp.cosmicLevel.percent : tmp.level.percent)})`))
+    tmp.el.level.setHTML(`Level <b class="cyan">${format(pa?player.planetoid.level:player.level,0)}</b>`+((pa?player.planetoid.level:player.level)>=10000?"":` (${formatPercent(pa ? tmp.cosmicLevel.percent : tmp.level.percent)})`))
 
     tmp.el.tier.setDisplay(tier_unl)
     tmp.el.astral.setDisplay(astr_unl)
     if (tier_unl) tmp.el.tier.setHTML(`Tier <b class="yellow">${format(player.tier,0)}</b> ${player.tier>=10000?'':'('+formatPercent(tmp.tier.percent)+')'}`)
-    if (astr_unl) tmp.el.astral.setHTML(`Astral <b class="magenta">${(player.astralPrestige>0?format(player.astralPrestige,0)+"-":"")+format(player.astral,0)}</b> (${formatPercent(tmp.astral.percent)})`)
+    if (astr_unl) tmp.el.astral.setHTML(`Astral <b class="magenta">${(player.astralPrestige>0?format(player.astralPrestige,0)+"-":"")+format(player.astral,0)}</b> ${player.astralPrestige>=10000?'':'('+formatPercent(tmp.astral.percent)+')'}`)
 
     if (mapID == 'g') {
         let xpID = pa ? 'Cosmic' : 'XP'

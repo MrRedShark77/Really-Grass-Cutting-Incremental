@@ -41,7 +41,7 @@ const STAR_MAP = [
     [null,null,null,null,null,null,null],
     [null,null,'sol','cs',null,null,null],
     [null,'adv','stage','star','sm',null,null],
-    [null,null,'solc',null,null,null,null],
+    [null,null,'solc','lun_map','lun',null,null],
     [null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null],
 ]
@@ -77,6 +77,8 @@ const MAP_NAMES = {
     'sol': "Collecting/Forming",
     'solc': "Sol Compression",
     'adv': "Advanced Star",
+    'lun': "Lunarian Inventory",
+    'lun_map': "Lunarian Map",
 }
 
 const MAP_UNLOCKS = {
@@ -100,6 +102,8 @@ const MAP_UNLOCKS = {
     'sol': () => tmp.solarianUnl,
     'solc': () => hasSolarUpgrade(7,3),
     'adv': () => player.sol.bestStage.gte(20),
+    'lun': () => tmp.lunarianUnl,
+    'lun_map': () => tmp.lunarianUnl,
 }
 
 const MAP_IDS = (()=>{

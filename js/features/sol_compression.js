@@ -2,7 +2,7 @@ const SOL_COMPRESSION = {
     get mult() {
         let x = E(1)
 
-        .mul(getFormingBonus('basic',2)).mul(solarUpgEffect(9,2))
+        .mul(getFormingBonus('basic',2)).mul(solarUpgEffect(9,2)).mul(solarUpgEffect(10,1))
 
         return x
     },
@@ -42,6 +42,14 @@ const SOL_COMPRESSION = {
             },
             effDesc: x => `<b class='green'>${formatMult(x)}</b> Divine Souls`,
             req: E(1e55),
+        },{
+            eff(c) {
+                let x = c.div(1e200).add(1).root(2)
+
+                return x
+            },
+            effDesc: x => `<b class='green'>${formatMult(x)}</b> Solar Flares`,
+            req: E(1e200),
         },
     ],
 }
