@@ -102,7 +102,7 @@ const MAP_UNLOCKS = {
     'sol': () => tmp.solarianUnl,
     'solc': () => hasSolarUpgrade(7,3),
     'adv': () => player.sol.bestStage.gte(20),
-    'lun': () => tmp.lunarianUnl,
+    'lun_inv': () => tmp.lunarianUnl,
     'lun_map': () => tmp.lunarianUnl,
 }
 
