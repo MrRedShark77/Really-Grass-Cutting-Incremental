@@ -555,6 +555,7 @@ const SOLAR_UPGS = [
                 icon: ['Icons/PrismUpgrade'],
                 cost: i => 1e6,
                 onBuy() {
+                    cs_selected = ''
                     for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) {
                         let g = player.constellation.grid[y][x], t = parseInt(g.split('t')[0])
                         if (g != '' && t <= 13) player.constellation.grid[y][x] = ''
