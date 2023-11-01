@@ -72,6 +72,8 @@ function loadLunarian() {
     camera_pos = getPositionMult(...player.position)
 
     setInterval(loop,1000/30)
+
+    retrieveCanvasData()
 }
 
 function loop() {
