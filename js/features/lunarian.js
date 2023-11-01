@@ -118,7 +118,7 @@ el.update.lunarian = () => {
                 x.levels.forEach((y,j) => {tmp.el[id+"_level"+j].setClasses({locked: j > m})})
             }
         })
-    } else if (mapID3 == 'lun') {
+    } else if (mapID3 == 'lun_inv') {
         for (let [i,x] of Object.entries(LUNAR_ITEMS)) if (x.type === 'items') {
             let id = "li_"+i, dis = player.lun.items[i] !== undefined
             tmp.el[id+"_div"].setDisplay(dis)
