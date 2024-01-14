@@ -58,6 +58,8 @@ RESET.supernova = {
         player.planetoid.firstEnter = k.fe
         player.planetoid.planetTier = solarUpgEffect(0,6,0)
 
+        if (player.hsj >= 4) player.planetoid.active = true
+
         sellAllGrids(false,false,true)
         updateConstellationTemp()
         updateConstellation()

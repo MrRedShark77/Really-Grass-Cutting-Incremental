@@ -405,7 +405,7 @@ RESET.formRing = {
         pd.pm = E(0)
         pd.bestPm = E(0)
         pd.xp = E(0)
-        pd.level = 0
+        pd.level = E(0)
 
         resetUpgrades('planetarium')
 
