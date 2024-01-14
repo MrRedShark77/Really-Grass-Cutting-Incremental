@@ -2488,7 +2488,7 @@ function buyNextSolarUpgrade(id,x) {
 
 			amt[x] = Math.min(u.costOnce ? bulk + amt2 : Math.max(amt2,bulk),u.max)
 
-            cost = u.costOnce ? Decimal.mul(cost,amt[x] - amt2) : u.cost(bulk-1)
+            cost = u.costOnce ? Decimal.mul(cost,amt[x] - amt2) : u.cost(amt[x]-1)
             
             if (id == 12) {
                 player.spentPerkSolar = player.spentPerkSolar.add(cost)
@@ -2518,7 +2518,7 @@ function buyMaxSolarUpgrade(id,x) {
 		if (bulk > (u.costOnce ? 0 : amt2)) {
 			amt[x] = Math.min(u.costOnce ? bulk + amt2 : Math.max(amt2,bulk),u.max)
 
-            cost = u.costOnce ? Decimal.mul(cost,amt[x] - amt2) : u.cost(bulk-1)
+            cost = u.costOnce ? Decimal.mul(cost,amt[x] - amt2) : u.cost(amt[x]-1)
 
             if (id == 12) {
                 player.spentPerkSolar = player.spentPerkSolar.add(cost)
