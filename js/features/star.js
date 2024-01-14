@@ -25,7 +25,7 @@ UPGS.stardust = {
             bulk: i => i.scale(1e33,3,2,true).div(10).max(1).log(1.15).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.05,i)
+                let x = Decimal.pow(1.5,i)
         
                 return x
             },
@@ -43,13 +43,13 @@ UPGS.stardust = {
             bulk: i => i.scale(1e33,2,2,true).div(25).max(1).log(1.3).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.15,i)
+                let x = Decimal.pow(1.75,i)
         
                 return x
             },
             effDesc: x => formatMult(x),
         },{
-            max: 1000,
+            max: 10000,
 
             title: "Stardust XP",
             desc: `Increase the exponent of XP by <b class="green">+1%</b> per level.`,
@@ -67,7 +67,7 @@ UPGS.stardust = {
             },
             effDesc: x => formatPow(x),
         },{
-            max: 1000,
+            max: 10000,
 
             title: "Stardust Cosmic",
             desc: `Increase the exponent of Cosmic by <b class="green">+1%</b> per level.`,
