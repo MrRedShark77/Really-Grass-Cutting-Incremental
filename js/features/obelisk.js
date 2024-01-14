@@ -42,11 +42,11 @@ const AP_BONUS_BASE = [100,25,5,3,5,3,3]
 const LUNAR_OB = [
     // 0 - multiplier, 1 - exponent
 
-    ['Grass Value','Curr/Grass',10,1.1,0.001,1],
-    ['XP','Icons/XP',10,1.1,0.001,1],
-    [`TP`,'Icons/TP',10,1.1,0.001,1],
+    ['Grass Value','Curr/Grass',10,1.1,0.008,1],
+    ['XP','Icons/XP',10,1.1,0.008,1],
+    [`TP`,'Icons/TP',10,1.1,0.008,1],
     [`Cosmic`,'Icons/XP2',20,5,2,0],
-    [`Charge`,'Curr/Charge',100,1.1,0.001,1],
+    [`Charge`,'Curr/Charge',100,1.1,0.008,1],
     [`Rocket Fuel`,'Curr/RocketFuel',1000,100,0.01,0],
     [`Planetarium`,'Curr/Planetoid',20,5,2,0],
 ]
