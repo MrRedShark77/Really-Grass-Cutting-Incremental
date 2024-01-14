@@ -1,15 +1,27 @@
+var LUNAR_BASES = {
+    'l_soul': 'LunarianBase',
+    'l_curr1': 'LunarianBase',
+    'l_curr2': 'LunarianBase',
+}
+
 const LUNAR_MATERIALS = (()=>{
     let a = {}
+    var gen = ['l_curr1','l_curr2']
     for (let [id,x] of Object.entries(LUNAR_ITEMS)) if (x.type === 'res') {
         a[id] = {
             unl() { return player.lun.res[id] !== undefined },
             name: x.name,
             icon: x.icon,
+            base: LUNAR_BASES[id],
         }
 
         Object.defineProperty(a[id],'amount',{
             get() { return player.lun.res[id]??E(0) },
             set(v) { return player.lun.res[id] = v },
+        })
+
+        if (gen.includes(id)) Object.defineProperty(a[id],'gain',{
+            get() { return tmp.lun.res_gen[id] },
         })
     }
     return a
@@ -17,7 +29,6 @@ const LUNAR_MATERIALS = (()=>{
 
 var lunarian_map_tab = -1
 var lunarian_map_choose = null
-
 const LUNAR_MAP = [
     {
         id: "lunar1",
@@ -26,21 +37,24 @@ const LUNAR_MAP = [
 
         levels: [1,6,11,16,21],
 
+        res: "l_curr1",
         discover_items: ['l_soul','l_curr1','key','rage_essence','calm_essence','wise_essence'],
     },{
         id: "lunar2",
         dot: "2",
-        name: "Lunarian Village",
+        name: "Lune Village",
 
-        req: () => false,
-        reqDesc: "???",
+        req: () => lunarianAreaCompleted(0),
+        reqDesc: "A1 Completion",
 
-        levels: [1001],
+        levels: [1,6,11,16,21,26,31],
 
-        discover_items: [],
+        res: "l_curr2",
+        discover_items: ['l_curr2','clover','gps'],//
     },
 ]
 
+function lunarianAreaCompleted(i) { return (player.lun.completed[i] ?? 0) >= LUNAR_MAP[i].levels.length }
 function switchLTab(i) { if (i < 0 || !LUNAR_MAP[i].req || LUNAR_MAP[i].req()) lunarian_map_tab = i }
 function chooseLunarLevel(i,j) { if (j <= (player.lun.completed[i] ?? 0)) lunarian_map_choose = [i,j] }
 function startBattle() {
@@ -71,15 +85,24 @@ function upgradeLunarItem(id) {
 function getStartingStats() {
     let x = {}
 
-    x.lunarian = Decimal.add(100,getFormingBonus("fund",1,0)).round()
+    x.lunarian = Decimal.add(100,getFormingBonus("fund",1,0)).mul(getFormingBonus("adv",1,1)).round()
 
-    x.damage = Decimal.mul(1,getFormingBonus("fund",0))
+    x.damage = Decimal.mul(1,getFormingBonus("fund",0)).mul(getFormingBonus("adv",0,1))
 
     return x
 }
 
 tmp_update.push(()=>{
-    
+    let su20 = hasSolarUpgrade(7,20)
+    LUNAR_MAP.forEach((x,i)=>{
+        let res = x.res, comp = player.lun.completed[i]
+
+        if (su20 && comp && comp > 0) {
+            let lvl = x.levels[comp-1]
+            
+            tmp.lun.res_gen[res] = Decimal.pow(1.1,lvl-1).mul(lvl/10)
+        } else tmp.lun.res_gen[res] = undefined
+    })
 })
 
 el.update.lunarian = () => {
@@ -123,7 +146,7 @@ el.update.lunarian = () => {
             let id = "li_"+i, dis = player.lun.items[i] !== undefined
             tmp.el[id+"_div"].setDisplay(dis)
             if (dis) {
-                var amt = x.amount, lvl = x.upg_level, maxed = lvl >= x.maxLevel, req = x.require
+                var amt = x.amount, lvl = x.upg_level, maxed = lvl >= x.maxLevel, req = x.require, rarity = ITEM_RARITY[x.rarity??0]
 
                 tmp.el[id+"_lvl"].setTxt("Level: "+format(lvl,0))
                 tmp.el[id+"_upg"].setTxt(maxed ? `Maxed` : `Upgrade (${format(amt,0)} / ${format(req,0)})`)
@@ -131,7 +154,9 @@ el.update.lunarian = () => {
 
                 var d = ""
 
-                d += `<b class="darkblue">[Global Boost]</b> `+x.upgradeDesc
+                d += `<b style="color: ${rarity[1]}">[${rarity[0]}]</b>`
+
+                d += `<br><b class="darkblue">[Global Boost]</b> `+x.upgradeDesc
 
                 if (x.boosted) d += `<br><b class="darkblue">[Lunarian Boost]</b> Boost the item power by <b class="green">+10%</b> per level. <b class="green">(+${formatPercent(lvl/10,0)})</b>`
 
@@ -199,7 +224,7 @@ el.setup.lunarian = () => {
             <img src="images/${x.icon}.png">
             <div class="item-level" id="li_${i}_lvl">Level: 0</div>
             <div class="item-upgrade locked" id="li_${i}_upg" onclick="upgradeLunarItem('${i}')">Upgrade (0 / ???)</div>
-            <div class="item-name">${x.name}</div>
+            <div class="item-name" style="color: ${ITEM_RARITY[x.rarity??0][1]}">${x.name}</div>
             <div class="item-desc" id="li_${i}_desc">???</div>
         </div>
         `

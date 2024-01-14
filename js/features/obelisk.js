@@ -18,17 +18,17 @@ RESET.astralPrestige = {
     reset(force=false) {
         if (player.astral>=100||force) {
             if (!force) {
-                player.astralPrestige++
+                player.astralPrestige = player.astralPrestige.add(1)
             }
 
-            player.astral = 0
+            player.astral = E(0)
             player.sp = E(0)
 
             updateTemp()
         } else if (player.astralPrestige>0) {
-            player.astralPrestige--
+            player.astralPrestige = player.astralPrestige.sub(1)
 
-            player.astral = 0
+            player.astral = E(0)
             player.sp = E(0)
 
             updateTemp()
@@ -53,25 +53,29 @@ const LUNAR_OB = [
 const LUNAR_OB_MODE = ['x','^']
 
 tmp_update.push(()=>{
-    let x = Decimal.pow(1.5,Math.log10(player.moonstone+1)).div(100).mul(starTreeEff('ring',32)).mul(starTreeEff('ring',36)).mul(getAPEff(2))
+    let x = Decimal.pow(1.5,player.moonstone.add(1).log10().overflow(1e3,0.4)).div(100).mul(starTreeEff('ring',32)).mul(starTreeEff('ring',36)).mul(getAPEff(2))
 
     .mul(cs_effect.moon||1)
 
     x = x.mul(tmp.darkChargeEffs.lunar||1)
 
-    x = x.mul(solarUpgEffect(4,2)).mul(solarUpgEffect(1,19))
+    x = x.mul(solarUpgEffect(4,2)).mul(solarUpgEffect(1,19)).mul(getFormingBonus('dark',3))
+
+    x = x.pow(getStageBonus('lp'))
 
     tmp.LPgain = x
 
     tmp.lunar_length = 7
     tmp.lunar_max_active = Math.min(1+getPTEffect(4,0),tmp.lunar_length)
 
+    let su = hasSolarUpgrade(2,17)
+
     for (let i = 0; i < LUNAR_OB.length; i++) {
         let l = LUNAR_OB[i]
         let lvl = E(player.lunar.level[i])
 
         tmp.lunar_next[i] = l[5]==0?Decimal.mul(l[3],lvl).add(l[2]):Decimal.pow(l[3],lvl).mul(l[2])
-        tmp.lunar_eff[i] = (l[5]==1 ? lvl.softcap(200,0.5,0) : lvl).mul(l[4]).add(1)
+        tmp.lunar_eff[i] = (!su && l[5]==1 ? lvl.softcap(200,0.5,0) : lvl).mul(l[4]).add(1)
     }
 })
 
@@ -214,7 +218,7 @@ RESET.sunrise = {
     <b class="green">${formatMult(tmp.sunriseEffect.ss)}</b> to Solar Shard<br>
     <b class="green">${formatMult(tmp.sunriseEffect.sfc)}</b> to Solar Flare Cap <b class="magenta">(${player.sn.bestEclipse.format(0)})</b><br>
     `+(tmp.solarianUnl?`
-    Fight Multiplier: <b class="green">${formatMult(player.sol.fight_mult,0)+(tmp.sol.sunriseFM.gt(player.sol.fight_mult)?" ➜ "+formatMult(tmp.sol.sunriseFM):"")}</b>
+    Fight Multiplier: <b class="green">${formatMult(player.sol.fight_mult,0)+(tmp.sol.sunriseFM.gt(player.sol.fight_mult)&&player.sn.tier.lt(12)?" ➜ "+formatMult(tmp.sol.sunriseFM):"")}</b>
     `:""),
 
     title: `Sunrise`,
@@ -244,7 +248,9 @@ RESET.sunrise = {
                 player.sol.stage = E(0)
                 resetMaterials()
 
-                const d = lyr == 0 && hasSolarUpgrade(9,6) ? solarUpgEffect(9,6,undefined) : undefined
+                const d = lyr == 0 && hasSolarUpgrade(9,6) ? solarUpgEffect(9,6,undefined)
+                : lyr == 1 && hasSolarUpgrade(11,3) ? solarUpgEffect(11,3,undefined)
+                : undefined
 
                 resetForming('stats',[],false,d)
                 resetForming('collect',[],false,d)
@@ -264,7 +270,7 @@ RESET.sunrise = {
             let keep = []
 
             if (hasSolarUpgrade(2,14)) keep.push(0,1,2,3,4,5)
-            if (hasSolarUpgrade(2,16)) keep.push(6,7)
+            if (hasSolarUpgrade(2,16)) keep.push(6,7,8)
 
             resetSolarUpgrades(5,keep)
         }
@@ -278,11 +284,9 @@ RESET.sunset = {
     reqDesc: ()=>`Reach Stage 40`,
 
     resetDesc: `
-    <span id="sunrise_desc">
     Reset everything does sunrise as well as Souls, Soul Upgrades, Sol Compaction, FM, and Darkness Upgrades (marked with *). Convert Mana into Darkness at full rate. Gain more divine souls based on soul, starting at 1 Qt.
     <br><br>
     First Sunset unlocks Darkness in Forming tab and Divine Soul Upgrades Chart.
-    </span>
     `,
     resetGain: ()=> `
     Gain <b class="cyan">${tmp.divineSoulGain.format(0)}</b> Divine Souls and <b class="darkblue">${player.sol.mana.format(0)}</b> Darkness.
@@ -291,7 +295,7 @@ RESET.sunset = {
     title: `Sunset`,
     resetBtn: `Set the Sun down!!!`,
 
-    reset(force=false) {
+    reset(force=false,lyr=1) {
         if (player.sol.stage.gte(40)||force) {
             if (!force) {
                 player.sn.sunsetTimes++
@@ -304,16 +308,61 @@ RESET.sunset = {
             player.sol.active_compression = player.sol.active_compression.map(x=>E(0))
             player.sol.compression_unl = 1
 
-            player.sol.mana = E(1)
+            player.sol.mana = E(0)
 
-            resetForming('basic',[2],true)
-            resetForming('dark',[0],true)
-            resetSolarUpgrades(8,[0,1,5],true)
+            const d = lyr == 1 && hasSolarUpgrade(11,3) ? solarUpgEffect(11,3,undefined) : undefined
+
+            resetForming('basic',[2],true,d)
+            resetForming('dark',[0],true,d)
+            if (player.sn.tier.lt(10)) resetSolarUpgrades(8,[0,1,5],true)
 
             player.sol.fight_mult = E(1)
-            player.sol.soul = E(1)
+            player.sol.soul = E(0)
 
-            RESET.sunrise.reset(true,1)
+            RESET.sunrise.reset(true,lyr)
+        }
+    },
+}
+
+RESET.twilight = {
+    unl: ()=>player.sn.tier.gte(10),
+
+    req: ()=>player.sol.stage.gte(130),
+    reqDesc: ()=>`Reach Stage 130`,
+
+    resetDesc: `
+    <span style="font-size: 16px">
+    Reset everything does sunset as well as Restoration, Divine Souls, Divine Soul Upgrades, Darkness, Star Growth, and Darkness Upgrades (marked with **). Gain more unstable souls based on current stage, starting at 130.
+    <br><br>
+    <span id="twilight_bonus">???</span>
+    </span>
+    `,
+    resetGain: ()=> `
+    Gain <b class="lightgray">${tmp.unstableSoulGain.format(0)}</b> Unstable Souls.
+    `,
+
+    title: `Twilight`,
+    resetBtn: `Twilight!!!`,
+
+    reset(force=false) {
+        if (player.sol.stage.gte(40)||force) {
+            if (!force) {
+                player.sn.twilightTimes++
+
+                player.sol.unstableSoul = player.sol.unstableSoul.add(tmp.unstableSoulGain)
+                player.sol.twilightBonus = player.sol.twilightBonus.add(tmp.twilightBonusIncrease)
+            }
+
+            resetForming('restore')
+            if (player.sn.tier.lt(12)) resetSolarUpgrades(9,[0,1,2,3,4,7],true)
+
+            player.sol.divineSoul = E(0)
+            player.sol.darkness = E(0)
+
+            player.stargrowth = E(0)
+            resetForming('dark',[1],true)
+
+            RESET.sunset.reset(true,2)
         }
     },
 }
@@ -324,6 +373,8 @@ const SOLAR_OBELISK = {
         let x = Decimal.pow(1.025,e.min(300).sub(100)).mul(10)
 
         .mul(getStageBonus('sunstone'))
+
+        if (hasSolarUpgrade(7,17) && e.gte(300)) x = x.mul(Decimal.pow(1.01,e.sub(300)))
 
         return x.floor()
     },
@@ -342,9 +393,34 @@ const SOLAR_OBELISK = {
 
         .mul(getSolCompressionEffect(3))
 
-        .mul(solarUpgEffect(5,6)).mul(solarUpgEffect(10,6)).mul(getStarBonus(10))
+        .mul(solarUpgEffect(5,6)).mul(solarUpgEffect(10,6)).mul(getStarBonus(10)).mul(tmp.twilightBonus?.[2]??1)
+        .mul(solarUpgEffect(11,0))
 
         return x.softcap(1e9,0.5,0)
+    },
+    get unstableSoulGain() {
+        let s = player.sol.stage.sub(130)
+        if (s.lt(0)) return E(0)
+        let x = Decimal.pow(1.1,s).mul(s.add(1)).mul(10)
+        return x.floor()
+    },
+    twilight: {
+        get nextBonus() {
+            return player.sol.twilightBonus.add(tmp.twilightBonusIncrease).scale(5,2,0).mul(player.sn.tier.gte(13)?10:15).add(130).ceil()
+        },
+        get bonusIncrease() {
+            let s = player.sol.stage.sub(130)
+            if (s.lt(0)) return E(0)
+            let x = s.div(player.sn.tier.gte(13)?10:15).scale(5,2,0,true).sub(player.sol.twilightBonus).add(1).max(0)
+            return x.floor()
+        },
+        get bonusEffect() {
+            let b = player.sol.twilightBonus, x = []
+            x[0] = Decimal.pow(10,b.pow(2))
+            x[1] = Decimal.pow(10,b.pow(1.5))
+            x[2] = Decimal.pow(5,b)
+            return x
+        },
     },
 }
 
@@ -431,7 +507,37 @@ const VOID_OBELISK = [
         get amount() { return player.np },
         limit: E('e1e43'),
         icon: "Curr/Normality",
-    },
+    },{ // 16
+        name: "Cloud",
+        get amount() { return player.cloud },
+        limit: E('e2e56'),
+        icon: "Curr/Cloud",
+    },{ // 17
+        name: "Moonstone",
+        get amount() { return player.moonstone },
+        limit: E('1e333'),
+        icon: "Curr/Moonstone",
+    },{ // 18
+        name: "Rings",
+        get amount() { return player.planetoid.ring },
+        limit: E('e3e71'),
+        icon: "Curr/Ring",
+    },{ // 19
+        name: "Planetarium",
+        get amount() { return player.planetoid.pm },
+        limit: E('e3e15'),
+        icon: "Curr/Planetoid",
+    },{ // 20
+        name: "Astro",
+        get amount() { return player.planetoid.astro },
+        limit: E('e3e18'),
+        icon: "Curr/Astrolabe",
+    },/*{ // 21
+        name: "Measure",
+        get amount() { return player.planetoid.measure },
+        limit: E('e3e33'),
+        icon: "Curr/Measure",
+    },*/
 ]
 
 function hasCentralized(i) { return player.centralized.includes(i) }

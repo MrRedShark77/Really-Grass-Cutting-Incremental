@@ -2,7 +2,7 @@ MAIN.pp = {
     gain() {
         if (hasCentralized(0)) return player.grass.floor();
 
-        let l = Math.max(player.level-29,0)
+        let l = player.level.sub(29).max(0)
         let x = Decimal.pow(1.1+getASEff('pp'),l).mul(l).mul(player.bestGrass.div(1e9).max(1).root(3))
 
         tmp.ppGainBase = x
@@ -57,13 +57,13 @@ RESET.pp = {
         player.grass = E(0)
         player.bestGrass = E(0)
         player.xp = E(0)
-        player.level = 0
+        player.level = E(0)
 
         let keep_perk = order == "p" && hasUpgrade('auto',4) || order == "c" && hasUpgrade('auto',7) || order == "gh" && tmp.minStats.gh >= 10
 
         if (!keep_perk) {
-            player.maxPerk = 0
-            player.spentPerk = 0
+            player.maxPerk = E(0)
+            player.spentPerk = E(0)
             resetUpgrades('perk')
         }
 
@@ -104,7 +104,7 @@ UPGS.pp = {
             bulk: i => i.div(1).max(1).log(1.25).scale(1e6,2,0,true).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
         
                 return x
             },
@@ -122,7 +122,7 @@ UPGS.pp = {
             bulk: i => i.div(3).max(1).log(1.3).scale(1e6,2,0,true).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
         
                 return x
             },
@@ -140,7 +140,7 @@ UPGS.pp = {
             bulk: i => i.div(50).max(1).log(1.5).scale(1e6,2,0,true).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(2,Math.floor(i/25)).mul(i+1)
+                let x = Decimal.pow(2,i.div(25).floor()).mul(i.add(1))
         
                 return x
             },
@@ -155,7 +155,7 @@ MAIN.ap = {
     gain() {
         if (hasCentralized(4)) return player.grass.floor();
 
-        let l = Math.max(player.level-29,0)
+        let l = player.level.sub(29).max(0)
         let x = Decimal.pow(1.1,l).mul(l).mul(player.aBestGrass.div(1e18).max(1).root(3))
 
         tmp.apGainBase = x
@@ -205,7 +205,7 @@ RESET.ap = {
         player.aGrass = E(0)
         player.aBestGrass = E(0)
         player.xp = E(0)
-        player.level = 0
+        player.level = E(0)
 
         if (!hasUpgrade('auto',18)) resetUpgrades('aGrass')
 
@@ -242,7 +242,7 @@ UPGS.ap = {
             bulk: i => i.div(2).max(1).log(1.2).scale(1e5,2,0,true).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },
@@ -260,7 +260,7 @@ UPGS.ap = {
             bulk: i => i.div(3).max(1).log(1.2).scale(1e5,2,0,true).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/10+1).softcap(1e12,0.25,0)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(10).add(1)).softcap(1e12,0.25,0)
 
                 return x
             },
@@ -296,7 +296,7 @@ UPGS.ap = {
             bulk: i => i.div(10).max(1).log(1.35).scale(1e5,2,0,true).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
 
                 return x
             },
@@ -347,7 +347,7 @@ MAIN.np = {
     gain() {
         if (hasCentralized(15)) return player.grass.floor();
 
-        let l = Math.max(player.level-49,0)
+        let l = player.level.sub(49).max(0)
         let x = Decimal.pow(1.05,l).mul(l).mul(player.unBestGrass.div(1e33).max(1).root(5))
 
         tmp.npGainBase = x
@@ -389,10 +389,10 @@ RESET.np = {
         player.unGrass = E(0)
         player.unBestGrass = E(0)
         player.xp = E(0)
-        player.level = 0
+        player.level = E(0)
 
         player.chargeRate = E(0)
-        player.astral = 0
+        player.astral = E(0)
         player.sp = E(0)
 
         resetUpgrades('unGrass')
@@ -430,7 +430,7 @@ UPGS.np = {
             bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },
@@ -448,7 +448,7 @@ UPGS.np = {
             bulk: i => i.div(2).max(1).log(1.2).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },
@@ -466,7 +466,7 @@ UPGS.np = {
             bulk: i => i.div(5).max(1).log(1.35).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },

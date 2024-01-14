@@ -94,8 +94,8 @@ RESET.gal = {
             player.bestOil2 = E(0)
             player.bestAP2 = E(0)
         }
-        player.aRes.level = 0
-        player.aRes.tier = 0
+        player.aRes.level = E(0)
+        player.aRes.tier = E(0)
         player.aRes.xp = E(0)
         player.aRes.tp = E(0)
 
@@ -163,7 +163,7 @@ const ASTRAL = {
 }
 
 function getASEff(id,def=1) { return tmp.astral_eff[id]||def }
-function getAPEff(id) { return Decimal.pow(AP_BONUS_BASE[id],softcap(player.astralPrestige,10,0.25,0)-id).max(1) }
+function getAPEff(id) { return Decimal.pow(AP_BONUS_BASE[id],player.astralPrestige.softcap(10,0.25,0).sub(id)).max(1) }
 
 UPGS.moonstone = {
     title: "Moonstone Upgrades",
@@ -183,7 +183,7 @@ UPGS.moonstone = {
             icon: ['Curr/Grass'],
             
             cost: i => 3,
-            bulk: i => Math.floor(i/3),
+            bulk: i => i.div(3).floor(),
 
             effect(i) {
                 let x = i/2+1
@@ -203,7 +203,7 @@ UPGS.moonstone = {
             icon: ['Icons/XP'],
             
             cost: i => 3,
-            bulk: i => Math.floor(i/3),
+            bulk: i => i.div(3).floor(),
 
             effect(i) {
                 let x = i/2+1
@@ -223,7 +223,7 @@ UPGS.moonstone = {
             icon: ['Icons/TP'],
             
             cost: i => 3,
-            bulk: i => Math.floor(i/3),
+            bulk: i => i.div(3).floor(),
 
             effect(i) {
                 let x = i/2+1
@@ -243,7 +243,7 @@ UPGS.moonstone = {
             icon: ['Curr/Platinum'],
             
             cost: i => 10,
-            bulk: i => Math.floor(i/10),
+            bulk: i => i.div(10).floor(),
 
             effect(i) {
                 let x = i/4+1
@@ -263,7 +263,7 @@ UPGS.moonstone = {
             icon: ['Curr/Star'],
             
             cost: i => 50,
-            bulk: i => Math.floor(i/50),
+            bulk: i => i.div(50).floor(),
 
             effect(i) {
                 let x = i/10+1
@@ -285,7 +285,7 @@ UPGS.moonstone = {
             icon: ['Curr/SuperFun'],
             
             cost: i => 250,
-            bulk: i => Math.floor(i/250),
+            bulk: i => i.div(250).floor(),
 
             effect(i) {
                 let x = i/2+1
@@ -307,7 +307,7 @@ UPGS.moonstone = {
             icon: ['Icons/XP','Icons/Exponent'],
             
             cost: i => 2500,
-            bulk: i => Math.floor(i/2500),
+            bulk: i => i.div(2500).floor(),
 
             effect(i) {
                 let x = i*0.01+1
@@ -329,7 +329,7 @@ UPGS.moonstone = {
             icon: ['Icons/Charge','Icons/Exponent'],
             
             cost: i => 2.5e5,
-            bulk: i => Math.floor(i/2.5e5),
+            bulk: i => i.div(2.5e5).floor(),
 
             effect(i) {
                 let x = i*0.01+1

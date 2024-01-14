@@ -23,7 +23,7 @@
     <script src="js/calc.js"></script>
     <script src="js/main.js"></script>
 
-    <script src="js/stats.js"></script>
+    <script src="js/drag_stats.js"></script>
 
     <script src="js/features/grass.js"></script>
     <script src="js/features/pp.js"></script>
@@ -48,6 +48,7 @@
     <script src="js/features/sol_compression.js"></script>
     <script src="js/lunarians/lunar_init.js"></script>
     <script src="js/features/lunarian.js"></script>
+    <script src="js/features/synthesis.js"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -56,7 +57,7 @@
     <div id="fog"></div>
     <div id="app" style="display: none;">
         <div class="table_space">
-            <div id="grass_div" style="margin: 10px;">
+            <div id="grass_div" style="margin: 30px 0px">
                 <div class="table_between">
                     <div id="grass-image"></div>
                     <div>
@@ -65,10 +66,6 @@
                     <div id="grassOverflow"></div>
                 </div>
             </div>
-        </div><div class="table_space">
-            <div id="level" style="margin: 10px;"></div>
-            <div id="tier" style="margin: 10px;"></div>
-            <div id="astral" style="margin: 10px;"></div>
         </div>
         <div id="main_app">
             <div id="map_div_g" class="table_center">
@@ -124,13 +121,13 @@
                 <button onclick="changeGHMult()" id="multGHButton">Multi-Grasshop: <span id="multGHOption">OFF</span></button>
                 <button onclick="changeGSMult()" id="multGSButton">Multi-Grass-skip: <span id="multGSOption">OFF</span></button>
                 <br><br>
-                Really Grass Cutting Incremental - v0.5.2 - Lunarian Test - Made by MrRedShark77<br>
+                Really Grass Cutting Incremental - v0.5.2 - Lunarian Test 2 - Made by MrRedShark77<br>
                 The game inspired by <a href="https://www.roblox.com/games/9292879820">Grass Cutting Incremental</a><br>
                 Artist(-s): Bézier<br>
                 <b class="red">Warning! Recommended size is 1920x1080! You may change zoom!</b><br><br>
                 <details>
                     <summary>Endgame (Spoiler)</summary>
-                    Level 125,000,000+; Supernova Tier 10; Eclipse: 50,000+; Stage 130+; HSJ 3;
+                    Level 2T+; Supernova Tier 13; Eclipse: 3,600,000+; Stage 720+; HSJ 4;
                 </details>
             </div><div id="map_div_p">
                 <div style="width: 100%; height: 50%;">
@@ -317,14 +314,6 @@
                 </div><div style="width: 100%; height: 50%;" class="table_center">
                     <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_enterPlanetoid"></div></div>
                 </div>
-            </div><div id="map_div_stats">
-                <div id="stats_div">
-                    <div id="stats_tab_div"></div>
-                    <div id="stats_desc_div">
-                        <h2 id="stats_title">???</h2><br><br>
-                        <div id="stats_desc"></div>
-                    </div>
-                </div>
             </div><div id="map_div_ap">
                 <div style="width: 100%; height: 100%;" class="table_center">
                     <div style="width: 33.3%; height: 100%;"><div class="reset_div" id="reset_div_astralPrestige"></div></div>
@@ -342,7 +331,7 @@
                         <div id="void_table">
                             
                         </div><div>
-                            <i style="font-size: 14px; color: lightcoral">Centralizing currency makes its multiplier equals to grass, except grass types (results that grass is squared).</i>
+                            <i style="font-size: 14px; color: lightcoral">Centralizing currency makes its multiplier equals to grass/planetarium, except grass types (results that grass/planetarium is squared).</i>
                         </div>
                     </div></div>
                 </div>
@@ -387,7 +376,7 @@
 
             <div id="map_div_star">
                 <div class="solar-upgs-bg">
-                    <div style="width: 90px; overflow-y: scroll;" id="solar_tabs"></div>
+                    <div style="width: 90px; overflow-y: scroll; overflow-x: hidden;" id="solar_tabs"></div>
                     <div style="width: calc(100% - 90px);">
                         <div style="height: 100%; overflow-y: scroll;">
                             <div id="solar_upgs_table"></div>
@@ -416,7 +405,7 @@
                 <div style="width: 100%; height: 50%;" class="table_center">
                     <div style="width: 33.3%; height: 100%;"><div class="reset_div" id="reset_div_sunrise"></div></div>
                     <div style="width: 33.4%; height: 100%;"><div class="reset_div" id="reset_div_sunset"></div></div>
-                    <div style="width: 33.3%; height: 100%;"></div>
+                    <div style="width: 33.3%; height: 100%;"><div class="reset_div" id="reset_div_twilight"></div></div>
                 </div>
             </div><div id="map_div_stage">
                 <div class="solarian-div table_center">
@@ -531,6 +520,37 @@
                     </div>
                 </div>
             </div>
+
+            <div id="map_div_synt">
+                <div style="width: 100%; height: 50%;">
+                    <div class="upgs_div cs table_center">
+                        <div id="synthesis_table" style="width: calc(75% - 20px); height: calc(100% - 20px); margin: 10px; background-color: #181818; overflow-y: auto; overflow-x: hidden;">
+                            <div class="synthesis-slot">
+                                <div class="ss-req">???</div><div style="display: none;">
+                                    <div class="ss-name">S1</div>
+                                    <img class="ss-icon" src="images/Curr/CorruptionShard.png">
+                                    <div class="ss-mid">
+                                        <div class="progress-bar ss-progress" id="ss_progress"><div></div></div>
+                                        <div class="ss-boost" id="ss_boost">???</div>
+                                    </div>
+                                    <div class="ss-level">0</div>
+                                    <button class="ss-btn">Begin</button>
+                                </div>
+                            </div>
+                        </div><div id="synthesis_types" style="width: calc(25% - 20px); height: calc(100% - 20px); margin: 10px; background-color: #181818; overflow-y: auto; overflow-x: hidden;">
+                            <div class="synthesis-insert">
+                                <img class="ss-icon" src="images/Curr/CorruptionShard.png">
+                                <div class="si-desc">
+                                    Corruption Shard<br>
+                                    [FREE]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><div style="width: 100%; height: 50%;">
+                    <div class="upgs_div" id="upgs_div_cs"></div>
+                </div>
+            </div>
         </div>
         <div id="map_name"></div>
         <div id="map">
@@ -556,6 +576,9 @@
                 <span id="offline_ticks">? / ?</span> Ticks<br><br>
                 <button id="offline_skip">Skip Offline Progress</button>
             </div>
+        </div>
+        <div id="drag_stats">
+            
         </div>
     </div>
 </body>

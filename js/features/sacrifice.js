@@ -53,7 +53,7 @@ RESET.sac = {
         }
 
         player.sp = E(0)
-        player.astral = 0
+        player.astral = E(0)
         player.stars = E(0)
         player.fun = E(0)
         player.SFRGT = E(0)
@@ -89,7 +89,7 @@ UPGS.dm = {
             bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.add(1))
         
                 return x
             },
@@ -107,7 +107,7 @@ UPGS.dm = {
             bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.add(1))
         
                 return x
             },
@@ -125,7 +125,7 @@ UPGS.dm = {
             bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.add(1))
         
                 return x
             },
@@ -143,7 +143,7 @@ UPGS.dm = {
             bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.add(1))
         
                 return x
             },
@@ -161,7 +161,7 @@ UPGS.dm = {
             bulk: i => i.div(10).max(1).log(1.25).floor().add(1),
         
             effect(i) {
-                let x = i/2+1
+                let x = i.div(2).add(1)
         
                 return x
             },
@@ -179,7 +179,7 @@ UPGS.dm = {
             bulk: i => i.div(100).max(1).log(10).root(1.5).floor().add(1),
         
             effect(i) {
-                let x = i/10
+                let x = i.div(10)
         
                 return x
             },
@@ -199,7 +199,7 @@ UPGS.dm = {
             bulk: i => i.div(1e10).max(1).log(1.2).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },
@@ -219,7 +219,7 @@ UPGS.dm = {
             bulk: i => i.div(1e11).max(1).log(1.2).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },

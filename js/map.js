@@ -19,9 +19,9 @@ window.addEventListener('keydown', e=>{
 const MAP = [
     [null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null],
-    [null,null,'stats','opt','cs','rp',null],
+    [null,null,null,'opt','cs','rp',null],
     [null,null,'auto','g','pc','gh','fd'],
-    [null,null,null,'p','chal','as',null],
+    [null,null,'synt','p','chal','as',null],
     [null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null],
 ]
@@ -53,7 +53,6 @@ const MAP_NAMES = {
     get 'p'() { return player.planetoid.active ? `Observatorium` : `Perks` },
     get 'auto'() { return player.planetoid.active ? `Ring Form` : `Automation` },
     'opt': `Options`,
-    'stats': `Statistics`,
     'cs': `Constellation`,
     'chal': `Challenge`,
     get 'fd'() { return player.decel ? `Fundry` : `Foundry` },
@@ -61,6 +60,8 @@ const MAP_NAMES = {
     get 'gh'() { return player.decel ? `Grass-Skip` : player.recel ? `Grass Jump` : `Grasshop` },
     get 'rp'() { return player.planetoid.active ? `The Star` : `The Launch Pad` },
     'pc': `Prestige Field`,
+
+    'synt': "Synthesis",
 
     // Space
 
@@ -90,6 +91,8 @@ const MAP_UNLOCKS = {
     'fd': () => !player.planetoid.active && hasUpgrade('factory',0),
     'as': () => !player.planetoid.active && hasUpgrade('factory',3),
     'rp': () => hasUpgrade('factory',6) || player.grassjump>=30,
+
+    'synt': () => player.hsj >= 4,
 
     // Space
 

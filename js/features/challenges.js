@@ -13,7 +13,7 @@ const CHALS = [
         bulk: i=>Math.floor((i-30)/10+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: ()=>player.level,
+        goalAmt: ()=>player.level.toNumber(),
 
         eff: i=>Decimal.pow(2,i),
         effDesc: x=>format(x)+"x",
@@ -31,7 +31,7 @@ const CHALS = [
         bulk: i=>Math.floor((i-100)/10+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: ()=>player.level,
+        goalAmt: ()=>player.level.toNumber(),
 
         eff: i=>Decimal.pow(2,i),
         effDesc: x=>format(x)+"x",
@@ -49,7 +49,7 @@ const CHALS = [
         bulk: i=>Math.floor((i-100)/10+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: ()=>player.level,
+        goalAmt: ()=>player.level.toNumber(),
 
         eff: i=>Decimal.pow(2,i),
         effDesc: x=>format(x)+"x",
@@ -67,7 +67,7 @@ const CHALS = [
         bulk: i=>Math.floor((i-50)/20+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: ()=>player.level,
+        goalAmt: ()=>player.level.toNumber(),
 
         eff: i=>i/50+1,
         effDesc: x=>formatPow(x),
@@ -85,7 +85,7 @@ const CHALS = [
         bulk: i=>i-6,
 
         goalDesc: x=>"Tier "+format(x,0),
-        goalAmt: ()=>player.tier,
+        goalAmt: ()=>player.tier.toNumber(),
 
         eff: i=>Decimal.pow(2,i),
         effDesc: x=>format(x)+"x",
@@ -103,7 +103,7 @@ const CHALS = [
         bulk: i=>Math.floor((i-100)/20+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: ()=>player.level,
+        goalAmt: ()=>player.level.toNumber(),
 
         eff: i=>Decimal.pow(1.5,i),
         effDesc: x=>format(x)+"x",
@@ -121,7 +121,7 @@ const CHALS = [
         bulk: i=>i-19,
 
         goalDesc: x=>"Tier "+format(x,0),
-        goalAmt: ()=>player.tier,
+        goalAmt: ()=>player.tier.toNumber(),
 
         eff: i=>Decimal.pow(2,i),
         effDesc: x=>format(x)+"x",
@@ -139,7 +139,7 @@ const CHALS = [
         bulk: i=>Math.floor((i-40)/10+1),
 
         goalDesc: x=>"Level "+format(x,0),
-        goalAmt: ()=>player.level,
+        goalAmt: ()=>player.level.toNumber(),
 
         eff: i=>Decimal.pow(10,i),
         effDesc: x=>format(x)+"x",

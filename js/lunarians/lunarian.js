@@ -18,7 +18,22 @@ function resetLunarTemp() {
         block_chance: 0,
         hc_power: 1,
         key_chance: 0,
+        double_chance: 0,
+        luck: 1,
+        gps: false,
     }
+}
+
+function setupLuckWeight() {
+    let mw = 0, w = 0, luck = temp.luck
+
+    var current_tw = treasure_weight_before.map(x => [x[0],(x[1]-1)/luck+1])
+
+    current_tw.forEach(([i,x]) => {mw += x})
+    treasure_chances = current_tw.map(([i,x]) => {
+        w += x
+        return [i,w/mw,x/mw]
+    })
 }
 
 function loadLunarian() {
@@ -73,7 +88,7 @@ function loadLunarian() {
 
     setInterval(loop,1000/30)
 
-    retrieveCanvasData()
+    resizeCanvas()
 }
 
 function loop() {
@@ -104,6 +119,8 @@ function updateLunarTemp() {
 
     resetLunarTemp()
 
+    temp.gps = lunarian_data.upgrades.gps>0 || player.items.gps?.gte(1)
+
     Object.values(LUNAR_ITEMS).forEach(item => {
         if (item.updateEffect) item.updateEffect()
         if (item.updateUpgrade) item.updateUpgrade()
@@ -111,6 +128,8 @@ function updateLunarTemp() {
 
     temp.damage = temp.damage.round()
     temp.max_lunar = temp.max_lunar.round()
+
+    setupLuckWeight()
 }
 
 function addOutput(text,delay=5) {
@@ -124,9 +143,11 @@ function addOutput(text,delay=5) {
 
 function addItem(id,value,found=false,text="") {
     const I = LUNAR_ITEMS[id]
+    var doubled = Decimal.gt(value,0) && temp.double_chance > Math.random()
+    if (doubled) value = Decimal.mul(value,2)
     I.amount = I.amount.add(value).max(0)
     if (found) player.found[id] = player.found[id]?.add(value).max(0)??E(value)
-    if (!Decimal.eq(value,0)) addOutput("<b>"+(Decimal.lt(value,0)?"":"+")+format(value,0)+" "+LUNAR_ITEMS[id].name+"</b>"+text)
+    if (!Decimal.eq(value,0)) addOutput("<b>"+(Decimal.lt(value,0)?"":"+")+format(value,0)+" "+LUNAR_ITEMS[id].name+"</b>"+text+(doubled?" <span class='green'>DOUBLED!!!</span>":""))
 }
 
 function setupLunarianHTML() {
@@ -195,6 +216,13 @@ function getObjectInfo() {
                 h += `
                 <br>Heals you by <b class='green'>+${formatPercent(obj.percent*temp.hc_power,0)}</b> of your max lunarians.
                 `
+            break;
+            case 'treasure':
+                h += treasure_chances.map(([i,x,c]) => {
+                    const I = LUNAR_ITEMS[i]
+                    let v = lunarian_data.items[i] || lunarian_data.res[i]
+                    return `<br><b style="color: ${ITEM_RARITY[I.rarity??0][1]}">${v ? I.name : "???"} - ${formatPercent(c)}</b>`
+                }).join("")
             break;
         }
     } else if (item_hover != "") {

@@ -82,11 +82,11 @@ RESET.supernova = {
 
         // Other
 
-        player.astralPrestige = solarUpgEffect(0,5,0)
+        player.astralPrestige = E(solarUpgEffect(0,5,0))
         player.lunar = DATA.lunar
         player.dm = E(0)
         resetUpgrades('dm')
-        player.moonstone = 0
+        player.moonstone = E(0)
         if (player.sn.tier.lt(3)) {
             resetUpgrades('moonstone')
             resetUpgrades('rocket')
@@ -232,19 +232,51 @@ const SUPERNOVA = {
             - Unlock the <b class="green">Restoration</b> in Forming tab.<br>
             `,
         },{
+            r: 7,
+            desc: `
+            - Skipping stage's speed is drastically increased.<br>
+            `,
+        },{
             r: 8,
             desc: `
             - Passively generate sunstone (based on current stage) and remnants (based on total remnants from Eclipse) at <b class="green">1%</b> rate.<br>
             - Unlock more remnant and sunstone upgrades.<br>
             - Eclipse no longer gets reset.
             `,
-        },/*{
+        },{
+            r: 9,
+            desc: `
+            - Ranking Forming's speed is drastically increased.<br>
+            `,
+        },{
             r: 10,
             desc: `
             - Unlock the <b class="green">Twilight</b> reset (on bottom of supernova milestones).<br>
+            - Soul upgrades no longer get reset.<br>
             - Unlock more soul and divine soul upgrades.<br>
             `,
-        },*/
+        },{
+            r: 11,
+            desc: `
+            - Unlock the final collecting resource and final collection formings.<br>
+            `,
+        },{
+            r: 12,
+            desc: `
+            - Unlock another synthesis slot and new synthesis type.<br>
+            - Unlock the <b class="green">Advanced</b> in Forming tab.<br>
+            - Best Eclipse automatically updates with new best.<br>
+            - Fighting multi will automatically update without needing to sunrise.<br>
+            - Twilight no longer resets divine soul upgrades.<br>
+            `,
+        },{
+            r: 13,
+            desc: `
+            - Unlock another synthesis slot.<br>
+            - Passively generate divine souls you gained on sunset at <b class="green">1%</b> rate.<br>
+            - Twilight bonus skipping is improved.<br>
+            `,
+        },
     ],
 }
 
@@ -261,6 +293,10 @@ tmp_update.push(()=>{
 
     tmp.sunstoneGain = SOLAR_OBELISK.sunstoneGain
     tmp.divineSoulGain = SOLAR_OBELISK.divineSoulGain
+
+    tmp.unstableSoulGain = SOLAR_OBELISK.unstableSoulGain
+    tmp.twilightBonusIncrease = SOLAR_OBELISK.twilight.bonusIncrease
+    tmp.twilightBonus = SOLAR_OBELISK.twilight.bonusEffect
 
     for (let i in tmp.minStats) tmp.minStats[i] = getFreeStats(i)
 })
@@ -288,8 +324,8 @@ function getSupernovaSave() {
 
         sunstone: E(0),
         sunriseTimes: 0,
-
         sunsetTimes: 0,
+        twilightTimes: 0,
     }
     for (let i in SOLAR_UPGS) s.solarUpgs[i] = []
     return s
@@ -361,8 +397,12 @@ function calcSupernova(dt) {
         player.sn.sunstone = player.sn.sunstone.add(tmp.sunstoneGain.mul(dt/100))
     }
 
+    if (player.sn.tier.gte(12)) player.sn.bestEclipse = player.sn.bestEclipse.max(player.sn.eclipse)
+
     if (hasSolarUpgrade(2,11)) player.sn.bestSSEarn = player.sn.bestSSEarn.max(tmp.solarShardGain)
     if (hasSolarUpgrade(2,12)) player.sn.totalSFEarn = player.sn.totalSFEarn.add(SUPERNOVA.flareEarn.mul(dt))
+
+    for (let [i,x] of Object.entries(tmp.lun.res_gen)) if (x) player.lun.res[i] = player.lun.res[i].add(x.mul(dt))
 }
 
 function updateRemnant() {
@@ -385,6 +425,8 @@ el.update.sn = () => {
 
             tmp.el['sn-milestone'+i].setDisplay(i == 0 || st.gte(SUPERNOVA.milestone[i-1].r))
         }
+
+        
     }
 }
 

@@ -36,7 +36,7 @@ const SOL_COMPRESSION = {
             req: E(1e8),
         },{
             eff(c) {
-                let x = c.div(1e55).add(1).log10().add(1)
+                let x = hasSolarUpgrade(7,19) ? expMult(c.div('1e55').add(1),0.5) : c.div(1e55).add(1).log10().add(1)
 
                 return x
             },
@@ -50,6 +50,14 @@ const SOL_COMPRESSION = {
             },
             effDesc: x => `<b class='green'>${formatMult(x)}</b> Solar Flares`,
             req: E(1e200),
+        },{
+            eff(c) {
+                let x = expMult(c.div('1e600').add(1),0.25)
+
+                return x
+            },
+            effDesc: x => `<b class='green'>${formatMult(x)}</b> Corruption Shards`,
+            req: E('1e600'),
         },
     ],
 }

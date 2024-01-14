@@ -135,9 +135,16 @@ function resetTemp() {
             comp_eff: [],
         },
 
-        lun: {},
+        lun: {
+            res_gen: {},
+        },
 
         starBonus: [],
+
+        synthesis: {
+            speed: E(1),
+            csMult: E(1),
+        },
 
         grass_overflow: E(1),
     }
@@ -169,7 +176,7 @@ function updateTemp() {
     tmp.solarianUnl = hasSolarUpgrade(7,0)
     tmp.lunarianUnl = hasSolarUpgrade(7,12)
 
-    tmp.total_astral = player.astral+100*player.astralPrestige
+    tmp.total_astral = player.astralPrestige.mul(100).add(player.astral)
     tmp.oilRigBase = (player.upgs.factory[7]||0)/100
     for (let x = 0; x < tmp_update.length; x++) tmp_update[x]()
 }

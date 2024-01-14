@@ -1,6 +1,6 @@
 MAIN.gh = {
     req: ()=> Math.ceil(300+E(player.grasshop).scale(20,2,0).toNumber()*10),
-    bulk: ()=> player.level>=300?E((player.level-300)/10).scale(20,2,0,true).floor().toNumber()+1:0,
+    bulk: ()=> player.level>=300?player.level.sub(300).div(10).scale(20,2,0,true).floor().toNumber()+1:0,
 
     milestone: [
         {
@@ -149,7 +149,7 @@ MAIN.agh_milestone = [
 
 MAIN.gs = {
     req: ()=> Math.ceil(400+E(tmp.minStats.gs).scale(10,2,0).toNumber()*10),
-    bulk: ()=> player.level>=400?E((player.level-400)/10).scale(10,2,0,true).floor().toNumber()+1:0,
+    bulk: ()=> player.level>=400?player.level.sub(400).div(10).scale(10,2,0,true).floor().toNumber()+1:0,
 
     milestone: [
         {
@@ -189,7 +189,7 @@ MAIN.gs = {
 
 MAIN.gj = {
     req: ()=> Math.ceil(300+E(player.grassjump).scale(10,2,0).toNumber()*20),
-    bulk: ()=> player.level>=300?E((player.level-300)/20).scale(10,2,0,true).floor().toNumber()+1:0,
+    bulk: ()=> player.level>=300?player.level.sub(300).div(20).scale(10,2,0,true).floor().toNumber()+1:0,
 
     milestone: [
         {
@@ -381,12 +381,13 @@ MAIN.hsj = {
     get amount() { return player.hsj },
     set amount(v) { return player.hsj = v },
 
-    get require() { return [10000,1.2e6,1e7][this.amount] || Infinity },
+    get require() { return [10000,1.2e6,1e7,2.25e8][this.amount] || Infinity },
     get desc() {
         return [
             `Doing this will allow you to use upgrades, generate currencies, and auto grasshop/skip/jump from all three realms at the same time.`,
             `Almost remove all scalings from Level and Astral Prestige. Grass Overflow starts ^10 later. You can automatically do an Astral Prestige.`,
             `Final level & astral scaling starts x10 later. 8th grass jump milestone is overpowered.`,
+            `You will no longer visit normal/anti/unnatural realms and you're teleported into planetoid instantly. Unlock Synthesis in planetoid.`,
         ][this.amount] || "Say Nothing!"
     },
 }
@@ -405,6 +406,17 @@ RESET.hsj = {
     reset() {
         if (this.req()&&player.level>=MAIN.hsj.require) {
             MAIN.hsj.amount++
+
+            if (MAIN.hsj.amount == 4) {
+                player.planetoid.active = true
+
+                player.decel = false
+                player.recel = false
+
+                player.world = 'ground'
+                mapID = 'g'
+                mapPos = [3,3]
+            }
         }
     },
 }

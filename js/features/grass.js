@@ -28,11 +28,14 @@ function removeGrass(i,auto=false) {
     let y = 1
     if (auto) y *= tmp.autocutBonus
 
-    if (player.planetoid.active) {
+    var p = player.planetoid.active, hsj4 = player.hsj >= 4
+
+    if (hsj4 || p) {
         if (tg.pl) player.planetoid.observ = player.planetoid.observ.add(tmp.observGain)
-    } else {
+    }
+    if (hsj4 || !p) {
         if (tg.pl) player.plat = player.plat.add(tmp.platGain.mul(tmp.platCutAmt ? y : 1))
-        if (tg.ms) player.moonstone += tmp.moonstoneGain * (tmp.moonstonesCutAmt ? y : 1)
+        if (tg.ms || (hsj4 && tg.pl)) player.moonstone = player.moonstone.add(tmp.moonstoneGain.mul(tmp.moonstonesCutAmt ? y : 1))
     }
 
     gainCurrenciesOnGrass(y)
@@ -44,11 +47,13 @@ function removeGrass(i,auto=false) {
 
 function gainCurrenciesOnGrass(bonus=1, mult=1) {
     // console.log(format(tmp.XPGain.mul(bonus).mul(mult),0))
+    var p = player.planetoid.active, hsj4 = player.hsj >= 4
 
-    if (player.planetoid.active) {
+    if (hsj4 || p) {
         player.planetoid.pm = player.planetoid.pm.add(tmp.planetiumGain.mul(mult))
         player.planetoid.xp = player.planetoid.xp.add(tmp.cosmicGain.mul(mult))
-    } else {
+    }
+    if (hsj4 || !p) {
         let g = tmp.grassGain.mul(bonus).mul(mult)
         if (player.hsj > 0) {
             player.unGrass = player.unGrass.add(g)

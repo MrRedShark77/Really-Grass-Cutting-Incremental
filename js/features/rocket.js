@@ -311,8 +311,8 @@ RESET.rocket_part = {
         player.bestOil = E(0)
         player.steel = E(0)
         player.chargeRate = E(0)
-        player.aRes.level = 0
-        player.aRes.tier = 0
+        player.aRes.level = E(0)
+        player.aRes.tier = E(0)
         player.aRes.xp = E(0)
         player.aRes.tp = E(0)
         resetUpgrades('oil')

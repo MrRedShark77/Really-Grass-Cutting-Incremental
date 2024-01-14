@@ -223,7 +223,13 @@ const ADV_STAR = [
         req: [1e81,50000,1e220],
         bonus: x => expMult(x.div(1e80).add(1),0.5),
         bonusDesc: x => `<b class='darkgreen'>${formatMult(x)}</b> Divine Soul`
-    }
+    },{
+        req: [1e140,69420,'1e410'],
+    },{
+        req: ['e369',333333,'e1155'],
+    },{
+        req: ['e700',3000000,'e3000'],
+    },
 ]
 
 el.setup.star = ()=>{

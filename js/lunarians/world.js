@@ -37,8 +37,11 @@ var world_init = {
     size: 50,
     level: 1,
 }
+var world_config = {}
+var trasture_before = []
 var treasure_chances = []
 var visible_tile = {};
+var gps_tile = {};
 var portal_pos = [0,0];
 
 var preload_textures = [
@@ -69,10 +72,14 @@ function getRandomTile() { return Object.keys(tiles)[getRandomInt(0,Object.keys(
 
 function retrieveCanvasData() {
 	let pre_canvas = document.getElementById("map_canvas")
-	if (pre_canvas===undefined||pre_canvas===null) return false;
+    let pre_canvas_gps = document.getElementById("lunar_gps")
+	if (pre_canvas===undefined||pre_canvas===null||pre_canvas_gps===undefined||pre_canvas_gps===null) return false;
     canvas = pre_canvas
 	canvas_ctx = canvas.getContext("2d");
     canvas_rect = canvas.getBoundingClientRect()
+    canvas_gps = pre_canvas_gps
+    canvas_gps_ctx = canvas_gps.getContext("2d");
+    canvas_gps_rect = canvas_gps.getBoundingClientRect()
 	return true;
 }
 
@@ -213,14 +220,14 @@ function createObject(type,x,y,config={}) {
             data.level = lvl
             data.key = config.key
             
-            data.soul = Decimal.pow(1.1,lvl-1).mul(lvl).round()
-            data.damage = (data.health = data.max_health = Decimal.pow(1.1,lvl-1).mul(5+(lvl-1)*2).round()).div(10).round().max(1)
+            data.soul = Decimal.pow(1.1,lvl-1).mul(lvl).mul(world_config.soul_mult??1).round()
+            data.damage = (data.health = data.max_health = Decimal.pow(1.1,lvl-1).mul(5+(lvl-1)*2).mul(world_config.health_mult??1).round()).div(10).round().max(1)
         break
         case 'treasure':
             var lvl = world_init.level + Math.random()**2*5
             var w = Decimal.pow(1.1,lvl-1).mul(lvl)
             data.weight = {}
-            WORLD_GENERATION[world_init.type].config.treasure_weight.forEach(([i,c,a]) => {data.weight[i] = LUNAR_ITEMS[i].type == "items" ? 1 : w.mul(a??1).round().max(1)})
+            world_config.treasure_weight.forEach(([i,c,a]) => {data.weight[i] = LUNAR_ITEMS[i].type == "items" ? 1 : w.mul(a??1).mul(i == 'l_soul'?world_config.soul_mult??1:1).round().max(1)})
         break
         case 'heal':
             data.percent = 0.25 + (Math.random()-0.5)*0.1
@@ -238,9 +245,9 @@ function createObject(type,x,y,config={}) {
 }
 
 function generateTiles(color) {
-    const config = WORLD_GENERATION[world_init.type].config
+    world_config = WORLD_GENERATION[world_init.type].config
 
-    document.body.style.backgroundColor = config.colors[0]
+    document.body.style.backgroundColor = world_config.colors[0]
 
     noise.seed(Math.random())
     tiles = {}
@@ -286,22 +293,26 @@ function generateTiles(color) {
 
     WORLD_GENERATION[world_init.type].run()
 
-    var max_enemies = getRandomInt(...config.enemies_range),
-    max_treasures = getRandomInt(...config.treasures_range),
+    var max_enemies = getRandomInt(...world_config.enemies_range),
+    max_treasures = getRandomInt(...world_config.treasures_range),
     max_heals = Math.round(max_treasures/3)
-
-    let mw = 0, w = 0
     
     goal.enemy = Math.round(max_enemies * 2 / 3)
     goal.total = max_enemies + max_treasures - max_heals
     goal.max_enemies = max_enemies
     goal.max_treasures = max_treasures - max_heals
 
+    treasure_weight_before = world_config.treasure_weight
+
+    /*
+    let mw = 0, w = 0
+
     config.treasure_weight.forEach(([i,x]) => {mw += x})
     treasure_chances = config.treasure_weight.map(([i,x]) => {
         w += x
         return [i,w/mw,x/mw]
     })
+    */
 
     let obj = 0
 
@@ -379,6 +390,8 @@ function calcCanvas(dt) {
 
     mouse_pos = getHexPosition((before_mouse_pos[0] - cw/2)/H_RADIUS + camera_pos[0], (before_mouse_pos[1] - ch/2)/H_RADIUS + camera_pos[1])
 
+    var gps = temp.gps
+
     visible_tile = {}
 
     let cph = getHexPosition(...camera_pos)
@@ -451,4 +464,18 @@ function drawCanvas() {
     }
 
     */
+
+    canvas_gps_ctx.clearRect(0, 0, 290, 290);
+    document.getElementById("lunar_gps").style.display = temp.gps ? "" : "none";
+    if (temp.gps) {
+        var step = 290 / world_init.size
+        for (let [t,o] of Object.entries(objects)) {
+            let [x,y] = t.split(';').map(i=>parseInt(i))
+            canvas_gps_ctx.fillStyle = o.type == 'treasure' ? 'yellow' : o.type == 'enemy' ? 'red' : o.type == 'heal' ? 'lime' : o.type == 'portal' ? 'cyan' : 'white'
+            canvas_gps_ctx.fillRect(step * x, step * y, step, step)
+        }
+
+        canvas_gps_ctx.fillStyle = "white"
+        canvas_gps_ctx.fillRect(step * px, step * py, step, step)
+    }
 }

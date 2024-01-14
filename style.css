@@ -454,6 +454,11 @@ body.planetoid #level_bar {
     background-color: #333;
 }
 
+.upgs_div.cs,
+.upg_desc.cs {
+    background-color: #111;
+}
+
 .reset_div.planetary,
 .reset_req.planetary,
 #milestone_div_planetary,
@@ -1260,6 +1265,7 @@ body.planetoid #level_bar {
 
     color: red;
     font-weight: bold;
+    font-size: 14px;
 
     z-index: 1;
 }
@@ -1470,6 +1476,12 @@ body.planetoid #level_bar {
     border-color: #fff895;
 }
 
+.reset_div.twilight,
+.reset_req.twilight {
+    background-color: #5b0e88;
+    border-color: #cf95ff;
+}
+
 .solarian-div {
     width: calc(100% - 20px);
     height: calc(100% - 20px);
@@ -1534,6 +1546,10 @@ body.planetoid #level_bar {
     z-index: 1;
 }
 
+#enemy_bar {
+    width: 100%;
+    font-size: 16px;
+}
 #enemy_bar.progress-bar {
     background-color: #300;
 }
@@ -1799,6 +1815,13 @@ body.planetoid #level_bar {
     background-color: #30b884 !important;
 }
 
+#fb_adv {
+    background-color: #15ff00;
+}
+#fb_adv:hover {
+    background-color: #00b909 !important;
+}
+
 .level-color {
     color: #00ff0d;
 }
@@ -1833,6 +1856,10 @@ body.planetoid #level_bar {
 
 .compression-div:nth-child(5) {
     background-color: #fdff6d44;
+}
+
+.compression-div:nth-child(6) {
+    background-color: #d4d4d444;
 }
 
 #star_btn {
@@ -2025,4 +2052,168 @@ body.planetoid #level_bar {
     overflow-x: hidden;
     overflow-y: scroll;
     font-size: 12px;
+}
+
+#drag_stats {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.drag-div {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 300px;
+    background-color: #0008;
+}
+
+.drag-div * {
+    text-shadow: none;
+}
+
+.drag-top {
+    position: relative;
+    width: 100%;
+    height: 24px;
+    font-size: 18px;
+    display: flex;
+}
+
+.drag-top > img {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.drag-top > div {
+    width: calc(100% - 48px);
+}
+
+.drag-list {
+    font-size: 16px;
+    width: 100%;
+    max-height: 600px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.drag-item {
+    width: 100%;
+    position: relative;
+    height: 60px;
+}
+
+.drag-item * {
+    pointer-events: none;
+}
+
+.drag-item > img {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 60px;
+    height: 60px;
+}
+
+.drag-item > div {
+    position: absolute;
+    top: 50%;
+    left: 60px;
+    width: calc(100% - 60px);
+    max-height: 60px;
+    transform: translateY(-50%);
+}
+
+.drag-small-text {
+    font-size: 12px;
+    color: lightgray;
+}
+
+.synthesis-slot {
+    position: relative;
+    width: calc(100% - 10px);
+    height: 100px;
+    margin: 5px;
+    font-size: 16px;
+}
+
+.ss-name {
+    position: absolute;
+    top: 50%;
+    left: 0px;
+    z-index: 1;
+    transform: translateY(-50%);
+}
+
+.ss-icon {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100px; height: 100px;
+}
+
+.ss-mid {
+    position: absolute;
+    top: 50%;
+    left: 110px;
+    width: calc(100% - 320px);
+    transform: translateY(-50%);
+}
+
+.ss-btn {
+    position: absolute;
+    top: 50px;
+    right: 0px;
+    width: 196px; height: 32px;
+    padding: 0px 0px;
+    font-size: 16px;
+}
+
+.ss-mid > .progress-bar {
+    width: 100%;
+}
+
+.ss-progress::after {
+    background-color: lightgray;
+}
+
+.ss-level {
+    position: absolute;
+    bottom: 50px;
+    right: 0px;
+    width: 200px;
+    font-size: 16px;
+}
+
+.synthesis-insert {
+    position: relative;
+    width: calc(100% - 14px);
+    height: 100px;
+    margin: 5px;
+    font-size: 16px;
+    background-color: gray;
+    border: solid 2px black;
+    cursor: pointer;
+}
+
+.si-desc {
+    position: absolute;
+    top: 50%;
+    left: 100px;
+    width: calc(100% - 100px);
+    transform: translateY(-50%);
+}
+
+.si-desc > button {
+    font-size: 16px;
+}
+
+.ss-req {
+    position: absolute;
+    top: 50%;
+    left: 0px;
+    transform: translateY(-50%);
+    width: 100%;
+    font-size: 24px;
 }

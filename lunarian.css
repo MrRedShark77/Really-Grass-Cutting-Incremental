@@ -142,7 +142,7 @@ h3 {
 #lunar_items {
     background: none;
     top: 0px; left: 300px;
-    width: calc(100% - 300px);
+    width: calc(100% - 600px);
     display: flex;
     justify-content: start;
     flex-flow: row wrap;
@@ -190,6 +190,14 @@ h3 {
     width: 100%;
     max-height: calc(100% - 40px);
     overflow-y: scroll;
+}
+
+#lunar_gps {
+    position: absolute;
+    top: 5px; right: 5px;
+    width: 280px;
+    height: 280px;
+    background-color: #0004;
 }
 
 #lunar_items_found > .lunar_item {

@@ -119,7 +119,7 @@ UPGS.unGrass = {
             bulk: i => i.div(1e6).max(1).log(1.25).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(2).add(1))
 
                 return x
             },
@@ -155,7 +155,7 @@ UPGS.unGrass = {
             bulk: i => i.div(1e9).max(1).log(1.25).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(2).add(1))
 
                 return x
             },

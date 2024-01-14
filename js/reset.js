@@ -104,11 +104,25 @@ el.update.reset = ()=> {
     if (mapID3 == 'sm') {
         updateResetHTML('sunrise')
         updateResetHTML('sunset')
+        updateResetHTML('twilight')
 
         tmp.el.sunrise_desc.setHTML(
             tmp.solarianUnl
             ?`Reset eclipse, remnants, remnant upgrades, collecting, and forming for sunstone and update FM.`
             :`Reset eclipse, remnants, and remnant upgrades for sunstone.`
         )
+
+        if (RESET.twilight.unl() && RESET.twilight.req()) {
+            let b = tmp.twilightBonus
+            let h = `
+            Increase your twilight bonus by <b class="magenta">${tmp.twilightBonusIncrease.format(0)}</b> (next at stage ${SOLAR_OBELISK.twilight.nextBonus.format(0)})<br>
+            Twilight Bonuses (${player.sol.twilightBonus.format(0)}):
+            <br><b class="green">${formatMult(b[0],0)}</b> Offense
+            <br><b class="green">${formatMult(b[1],0)}</b> Souls/Collect/Form/Restore
+            <br><b class="green">${formatMult(b[2],0)}</b> Divine Souls/Fund
+            `
+
+            tmp.el.twilight_bonus.setHTML(h)
+        }
     }
 }

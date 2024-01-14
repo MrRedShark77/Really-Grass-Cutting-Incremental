@@ -122,8 +122,7 @@ function calc(dt) {
         }
     }
 
-    for (let x in UPGS) if (tmp.upgs[x].autoUnl && !(['grass','pp','crystal'].includes(x) && outsideNormal) && (hsj1 || !(['aGrass'].includes(x) && !outsideNormal))) if (player.autoUpg[x]) buyMaxUpgrades(x,true)
-    player.maxPerk = Math.max(player.maxPerk, tmp.perks)
+    player.maxPerk = player.maxPerk.max(tmp.perks)
 
     if (tmp.ringGen > 0) player.planetoid.ring = player.planetoid.ring.add(tmp.ringGain.mul(dt*tmp.ringGen))
 
@@ -169,6 +168,9 @@ function calc(dt) {
 
     calcSupernova(dt)
     calcSolarians(dt)
+    calcSynthesis(dt)
+
+    for (let x in UPGS) if (tmp.upgs[x].autoUnl && !(['grass','pp','crystal'].includes(x) && outsideNormal) && (hsj1 || !(['aGrass'].includes(x) && !outsideNormal))) if (player.autoUpg[x]) buyMaxUpgrades(x,true)
 
     MAIN.checkCutting()
 }

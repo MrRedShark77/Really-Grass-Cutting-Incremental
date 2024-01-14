@@ -26,16 +26,17 @@ function getPlayerData() {
     let s = {
         grass: E(0),
         bestGrass: E(0),
-        level: 0,
+        level: E(0),
         xp: E(0),
-        tier: 0,
+        tier: E(0),
         tp: E(0),
 
         upgs: {},
         autoUpg: {},
 
-        maxPerk: 0,
-        spentPerk: 0,
+        maxPerk: E(0),
+        spentPerk: E(0),
+        spentPerkSolar: E(0),
 
         plat: E(0),
 
@@ -71,9 +72,9 @@ function getPlayerData() {
         aGrass: E(0),
         aBestGrass: E(0),
         aRes: {
-            level: 0,
+            level: E(0),
             xp: E(0),
-            tier: 0,
+            tier: E(0),
             tp: E(0),
         },
         
@@ -100,11 +101,11 @@ function getPlayerData() {
         stars: E(0),
         lowGH: 1e300,
 
-        astral: 0,
-        astralPrestige: 0,
+        astral: E(0),
+        astralPrestige: E(0),
         sp: E(0),
 
-        moonstone: 0,
+        moonstone: E(0),
         grassskip: 0,
         bestGS: 0,
 
@@ -135,9 +136,9 @@ function getPlayerData() {
         unGrass: E(0),
         unBestGrass: E(0),
         unRes: {
-            level: 0,
+            level: E(0),
             xp: E(0),
-            tier: 0,
+            tier: E(0),
             tp: E(0),
         },
 
@@ -177,6 +178,19 @@ function getPlayerData() {
         timewarp: { amt: 0, time: 0 },
         sn: getSupernovaSave(),
 
+        synthesis: {
+            slot: [],
+
+            cs: E(0),
+            fs: E(0),
+        },
+
+        pinned_drag: {
+            currency: [true],
+            level: [true],
+            bonus: [true],
+        },
+
         hsj: 0,
 
         world: 'ground',
@@ -187,6 +201,9 @@ function getPlayerData() {
     for (let x in UPGS) {
         s.upgs[x] = []
         s.autoUpg[x] = false
+    }
+    for (let x in SYNTHESIS.slot) {
+        s.synthesis.slot[x] = [-1,E(0)]
     }
     return s
 }
@@ -225,8 +242,8 @@ function checkVersion() {
         player.bestAP = E(0)
         player.aGrass = E(0)
         player.aBestGrass = E(0)
-        player.aRes.level = 0
-        player.aRes.tier = 0
+        player.aRes.level = E(0)
+        player.aRes.tier = E(0)
         player.aRes.xp = E(0)
         player.aRes.tp = E(0)
 
@@ -264,8 +281,8 @@ function checkVersion() {
 
         player.unGrass = E(0)
         player.unBestGrass = E(0)
-        player.unRes.level = 0
-        player.unRes.tier = 0
+        player.unRes.level = E(0)
+        player.unRes.tier = E(0)
         player.unRes.xp = E(0)
         player.unRes.tp = E(0)
 
@@ -427,7 +444,7 @@ function loadGame(start=true, gotNaN=false) {
 
     for (let x in UPGS) {
         UPGS_SCOST[x] = []
-        for (let y in UPGS[x].ctn) UPGS_SCOST[x][y] = UPGS[x].ctn[y].cost(0)
+        for (let y in UPGS[x].ctn) UPGS_SCOST[x][y] = UPGS[x].ctn[y].cost(E(0))
     }
 
     for (let x in STAR_CHART) {

@@ -3,7 +3,7 @@ function getPlanetoidSave() {
         pm: E(0),
         bestPm: E(0),
 
-        level: 0,
+        level: E(0),
         xp: E(0),
 
         firstEnter: false,
@@ -64,7 +64,17 @@ const PLANETOID = {
 
         x = x.pow(starTreeEff('reserv',7))
 
+        if (hasCentralized(19)) x = x.pow(2)
+
         if (hasStarTree('reserv',22)) x = x.mul(tmp.compact)
+
+        let o = E('ee20')
+
+        if (x.gte(o)) {
+            let before = x
+            x = x.overflow(o,0.75)
+            tmp.pm_overflow = before.log10().div(x.log10())
+        } else tmp.pm_overflow = E(1)
 
         return x
     },
@@ -98,29 +108,31 @@ const PLANETOID = {
     },
     level: {
         req(i) {
-            i = E(i).scale(200,2,0)
+            i = i.scale(1e9,3,3).scale(200,2,0)
 
-            let x = Decimal.pow(tmp.cosmicLevel.threshold,i**0.87).mul(50)
+            let x = Decimal.pow(tmp.cosmicLevel.threshold,i.pow(0.87)).mul(50)
 
             return x.ceil()
         },
         bulk(i) {
             let x = i.div(50)
             if (x.lt(1)) return 0
-            x = x.log(tmp.cosmicLevel.threshold).root(.87).scale(200,2,0,true)
+            x = x.log(tmp.cosmicLevel.threshold).root(.87).scale(200,2,0,true).scale(1e9,3,3,true)
 
-            return Math.floor(x.add(1))
+            return x.add(1).floor()
         },
         cur(i) {
-            return i > 0 ? this.req(i-1) : E(0) 
+            return i.gt(0) ? this.req(i.sub(1)) : E(0) 
         },
     },
     ringGain() {
-        let lvl = player.planetoid.level-4
+        if (hasCentralized(18)) return player.grass.floor();
+
+        let lvl = player.planetoid.level.sub(4)
 
         if (lvl <= 0) return E(0)
 
-        let x = Decimal.pow(1.1,lvl-1).mul((lvl+1)/2)
+        let x = Decimal.pow(1.1,lvl.add(1)).mul(lvl.add(1).div(2))
 
         if (player.planetoid.bestPm.gte(1e9)) x = x.mul(Decimal.pow(10,player.planetoid.bestPm.log10().sub(8).root(2).sub(1)))
 
@@ -173,11 +185,13 @@ const PLANETOID = {
         return x.floor()
     },
     astroGain() {
-        let lvl = player.planetoid.level-29
+        if (hasCentralized(20)) return player.planetoid.pm.floor()
+
+        let lvl = player.planetoid.level.sub(29)
 
         if (lvl <= 0) return E(0)
 
-        let x = Decimal.pow(1.1,lvl-1).mul(lvl).mul(player.planetoid.bestPm.div(1e12).max(1).root(3))
+        let x = Decimal.pow(1.1,lvl.sub(1)).mul(lvl).mul(player.planetoid.bestPm.div(1e12).max(1).root(3))
 
         tmp.astroGainBase = x
 
@@ -194,11 +208,13 @@ const PLANETOID = {
         return x.floor()
     },
     measureGain() {
-        let lvl = player.planetoid.level-99
+        if (hasCentralized(21)) return player.planetoid.pm.floor()
+
+        let lvl = player.planetoid.level.sub(99)
 
         if (lvl <= 0) return E(0)
 
-        let x = Decimal.pow(1.1,lvl-1).mul(lvl).mul(player.planetoid.bestAstro.div(1e15).max(1).root(3))
+        let x = Decimal.pow(1.1,lvl.sub(1)).mul(lvl).mul(player.planetoid.bestAstro.div(1e15).max(1).root(3))
 
         tmp.measureGainBase = x
 
@@ -215,11 +231,11 @@ const PLANETOID = {
     },
     planetary: {
         gain() {
-            let lvl = player.planetoid.level-199
+            let lvl = player.planetoid.level.sub(199)
 
             if (lvl <= 0) return E(0)
 
-            let x = Decimal.pow(1.1,lvl-1).mul(lvl).mul(player.planetoid.bestMeasure.div(1e15).max(1).root(3))
+            let x = Decimal.pow(1.1,lvl.sub(1)).mul(lvl).mul(player.planetoid.bestMeasure.div(1e15).max(1).root(3))
 
             tmp.planetGainBase = x
 
@@ -237,7 +253,7 @@ const PLANETOID = {
             return x
         },
         tierBulk() {
-            let lvl = player.planetoid.level
+            let lvl = player.planetoid.level.toNumber()
             if (lvl < 200) return 0
             let p = (lvl - 200) / 10
             if (p >= 30) p = (p/29)**0.5*29
@@ -325,7 +341,7 @@ tmp_update.push(()=>{
 })
 
 RESET.enterPlanetoid = {
-    unl: ()=> player.lowGH<=-32,
+    unl: ()=> player.lowGH<=-32 && player.hsj < 4,
 
     req: ()=>true,
     reqDesc: ()=>`how.`,
@@ -447,7 +463,7 @@ UPGS.planetarium = {
             bulk: i => i.div(5000).max(1).log(1.25).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(2,Math.floor(i/25)).mul(i+1)
+                let x = Decimal.pow(2,i.div(25).floor()).mul(i.add(1))
 
                 return x
             },
@@ -465,7 +481,7 @@ UPGS.planetarium = {
             bulk: i => i.div(25000).max(1).log(1.25).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(2,Math.floor(i/25)).mul(i+1)
+                let x = Decimal.pow(2,i.div(25).floor()).mul(i.add(1))
 
                 return x
             },
@@ -756,7 +772,7 @@ UPGS.astro = {
             bulk: i => i.div(1).max(1).log(1.2).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
 
                 return x
             },
@@ -774,7 +790,7 @@ UPGS.astro = {
             bulk: i => i.div(10).max(1).log(1.3).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
 
                 return x
             },
@@ -810,7 +826,7 @@ UPGS.astro = {
             bulk: i => i.div(100).max(1).log(1.2).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
 
                 return x
             },
@@ -932,7 +948,7 @@ UPGS.measure = {
             bulk: i => i.div(10).max(1).log(1.2).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
 
                 return x
             },
@@ -950,7 +966,7 @@ UPGS.measure = {
             bulk: i => i.div(100).max(1).log(1.25).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
 
                 return x
             },
@@ -986,7 +1002,7 @@ UPGS.measure = {
             bulk: i => i.div(1e6).max(1).log(1.25).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/10+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(10).add(1))
 
                 return x
             },
@@ -1078,7 +1094,7 @@ UPGS.planet = {
             bulk: i => i.div(3).max(1).log(1.2).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
 
                 return x
             },
@@ -1114,7 +1130,7 @@ UPGS.planet = {
             bulk: i => i.div(10).max(1).log(1.2).floor().add(1),
 
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
 
                 return x
             },

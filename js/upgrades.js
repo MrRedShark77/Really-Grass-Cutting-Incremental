@@ -28,9 +28,10 @@ const UPG_RES = {
     line: ["Line",()=>[player.constellation,"line"],'ConstellationBase','Curr/Lines'],
     arc: ["Arc",()=>[player.constellation,"arc"],'ConstellationBase','Curr/Arcs'],
     stardust: ["Stardust",()=>[player,"stardust"],'NebulaBase','Curr/Stardust'],
+    cs: ["Corruption Shard",()=>[player.synthesis,"cs"],'UnstableBase','Curr/CorruptionShard'],
 }
 
-const isResNumber = ['perk','moonstone']
+const isResNumber = []
 
 const UPGS = {
     grass: {
@@ -58,7 +59,7 @@ const UPGS = {
                 bulk: i => i.div(10).max(1).log(1.2).scale(1e6,2,0,true).floor().add(1),
 
                 effect(i) {
-                    let x = Decimal.pow(2,Math.floor(i/25)).mul(i+1)
+                    let x = Decimal.pow(2,i.div(25).floor()).mul(i.add(1))
 
                     return x
                 },
@@ -112,7 +113,7 @@ const UPGS = {
                 bulk: i => i.div(1e3).max(1).log(1.3).scale(1e6,2,0,true).floor().add(1),
 
                 effect(i) {
-                    let x = Decimal.pow(2,Math.floor(i/25)).mul(i+1)
+                    let x = Decimal.pow(2,i.div(25).floor()).mul(i.add(1))
 
                     return x
                 },
@@ -166,7 +167,7 @@ const UPGS = {
                 bulk: i => i,
 
                 effect(i) {
-                    let x = Decimal.mul(player.level*i,0.2).add(1)
+                    let x = Decimal.mul(player.level.mul(i),0.2).add(1)
 
                     return x
                 },
@@ -228,7 +229,7 @@ const UPGS = {
                 effect(i) {
                     // if (player.decel) return 1
 
-                    let x = Decimal.mul(player.level*i,0.2).add(1)
+                    let x = Decimal.mul(player.level.mul(i),0.2).add(1)
 
                     return x
                 },
@@ -265,7 +266,7 @@ const UPGS = {
                 icon: ['Icons/MoreGrass'],
                 
                 cost: i => 10,
-                bulk: i => Math.floor(i/10),
+                bulk: i => i.div(10).floor(),
 
                 effect(i) {
                     let x = i
@@ -290,7 +291,7 @@ const UPGS = {
                 bulk: i => i,
 
                 effect(i) {
-                    let x = Decimal.mul(player.level*i,0.05).add(1)
+                    let x = Decimal.mul(player.level.mul(i),0.05).add(1)
 
                     return x
                 },
@@ -309,7 +310,7 @@ const UPGS = {
                 icon: ['Curr/Prestige'],
                 
                 cost: i => 2,
-                bulk: i => Math.floor(i/2),
+                bulk: i => i.div(2).floor(),
 
                 effect(i) {
                     let x = Decimal.mul(i,0.2).add(1)
@@ -331,7 +332,7 @@ const UPGS = {
                 icon: ['Curr/Crystal'],
                 
                 cost: i => 4,
-                bulk: i => Math.floor(i/4),
+                bulk: i => i.div(4).floor(),
 
                 effect(i) {
                     let x = Decimal.mul(i,0.2).add(1)
@@ -914,8 +915,8 @@ function buyUpgrade(id,x) {
         let [p,q] = UPG_RES[resDis][1]()
 
         if (resDis == 'perk') {
-            player.spentPerk += Number(tu.cost[x])
-            tmp.perkUnspent = Math.max(player.maxPerk-player.spentPerk,0)
+            player.spentPerk = player.spentPerk.add(tu.cost[x])
+            updateUnspentPerk()
         }
         else if (!tu.noSpend) p[q] = isResNumber.includes(resDis) ? Math.max(p[q]-tu.cost[x],0) : p[q].sub(tu.cost[x]).max(0)
         amt[x] = amt[x]?.add(1) ?? E(1)
@@ -1004,8 +1005,8 @@ function buyNextUpgrade(id,x) {
 
 			amt[x] = Decimal.min(amt[x] ? costOnce ? amt[x].add(bulk) : amt[x].max(bulk) : bulk,max)
 			if (resDis == 'perk') {
-				player.spentPerk += Number(cost)
-				tmp.perkUnspent = Math.max(player.maxPerk-player.spentPerk,0)
+				player.spentPerk = player.spentPerk.add(cost)
+				updateUnspentPerk()
 			}
 			else if (!tu.noSpend) p[q] = numInc ? Math.max(p[q]-cost,0) : p[q].sub(cost).max(0)
 
@@ -1050,8 +1051,8 @@ function buyMaxUpgrade(id,x,auto=false) {
 
                 amt[x] = Decimal.min(amt[x] ? costOnce ? amt[x].add(bulk) : amt[x].max(bulk) : bulk,max)
                 if (resDis == 'perk') {
-                    player.spentPerk += Number(cost)
-                    tmp.perkUnspent = Math.max(player.maxPerk-player.spentPerk,0)
+                    player.spentPerk = player.spentPerk.add(cost)
+                    updateUnspentPerk()
                 }
                 else if (!tu.noSpend) p[q] = numInc ? Math.max(p[q]-cost,0) : p[q].sub(cost).max(0)
 
@@ -1359,8 +1360,11 @@ el.update.upgs = ()=>{
 
         updateUpgradesHTML('stardust')
     }
-    else if (m && player.constellation.unl) {
+    else if (m == "cs" && player.constellation.unl) {
         updateUpgradesHTML('constellation')
+    }
+    else if (m == 'synt') {
+        updateUpgradesHTML('cs')
     }
     
     if (m == 'opt') {

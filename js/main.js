@@ -236,7 +236,7 @@ const MAIN = {
     autoCut: ()=>hasStarTree('reserv',2)?0.01:5-(player.planetoid.active?0:upgEffect('auto',0,0)+upgEffect('plat',0,0)+starTreeEff('progress',3,0)),
     level: {
         req(i) {
-            i = E(i).scale(player.hsj>=3 ? 1e6 : 1e5,3,3)
+            i = i.scale(tmp.level.scale3,3,3)
             
             if (player.hsj < 2) i = i.scale(tmp.level.scale2,2,0).scale(tmp.level.scale1,2,0)
 
@@ -255,10 +255,10 @@ const MAIN = {
 
             if (player.hsj < 2) x = x.scale(tmp.level.scale1,2,0,true).scale(tmp.level.scale2,2,0,true)
 
-            return Math.floor(x.scale(player.hsj>=3 ? 1e6 : 1e5,3,3,true).toNumber()+1)
+            return x.scale(tmp.level.scale3,3,3,true).add(1).floor()
         },
         cur(i) {
-            return i > 0 ? this.req(i-1) : E(0) 
+            return i.gt(0) ? this.req(i.sub(1)) : E(0) 
         },
         perk() {
             let x = player.level
@@ -270,7 +270,7 @@ const MAIN = {
         req(i) {
             let pow = player.lowGH <= 12 ? 1.15 : 1.2
             if (player.recel && player.hsj <= 0) pow *= 1.1
-            let x = Decimal.pow(tmp.level.tier,i**pow).mul(100)
+            let x = Decimal.pow(tmp.level.tier,i.pow(pow)).mul(100)
 
             return x.ceil()
         },
@@ -281,10 +281,10 @@ const MAIN = {
             if (player.recel && player.hsj <= 0) pow *= 1.1
             x = x.log(tmp.level.tier).root(pow)
 
-            return Math.floor(x.toNumber()+1)
+            return x.add(1).floor()
         },
         cur(i) {
-            return i > 0 ? this.req(i-1) : E(0) 
+            return i.gt(0) ? this.req(i.sub(1)) : E(0) 
         },
         mult(i) {
             let base = Decimal.add(upgEffect('crystal',5,0),tmp.chargeEff[5]||0).add(2)
@@ -301,33 +301,33 @@ const MAIN = {
 
             let ap = player.astralPrestige
 
-            if (player.hsj >= 2) return Decimal.pow(3,E(i+ap*100).scale(player.hsj>=3 ? 1e5 : 1e4,3,3))
+            if (player.hsj >= 2) return Decimal.pow(3,ap.mul(100).add(i).scale(player.hsj>=3 ? 1e5 : 1e4,3,3))
 
-            let b = Decimal.pow(10,ap*20+2)
+            let b = Decimal.pow(10,ap.mul(20).add(2))
 
-            i += ap*50
+            i = ap.mul(50).add(i)
 
-            i = E(i).scale(65,2+ap/5,0)
+            i = i.scale(65,ap.div(5).add(2),0)
 
-            let x = Decimal.pow(3+ap/5,i).mul(b)
+            let x = Decimal.pow(ap.div(5).add(3),i).mul(b)
 
             return x.ceil()
         },
         bulk(i) {
             let ap = player.astralPrestige
 
-            if (player.hsj >= 2) return i.lt(1) ? 0 : Math.floor(i.log(3).scale(player.hsj>=3 ? 1e5 : 1e4,3,3,true).toNumber()-ap*100+1)
+            if (player.hsj >= 2) return i.lt(1) ? 0 : i.log(3).scale(player.hsj>=3 ? 1e5 : 1e4,3,3,true).sub(ap.mul(100)).add(1).floor()
 
-            let b = Decimal.pow(10,ap*20+2)
+            let b = Decimal.pow(10,ap.mul(20).add(2))
 
             let x = i.div(b)
             if (x.lt(1)) return 0
-            x = x.log(3+ap/5)
+            x = x.log(ap.div(5).add(3))
 
-            return Math.floor(x.scale(65,2+ap/5,0,true).toNumber()-ap*50+1)
+            return x.scale(65,ap.div(5).add(2),0,true).sub(ap.mul(50)).add(1).floor()
         },
         cur(i) {
-            return i > 0 ? this.req(i-1) : E(0) 
+            return i.gt(0) ? this.req(i.sub(1)) : E(0)
         },
     },
     spGain() {
@@ -364,22 +364,22 @@ const MAIN = {
     },
     checkCutting() {
         if (player.xp.gte(tmp.level.next)) {
-            player.level = Math.max(player.level, tmp.level.bulk)
+            player.level = player.level.max(tmp.level.bulk)
         }
         if (player.tp.gte(tmp.tier.next)) {
-            player.tier = Math.max(player.tier, tmp.tier.bulk)
+            player.tier = player.tier.max(tmp.tier.bulk)
         }
         if (player.sp.gte(tmp.astral.next)) {
-            player.astral = Math.max(player.astral, tmp.astral.bulk)
+            player.astral = player.astral.max(tmp.astral.bulk)
         }
         if (player.hsj >= 2 && player.astral >= 100) {
-            let w = Math.floor(player.astral/100)
-            player.astralPrestige += w
-            player.astral -= 100 * w
+            let w = player.astral.div(100).floor()
+            player.astralPrestige = player.astralPrestige.add(w)
+            player.astral = player.astral.sub(w.mul(100))
         }
 
         if (player.planetoid.xp.gte(tmp.cosmicLevel.next)) {
-            player.planetoid.level = Math.max(player.planetoid.level, tmp.cosmicLevel.bulk)
+            player.planetoid.level = player.planetoid.level.max(tmp.cosmicLevel.bulk)
         }
     }, 
 }
@@ -390,17 +390,19 @@ el.update.main = ()=>{
 
     tmp.el.grassAmt.setHTML(g.format(0))
     tmp.el.grassGain.setHTML(tmp.autoCutUnlocked ? formatGain(g,(pa?tmp.planetiumGain:tmp.grassGain).div(tmp.autocut).mul(tmp.autocutBonus).mul(tmp.autocutAmt)) : "")
-    tmp.el.grassOverflow.setHTML(tmp.grass_overflow.gt(1)?`(^1/${format(tmp.grass_overflow)} to grass!)`:'')
+    tmp.el.grassOverflow.setHTML((tmp.grass_overflow.gt(1)?`(^1/${format(tmp.grass_overflow)} to grass!)`:'')+(tmp.pm_overflow.gt(1)?` (^1/${format(tmp.pm_overflow)} to planetarium!)`:''))
 
     let tier_unl = !pa && player.pTimes > 0
     let astr_unl = player.gTimes > 0
 
+    /*
     tmp.el.level.setHTML(`Level <b class="cyan">${format(pa?player.planetoid.level:player.level,0)}</b>`+((pa?player.planetoid.level:player.level)>=10000?"":` (${formatPercent(pa ? tmp.cosmicLevel.percent : tmp.level.percent)})`))
 
     tmp.el.tier.setDisplay(tier_unl)
     tmp.el.astral.setDisplay(astr_unl)
     if (tier_unl) tmp.el.tier.setHTML(`Tier <b class="yellow">${format(player.tier,0)}</b> ${player.tier>=10000?'':'('+formatPercent(tmp.tier.percent)+')'}`)
     if (astr_unl) tmp.el.astral.setHTML(`Astral <b class="magenta">${(player.astralPrestige>0?format(player.astralPrestige,0)+"-":"")+format(player.astral,0)}</b> ${player.astralPrestige>=10000?'':'('+formatPercent(tmp.astral.percent)+')'}`)
+    */
 
     if (mapID == 'g') {
         let xpID = pa ? 'Cosmic' : 'XP'
@@ -434,6 +436,10 @@ el.update.main = ()=>{
     }
 }
 
+function updateUnspentPerk() {
+    tmp.perkUnspent = player.maxPerk.sub(player.spentPerk).sub(player.spentPerkSolar).max(0)
+}
+
 tmp_update.push(()=>{
     tmp.star = player.world == 'star'
     tmp.space = player.world == 'space'
@@ -462,7 +468,7 @@ tmp_update.push(()=>{
     tmp.SPGain = MAIN.spGain()
 
     tmp.perks = MAIN.level.perk()
-    tmp.perkUnspent = Math.max(player.maxPerk-player.spentPerk,0)
+    updateUnspentPerk()
 
     let lvl = player.level
 
@@ -476,6 +482,8 @@ tmp_update.push(()=>{
 
     tmp.level.scale2 = player.recel && player.hsj <= 0?5:player.decel && player.hsj <= 0?300:700
     tmp.level.scale2 *= starTreeEff('progress',7,1)
+
+    tmp.level.scale3 = Decimal.mul(player.hsj>=3?1e6:1e5,upgEffect('cs',3))
 
     tmp.level.next = MAIN.level.req(lvl)
     tmp.level.bulk = MAIN.level.bulk(player.xp)
@@ -518,16 +526,23 @@ tmp_update.push(()=>{
         tmp.platGain = Decimal.ceil(tmp.platGain.mul(tmp.compact))
     }
 
-    tmp.moonstoneGain = 1
-    tmp.moonstoneChance = 0.005
-    if (tmp.minStats.gs >= 8) tmp.moonstoneGain += getGSEffect(2,0)
-    if (tmp.minStats.gs >= 21) {
-        tmp.moonstoneChance *= 2
-        tmp.moonstoneGain *= 2
+    if (hasCentralized(17)) {
+        tmp.moonstoneGain = player.grass.floor();
+        tmp.moonstoneChance = 0.5
     }
-    tmp.moonstoneGain = tmp.moonstoneGain *= solarUpgEffect(3,2)
+    else {
+        tmp.moonstoneGain = E(1)
+        tmp.moonstoneChance = 0.005
+        
+        if (tmp.minStats.gs >= 8) tmp.moonstoneGain = tmp.moonstoneGain.add(getGSEffect(2,0))
+        if (tmp.minStats.gs >= 21) {
+            tmp.moonstoneChance *= 2
+            tmp.moonstoneGain = tmp.moonstoneGain.mul(2)
+        }
+        tmp.moonstoneGain = tmp.moonstoneGain.mul(solarUpgEffect(3,2)).mul(solarUpgEffect(1,20))
 
-    tmp.moonstoneGain = Math.ceil(tmp.moonstoneGain*tmp.compact)
+        tmp.moonstoneGain = tmp.moonstoneGain.mul(tmp.compact).ceil()
+    }
 
     tmp.platChance = 0.005
     if (tmp.minStats.gh >= 6 || player.lowGH <= 4) tmp.platChance *= 2

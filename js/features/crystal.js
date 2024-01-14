@@ -2,7 +2,7 @@ MAIN.crystal = {
     gain() {
         if (hasCentralized(1)) return player.grass.floor();
 
-        let l = player.tier+1
+        let l = player.tier.add(1)
         let x = Decimal.pow(1.1+getASEff('crystal'),l).mul(l).mul(player.bestPP.div(1e7).max(1).root(3))
 
         tmp.crystalGainBase = x
@@ -56,7 +56,7 @@ RESET.crystal = {
         player.pp = E(0)
         player.bestPP = E(0)
         player.tp = E(0)
-        player.tier = 0
+        player.tier = E(0)
 
         resetUpgrades('pp')
 
@@ -90,10 +90,10 @@ UPGS.crystal = {
             icon: ["Curr/Grass"],
                         
             cost: i => Decimal.pow(1.2,scale(E(i),1e6,2,0)).mul(4).ceil(),
-            bulk: i => i.div(4).max(1).log(1.2).scale(1e6,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(4).max(1).log(1.2).scale(1e6,2,0,true).add(1).floor(),
         
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
         
                 return x
             },
@@ -108,10 +108,10 @@ UPGS.crystal = {
             icon: ["Icons/XP"],
                         
             cost: i => Decimal.pow(1.25,scale(E(i),1e6,2,0)).mul(5).ceil(),
-            bulk: i => i.div(5).max(1).log(1.25).scale(1e6,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(5).max(1).log(1.25).scale(1e6,2,0,true).add(1).floor(),
         
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
         
                 return x
             },
@@ -126,10 +126,10 @@ UPGS.crystal = {
             icon: ["Icons/TP"],
                         
             cost: i => Decimal.pow(1.3,scale(E(i),1e6,2,0)).mul(6).ceil(),
-            bulk: i => i.div(6).max(1).log(1.3).scale(1e6,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(6).max(1).log(1.3).scale(1e6,2,0,true).add(1).floor(),
         
             effect(i) {
-                let x = Decimal.pow(2,Math.floor(i/25)).mul(i+1)
+                let x = Decimal.pow(2,i.div(25).floor()).mul(i.add(1))
         
                 return x
             },
@@ -144,10 +144,10 @@ UPGS.crystal = {
             icon: ["Curr/Prestige"],
                         
             cost: i => Decimal.pow(1.5,scale(E(i),1e6,2,0)).mul(11).ceil(),
-            bulk: i => i.div(11).max(1).log(1.5).scale(1e6,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(11).max(1).log(1.5).scale(1e6,2,0,true).add(1).floor(),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },
@@ -180,7 +180,7 @@ UPGS.crystal = {
             icon: ["Icons/TP","Icons/Plus"],
                         
             cost: i => Decimal.pow(10,i**1.25).mul(100).ceil(),
-            bulk: i => i.div(100).max(1).log(10).root(1.25).floor().toNumber()+1,
+            bulk: i => i.div(100).max(1).log(10).root(1.25).add(1).floor(),
         
             effect(i) {
                 let x = i
@@ -245,7 +245,7 @@ RESET.oil = {
     },
 
     doReset(order="l") {
-        player.tier = 0
+        player.tier = E(0)
         player.tp = E(0)
         player.ap = E(0)
         player.bestAP = E(0)
@@ -280,10 +280,10 @@ UPGS.oil = {
             icon: ["Curr/Grass"],
                         
             cost: i => Decimal.pow(1.2,scale(E(i),1e5,2,0)).mul(2).ceil(),
-            bulk: i => i.div(2).max(1).log(1.2).scale(1e5,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(2).max(1).log(1.2).scale(1e5,2,0,true).add(1).floor(),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },
@@ -298,10 +298,10 @@ UPGS.oil = {
             icon: ['Icons/XP'],
             
             cost: i => Decimal.pow(1.25,scale(E(i),1e5,2,0)).mul(3).ceil(),
-            bulk: i => i.div(3).max(1).log(1.25).scale(1e5,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(3).max(1).log(1.25).scale(1e5,2,0,true).add(1).floor(),
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
 
                 return x
             },
@@ -316,10 +316,10 @@ UPGS.oil = {
             icon: ['Icons/TP'],
             
             cost: i => Decimal.pow(1.3,scale(E(i),1e5,2,0)).mul(5).ceil(),
-            bulk: i => i.div(5).max(1).log(1.3).scale(1e5,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(5).max(1).log(1.3).scale(1e5,2,0,true).add(1).floor(),
 
             effect(i) {
-                let x = Decimal.pow(1.5,Math.floor(i/25)).mul(i/2+1)
+                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
 
                 return x
             },
@@ -334,10 +334,10 @@ UPGS.oil = {
             icon: ['Curr/Anonymity'],
             
             cost: i => Decimal.pow(1.4,scale(E(i),1e5,2,0)).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.4).scale(1e5,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(10).max(1).log(1.4).scale(1e5,2,0,true).add(1).floor(),
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
 
                 return x
             },
@@ -352,7 +352,7 @@ UPGS.oil = {
             icon: ['Curr/Platinum'],
             
             cost: i => Decimal.pow(10,scale(E(i),1e3,2,0)).mul(1e3).ceil(),
-            bulk: i => i.div(1e3).max(1).log(10).scale(1e3,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(1e3).max(1).log(10).scale(1e3,2,0,true).add(1).floor(),
 
             effect(i) {
                 let x = Decimal.pow(1.5,i).softcap(100,0.25,0)
@@ -370,10 +370,10 @@ UPGS.oil = {
             icon: ['Curr/Steel2'],
             
             cost: i => Decimal.pow(1.25,scale(E(i),1e5,2,0)).mul(1e4).ceil(),
-            bulk: i => i.div(1e4).max(1).log(1.25).scale(1e5,2,0,true).floor().toNumber()+1,
+            bulk: i => i.div(1e4).max(1).log(1.25).scale(1e5,2,0,true).add(1).floor(),
 
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
 
                 return x
             },
@@ -384,7 +384,9 @@ UPGS.oil = {
 
 MAIN.cloud = {
     gain() {
-        let l = Math.max(0,player.tier-30)
+        if (hasCentralized(16)) return player.grass.floor();
+
+        let l = player.tier.sub(30).max(0)
         let x = Decimal.pow(1.1,l).mul(l).mul(player.bestNP.div(1e24).max(1).root(3))
 
         tmp.cloudGainBase = x
@@ -436,10 +438,10 @@ UPGS.cloud = {
             icon: ["Curr/DarkMatter"],
                         
             cost: i => Decimal.pow(1.2,i).mul(2).ceil(),
-            bulk: i => i.div(2).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(2).max(1).log(1.2).add(1).floor(),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },
@@ -454,10 +456,10 @@ UPGS.cloud = {
             icon: ["Icons/SP"],
                         
             cost: i => Decimal.pow(1.2,i).mul(2).ceil(),
-            bulk: i => i.div(2).max(1).log(1.2).floor().toNumber()+1,
+            bulk: i => i.div(2).max(1).log(1.2).add(1).floor(),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },
@@ -472,10 +474,10 @@ UPGS.cloud = {
             icon: ["Curr/Ring"],
                         
             cost: i => Decimal.pow(1.25,i).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(10).max(1).log(1.25).add(1).floor(),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },
@@ -490,10 +492,10 @@ UPGS.cloud = {
             icon: ["Curr/Normality"],
                         
             cost: i => Decimal.pow(1.25,i).mul(100).ceil(),
-            bulk: i => i.div(100).max(1).log(1.25).floor().toNumber()+1,
+            bulk: i => i.div(100).max(1).log(1.25).add(1).floor(),
         
             effect(i) {
-                let x = Decimal.pow(1.25,Math.floor(i/25)).mul(i/4+1)
+                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
         
                 return x
             },
