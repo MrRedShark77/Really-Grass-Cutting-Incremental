@@ -741,7 +741,7 @@ const UPGS = {
                 },
                 effDesc: x => format(x)+"x",
             },{
-                max: 100,
+                max: 1000,
 
                 unl: ()=>player.sTimes>0,
 
@@ -753,8 +753,8 @@ const UPGS = {
                 res: "plat",
                 icon: ['Curr/Steel2'],
                 
-                cost: i => 1000,
-                bulk: i => i.div(1000).floor(),
+                cost: i => 100,
+                bulk: i => i.div(100).floor(),
 
                 effect(i) {
                     let x = E(i*0.1+1)
@@ -851,7 +851,7 @@ const UPGS = {
                 },
                 effDesc: x => format(x)+"x",
             },{
-                max: 25,
+                max: 225,
 
                 unl: ()=>player.rocket.part>0||player.gTimes>0,
 
