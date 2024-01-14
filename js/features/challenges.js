@@ -128,14 +128,14 @@ const CHALS = [
     },{
         unl: ()=>hasUpgrade('factory',2),
 
-        max: 10,
+        max: 70,
         id: 'steel',
 
         title: `Challengerism`,
         desc: `You are trapped in Prestige & Crystal Challenges (except Reduced Resources).`,
         reward: `Charge rate is increased by <b class="green">10x</b> every completions.`,
 
-        goal: i=>40+i*10,
+        goal: i=>40+i*12,
         bulk: i=>Math.floor((i-40)/10+1),
 
         goalDesc: x=>"Level "+format(x,0),
