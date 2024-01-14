@@ -284,9 +284,9 @@ const PLANETOID = {
                 effect: ()=>Math.floor(Math.max(player.planetoid.planetTier-5,0)/5),
                 effDesc: x=>"+"+format(x,0),
             },{
-                r: 40,
-                desc: `Gain more Stardusts based on planetary tier, starting at 40.`,
-                effect: ()=>Decimal.pow(1.2,player.planetoid.planetTier-39).max(1),
+                r: 34,
+                desc: `Gain more Stardusts based on planetary tier, starting at 34.`,
+                effect: ()=>Decimal.pow(1.45,player.planetoid.planetTier-33).max(1),
                 effDesc: x=>formatMult(x),
             },
         ],
@@ -515,11 +515,11 @@ UPGS.planetarium = {
             res: "pm",
             icon: ["Curr/Stardust"],
                         
-            cost: i => Decimal.pow(10,i).mul('1e360'),
-            bulk: i => i.div('1e360').max(1).log(10).floor().add(1),
+            cost: i => Decimal.pow(10,i).mul('1e320'),
+            bulk: i => i.div('1e320').max(1).log(10).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.025,i)
+                let x = Decimal.pow(1.25,i)
         
                 return x
             },
@@ -864,7 +864,7 @@ UPGS.astro = {
             bulk: i => i.div('1e120').max(1).log(10).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.025,i)
+                let x = Decimal.pow(1.25,i)
         
                 return x
             },
@@ -1022,7 +1022,7 @@ UPGS.measure = {
             bulk: i => i.div('1e60').max(1).log(10).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.025,i)
+                let x = Decimal.pow(1.25,i)
         
                 return x
             },
@@ -1150,7 +1150,7 @@ UPGS.planet = {
             bulk: i => i.div('1e30').max(1).log(10).floor().add(1),
         
             effect(i) {
-                let x = Decimal.pow(1.025,i)
+                let x = Decimal.pow(1.25,i)
         
                 return x
             },
