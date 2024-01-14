@@ -341,7 +341,7 @@ tmp_update.push(()=>{
 })
 
 RESET.enterPlanetoid = {
-    unl: ()=> player.lowGH<=-32 && player.hsj < 4,
+    unl: ()=> player.lowGH<=-32 && (player.hsj < 4 || !player.planetoid.active),
 
     req: ()=>true,
     reqDesc: ()=>`how.`,
