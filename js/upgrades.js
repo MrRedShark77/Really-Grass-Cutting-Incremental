@@ -55,8 +55,8 @@ const UPGS = {
                 res: "grass",
                 icon: ['Curr/Grass'],
                 
-                cost: i => Decimal.pow(1.2,scale(E(i),1e6,2,0)).mul(10).ceil(),
-                bulk: i => i.div(10).max(1).log(1.2).scale(1e6,2,0,true).floor().add(1),
+                cost: i => Decimal.pow(1.12,scale(E(i),1e6,2,0)).mul(10).ceil(),
+                bulk: i => i.div(10).max(1).log(1.12).scale(1e6,2,0,true).floor().add(1),
 
                 effect(i) {
                     let x = Decimal.pow(2,i.div(25).floor()).mul(i.add(1))
@@ -73,8 +73,8 @@ const UPGS = {
                 res: "grass",
                 icon: ['Icons/MoreGrass'],
                 
-                cost: i => Decimal.pow(1.4,i).mul(25).ceil(),
-                bulk: i => i.div(25).max(1).log(1.4).floor().add(1),
+                cost: i => Decimal.pow(1.24,i).mul(25).ceil(),
+                bulk: i => i.div(25).max(1).log(1.24).floor().add(1),
 
                 effect(i) {
                     let x = i
@@ -91,8 +91,8 @@ const UPGS = {
                 res: "grass",
                 icon: ['Icons/Speed'],
                 
-                cost: i => Decimal.pow(1.75,i).mul(100).ceil(),
-                bulk: i => i.div(100).max(1).log(1.75).floor().add(1),
+                cost: i => Decimal.pow(1.275,i).mul(100).ceil(),
+                bulk: i => i.div(100).max(1).log(1.275).floor().add(1),
 
                 effect(i) {
                     let x = i/10+1
@@ -109,8 +109,8 @@ const UPGS = {
                 res: "grass",
                 icon: ['Icons/XP'],
                 
-                cost: i => Decimal.pow(1.3,scale(E(i),1e6,2,0)).mul(1e3).ceil(),
-                bulk: i => i.div(1e3).max(1).log(1.3).scale(1e6,2,0,true).floor().add(1),
+                cost: i => Decimal.pow(1.13,scale(E(i),1e6,2,0)).mul(1e3).ceil(),
+                bulk: i => i.div(1e3).max(1).log(1.13).scale(1e6,2,0,true).floor().add(1),
 
                 effect(i) {
                     let x = Decimal.pow(2,i.div(25).floor()).mul(i.add(1))
@@ -119,7 +119,7 @@ const UPGS = {
                 },
                 effDesc: x => x.format()+"x",
             },{
-                max: 5,
+                max: 15,
 
                 title: "Range",
                 desc: `Increase grass cut range by <b class="green">10</b> per level. Base is 50.`,
@@ -153,7 +153,7 @@ const UPGS = {
 
         ctn: [
             {
-                max: 50,
+                max: 150,
 
                 costOnce: true,
 
@@ -173,7 +173,7 @@ const UPGS = {
                 },
                 effDesc: x => x.format()+"x",
             },{
-                max: 10,
+                max: 110,
 
                 costOnce: true,
 
@@ -193,7 +193,7 @@ const UPGS = {
                 },
                 effDesc: x => "+"+format(x,0),
             },{
-                max: 10,
+                max: 20,
 
                 costOnce: true,
 
@@ -213,7 +213,7 @@ const UPGS = {
                 },
                 effDesc: x => format(x)+"x",
             },{
-                max: 50,
+                max: 150,
 
                 costOnce: true,
 
@@ -235,7 +235,7 @@ const UPGS = {
                 },
                 effDesc: x => x.format()+"x",
             },{
-                max: 5,
+                max: 10,
 
                 costOnce: true,
 
@@ -255,7 +255,7 @@ const UPGS = {
                 },
                 effDesc: x => "+"+format(x,0),
             },{
-                max: 1,
+                max: 6,
 
                 costOnce: true,
 
@@ -275,7 +275,7 @@ const UPGS = {
                 },
                 effDesc: x => "+"+format(x,0),
             },{
-                max: 10,
+                max: 30,
 
                 unl: ()=>player.cTimes>0,
 
