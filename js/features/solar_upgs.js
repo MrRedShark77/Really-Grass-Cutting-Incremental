@@ -2018,7 +2018,7 @@ const SOLAR_UPGS = [
             },{
                 max: 1000,
                 title: "Lunarian Synthesis Speed",
-                desc: `Increase yield of corrupton shards by <b class="green">x1.1</b> per level.`,
+                desc: `Increase synthesis speed by <b class="green">x1.1</b> per level.`,
                 icon: ['Icons/SynthesisSpeed'],
                 require() { return player.hsj >= 4 },
                 req_txt: `HSJ4`,
@@ -2111,7 +2111,7 @@ const SOLAR_UPGS = [
             },{
                 max: 200,
                 title: "Unstable Synthesis Speed",
-                desc: `Increase yield of corrupton shards by <b class="green">x1.1</b> per level.`,
+                desc: `Increase synthesis speed by <b class="green">x1.1</b> per level.`,
                 icon: ['Icons/SynthesisSpeed'],
                 require() { return player.hsj >= 4 },
                 req_txt: `HSJ4`,
