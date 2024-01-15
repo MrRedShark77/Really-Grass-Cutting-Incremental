@@ -13,7 +13,7 @@ UPGS.stardust = {
 
     ctn: [
         {
-            max: 1000,
+            max: 30000,
 
             title: "Star Growth",
             desc: `Increase star grow speed by <b class="green">+5%</b> compounding per level.`,
@@ -21,8 +21,8 @@ UPGS.stardust = {
             res: "stardust",
             icon: ["Curr/StarGrow"],
                         
-            cost: i => Decimal.pow(1.15,i).mul(10).scale(1e33,3,2),
-            bulk: i => i.scale(1e33,3,2,true).div(10).max(1).log(1.15).floor().add(1),
+            cost: i => Decimal.pow(1.015,i).mul(10).scale(1e33,3,2),
+            bulk: i => i.scale(1e33,3,2,true).div(10).max(1).log(1.015).floor().add(1),
         
             effect(i) {
                 let x = Decimal.pow(1.5,i)
