@@ -1301,7 +1301,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 10,
+                max: 300,
                 title: "Sunstone Remnants",
                 desc: `Increase remnants gain by <b class="green">+100%</b> per level.`,
                 icon: ['Curr/Remnant'],
@@ -1315,7 +1315,7 @@ const SOLAR_UPGS = [
                 effDesc: x => formatMult(x,0),
                 onBuy: updateRemnant,
             },{
-                max: 10,
+                max: 18,
                 title: "Ray Cap",
                 desc: `Increases rays cap by <b class="green">+1</b> per level.`,
                 icon: ['Icons/RayUpgrade'],
@@ -1330,7 +1330,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => "+"+format(x,0),
             },{
-                max: 10,
+                max: 18,
                 title: "Improver Cap",
                 desc: `Increases improver cap by <b class="green">+1</b> per level.`,
                 icon: ['Icons/UpgraderUpgrade'],
@@ -1606,7 +1606,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 5,
+                max: 30,
                 title: "Sol",
                 desc: `Sol's multiplier is <b class="green">doubled</b> every level.`,
                 icon: ['Curr/SolCurrency1'],
@@ -1619,7 +1619,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x,0),
             },{
-                max: 4,
+                max: 27,
                 title: "Light Log",
                 desc: `Light Log's multiplier is <b class="green">doubled</b> every level.`,
                 icon: ['Curr/SolCurrency2'],
@@ -1634,7 +1634,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x,0),
             },{
-                max: 3,
+                max: 24,
                 title: "Portal Stone",
                 desc: `Portal Stone's multiplier is <b class="green">doubled</b> every level.`,
                 icon: ['Curr/SolCurrency3'],
@@ -1662,7 +1662,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 3,
+                max: 8,
                 title: "Fragment",
                 desc: `Fragment's multiplier is <b class="green">doubled</b> every level.`,
                 icon: ['Curr/SolCurrency4'],
