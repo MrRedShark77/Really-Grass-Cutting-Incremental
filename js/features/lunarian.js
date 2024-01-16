@@ -35,7 +35,7 @@ const LUNAR_MAP = [
         dot: "1",
         name: "Lunarian Prairie",
 
-        levels: [1,6,11,16,21],
+        levels: [1,6,11,16,21,36,51,66,71,80,90,110,130,150],
 
         res: "l_curr1",
         discover_items: ['l_soul','l_curr1','key','rage_essence','calm_essence','wise_essence'],
