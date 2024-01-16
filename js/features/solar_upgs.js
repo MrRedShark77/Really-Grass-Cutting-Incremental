@@ -1606,7 +1606,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 30,
+                max: 120,
                 title: "Sol",
                 desc: `Sol's multiplier is <b class="green">doubled</b> every level.`,
                 icon: ['Curr/SolCurrency1'],
@@ -1619,7 +1619,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x,0),
             },{
-                max: 27,
+                max: 220,
                 title: "Light Log",
                 desc: `Light Log's multiplier is <b class="green">doubled</b> every level.`,
                 icon: ['Curr/SolCurrency2'],
@@ -1634,7 +1634,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x,0),
             },{
-                max: 24,
+                max: 220,
                 title: "Portal Stone",
                 desc: `Portal Stone's multiplier is <b class="green">doubled</b> every level.`,
                 icon: ['Curr/SolCurrency3'],
@@ -1662,7 +1662,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 8,
+                max: 50,
                 title: "Fragment",
                 desc: `Fragment's multiplier is <b class="green">doubled</b> every level.`,
                 icon: ['Curr/SolCurrency4'],
