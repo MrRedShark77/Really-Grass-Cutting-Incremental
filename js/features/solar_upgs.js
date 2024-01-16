@@ -499,7 +499,7 @@ const SOLAR_UPGS = [
                 effDesc: x => formatMult(x),
             },{
                 unl: ()=>!hasCentralized(17),
-                max: 5,
+                max: 6,
                 title: "Solar Powered Moonstone",
                 get desc() {return `Increase moonstone gain by <b class="green">${formatMult(1e10)}</b> per squared level.`},
                 icon: ['Curr/Moonstone'],
