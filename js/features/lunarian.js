@@ -47,11 +47,22 @@ const LUNAR_MAP = [
         req: () => lunarianAreaCompleted(0),
         reqDesc: "A1 Completion",
 
-        levels: [1,6,11,16,21,26,51,56,61,66,71,76,90,110,130,150],
+        levels: [1,6,11,16,21,26,51,56,61,66],
 
         res: "l_curr2",
         discover_items: ['l_curr2','clover','gps'],//
-    },
+    },{
+        id: "lunar3",
+        dot: "3",
+        name: "Lunarian Arena",
+
+        req: () => lunarianAreaCompleted(0),
+        reqDesc: "A2 Completion",
+
+        levels: [1,6,11,16,21,26,51,56,61,66,71,76,90,110,130,150],
+
+        res: "l_curr1","l_curr2",
+        discover_items: ['l_curr2','clover','gps'],//
 ]
 
 function lunarianAreaCompleted(i) { return (player.lun.completed[i] ?? 0) >= LUNAR_MAP[i].levels.length }
