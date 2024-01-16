@@ -2135,7 +2135,7 @@ const SOLAR_UPGS = [
 
         ctn: [
             {
-                max: 1000,
+                max: 100000,
                 title: "Corruption Shard Perk",
                 desc: `Increase yield of corruption shards by <b class="green">+10%</b> per level.`,
                 icon: ['Curr/CorruptionShard'],
@@ -2148,7 +2148,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 1000,
+                max: 100000,
                 title: "Synthesis Speed Perk",
                 desc: `Increase synthesis speed by <b class="green">+10%</b> per level.`,
                 icon: ['Icons/SynthesisSpeed'],
@@ -2161,7 +2161,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 1000,
+                max: 100000,
                 title: "Funding Perk",
                 desc: `Increase funding speed by <b class="green">+10%</b> per level.`,
                 icon: ['Icons/Fund'],
