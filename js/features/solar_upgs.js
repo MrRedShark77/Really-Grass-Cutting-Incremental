@@ -1606,7 +1606,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 120,
+                max: 220,
                 title: "Sol",
                 desc: `Sol's multiplier is <b class="green">doubled</b> every level.`,
                 icon: ['Curr/SolCurrency1'],
