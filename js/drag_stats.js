@@ -208,7 +208,7 @@ el.setup.drag = () => {
 
     for (let [i,v] of Object.entries(SOL_MATERIALS)) if (!res_exc.includes(i)) {
         let u = {
-            unl: v.unl??(i=='sol'?()=>hasSolarUpgrade(7,0):undefined),
+            unl: v.unl??(i=='sol'||i=='soul'?()=>hasSolarUpgrade(7,0):undefined),
             name: v.name,
             icon: [v.base,v.icon],
             get primary_text() { return format(v.amount,0) },
