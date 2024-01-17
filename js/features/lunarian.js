@@ -35,7 +35,7 @@ const LUNAR_MAP = [
         dot: "1",
         name: "Lunarian Prairie",
 
-        levels: [1,6,11,16,21,36,51,66,81,100,120,150,180,210],
+        levels: [1,6,11,16,21,36,51,66,81,100,120,150,180,210,250,300],
 
         res: "l_curr1",
         discover_items: ['l_soul','l_curr1','key','rage_essence','calm_essence','wise_essence'],
@@ -47,7 +47,7 @@ const LUNAR_MAP = [
         req: () => lunarianAreaCompleted(0),
         reqDesc: "A1 Completion",
 
-        levels: [36,51,66,81,100,120,150,180,210,240,270,300,350,400],
+        levels: [36,51,81,120,150,180,210,240,270,300,350,400,450,500,550,600,650,700],
 
         res: "l_curr2",
         discover_items: ['l_curr2','clover','gps'],//
