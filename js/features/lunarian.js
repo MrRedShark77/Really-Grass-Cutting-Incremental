@@ -47,7 +47,7 @@ const LUNAR_MAP = [
         req: () => lunarianAreaCompleted(0),
         reqDesc: "A1 Completion",
 
-        levels: [1,6,11,16,21,36,51,66,81,100,120,150,180,210,240,270,300,350,400],
+        levels: [36,51,66,81,100,120,150,180,210,240,270,300,350,400],
 
         res: "l_curr2",
         discover_items: ['l_curr2','clover','gps'],//
