@@ -2008,7 +2008,7 @@ const SOLAR_UPGS = [
                 desc: `Increase funding speed by <b class="green">x1.15</b> per level.`,
                 icon: ['Icons/Fund'],
                 cost: i => Decimal.pow(1.2,i).mul(100).ceil(),
-                bulk: i => i.div(100).log(1.25).floor().toNumber()+1,
+                bulk: i => i.div(100).log(1.2).floor().toNumber()+1,
                 effect(i) {
                     let x = Decimal.pow(1.15,i)
                         
@@ -2023,7 +2023,7 @@ const SOLAR_UPGS = [
                 require() { return player.hsj >= 4 },
                 req_txt: `HSJ4`,
                 cost: i => Decimal.pow(1.2,i).mul(100).ceil(),
-                bulk: i => i.div(1e3).log(1.25).floor().toNumber()+1,
+                bulk: i => i.div(1e3).log(1.2).floor().toNumber()+1,
                 effect(i) {
                     let x = Decimal.pow(1.15,i)
                         
@@ -2094,31 +2094,31 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => "-"+format(x,0),
             },{
-                max: 200,
+                max: 1200,
                 title: "Unstable Corruption Shards",
                 desc: `Increase yield of corrupton shards by <b class="green">x1.1</b> per level.`,
                 icon: ['Curr/CorruptionShard'],
                 require() { return player.hsj >= 4 },
                 req_txt: `HSJ4`,
-                cost: i => Decimal.pow(1.5,i).mul(1e6).ceil(),
-                bulk: i => i.div(1e6).log(1.5).floor().toNumber()+1,
+                cost: i => Decimal.pow(1.35,i).mul(1e6).ceil(),
+                bulk: i => i.div(1e6).log(1.35).floor().toNumber()+1,
                 effect(i) {
-                    let x = Decimal.pow(1.1,i)
+                    let x = Decimal.pow(1.13,i)
                         
                     return x
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 200,
+                max: 1200,
                 title: "Unstable Synthesis Speed",
                 desc: `Increase synthesis speed by <b class="green">x1.1</b> per level.`,
                 icon: ['Icons/SynthesisSpeed'],
                 require() { return player.hsj >= 4 },
                 req_txt: `HSJ4`,
-                cost: i => Decimal.pow(2,i).mul(1e6).ceil(),
-                bulk: i => i.div(1e6).log(2).floor().toNumber()+1,
+                cost: i => Decimal.pow(1.8,i).mul(1e6).ceil(),
+                bulk: i => i.div(1e6).log(1.8).floor().toNumber()+1,
                 effect(i) {
-                    let x = Decimal.pow(1.1,i)
+                    let x = Decimal.pow(1.13,i)
                         
                     return x
                 },
