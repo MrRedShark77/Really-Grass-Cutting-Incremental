@@ -2003,29 +2003,29 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 1000,
+                max: 10000,
                 title: "Funding",
-                desc: `Increase funding speed by <b class="green">x1.1</b> per level.`,
+                desc: `Increase funding speed by <b class="green">x1.15</b> per level.`,
                 icon: ['Icons/Fund'],
-                cost: i => Decimal.pow(1.25,i).mul(100).ceil(),
+                cost: i => Decimal.pow(1.2,i).mul(100).ceil(),
                 bulk: i => i.div(100).log(1.25).floor().toNumber()+1,
                 effect(i) {
-                    let x = Decimal.pow(1.1,i)
+                    let x = Decimal.pow(1.15,i)
                         
                     return x
                 },
                 effDesc: x => formatMult(x),
             },{
-                max: 1000,
+                max: 10000,
                 title: "Lunarian Synthesis Speed",
                 desc: `Increase synthesis speed by <b class="green">x1.1</b> per level.`,
                 icon: ['Icons/SynthesisSpeed'],
                 require() { return player.hsj >= 4 },
                 req_txt: `HSJ4`,
-                cost: i => Decimal.pow(1.25,i).mul(1e3).ceil(),
+                cost: i => Decimal.pow(1.2,i).mul(100).ceil(),
                 bulk: i => i.div(1e3).log(1.25).floor().toNumber()+1,
                 effect(i) {
-                    let x = Decimal.pow(1.1,i)
+                    let x = Decimal.pow(1.15,i)
                         
                     return x
                 },
@@ -2142,7 +2142,7 @@ const SOLAR_UPGS = [
                 costOnce: true,
                 cost: i => 1e8,
                 effect(i) {
-                    let x = i/10+1
+                    let x = i/2+1
                         
                     return x
                 },
@@ -2155,7 +2155,7 @@ const SOLAR_UPGS = [
                 costOnce: true,
                 cost: i => 1e8,
                 effect(i) {
-                    let x = i/10+1
+                    let x = i/2+1
                         
                     return x
                 },
@@ -2168,7 +2168,7 @@ const SOLAR_UPGS = [
                 costOnce: true,
                 cost: i => 1e8,
                 effect(i) {
-                    let x = i/10+1
+                    let x = i/2+1
                         
                     return x
                 },
