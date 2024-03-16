@@ -173,7 +173,7 @@ UPGS.aGrass = {
             res: "aGrass",
             icon: ['Icons/XP','Icons/Plus'],
             
-            cost: i => Decimal.pow(3,i**1.4).mul(1e12).ceil(),
+            cost: i => Decimal.pow(3,i.pow(1.4)).mul(1e12).ceil(),
             bulk: i => i.div(1e12).max(1).log(3).root(1.4).floor().add(1),
 
             effect(i) {

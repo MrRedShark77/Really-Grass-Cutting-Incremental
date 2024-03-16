@@ -175,7 +175,7 @@ UPGS.dm = {
             res: "dm",
             icon: ["Curr/Star","Icons/Plus"],
                         
-            cost: i => Decimal.pow(10,i**1.5).mul(100).ceil(),
+            cost: i => Decimal.pow(10,i.pow(1.5)).mul(100).ceil(),
             bulk: i => i.div(100).max(1).log(10).root(1.5).floor().add(1),
         
             effect(i) {

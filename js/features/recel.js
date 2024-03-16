@@ -169,7 +169,7 @@ UPGS.unGrass = {
             res: "unGrass",
             icon: ['Icons/Placeholder','Icons/Exponent'],
             
-            cost: i => Decimal.pow(10,i**1.25).mul(1e15).ceil(),
+            cost: i => Decimal.pow(10,i.pow(1.25)).mul(1e15).ceil(),
             bulk: i => i.div(1e15).max(1).log(10).root(1.25).floor().add(1),
 
             effect(i) {

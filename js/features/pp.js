@@ -328,7 +328,7 @@ UPGS.ap = {
             res: "ap",
             icon: ['Icons/XP','Icons/Plus'],
             
-            cost: i => Decimal.pow(3,i**1.2).mul(1e5).ceil(),
+            cost: i => Decimal.pow(3,i.pow(1.2)).mul(1e5).ceil(),
             bulk: i => i.div(1e5).max(1).log(3).root(1.2).floor().add(1),
 
             effect(i) {
@@ -480,7 +480,7 @@ UPGS.np = {
             res: "np",
             icon: ["Curr/Momentum"],
                         
-            cost: i => Decimal.pow(2,i**1.25).mul(10).ceil(),
+            cost: i => Decimal.pow(2,i.pow(1.25)).mul(10).ceil(),
             bulk: i => i.div(10).max(1).log(2).root(1.25).floor().add(1),
         
             effect(i) {

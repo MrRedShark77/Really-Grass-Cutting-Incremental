@@ -179,7 +179,7 @@ UPGS.crystal = {
             res: "crystal",
             icon: ["Icons/TP","Icons/Plus"],
                         
-            cost: i => Decimal.pow(10,i**1.25).mul(100).ceil(),
+            cost: i => Decimal.pow(10,i.pow(1.25)).mul(100).ceil(),
             bulk: i => i.div(100).max(1).log(10).root(1.25).add(1).floor(),
         
             effect(i) {
