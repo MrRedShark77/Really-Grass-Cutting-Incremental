@@ -70,6 +70,8 @@ const PLANETOID = {
 
         let o = E('ee20')
 
+        if (player.hsj>=6) o = o.pow(tmp.hsjEffect[1])
+
         if (x.gte(o)) {
             let before = x
             x = x.overflow(o,0.75)
@@ -231,6 +233,8 @@ const PLANETOID = {
     },
     planetary: {
         gain() {
+            if (hasCentralized(22)) return player.planetoid.pm.floor()
+
             let lvl = player.planetoid.level.sub(199)
 
             if (lvl <= 0) return E(0)

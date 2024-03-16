@@ -1115,6 +1115,8 @@ function updateUpgTemp(id) {
             if (hasStarTree('reserv',37) && (x == 1 || x == 2 || x == 4)) tu.max[x] = EINF
         } else if (id == "dm") {
             if (player.sn.tier.gte(4)) tu.max[x] = EINF
+        } else if (id == "constellation") {
+            if (player.sn.tier.gte(14) && x == 7) tu.max[x] = EINF
         }
 
         if (upg.unl?upg.unl():true) if (Decimal.lt(amt,tu.max[x])) ul++
@@ -1185,6 +1187,13 @@ function setupUpgradesHTML(id) {
         }
 
         new Element(`upgs_ctn_${id}`).setHTML(html)
+
+        for (let x in UPGS[id].ctn) {
+            document.getElementById(`upg_ctn_${id}${x}`).addEventListener("contextmenu", e => {
+                e.preventDefault();
+                buyMaxUpgrade(id,x)
+            })
+        }
     }
 }
 

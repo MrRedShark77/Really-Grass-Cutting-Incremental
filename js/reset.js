@@ -53,6 +53,9 @@ function updateResetHTML(id) {
 }
 
 el.update.reset = ()=> {
+    if (mapID == 'p') {
+        updateResetHTML("hsj2")
+    }
     if (mapID == 'pc') {
         updateResetHTML('pp')
         updateResetHTML('crystal')

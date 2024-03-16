@@ -1,5 +1,5 @@
 const SYNTHESIS = {
-    slot: [["wtf?",()=>true],["Supernova Tier 12",()=>player.sn.tier.gte(12)],["Supernova Tier 13",()=>player.sn.tier.gte(13)]],
+    slot: [["wtf?",()=>true],["Supernova Tier 12",()=>player.sn.tier.gte(12)],["Supernova Tier 13",()=>player.sn.tier.gte(13)],["Supernova Tier 14",()=>player.sn.tier.gte(14)]],
 
     type: [
         {
@@ -8,8 +8,8 @@ const SYNTHESIS = {
             unl: ()=>true,
             cost: 0,
 
-            req: l => Decimal.pow(3,l.scale(29,2,0)).mul(10),
-            bulk: x => x.div(10).log(3).scale(29,2,0,true).add(1).floor(),
+            req: l => Decimal.pow(3,l.scale(tmp.synthesis.scaled_t1-1,2,0)).mul(10),
+            bulk: x => x.div(10).log(3).scale(tmp.synthesis.scaled_t1-1,2,0,true).add(1).floor(),
 
             get amount() { return player.synthesis.cs },
             set amount(v) { player.synthesis.cs = v },
@@ -27,12 +27,25 @@ const SYNTHESIS = {
             get amount() { return player.synthesis.fs },
             set amount(v) { player.synthesis.fs = v },
 
+            get mult() { return player.hsj>=7 ? tmp.hsjEffect[2]??1 : 1 }
+        },{
+            name: "Empty Gem",
+            icon: "Curr/EmptyGem",
+            unl: ()=>player.sn.tier.gte(14),
+            cost: 1e100,
+
+            req: l => Decimal.pow(5,l).mul(1e21),
+            bulk: x => x.div(1e21).log(5).add(1).floor(),
+
+            get amount() { return player.synthesis.eg },
+            set amount(v) { player.synthesis.eg = v },
+
             get mult() { return 1 }
         },
     ],
 
     get csMult() {
-        let x = Decimal.mul(solarUpgEffect(11,4),upgEffect('cs',0)).mul(getSolCompressionEffect(5)).mul(solarUpgEffect(5,8)).mul(solarUpgEffect(12,0))
+        let x = Decimal.mul(solarUpgEffect(11,4),upgEffect('cs',0)).mul(getSolCompressionEffect(5)).mul(solarUpgEffect(5,8)).mul(solarUpgEffect(12,0)).mul(getFormingBonus('adv',2)).mul(getStarBonus(14))
 
         return x
     },
@@ -81,7 +94,7 @@ function getSSData(i, display=false) {
         D.time = finish.sub(S[1]).div(tmp.synthesis.speed).max(0)
     }
 
-    D.gain = D.level.lte(0) ? E(0) : Decimal.pow(5, D.level.sub(1)).mul(T.mult).round()
+    D.gain = D.level.lte(0) ? E(0) : Decimal.pow(tmp.synthesis.base[S[0]], D.level.sub(1)).mul(T.mult).round()
 
     return D
 }
@@ -89,8 +102,8 @@ function getSSData(i, display=false) {
 UPGS.cs = {
     title: "Corruption Shard Upgrades",
 
-    //autoUnl: ()=>hasSolarUpgrade(0,13),
-    //noSpend: ()=>hasSolarUpgrade(0,13),
+    autoUnl: ()=>player.sn.tier.gte(14),
+    noSpend: ()=>player.sn.tier.gte(14),
 
     req: ()=>player.hsj>=4,
     reqDesc: ()=>`Reach HSJ 4 to Unlock.`,
@@ -284,10 +297,19 @@ el.update.synthesis = ()=>{
 
 function calcSynthesis(dt) {
     var tspeed = tmp.synthesis.speed
+    var t = []
+    if (player.sn.tier.gte(14)) t.push(0,1)
     SYNTHESIS.slot.forEach((x,i)=>{
         var S = player.synthesis.slot[i]
         if (S[0] > -1) {
             S[1] = S[1].add(tspeed.mul(dt))
+
+            if (t.includes(S[0])) {
+                var T = SYNTHESIS.type[S[0]]
+                var data = getSSData(i)
+
+                T.amount = T.amount.add(data.gain.mul(dt/100))
+            }
         }
     })
 }
@@ -297,4 +319,15 @@ tmp_update.push(()=>{
 
     ts.speed = SYNTHESIS.speed
     ts.csMult = SYNTHESIS.csMult
+
+    var b = [5,5,5]
+
+    if (hasSolarUpgrade(7,22)) b[0]++
+
+    var t1_scale = 30
+
+    if (hasSolarUpgrade(7,21)) t1_scale += 10
+
+    ts.scaled_t1 = t1_scale
+    ts.base = b
 })

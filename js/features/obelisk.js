@@ -532,12 +532,27 @@ const VOID_OBELISK = [
         get amount() { return player.planetoid.astro },
         limit: E('e3e18'),
         icon: "Curr/Astrolabe",
-    },/*{ // 21
+    },{ // 21
         name: "Measure",
         get amount() { return player.planetoid.measure },
-        limit: E('e3e33'),
+        limit: E('e3e23'),
         icon: "Curr/Measure",
-    },*/
+    },{ // 22
+        name: "Planet",
+        get amount() { return player.planetoid.planet },
+        limit: E('e3e27'),
+        icon: "Curr/Planet",
+    },{ // 23
+        name: "Line",
+        get amount() { return player.constellation.line },
+        limit: E('e3e10'),
+        icon: "Curr/Lines",
+    },{ // 24
+        name: "Arc",
+        get amount() { return player.constellation.arc },
+        limit: E('e3e55'),
+        icon: "Curr/Arcs",
+    },
 ]
 
 function hasCentralized(i) { return player.centralized.includes(i) }

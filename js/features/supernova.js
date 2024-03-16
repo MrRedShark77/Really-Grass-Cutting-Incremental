@@ -153,13 +153,13 @@ const SUPERNOVA = {
         return x
     },
     eclipse: {
-        req(offest = 0) { return Decimal.pow(1.05,player.sn.eclipse.sub(offest).scale(tmp.scale_eclipse,2,0).add(1)).sub(1).mul(2000) },
-        calcBulk(res = player.sn.sr) { return res.div(2000).add(1).log(1.05).sub(1).scale(tmp.scale_eclipse,2,0,true).add(1).sub(player.sn.eclipse).floor() },
+        req(offest = 0) { return Decimal.pow(1.05,player.sn.eclipse.sub(offest).scale(1e12,3,3).scale(tmp.scale_eclipse,2,0).add(1)).sub(1).mul(2000) },
+        calcBulk(res = player.sn.sr) { return res.div(2000).add(1).log(1.05).sub(1).scale(tmp.scale_eclipse,2,0,true).scale(1e12,3,3,true).add(1).sub(player.sn.eclipse).floor() },
 
         get require() { return this.req() },
         get reqBase() {
             let e = player.sn.eclipse
-            return Decimal.pow(1.05,e.add(1).scale(tmp.scale_eclipse,2,0)).sub(Decimal.pow(1.05,e.scale(tmp.scale_eclipse,2,0))).mul(2000)
+            return Decimal.pow(1.05,e.add(1).scale(1e12,3,3).scale(tmp.scale_eclipse,2,0)).sub(Decimal.pow(1.05,e.scale(1e12,3,3).scale(tmp.scale_eclipse,2,0))).mul(2000)
         },
         get bulk() { return this.calcBulk() },
         get remnantGain() {
@@ -277,6 +277,14 @@ const SUPERNOVA = {
             - Unlock another synthesis slot.<br>
             - Passively generate divine souls you gained on sunset at <b class="green">1%</b> rate.<br>
             - Twilight bonus skipping is improved.<br>
+            `,
+        },{
+            r: 14,
+            desc: `
+            - Unlock another synthesis slot and new synthesis type.<br>
+            - Unlock corruption shard upgrades autobuyer.<br>
+            - Passively generate corruption shards and flare shards you gained on yielding at <b class="green">1%</b> rate.<br>
+            - Remove the level cap of <b class="green">Final Prism Upgrade</b> (constellation upgrade).<br>
             `,
         },
     ],

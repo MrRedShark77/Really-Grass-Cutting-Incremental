@@ -4,7 +4,7 @@ const WORLD_GENERATION = {
 
         },
         config: {
-            colors: ['#003'],
+            background: '#003',
 
             enemies_range: [20,30],
             treasures_range: [15,20],
@@ -24,7 +24,7 @@ const WORLD_GENERATION = {
 
         },
         config: {
-            colors: ['#003'],
+            background: '#003',
 
             health_mult: 200,
             soul_mult: 1000,
@@ -40,6 +40,30 @@ const WORLD_GENERATION = {
                 ['l_soul',0.5,2],
                 ['clover',0.1],
                 ['gps',0.05],
+            ],
+        },
+    },
+    lunar3: {
+        run() {
+
+        },
+        config: {
+            background: '#003',
+            tileColor: '#2DA4FF',
+
+            health_mult: 2e5,
+            soul_mult: 1e6,
+
+            enemies_range: [20,30],
+            treasures_range: [15,20],
+
+            treasure_weight: [
+                ['l_curr3',1],
+                ['rage_essence',0.25],
+                ['calm_essence',0.25],
+                ['wise_essence',0.25],
+                ['l_soul',0.5,2],
+                ['clover',0.1],
             ],
         },
     },
@@ -84,6 +108,11 @@ const LUNAR_ITEMS = {
         type: "res",
         name: "Lunarian Wheat",
         icon: "Curr/LunarCurrency2",
+    },
+    l_curr3: {
+        type: "res",
+        name: "Ball of Ice",
+        icon: "Curr/LunarCurrency3",
     },
     
     clover: {

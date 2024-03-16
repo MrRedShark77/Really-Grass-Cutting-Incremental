@@ -69,6 +69,8 @@ const MAIN = {
 
         let o = E(player.hsj >= 2 ? 'ee13' : 'ee12')
 
+        if (player.hsj>=6) o = o.pow(tmp.hsjEffect[1])
+
         if (x.gte(o)) {
             let before = x
             x = x.overflow(o,0.75)
@@ -437,7 +439,7 @@ el.update.main = ()=>{
 }
 
 function updateUnspentPerk() {
-    tmp.perkUnspent = player.maxPerk.sub(player.spentPerk).sub(player.spentPerkSolar).max(0)
+    tmp.perkUnspent = player.maxPerk.add(player.generatedPerk).sub(player.spentPerk).sub(player.spentPerkSolar).max(0)
 }
 
 tmp_update.push(()=>{
@@ -483,7 +485,11 @@ tmp_update.push(()=>{
     tmp.level.scale2 = player.recel && player.hsj <= 0?5:player.decel && player.hsj <= 0?300:700
     tmp.level.scale2 *= starTreeEff('progress',7,1)
 
-    tmp.level.scale3 = Decimal.mul(player.hsj>=3?1e6:1e5,upgEffect('cs',3))
+    let s = Decimal.mul(player.hsj>=3?1e6:1e5,upgEffect('cs',3))
+
+    s = s.mul(solarUpgEffect(12,3)).mul(getFormingBonus('fund',4)).mul(getStageBonus('dl'))
+
+    tmp.level.scale3 = s
 
     tmp.level.next = MAIN.level.req(lvl)
     tmp.level.bulk = MAIN.level.bulk(player.xp)

@@ -21,12 +21,12 @@ const SOLARIANS = {
 
     enemy: {
         get max_health() {
-            let x = Decimal.pow(10,player.sol.stage.scale(this.stage_scale,3,0).scale(14,hasSolarUpgrade(7,5)?1.75:2,0)).mul(1e3)
+            let x = Decimal.pow(10,player.sol.stage.scale(this.stage_scale,3,0).scale(14,hasSolarUpgrade(7,5)?1.75:2,0)).mul(1e3).root(getFormingBonus('adv',3))
 
             return x
         },
         get bulk_stage() {
-            let x = tmp.sol.offense.div(1e3).log10().scale(14,hasSolarUpgrade(7,5)?1.75:2,0,true).scale(this.stage_scale,3,0,true)
+            let x = tmp.sol.offense.pow(getFormingBonus('adv',3)).div(1e3).log10().scale(14,hasSolarUpgrade(7,5)?1.75:2,0,true).scale(this.stage_scale,3,0,true)
 
             return x.add(1).floor().sub(player.sol.stage).max(1).min(this.stage_skip)
         },
@@ -58,6 +58,7 @@ const SOLARIANS = {
         if (s.gte(10)) e.ss = Decimal.pow(3,s.sub(9))
         if (s.gte(75)) e.sf = Decimal.pow(2,s.sub(74))
         if (s.gte(400)) e.lp = Decimal.pow(1.1,s.sub(399).overflow(100,0.5))
+        if (s.gte(1900)) e.dl = Decimal.pow(1.1,s.sub(1899).overflow(100,0.5))
 
         return e
     },
@@ -110,7 +111,7 @@ const SOLARIANS = {
     get fundMult() {
         let x = E(1)
         
-        x = x.mul(solarUpgEffect(10,7)).mul(tmp.twilightBonus[2]??1).mul(solarUpgEffect(12,2))
+        x = x.mul(solarUpgEffect(10,7)).mul(tmp.twilightBonus[2]??1).mul(solarUpgEffect(12,2)).mul(solarUpgEffect(12,4))
 
         return x
     },
@@ -309,6 +310,16 @@ const SOL_MATERIALS = {
         icon: "Curr/FlareShard",
         get amount() { return player.synthesis.fs },
         set amount(v) { return player.synthesis.fs = v },
+    },
+    eg: {
+        icon: "Curr/EmptyGem",
+        get amount() { return player.synthesis.eg },
+        set amount(v) { return player.synthesis.eg = v },
+    },
+
+    perk: {
+        icon: "Curr/Perks",
+        get amount() { return tmp.perkUnspent },
     },
 }
 
@@ -681,6 +692,20 @@ const FORMING = {
                 rankMult: 1.5,
                 bonus: b => Decimal.pow(1e5,b.overflow(25,0.5)),
                 bonusDesc: x => formatMult(x),
+            },{
+                unl: ()=>player.lun.res.l_curr3,
+
+                title: "Lunarian Distant Level",
+                icon: "Icons/XP",
+
+                req: [1e17,10],
+                rankReq: [100],
+                materials: [
+                    ['l_curr3',1,2],
+                ],
+                rankMult: 2,
+                bonus: b => b.add(1),
+                bonusDesc: x => formatMult(x),
             },
         ],
     },
@@ -715,6 +740,36 @@ const FORMING = {
                 rankMult: 2,
                 bonus: b => b.div(100).add(1),
                 bonusDesc: x => "+"+formatPercent(x.sub(1),0),
+            },{
+                unl: ()=>player.lun.res.l_curr3,
+
+                title: "Advanced Corruption Shards",
+                icon: "Curr/CorruptionShard",
+
+                req: [1e17,10],
+                rankReq: [100],
+                materials: [
+                    ['perk',1e15,6,1.05],
+                    ['fs',1e9,6,1.05],
+                ],
+                rankMult: 2,
+                bonus: b => b.add(1).pow(2),
+                bonusDesc: x => formatMult(x),
+            },{
+                unl: ()=>player.sn.tier.gte(14),
+
+                title: "Lunarian Anti-Solarian Health Reduction",
+                icon: "Curr/EvilSolarian",
+
+                req: [1e24,10],
+                rankReq: [100],
+                materials: [
+                    ['fs',1e18,6,1.05],
+                    ['eg',1,6,1.05],
+                ],
+                rankMult: 2,
+                bonus: b => b.add(1).log10().add(1),
+                bonusDesc: x => formatPow(x,4),
             },
         ],
     }
@@ -821,8 +876,13 @@ function calcSolarians(dt) {
                     if (got) {
                         p[0] = p[0].sub(sub[0]).max(0)
                         fc.materials.forEach((x,i)=>{
-                            let m = getSMaterial(x[0])
-                            m.amount = m.amount.sub(sub[1][i]).max(0)
+                            if (x[0] == "perk") {
+                                player.spentPerkSolar = player.spentPerkSolar.add(sub[1][i])
+                                updateUnspentPerk()
+                            } else {
+                                let m = getSMaterial(x[0])
+                                m.amount = m.amount.sub(sub[1][i]).max(0)
+                            }
                         })
                     }
                 }
@@ -888,8 +948,12 @@ function updateSolarianTemp() {
 
     ts.compression_mult = SOL_COMPRESSION.mult
 
+    var su24 = hasSolarUpgrade(7,24)
+
     for (let i in SOL_COMPRESSION.ctn) {
-        ts.comp_eff[i] = SOL_COMPRESSION.ctn[i].eff(player.sol.active_compression[i])
+        let e = SOL_COMPRESSION.ctn[i].eff(player.sol.active_compression[i])
+        if (su24) e = e.pow(2)
+        ts.comp_eff[i] = e
     }
 
     ts.enemy_max_health = SOLARIANS.enemy.max_health
@@ -1027,6 +1091,7 @@ el.update.solarians = () => {
         if (bonus.form) t += `<br>Forming Speed: <b class='green'>${formatMult(bonus.form,0)}</b>`
         if (bonus.sf) t += `<br>Solar Flares: <b class='green'>${formatMult(bonus.sf,0)}</b>`
         if (bonus.lp) t += `<br>Lunar Power: <b class='green'>${formatPow(bonus.lp)}</b>`
+        if (bonus.dl) t += `<br>Distant Level: <b class='green'>${formatMult(bonus.dl)}</b>`
 
         tmp.el.stage_bonus.setHTML(t)
     } else if (mapID3 == 'sol') {

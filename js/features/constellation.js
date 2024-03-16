@@ -176,7 +176,7 @@ UPGS.constellation = {
             res: "line",
             icon: ['Icons/PrismUpgrade',"Icons/StarSpeed"],
                 
-            cost: i => Decimal.pow(100,i**1.25).mul(1e6).ceil(),
+            cost: i => Decimal.pow(100,i.pow(1.25)).mul(1e6).ceil(),
             bulk: i => i.div(1e6).max(1).log(100).root(1.25).floor().add(1),
 
             effect(i) {
@@ -764,6 +764,8 @@ function getConstellationImage(id) {
 }
 
 function lineGain() {
+    if (hasCentralized(23)) return player.planetoid.pm.floor()
+
     let x = cs_effect.line
 
     .mul(upgEffect('constellation',2))
@@ -781,6 +783,8 @@ function lineGain() {
 }
 
 function arcGain() {
+    if (hasCentralized(24)) return player.planetoid.pm.floor()
+
     let x = cs_effect.arc
 
     .mul(upgEffect('constellation',5))

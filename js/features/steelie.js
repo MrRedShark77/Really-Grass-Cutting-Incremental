@@ -107,7 +107,7 @@ MAIN.steel = {
                     let x = s.log10().div(10).add(1).root(2)
                     if (!hasUpgrade('assembler',5)) x = x.softcap(1.25,1/2,0)
 
-                    return x.toNumber()
+                    return x
                 },
                 effDesc: x => "Scaled level starts x"+format(x,4)+" later"+(hasUpgrade('assembler',5)?"":softcapHTML(x,1.25)),
             },{
@@ -143,7 +143,7 @@ MAIN.steel = {
 
                     let x = s.log10()
 
-                    return x.toNumber()
+                    return x
                 },
                 effDesc: x => "Increase Tier's effect base by +"+format(x),
             },{

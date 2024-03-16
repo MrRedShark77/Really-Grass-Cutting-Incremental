@@ -2,11 +2,12 @@ var LUNAR_BASES = {
     'l_soul': 'LunarianBase',
     'l_curr1': 'LunarianBase',
     'l_curr2': 'LunarianBase',
+    'l_curr3': 'LunarianBase',
 }
 
 const LUNAR_MATERIALS = (()=>{
     let a = {}
-    var gen = ['l_curr1','l_curr2']
+    var gen = ['l_curr1','l_curr2','l_curr3']
     for (let [id,x] of Object.entries(LUNAR_ITEMS)) if (x.type === 'res') {
         a[id] = {
             unl() { return player.lun.res[id] !== undefined },
@@ -51,6 +52,18 @@ const LUNAR_MAP = [
 
         res: "l_curr2",
         discover_items: ['l_curr2','clover','gps'],//
+    },{
+        id: "lunar3",
+        dot: "3",
+        name: "Tundra",
+
+        req: () => player.hsj >= 5,
+        reqDesc: "HSJ5",
+
+        levels: [1,6,11,16,21],
+
+        res: "l_curr3",
+        discover_items: ["l_curr3"],//
     },
 ]
 
@@ -99,8 +112,11 @@ tmp_update.push(()=>{
 
         if (su20 && comp && comp > 0) {
             let lvl = x.levels[comp-1]
+            let gain = Decimal.pow(1.1,lvl-1).mul(lvl/10)
+
+            if (player.hsj>=7 && (res=="l_curr1"||res=="l_curr2")) gain = gain.mul(tmp.hsjEffect[2])
             
-            tmp.lun.res_gen[res] = Decimal.pow(1.1,lvl-1).mul(lvl/10)
+            tmp.lun.res_gen[res] = gain
         } else tmp.lun.res_gen[res] = undefined
     })
 })

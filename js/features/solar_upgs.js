@@ -249,6 +249,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
+                unl: ()=>!hasCentralized(23),
                 max: 1000,
                 title: "Solar Powered Lines",
                 get desc() {return `Increase lines gain by <b class="green">${formatMult(1e3)}</b> per level.`},
@@ -326,6 +327,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
+                unl: ()=>!hasCentralized(24),
                 max: 1000,
                 title: "Solar Powered Arcs",
                 get desc() {return `Increase arcs gain by <b class="green">${formatMult(100)}</b> per level.`},
@@ -468,6 +470,7 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
+                unl: ()=>!hasCentralized(22),
                 max: 1000,
                 title: "Solar Powered Planet",
                 get desc() {return `Increase planets gain by <b class="green">${formatMult(1e10)}</b> per squared level.`},
@@ -1568,6 +1571,30 @@ const SOLAR_UPGS = [
                 desc: `Passively generates each lunarian resource equal to <b class='green'>10%</b> of minimum resource dropped by enemy with your current level.`,
                 icon: ['Curr/Lunarian','Icons/Automation'],
                 cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,20),
+                title: "Scaled Corruption Shards",
+                desc: `Scaled Corruption Shard in Synthesis starts <b class='green'>+10</b> later.`,
+                icon: ['Curr/CorruptionShard'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,20),
+                title: "Better Corruption Shards",
+                desc: `Corruption Shard's base in Synthesis is increased by <b class='green'>+1</b>.`,
+                icon: ['Curr/CorruptionShard'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,21) && hasSolarUpgrade(7,22),
+                title: "Squared Compressed Sol",
+                desc: `<b class='green'>Square</b> Compressed Sol generated.`,
+                icon: ['Curr/SolCurrency1a'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,21) && hasSolarUpgrade(7,22),
+                title: "Squared Compressed Sol Effects",
+                desc: `<b class='green'>Square</b> the effects of first 6 Compressed Sol Tiers.`,
+                icon: ['Curr/SolCurrency1a'],
+                cost: i => 1,
             },
         ],
     },{
@@ -2162,7 +2189,7 @@ const SOLAR_UPGS = [
                 effDesc: x => formatMult(x),
             },{
                 max: 1000,
-                title: "Funding Perk",
+                title: "Funding Perk I",
                 desc: `Increase funding speed by <b class="green">+10%</b> per level.`,
                 icon: ['Icons/Fund'],
                 costOnce: true,
@@ -2173,12 +2200,42 @@ const SOLAR_UPGS = [
                     return x
                 },
                 effDesc: x => formatMult(x),
+            },{
+                unl: ()=>player.hsj>=5,
+
+                max: 100,
+                title: "Distant Level Perk",
+                desc: `Increase distant level scaling by <b class="green">x2</b> per level.`,
+                icon: ["Icons/XP"],
+                cost: i => Decimal.pow(10,i).mul(1e10).ceil(),
+                bulk: i => i.div(1e10).log(10).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(2,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },{
+                unl: ()=>player.hsj>=5,
+
+                max: 1000,
+                title: "Funding Perk II",
+                desc: `Increase funding speed by <b class="green">x1.1</b> per level.`,
+                icon: ['Icons/Fund'],
+                cost: i => Decimal.pow(1.25,i).mul(1e15).ceil(),
+                bulk: i => i.div(1e15).log(1.25).floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(1.1,i)
+                        
+                    return x
+                },
+                effDesc: x => formatMult(x),
             },
         ],
     },
 ]
 
-for (let x of SOLAR_UPGS) for (let y of x.ctn) y.max = y.max ?? 1
+for (let x of SOLAR_UPGS) for (let y of x.ctn) y.max ??= 1
 
 /*
 {
@@ -2308,7 +2365,7 @@ const SU_RES = {
 
         get amount() { return tmp.perkUnspent },
 
-        get html() { return `Perks: ${this.amount.format(0)}` },
+        get html() { return `Perks: ${this.amount.format(0)}` + (player.hsj >= 5 ? " " + formatGain(this.amount,tmp.perks.div(100)) : "") },
     },
 }
 
@@ -2377,6 +2434,15 @@ el.setup.solar_upgs = () => {
 
     new Element("solar_tabs").setHTML(h1)
     new Element("solar_upgs_table").setHTML(h2)
+
+    for (let [i,t] of Object.entries(SOLAR_UPGS)) {
+        for (let x = 0; x < t.ctn.length; x++) {
+            document.getElementById(`solar_upg_${i}_${x}`).addEventListener("contextmenu", e => {
+                e.preventDefault();
+                if (!t.ctn[x]?.require || t.ctn[x]?.require()) buyMaxSolarUpgrade(i,x)
+            })
+        }
+    }
 }
 
 el.update.solar_upgs = () => {

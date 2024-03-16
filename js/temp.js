@@ -55,6 +55,7 @@ function resetTemp() {
         gsEffect: [],
         gjEffect: [],
         ptEffect: [],
+        hsjEffect: [],
 
         star_chart: {
             auto: {
@@ -144,6 +145,7 @@ function resetTemp() {
         synthesis: {
             speed: E(1),
             csMult: E(1),
+            base: [],
         },
 
         grass_overflow: E(1),

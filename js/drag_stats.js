@@ -192,6 +192,26 @@ el.setup.drag = () => {
             icon: ['PlanetBase','Icons/XP2'],
             get primary_text() { return format(player.planetoid.level,0) },
         },{
+            unl: () => player.grasshop>0 || player.gTimes>0,
+            name: "Grasshop",
+            icon: ['GrasshopBase','Icons/Grasshop2'],
+            get primary_text() { return format(player.grasshop,0) },
+        },{
+            unl: () => player.bestGS>0,
+            name: "Grass-Skip",
+            icon: ['FunBase','Icons/GrassSkip'],
+            get primary_text() { return format(player.grassskip,0) },
+        },{
+            unl: () => player.grassjump>0 || player.sn.times>0,
+            name: "Grass Jump",
+            icon: ['UnstableBase','Icons/GrassJump'],
+            get primary_text() { return format(player.grassjump,0) },
+        },{
+            unl: () => player.planetoid.planetTier>0 || player.sn.times>0,
+            name: "Planetary Tier",
+            icon: ['PlanetaryBase','Curr/Planet'],
+            get primary_text() { return format(player.planetoid.planetTier,0) },
+        },{
             unl: () => player.sn.tier.gte(2),
             name: "Eclipse",
             icon: ['EclipseBase','Icons/SR'],
@@ -204,7 +224,7 @@ el.setup.drag = () => {
         },
     ])
 
-    const res_exc = ['sf','sun','mana','dark','cs','fs'], sol_drag=[], lun_drag =[]
+    const res_exc = ['sf','sun','mana','dark','cs','fs','eg','perk'], sol_drag=[], lun_drag =[]
 
     for (let [i,v] of Object.entries(SOL_MATERIALS)) if (!res_exc.includes(i)) {
         let u = {
@@ -445,6 +465,11 @@ el.setup.drag = () => {
             name: "Flare Shards",
             icon: ['UnstableBase','Curr/FlareShard'],
             get primary_text() { return format(player.synthesis.fs,0) },
+        },{
+            unl: () => player.sn.tier.gte(14),
+            name: "Empty Gem",
+            icon: ['UnstableBase','Curr/EmptyGem'],
+            get primary_text() { return format(player.synthesis.eg,0) },
         },
     ])
 }

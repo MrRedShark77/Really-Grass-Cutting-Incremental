@@ -229,6 +229,10 @@ const ADV_STAR = [
         req: ['e369',333333,'e1155'],
     },{
         req: ['e700',3000000,'e3000'],
+    },{
+        req: ['e1250',2e9,'e7000'],
+        bonus: x => expMult(x.div('e1250').add(1),0.25),
+        bonusDesc: x => `<b class='darkgreen'>${formatMult(x)}</b> Corruption Shards`
     },
 ]
 

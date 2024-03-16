@@ -381,7 +381,10 @@ MAIN.hsj = {
     get amount() { return player.hsj },
     set amount(v) { return player.hsj = v },
 
-    get require() { return [10000,1.2e6,1e7,2.25e8][this.amount] || Infinity },
+    get require() {
+        let a = this.amount
+        return a > 3 ? Decimal.pow(10,Decimal.pow(a,2)).div(1e4) : [10000,1.2e6,1e7,2.25e8][a]
+    },
     get desc() {
         return [
             `Doing this will allow you to use upgrades, generate currencies, and auto grasshop/skip/jump from all three realms at the same time.`,
@@ -390,7 +393,26 @@ MAIN.hsj = {
             `You will no longer visit normal/anti/unnatural realms and you're teleported into planetoid instantly. Unlock Synthesis in planetoid.`,
         ][this.amount] || "Say Nothing!"
     },
+
+    beyondMilestone: [
+        {
+            r: 5,
+            desc: `Passively generate <b class="green">1%</b> of perks by normal level, and unlock more advanced perk upgrades. Perks no longer get reset.`,
+        },{
+            r: 6,
+            desc: `Normal level and HSJ delay overflows of grass and planetarium.`,
+            effect: ()=>Decimal.pow(1.15,player.level.add(1).log10().mul(player.hsj)),
+            effDesc: x=>formatPow(x),
+        },{
+            r: 7,
+            desc: `HSJ boosts Lunarian Soil & Wheat generation and the yield of Flare Shards.`,
+            effect: ()=>Decimal.pow(2,player.hsj),
+            effDesc: x=>formatMult(x),
+        },
+    ],
 }
+
+const HSJ_MIL_LEN = MAIN.hsj.beyondMilestone.length
 
 RESET.hsj = {
     unl: ()=>player.grassjump>=70 && player.recel,
@@ -417,6 +439,24 @@ RESET.hsj = {
                 mapID = 'g'
                 mapPos = [3,3]
             }
+        }
+    },
+}
+
+RESET.hsj2 = {
+    unl: ()=>player.hsj >= 4,
+    req: ()=>true,
+    reqDesc: ()=>`wtfff!!!`,
+
+    resetDesc: `woah hsj dude x2`,
+    resetGain: ()=>`Normal Level <b>${format(player.level,0)}</b> / <b>${format(MAIN.hsj.require,0)}</b>`,
+
+    title: `Extended Hop-Skip-Jump`,
+    resetBtn: `Do it now, seriously?`,
+
+    reset() {
+        if (this.req()&&player.level.gte(MAIN.hsj.require)) {
+            MAIN.hsj.amount++
         }
     },
 }
@@ -451,6 +491,11 @@ tmp_update.push(()=>{
     for (let x = 0; x < GJ_MIL_LEN; x++) {
         let m = MAIN.gj.milestone[x]
         if (m.effect) tmp.gjEffect[x] = m.effect()
+    }
+
+    for (let x = 0; x < HSJ_MIL_LEN; x++) {
+        let m = MAIN.hsj.beyondMilestone[x]
+        if (m.effect) tmp.hsjEffect[x] = m.effect()
     }
 })
 
@@ -572,6 +617,27 @@ el.setup.milestones = ()=>{
     h += `</div></div>`
 
     t.setHTML(h)
+
+    t = new Element("milestone_div_hsj")
+    h = ""
+
+    h += `<div id="hsj_mil_ctns">HSJ <b id="hsj">0</b><div class="milestone_ctns">`
+
+    for (i in MAIN.hsj.beyondMilestone) {
+        let m = MAIN.hsj.beyondMilestone[i]
+
+        h += `
+        <div id="hsj_mil_ctn${i}_div">
+            <h3>HSJ ${m.r}</h3><br>
+            ${m.desc}
+            ${m.effDesc?`<br>Effect: <b class="cyan" id="hsj_mil_ctn${i}_eff"></b>`:""}
+        </div>
+        `
+    }
+
+    h += `</div></div>`
+
+    t.setHTML(h)
 }
 
 el.update.milestones = ()=>{
@@ -679,6 +745,26 @@ el.update.milestones = ()=>{
         tmp.el.multGHButton.setDisplay(hasStarTree('auto',1))
         tmp.el.multGSOption.setTxt(player.gsMult?"ON":"OFF")
         tmp.el.multGSButton.setDisplay(hasStarTree('auto',4))
+    }
+    if (mapID == "p" & player.planetoid.active) {
+        let unl = RESET.hsj2.unl()
+
+        tmp.el.hsj_div.setDisplay(unl)
+
+        if (unl) {
+            tmp.el.hsj.setHTML(format(player.hsj,0))
+
+            for (let x = 0; x < HSJ_MIL_LEN; x++) {
+                let m = MAIN.hsj.beyondMilestone[x]
+                let id = "hsj_mil_ctn"+x
+
+                // tmp.el[id+"_div"].setDisplay((x<=6 || sn2) && (x<=7 || sn3))
+                tmp.el[id+"_div"].setClasses({bought: player.hsj >= m.r})
+                if (m.effDesc) tmp.el[id+"_eff"].setHTML(m.effDesc(tmp.hsjEffect[x]))
+            }
+        }
+
+        tmp.el.hsj_desc.setHTML(MAIN.hsj.desc)
     }
 }
 

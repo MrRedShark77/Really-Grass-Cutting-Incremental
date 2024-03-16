@@ -61,7 +61,7 @@ RESET.pp = {
 
         let keep_perk = order == "p" && hasUpgrade('auto',4) || order == "c" && hasUpgrade('auto',7) || order == "gh" && tmp.minStats.gh >= 10
 
-        if (!keep_perk) {
+        if (player.hsj < 5 && !keep_perk) {
             player.maxPerk = E(0)
             player.spentPerk = E(0)
             resetUpgrades('perk')

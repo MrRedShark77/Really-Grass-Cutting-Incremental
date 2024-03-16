@@ -726,7 +726,11 @@ body.planetoid #level_bar {
 }
 
 .reset_div.hsj,
-.reset_req.hsj {
+.reset_req.hsj,
+.reset_div.hsj2,
+.reset_req.hsj2,
+#milestone_div_hsj,
+#milestone_div_hsj .milestone_ctns > div.bought {
     background: linear-gradient(45deg, #c5c5c5, #ffff79, #222);
 }
 

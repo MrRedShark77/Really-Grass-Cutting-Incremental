@@ -244,10 +244,11 @@ function createObject(type,x,y,config={}) {
     return true;
 }
 
-function generateTiles(color) {
+function generateTiles() {
     world_config = WORLD_GENERATION[world_init.type].config
 
-    document.body.style.backgroundColor = world_config.colors[0]
+    document.body.style.backgroundColor = world_config.background
+    let color = world_config.tileColor ?? '#003875'
 
     noise.seed(Math.random())
     tiles = {}

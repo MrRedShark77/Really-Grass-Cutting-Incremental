@@ -8,7 +8,9 @@ const SOL_COMPRESSION = {
     },
     gain(i) {
         if (i>=player.sol.compression_unl) return E(0)
-        return (player.sol.compression[i+1] ?? E(0)).add(1).mul(tmp.sol.compression_mult)
+        let x = (player.sol.compression[i+1] ?? E(0)).add(1).mul(tmp.sol.compression_mult)
+        if (hasSolarUpgrade(7,23)) x = x.pow(2)
+        return x
     },
     ctn: [
         {

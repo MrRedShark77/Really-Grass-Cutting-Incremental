@@ -123,6 +123,7 @@ function calc(dt) {
     }
 
     player.maxPerk = player.maxPerk.max(tmp.perks)
+    if (player.hsj >= 5) player.generatedPerk = player.generatedPerk.add(tmp.perks.mul(dt/100))
 
     if (tmp.ringGen > 0) player.planetoid.ring = player.planetoid.ring.add(tmp.ringGain.mul(dt*tmp.ringGen))
 

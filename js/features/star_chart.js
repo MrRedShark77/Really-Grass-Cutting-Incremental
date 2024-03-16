@@ -2356,10 +2356,13 @@ el.setup.star_chart = ()=>{
     let nt = new Element("star_chart_table")
     let h = ""
 
+    let RC = {} 
+
     for (let id in SC_IDS) {
         h += `<div id="star_chart_${id}">`
 
         let t = SC_IDS[id]
+        let r = RC[id] = []
 
         for (let y in t) {
             h += `<div class="table_center">`
@@ -2370,6 +2373,8 @@ el.setup.star_chart = ()=>{
                 let h2 = ""
 
                 if (Number.isInteger(i) || i != "") {
+                    r.push(i)
+
                     let tu = STAR_CHART[id][i]
                     let icon = [SC_ICONS[id][0]]
                     if (tu.icon) icon.push(...tu.icon)
@@ -2401,6 +2406,15 @@ el.setup.star_chart = ()=>{
     }
 
     nt.setHTML(h)
+
+    for (let [id,x] of Object.entries(RC)) {
+        x.forEach(i => {
+            document.getElementById(`sc_upg_${id}${i}`).addEventListener("contextmenu", e => {
+                e.preventDefault();
+                buyMaxSCUpgrade(id,i)
+            })
+        })
+    }
 }
 
 const SC_SCOST = {}
