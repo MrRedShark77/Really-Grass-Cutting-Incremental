@@ -586,7 +586,7 @@ const VOID_OBELISK = [
         name: "Solar Flare",
         get amount() { return player.sn.solarFlare },
         limit: E('e13e18'),
-        icon: "Curr/StarGrow",
+        icon: "Curr/SolarFlare",
     },
 ]
 
