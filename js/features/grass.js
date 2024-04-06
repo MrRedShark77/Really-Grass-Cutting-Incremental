@@ -70,7 +70,7 @@ function gainCurrenciesOnGrass(bonus=1, mult=1) {
 }
 
 el.update.grassCanvas = ()=>{
-    if (mapID == 'g' && !tmp.space) {
+    if (mapID == 'g' && !tmp.space && !tmp.star) {
         if (grass_canvas.width == 0 || grass_canvas.height == 0) resizeCanvas()
         tmp.el.grass_canvas.setClasses({planetoid: player.planetoid.active})
         drawGrass()

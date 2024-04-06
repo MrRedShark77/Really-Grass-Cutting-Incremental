@@ -3,11 +3,13 @@ var LUNAR_BASES = {
     'l_curr1': 'LunarianBase',
     'l_curr2': 'LunarianBase',
     'l_curr3': 'LunarianBase',
+    'l_curr4': 'LunarianBase',
+    'l_curr5': 'LunarianBase',
 }
 
 const LUNAR_MATERIALS = (()=>{
     let a = {}
-    var gen = ['l_curr1','l_curr2','l_curr3']
+    var gen = ['l_curr1','l_curr2','l_curr3','l_curr4','l_curr5']
     for (let [id,x] of Object.entries(LUNAR_ITEMS)) if (x.type === 'res') {
         a[id] = {
             unl() { return player.lun.res[id] !== undefined },
@@ -64,8 +66,37 @@ const LUNAR_MAP = [
 
         res: "l_curr3",
         discover_items: ["l_curr3"],//
+    },{
+        id: "lunar4",
+        dot: "4",
+        name: "Inversed Cave",
+
+        req: () => player.sol.bestStage.gte(8500),
+        reqDesc: "Stage 8,500",
+
+        levels: [1,11,21,31,41],
+
+        res: "l_curr4",
+        discover_items: ["l_curr4"],//
+    },{
+        id: "lunar5",
+        dot: "5",
+        name: "Dark Forest",
+
+        req: () => player.hsj >= 16,
+        reqDesc: "HSJ16",
+
+        levels: [1,6,11,16,21],
+
+        res: "l_curr5",
+        discover_items: ["l_curr5","life_stealer"],//
     },
 ]
+
+function getLSoulMult() {
+    let m = getFormingBonus('fund',6)
+    return m
+}
 
 function lunarianAreaCompleted(i) { return (player.lun.completed[i] ?? 0) >= LUNAR_MAP[i].levels.length }
 function switchLTab(i) { if (i < 0 || !LUNAR_MAP[i].req || LUNAR_MAP[i].req()) lunarian_map_tab = i }
@@ -82,6 +113,7 @@ function startBattle() {
                 lunarian: SS.lunarian,
                 damage: SS.damage,
             },
+            soul_mult: getLSoulMult(),
         })))
         save()
         window.open('lunarian.html','_self')
@@ -115,6 +147,8 @@ tmp_update.push(()=>{
             let gain = Decimal.pow(1.1,lvl-1).mul(lvl/10)
 
             if (player.hsj>=7 && (res=="l_curr1"||res=="l_curr2")) gain = gain.mul(tmp.hsjEffect[2])
+
+            if (['l_curr1','l_curr2','l_curr3'].includes(res)) gain = gain.mul(getFormingBonus('fund',5))
             
             tmp.lun.res_gen[res] = gain
         } else tmp.lun.res_gen[res] = undefined

@@ -12,7 +12,7 @@ const SOLARIANS = {
 
         .mul(getStarBonus(7)).mul(tmp.twilightBonus[0]??1)
 
-        x = x.pow(solarUpgEffect(9,7)).pow(solarUpgEffect(9,9)).pow(solarUpgEffect(11,1)).pow(upgEffect('cs',1))
+        x = x.pow(solarUpgEffect(9,7)).pow(solarUpgEffect(9,9)).pow(solarUpgEffect(11,1)).pow(upgEffect('cs',1)).pow(tmp.twilightBonus[3]??1)
 
         if (hasSolarUpgrade(7,14)) x = x.pow(solarUpgEffect(7,14))
 
@@ -21,23 +21,24 @@ const SOLARIANS = {
 
     enemy: {
         get max_health() {
-            let x = Decimal.pow(10,player.sol.stage.scale(this.stage_scale,3,0).scale(14,hasSolarUpgrade(7,5)?1.75:2,0)).mul(1e3).root(getFormingBonus('adv',3))
+            let x = Decimal.pow(10,player.sol.stage.scale(3.5e5,3,3).scale(this.stage_scale,3,0).scale(14,hasSolarUpgrade(7,5)?1.75:2,0)).mul(1e3).root(getFormingBonus('adv',3))
 
             return x
         },
         get bulk_stage() {
-            let x = tmp.sol.offense.pow(getFormingBonus('adv',3)).div(1e3).log10().scale(14,hasSolarUpgrade(7,5)?1.75:2,0,true).scale(this.stage_scale,3,0,true)
-
-            return x.add(1).floor().sub(player.sol.stage).max(1).min(this.stage_skip)
+            let x = tmp.sol.offense.pow(getFormingBonus('adv',3)).div(1e3).log10().scale(14,hasSolarUpgrade(7,5)?1.75:2,0,true).scale(this.stage_scale,3,0,true).scale(3.5e5,3,3,true)
+            x = x.add(1).floor().sub(player.sol.stage).max(1).min(this.stage_skip)
+            if (isNaN(x.mag)) return E(0)
+            return x
         },
         get stage_scale() { return 99 + solarUpgEffect(11,2,0) },
-        get stage_skip() { return player.sn.tier.gte(7) ? 10 : 1 },
+        get stage_skip() { return player.sn.tier.gte(15) ? EINF : player.sn.tier.gte(7) ? 10 : 1 },
         calc_soul_gain(s) {
             let x = Decimal.pow(1.1,s).mul(s.add(1))
 
             .mul(getSolCompressionEffect(1)).mul(solarUpgEffect(9,0)).mul(solarUpgEffect(10,0)).mul(tmp.twilightBonus[1]??1)
 
-            x = x.pow(upgEffect('cs',5))
+            x = x.pow(upgEffect('cs',5)).pow(tmp.twilightBonus[4]??1)
 
             if (hasSolarUpgrade(7,2)) x = x.mul(2)
 
@@ -59,6 +60,7 @@ const SOLARIANS = {
         if (s.gte(75)) e.sf = Decimal.pow(2,s.sub(74))
         if (s.gte(400)) e.lp = Decimal.pow(1.1,s.sub(399).overflow(100,0.5))
         if (s.gte(1900)) e.dl = Decimal.pow(1.1,s.sub(1899).overflow(100,0.5))
+        if (s.gte(1e6)) e.de = Decimal.pow(1.1,s.sub(1e6-1).div(1e4).overflow(100,0.5))
 
         return e
     },
@@ -78,7 +80,9 @@ const SOLARIANS = {
 
         .mul(getStarBonus(8)).mul(solarUpgEffect(10,3)).mul(tmp.twilightBonus[1]??1)
 
-        x = x.pow(solarUpgEffect(8,9)).pow(upgEffect('cs',4))
+        x = x.pow(solarUpgEffect(8,9)).pow(upgEffect('cs',4)).pow(tmp.twilightBonus[4]??1)
+
+        if (hasSolarUpgrade(7,25)) x = x.pow(2)
 
         return x
     },
@@ -93,7 +97,9 @@ const SOLARIANS = {
 
         x = x.mul(getStarBonus(8)).mul(solarUpgEffect(10,4)).mul(tmp.twilightBonus[1]??1)
 
-        x = x.pow(solarUpgEffect(8,10)).pow(upgEffect('cs',4))
+        x = x.pow(solarUpgEffect(8,10)).pow(upgEffect('cs',4)).pow(tmp.twilightBonus[4]??1)
+
+        if (hasSolarUpgrade(7,25)) x = x.pow(2)
 
         return x
     },
@@ -104,7 +110,7 @@ const SOLARIANS = {
 
         if (hasSolarUpgrade(7,7)) x = x.mul(solarUpgEffect(7,7))
 
-        x = x.pow(upgEffect('cs',4))
+        x = x.pow(upgEffect('cs',4)).pow(tmp.twilightBonus[4]??1)
 
         return x
     },
@@ -146,6 +152,8 @@ const SOL_MATERIALS = {
 
             .mul(getFormingBonus('collect',0)).mul(getFormingBonus('collect',5))
 
+            if (hasSolarUpgrade(7,29)) x = x.mul(player.sol.materials.log[0])
+
             return x
         },
     },
@@ -164,6 +172,8 @@ const SOL_MATERIALS = {
             x = x.mul(solarUpgEffect(8,3))
 
             .mul(getFormingBonus('collect',1))
+
+            if (hasSolarUpgrade(7,29)) x = x.mul(player.sol.materials.stone[0])
 
             return x
         },
@@ -184,6 +194,8 @@ const SOL_MATERIALS = {
 
             .mul(getFormingBonus('collect',2))
 
+            if (hasSolarUpgrade(7,29)) x = x.mul(player.sol.materials.fragment[0])
+
             return x
         },
     },
@@ -203,6 +215,8 @@ const SOL_MATERIALS = {
 
             .mul(getFormingBonus('collect',3))
 
+            if (hasSolarUpgrade(7,29)) x = x.mul(player.sol.materials.essence[0])
+
             return x
         },
     },
@@ -219,6 +233,8 @@ const SOL_MATERIALS = {
             let x = E(1)
 
             x = x.mul(solarUpgEffect(9,5)).mul(getFormingBonus('collect',4))
+
+            if (hasSolarUpgrade(7,29)) x = x.mul(player.sol.materials.infinity[0])
 
             return x
         },
@@ -587,7 +603,7 @@ const FORMING = {
                 rankMult: 5,
                 bonus: b => b.div(10).add(1),
             },{
-                unl: ()=>player.sol.bestStage.gte(50),
+                unl: ()=>player.sol.bestStage.gte(50) && !hasCentralized(29),
 
                 title: "A Bright Star** (Star Growth)",
                 icon: "Curr/StarGrow",
@@ -639,6 +655,8 @@ const FORMING = {
         get mult() { return tmp.sol.fundMult },
         ctn: [
             {
+                max: 30,
+
                 title: "Lunarian Offense",
                 icon: "Icons/LunarSword",
 
@@ -651,6 +669,8 @@ const FORMING = {
                 bonus: b => b.div(100).add(1),
                 bonusDesc: x => "+"+formatPercent(x.sub(1),0),
             },{
+                max: 30,
+                
                 title: "Lunarians",
                 icon: "Curr/Lunarian",
 
@@ -706,6 +726,48 @@ const FORMING = {
                 rankMult: 2,
                 bonus: b => b.add(1),
                 bonusDesc: x => formatMult(x),
+            },{
+                unl: ()=>player.lun.res.l_curr4,
+
+                title: "Lunarian Generation A1-3",
+                icon: "Icons/Placeholder",
+
+                req: [1e75,10],
+                rankReq: [10],
+                materials: [
+                    ['l_curr4',1,2],
+                ],
+                rankMult: 2,
+                bonus: b => b.add(1),
+                bonusDesc: x => formatMult(x),
+            },{
+                unl: ()=>player.lun.res.l_curr4,
+
+                title: "Lunarian Soul Collector",
+                icon: "Curr/LunarianSoul",
+
+                req: [1e75,10],
+                rankReq: [10],
+                materials: [
+                    ['l_curr4',1,2],
+                ],
+                rankMult: 2,
+                bonus: b => b.add(1),
+                bonusDesc: x => formatMult(x),
+            },{
+                unl: ()=>player.lun.res.l_curr5,
+
+                title: "Lunarian Synthesis Speed",
+                icon: "Icons/SynthesisSpeed",
+
+                req: ['1e615',10],
+                rankReq: [10],
+                materials: [
+                    ['l_curr5',1,2],
+                ],
+                rankMult: 5,
+                bonus: (b,l,r) => Decimal.pow(1.2,l).mul(Decimal.pow(10,r)),
+                bonusDesc: x => formatMult(x),
             },
         ],
     },
@@ -758,7 +820,7 @@ const FORMING = {
             },{
                 unl: ()=>player.sn.tier.gte(14),
 
-                title: "Lunarian Anti-Solarian Health Reduction",
+                title: "Advanced Anti-Solarian Health Reduction",
                 icon: "Curr/EvilSolarian",
 
                 req: [1e24,10],
@@ -795,6 +857,7 @@ function calcSolarians(dt) {
     enemy_health = enemy_health.min(ts.enemy_max_health)
     
     let at = attack_time.add(ts.attack_speed*dt)
+    if (isNaN(at.mag)) at = E(0)
     attack_time = at
     if (at.gte(1)) {
         let w = at.floor()
@@ -831,26 +894,43 @@ function calcSolarians(dt) {
     }
 
     var snt9 = player.sn.tier.gte(9)
+    var snt15 = player.sn.tier.gte(15)
+    var continuum = hasSolarUpgrade(7,28)
 
     for (let [fi,f] of Object.entries(FORMING)) {
         const ft = ts.form[fi]
         if (ft.unl) {
             const pf = player.sol.form[fi]
             const mult = f.mult ?? ts.formingMult
+
+            const f_continuum = continuum && ['stats','basic','collect','restore','dark'].includes(fi)
+
+            const noLA = !f_continuum && snt15 && fi != "fund"
             for (let [i,fc] of Object.entries(f.ctn)) if (ft.unls[i]) {
                 const p = pf[i]
                 const [value,l,r,active] = p
-                if (fc.max && r >= fc.max) continue
+                if (fc.max && r.gte(fc.max)) continue
                 if (!active) continue
                 p[0] = p[0].add(mult.mul(dt))
-                const [l0,la] = [fc.rankReq[0],fc.rankReq[1]??0], lc = SOL_FORMULAS.getCurrentLevel(l,r,l0,la)
-                if (ft.afford[i]) {
-                    let got = false, sub = [E(0),[]]
+                
+                var [l0,la] = [fc.rankReq[0],fc.rankReq[1]??0]
 
-                    let bulk = Math.max(Math.min(
+                if (l.gte(1e9) && f_continuum) {
+                    let rank = SOL_FORMULAS.decimalMIN(
+                        ...fc.materials.map(x=>SOL_FORMULAS.getContinuumRank(l0,getSMaterial(x[0]).amount,x[1],x[2],x[3])),
+                        SOL_FORMULAS.getContinuumRank(l0,value,fc.req[0],fc.req[1],fc.req[2])
+                    ).max(r)
+
+                    p[1] = SOL_FORMULAS.getSumLevelFromRank(rank,l0,la)
+                    p[2] = rank
+                } else if (ft.afford[i]) {
+                    let got = false, sub = [E(0),[]]
+                    if (la > 0 && noLA) la = 0
+
+                    let bulk = SOL_FORMULAS.decimalMIN(
                         ...fc.materials.map(x=>SOL_FORMULAS.getLevelBulk(l,r,l0,getSMaterial(x[0]).amount,x[1],x[2],x[3],la)),
                         SOL_FORMULAS.getLevelBulk(l,r,l0,value,fc.req[0],fc.req[1],fc.req[2],la)
-                    ),0)
+                    ).max(0)
                     if (bulk>0) {
                         got = true
                         ft.afford[i]=false
@@ -858,30 +938,30 @@ function calcSolarians(dt) {
                         fc.materials.forEach(x=>{
                             sub[1].push(SOL_FORMULAS.getBulkedCost(bulk,l,r,l0,x[1],x[2],x[3],la))
                         })
-                        p[1] += bulk
+                        p[1] = p[1].add(bulk).round()
                     }
 
-                    if (p[1] >= SOL_FORMULAS.getSumLevelFromRank(r+1,l0,la)) if (snt9) {
-                        let bulk = Math.max(Math.min(
+                    if (p[1].gte(SOL_FORMULAS.getSumLevelFromRank(r.add(1),l0,la))) if (snt9) {
+                        let bulk = SOL_FORMULAS.decimalMIN(
                             ...fc.materials.map(x=>SOL_FORMULAS.getRankBulk(l0,getSMaterial(x[0]).amount,x[1],x[2],x[3],la)),
                             SOL_FORMULAS.getRankBulk(l0,value,fc.req[0],fc.req[1],fc.req[2],la)
-                        ),0)
-                        if (bulk>r) {
-                            p[2] = Math.min(bulk,fc.max??Infinity)
+                        ).max(0)
+                        if (bulk.gt(r)) {
+                            p[2] = bulk.min(fc.max??EINF)
                             p[1] = SOL_FORMULAS.getSumLevelFromRank(bulk,l0,la)
-                        } else p[2]++
+                        } else p[2] = p[2].add(1).round()
                     }
-                    else p[2]++
+                    else p[2] = p[2].add(1).round()
 
                     if (got) {
-                        p[0] = p[0].sub(sub[0]).max(0)
+                        if (p[0].lt('ee9')) p[0] = p[0].sub(sub[0]).max(0)
                         fc.materials.forEach((x,i)=>{
                             if (x[0] == "perk") {
                                 player.spentPerkSolar = player.spentPerkSolar.add(sub[1][i])
                                 updateUnspentPerk()
                             } else {
                                 let m = getSMaterial(x[0])
-                                m.amount = m.amount.sub(sub[1][i]).max(0)
+                                if (m.amount.lt('ee9')) m.amount = m.amount.sub(sub[1][i]).max(0)
                             }
                         })
                     }
@@ -934,7 +1014,7 @@ function getSolarianSave() {
     for (let id of COLLECTED_MATERIALS) s.materials[id] = [E(0), E(0)]
     for (let [fi,f] of Object.entries(FORMING)) {
         s.form[fi] = []
-        for (let i in f.ctn) s.form[fi][i] = [E(0),0,0]
+        for (let i in f.ctn) s.form[fi][i] = [E(0),E(0),E(0)]
     }
     for (let i in SOL_COMPRESSION.ctn) {
         s.compression[i] = E(0)
@@ -968,7 +1048,7 @@ function updateSolarianTemp() {
 
     ts.manaGain = SOLARIANS.manaGain
 
-    ts.attack_speed = ts.offense.gte(ts.enemy_max_health) ? ts.offense.div(ts.enemy_max_health).log10().add(1).mul(2).toNumber() : 1
+    ts.attack_speed = ts.offense.gte(ts.enemy_max_health) ? ts.offense.div(ts.enemy_max_health).max(1).log10().add(1).mul(2).toNumber() : 1
 
     ts.stageBonus = SOLARIANS.stageBonus
     ts.sunriseFM = SOLARIANS.sunriseFM
@@ -1024,13 +1104,13 @@ tmp_update.push(()=>{
 })
 
 const SOL_FORMULAS = {
-    solvePQE: (a,b,c) => {let d = b**2-4*a*c; return d < 0 ? 0 : (-b+Math.sqrt(d))/(2*a)}, // ax^2+bx+c=0
-    getSumLevelFromRank: (r,l0,la=0) => r*(l0+la*(r-1)/2),
-    getCurrentLevel(l,r,l0,la=0) { return Math.min(Math.max(0,l-this.getSumLevelFromRank(r,l0,la)),l0+r*la) },
+    solvePQE: (a,b,c) => {let d = Decimal.pow(b,2).sub(Decimal.add(a,c).mul(4)); return d.lt(0) ? E(0) : d.sqrt().sub(b).div(a).div(2)}, // ax^2+bx+c=0 D=b^2-4ac x1=(-b+sqrt(D))/2a x2=(-b-sqrt(D))/2a
+    getSumLevelFromRank: (r,l0,la=0) => r.sub(1).mul(la/2).add(l0).mul(r), // r*(l0+la*(r-1)/2)
+    getCurrentLevel(l,r,l0,la=0) { return l.sub(this.getSumLevelFromRank(r,l0,la)).max(0).min(r.mul(la).add(l0)) },
     bonus(l,r,b,l0,la=0) {
         let lc = this.getCurrentLevel(l,r,l0,la), br = Decimal.pow(b,r)
         let s = Decimal.mul(lc,br).add(Decimal.mul(l0,br.sub(1).div(b-1)))
-        if (la>0) s = Decimal.mul(la,br.mul(b*(r-1)).sub(br.mul(r)).add(b).div((b-1)**2)).add(s)
+        if (la>0) s = Decimal.mul(la,r.sub(1).mul(br).mul(b).sub(br.mul(r)).add(b).div((b-1)**2)).add(s)
         return s
     },
     getCost(l,r,ms,br,bl=1) {
@@ -1040,25 +1120,44 @@ const SOL_FORMULAS = {
         return this.getCost(this.getSumLevelFromRank(r,l0,la),r,ms,br,bl).mul(bl>1?Decimal.pow(bl,lb).sub(1).mul(Decimal.pow(bl,this.getCurrentLevel(l,r,l0,la))).div(bl-1):lb)
     },
     getLevelBulk(l,r,l0,f,ms,br,bl=1,la=0) {
-        let lc = this.getCurrentLevel(l,r,l0,la), lb = 0, lr = l0+la*r;
+        let lc = this.getCurrentLevel(l,r,l0,la), lb = 0, lr = r.mul(la).add(l0);
         let mf = this.getCost(this.getSumLevelFromRank(r,l0,la),r,ms,br,bl)
         if (bl<=1) {
-            lb = f.div(mf).floor().max(0).min(lr-lc).toNumber()
-            if (lb<=0) return 0;
+            lb = f.div(mf).floor().max(0).min(lr.sub(lc))
+            if (lb.lte(0)) return E(0);
         } else {
-            lb = f.mul(bl-1).div(mf).add(Decimal.pow(bl,lc)).log(bl).floor().max(0).min(lr).toNumber()
-            if (lb<=lc) return 0;
-            lb -= lc
+            lb = f.mul(bl-1).div(mf).add(Decimal.pow(bl,lc)).log(bl).floor().max(0).min(lr)
+            if (lb.lte(lc)) return E(0);
+            lb = lb.sub(lc)
         }
         return lb
     },
 
     getRankBulk(l0,f,ms,br,bl=1,la=0) {
         return la == 0 ?
-        (bl == 1 ? f.div(Decimal.mul(ms,l0)).log(br) : f.div(ms).log(bl).add(1).div(Math.logBase(br,bl)+l0)).floor().toNumber()+1
-        : bl == 1 ? Decimal.pow(br,l0/la).mul(f).mul(Math.log(br)).div(ms).div(la).lambertw().div(Math.log(br)).sub(l0/la).floor().toNumber()+1
-        : Math.floor(this.solvePQE(la,-la+2*l0+2*Math.logBase(br,bl),-2-2*f.div(ms).log(bl).toNumber()))
-    }
+        (bl == 1 ? f.div(Decimal.mul(ms,l0)).log(br) : f.div(ms).log(bl).add(1).div(Math.logBase(br,bl)+l0)).floor().add(1)
+        : bl == 1 ? Decimal.pow(br,l0/la).mul(f).mul(Math.log(br)).div(ms).div(la).lambertw().div(Math.log(br)).sub(l0/la).floor().add(1)
+        : this.solvePQE(la,-la+2*l0+2*Math.logBase(br,bl),f.div(ms).log(bl).mul(-2).sub(2)).floor()
+    },
+
+    decimalMIN(...a) {
+        let d = a[0]
+        for (let i = 1; i < a.length; i++) d = d.min(a[i])
+        return d
+    },
+
+    // Continuum Formulas
+
+    getContinuumRank(l0,f,ms,br,bl=1) {
+        return f.gte(ms) ? (bl == 1 ? f.div(Decimal.mul(ms,l0)).log(br) : f.div(ms).log(bl).add(1).div(Math.logBase(br,bl)+l0)).scale(2e15,2,0,true).add(1) : E(0)
+    },
+    getContinuumCost(l0,r,ms,br,bl=1) {
+        r = r.scale(2e15,2,0)
+        return bl == 1 ? Decimal.pow(br,r).mul(Decimal.mul(ms,l0)) : Decimal.pow(bl,r.mul(Math.logBase(br,bl)+l0).sub(1)).mul(ms)
+    },
+    getContinuumBonus(r,b) {
+        return Decimal.mul(l0,Decimal.pow(b,r).sub(1).div(b-1))
+    },
 }
 
 function getFormingBonus(id,i,def=1) { return tmp.sol.form[id].bonus[i]??def }
@@ -1092,6 +1191,7 @@ el.update.solarians = () => {
         if (bonus.sf) t += `<br>Solar Flares: <b class='green'>${formatMult(bonus.sf,0)}</b>`
         if (bonus.lp) t += `<br>Lunar Power: <b class='green'>${formatPow(bonus.lp)}</b>`
         if (bonus.dl) t += `<br>Distant Level: <b class='green'>${formatMult(bonus.dl)}</b>`
+        if (bonus.de) t += `<br>Distant Eclipse: <b class='green'>${formatMult(bonus.de)}</b>`
 
         tmp.el.stage_bonus.setHTML(t)
     } else if (mapID3 == 'sol') {
@@ -1141,6 +1241,9 @@ el.update.solarians = () => {
             tmp.el[el_id+'_amt'].setHTML(`<b>${amt.format(0)}</b>`+(gain?`<br><span>${formatGain(amt,gain)}</span>`:""))
         }
 
+        let snt15 = player.sn.tier.gte(15)
+        var continuum = hasSolarUpgrade(7,28)
+
         for (let [fi,f] of Object.entries(FORMING)) {
             let unl = !f.unl || f.unl()
             tmp.el[`fb_${fi}`].setDisplay(unl)
@@ -1150,6 +1253,7 @@ el.update.solarians = () => {
             const pf = player.sol.form[fi]
             const ft = ts.form[fi]
             const mult = f.mult ?? ts.formingMult
+            const t_continuum = continuum && ['stats','basic','collect','restore','dark'].includes(fi)
 
             if (unl) for (let [i,fc] of Object.entries(f.ctn)) {
                 let id = `f_${fi}_${i}`
@@ -1158,6 +1262,7 @@ el.update.solarians = () => {
                 if (!unl) continue;
 
                 const [value,l,r,active] = pf[i]
+                const [l0,la] = [fc.rankReq[0],snt15?0:fc.rankReq[1]??0]
 
                 tmp.el[id+'_bonus'].setHTML(`
                 <div>Level <b class='level-color'>${format(l,0)}</b> : <b class='green'>${(fc.bonusDesc ?? formatMult)(ft.bonus[i])}</b><div>
@@ -1165,22 +1270,27 @@ el.update.solarians = () => {
                 `)
 
                 for (let mi in fc.materials) {
-                    const m = fc.materials[mi], cost = SOL_FORMULAS.getCost(l,r,m[1],m[2],m[3])
+                    const m = fc.materials[mi], cost = t_continuum ? SOL_FORMULAS.getContinuumCost(l0,r,m[1],m[2],m[3]) : SOL_FORMULAS.getCost(l,r,m[1],m[2],m[3])
                     tmp.el[id+'_m_'+mi].setHTML(`<b class="${getSMaterial(m[0]).amount.gte(cost) ? "green" : "red"}">${format(cost,0)}</b>`)
                 }
 
-                const [l_el, r_el] = [tmp.el[id+'_level'],tmp.el[id+'_rank']]
+                const [l_el, r_el] = [tmp.el[id+'_level'],tmp.el[id+'_rank']], visible = l.lt(1e9)
 
-                const bl = fc.req[2]??1
-                const req = ft.req[i], maxed = fc.max && r >= fc.max
+                l_el.setDisplay(visible)
+                r_el.setDisplay(visible)
 
-                l_el.setProperty('--percent',maxed ? '100%' : value.div(req).max(0).min(1).mul(100)+'%')
-                l_el.setHTML(maxed ? "<div>Maxed</div>" : active&&(value.lt(req)||ft.afford[i])?`<div>${mult.gte(req)&&bl==1?"+"+mult.div(req).format()+"/s":formatTime(req.sub(value).div(mult).max(0))}</div>`:`<div>${format(value,0)} / ${format(req,0)}</div>`)
+                if (visible) {
+                    const bl = fc.req[2]??1
+                    const req = ft.req[i], maxed = fc.max && r.gte(fc.max)
 
-                const [l0,la] = [fc.rankReq[0],fc.rankReq[1]??0], lc = SOL_FORMULAS.getCurrentLevel(l,r,l0,la)
+                    l_el.setProperty('--percent',maxed ? '100%' : value.div(req).max(0).min(1).mul(100)+'%')
+                    l_el.setHTML(maxed ? "<div>Maxed</div>" : active&&(value.lt(req)||ft.afford[i])?`<div>${mult.gte(req)&&bl==1?"+"+mult.div(req).format()+"/s":formatTime(req.sub(value).div(mult).max(0))}</div>`:`<div>${format(value,0)} / ${format(req,0)}</div>`)
 
-                r_el.setProperty('--percent',maxed ? '100%' : Math.max(0,Math.min(1,lc/(l0+r*la)))*100+'%')
-                r_el.setHTML(maxed ? "<div>Maxed</div>" : `<div>${format(lc,0)} / ${format(l0+r*la,0)}</div>`)
+                    const lc = SOL_FORMULAS.getCurrentLevel(l,r,l0,la)
+
+                    r_el.setProperty('--percent',maxed ? '100%' : Math.max(0,Math.min(1,lc/(l0+r*la)))*100+'%')
+                    r_el.setHTML(maxed ? "<div>Maxed</div>" : `<div>${format(lc,0)} / ${format(l0+r*la,0)}</div>`)
+                }
 
                 tmp.el[id+"_btn"].setTxt(active?"Stop":"Start")
             }
@@ -1267,9 +1377,9 @@ function resetMaterials(keep=[]) {
 function resetForming(id,list=[],reset=false,decrease) {
     let ff = player.sol.form[id]
     for (let x = 0; x < FORMING[id].ctn.length; x++) if ((reset ? list.includes(x) : !list.includes(x)) && (decrease === undefined || decrease > 0)) {
-        if (decrease === undefined) ff[x] = [E(0),0,0,ff[x][3]]
+        if (decrease === undefined) ff[x] = [E(0),E(0),E(0),ff[x][3]]
         else {
-            const r = Math.max(ff[x][2] - decrease,0), s = FORMING[id].ctn[x].rankReq
+            const r = ff[x][2].sub(decrease).max(0), s = FORMING[id].ctn[x].rankReq
             ff[x] = [E(0),SOL_FORMULAS.getSumLevelFromRank(r,...s),r,ff[x][3]]
         }
     }

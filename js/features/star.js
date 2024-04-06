@@ -89,6 +89,8 @@ UPGS.stardust = {
 }
 
 function stardustGain() {
+    if (hasCentralized(28)) return player.planetoid.pm.floor()
+
     let x = upgEffect('stardust',1)
     .mul(upgEffect('planetarium',4))
     .mul(upgEffect('astro',5))
@@ -99,11 +101,15 @@ function stardustGain() {
 
     x = x.mul(solarUpgEffect(3,0)).mul(solarUpgEffect(4,8)).mul(getASEff('sd'))
 
+    x = x.pow(solarUpgEffect(1,22))
+
     return x
 }
 
 const THE_STAR = {
     get growSpeed() {
+        if (hasCentralized(29)) return player.sn.solarShard.floor();
+
         let x = upgEffect('stardust',0,E(1))
         
         .mul(solarUpgEffect(4,0))
@@ -213,11 +219,11 @@ const ADV_STAR = [
         bonusDesc: x => `<b class='darkgreen'>${formatMult(x)}</b> Offense`,
     },{
         req: [1e51,5500,1e72],
-        bonus: x => x.div(1e50).max(1).pow(2),
+        bonus: x => x.div(1e50).max(1).pow(2),//.overflow('ee13',0.5)
         bonusDesc: x => `<b class='darkgreen'>${formatMult(x)}</b> Collecting & Forming`,
     },{
         req: [1e58,12500,1e93],
-        bonus: x => x.div(1e55).max(1).log10().root(2).div(10).add(1),
+        bonus: x => x.div(1e55).max(1).log10().root(2).div(10).add(1).overflow(1e3,0.5),
         bonusDesc: x => `<b class='darkgreen'>${formatPow(x)}</b> Line & Solar Flare`,
     },{
         req: [1e81,50000,1e220],
@@ -233,6 +239,10 @@ const ADV_STAR = [
         req: ['e1250',2e9,'e7000'],
         bonus: x => expMult(x.div('e1250').add(1),0.25),
         bonusDesc: x => `<b class='darkgreen'>${formatMult(x)}</b> Corruption Shards`
+    },{
+        req: ['e12345678',6e13,'e7.5e8'],
+    },{
+        req: ['e3e18',2.4e15,'e4e20'],
     },
 ]
 

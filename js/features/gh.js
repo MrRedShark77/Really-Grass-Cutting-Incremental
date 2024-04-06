@@ -408,6 +408,9 @@ MAIN.hsj = {
             desc: `HSJ boosts Lunarian Soil & Wheat generation and the yield of Flare Shards.`,
             effect: ()=>Decimal.pow(2,player.hsj),
             effDesc: x=>formatMult(x),
+        },{
+            r: 15,
+            desc: `Solar flares no longer have a cap.`,
         },
     ],
 }
@@ -746,11 +749,9 @@ el.update.milestones = ()=>{
         tmp.el.multGSOption.setTxt(player.gsMult?"ON":"OFF")
         tmp.el.multGSButton.setDisplay(hasStarTree('auto',4))
     }
+    let unl = RESET.hsj2.unl()
+    tmp.el.hsj_div.setDisplay(unl && mapID == "p" & player.planetoid.active)
     if (mapID == "p" & player.planetoid.active) {
-        let unl = RESET.hsj2.unl()
-
-        tmp.el.hsj_div.setDisplay(unl)
-
         if (unl) {
             tmp.el.hsj.setHTML(format(player.hsj,0))
 

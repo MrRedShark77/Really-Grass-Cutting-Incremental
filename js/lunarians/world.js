@@ -161,9 +161,13 @@ function actionPlayer() {
                 case 'enemy':
                     var dmg = temp.damage, crit = Math.random() < temp.crit_chance
                     if (crit) dmg = dmg.mul(2)
+                    var ls = dmg.mul(temp.life_stealer)
+
+                    o.health = o.health.add(ls).min(temp.max_lunar)
                     o.health = o.health.sub(dmg).max(0)
     
                     addOutput(`You deal <b>${format(dmg,0)}</b> damage to enemy!`+(crit?" <b class='red'>CRITICAL!!!</b>":""))
+                    if (ls.gt(0)) addOutput(`Your damage heals <b class='green'>+${format(ls,0)}</b> Lunarians!`)
                     
                     if (o.health.lte(0)) {
                         player.killed++
@@ -214,20 +218,26 @@ function createObject(type,x,y,config={}) {
         image: config.image??nameToImage[type],
     }
 
+    var lvl_len = world_config.lvl_size ?? 5
+
+    var soul_mlt = Decimal.mul(world_config.soul_mult??1,world_init.soul_mult)
+
     switch (type) {
         case 'enemy':
-            var lvl = Math.round(Math.max(0,Math.min(5,distance(...player.position,x,y)/world_init.size*5+2*(Math.random()-0.5)))) + world_init.level
+            var lvl = Math.round(Math.max(0,Math.min(lvl_len,distance(...player.position,x,y)/world_init.size*lvl_len+2*(Math.random()-0.5)))) + world_init.level
             data.level = lvl
             data.key = config.key
+
+            var base = Decimal.pow(world_config.health_scaling??1.1,lvl-1)
             
-            data.soul = Decimal.pow(1.1,lvl-1).mul(lvl).mul(world_config.soul_mult??1).round()
-            data.damage = (data.health = data.max_health = Decimal.pow(1.1,lvl-1).mul(5+(lvl-1)*2).mul(world_config.health_mult??1).round()).div(10).round().max(1)
+            data.soul = base.mul(lvl).mul(soul_mlt).round()
+            data.damage = (data.health = data.max_health = base.mul(5+(lvl-1)*2).mul(world_config.health_mult??1).round()).div(10).round().max(1)
         break
         case 'treasure':
-            var lvl = world_init.level + Math.random()**2*5
+            var lvl = world_init.level + Math.random()**2*lvl_len
             var w = Decimal.pow(1.1,lvl-1).mul(lvl)
             data.weight = {}
-            world_config.treasure_weight.forEach(([i,c,a]) => {data.weight[i] = LUNAR_ITEMS[i].type == "items" ? 1 : w.mul(a??1).mul(i == 'l_soul'?world_config.soul_mult??1:1).round().max(1)})
+            world_config.treasure_weight.forEach(([i,c,a]) => {data.weight[i] = LUNAR_ITEMS[i].type == "items" ? 1 : w.mul(a??1).mul(i == 'l_soul'?soul_mlt:1).round().max(1)})
         break
         case 'heal':
             data.percent = 0.25 + (Math.random()-0.5)*0.1

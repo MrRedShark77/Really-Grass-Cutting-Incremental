@@ -107,25 +107,31 @@ const MAIN = {
 
         tmp.gsBeforeCompact = 2/x
 
+        if (!isFinite(tmp.gsBeforeCompact)) tmp.gsBeforeCompact = Number.MAX_VALUE
+
         if (player.grassjump>=2) x /= 10
 
         x = Math.min(Math.max(x*tmp.compact,2e-4),10)
+
+        if (isNaN(x)) x = 2e-4
 
         return x
     },
     compact() {
         if (!hasUpgrade('unGrass',3)) {
-            tmp.compact = 1
+            tmp.compact = E(1)
             return
         }
 
-        let c = upgEffect('unGrass',3,1)
+        let c = E(upgEffect('unGrass',3))
 
-        c *= upgEffect('astro',4,1)
+        c = c.mul(upgEffect('astro',4))
 
-        if (player.grassjump>=2) c **= 2
+        if (player.grassjump>=2) c = c.pow(2)
 
-        tmp.compact = Math.min(c,tmp.gsBeforeCompact/100)
+        tmp.compact = Decimal.min(c,tmp.gsBeforeCompact/100)
+
+        if (isNaN(tmp.compact.mag)) tmp.compact = E(Number.MAX_VALUE)
     },
     xpGain() {
         let x = Decimal.mul(3,upgEffect('grass',3)).mul(tmp.tier.mult).mul(tmp.compact)
@@ -392,7 +398,12 @@ el.update.main = ()=>{
 
     tmp.el.grassAmt.setHTML(g.format(0))
     tmp.el.grassGain.setHTML(tmp.autoCutUnlocked ? formatGain(g,(pa?tmp.planetiumGain:tmp.grassGain).div(tmp.autocut).mul(tmp.autocutBonus).mul(tmp.autocutAmt)) : "")
-    tmp.el.grassOverflow.setHTML((tmp.grass_overflow.gt(1)?`(^1/${format(tmp.grass_overflow)} to grass!)`:'')+(tmp.pm_overflow.gt(1)?` (^1/${format(tmp.pm_overflow)} to planetarium!)`:''))
+
+    var oh = tmp.grass_overflow.gt(1)?`(^1/${format(tmp.grass_overflow)} to grass!)`:''
+    if (tmp.pm_overflow.gt(1)) oh += ` (^1/${format(tmp.pm_overflow)} to planetarium!)`
+    if (tmp.sf_overflow.gt(1)) oh += ` (^1/${format(tmp.sf_overflow)} to solar flares!)`
+
+    tmp.el.grassOverflow.setHTML(oh)
 
     let tier_unl = !pa && player.pTimes > 0
     let astr_unl = player.gTimes > 0

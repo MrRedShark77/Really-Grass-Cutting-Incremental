@@ -343,9 +343,10 @@ const SOLAR_UPGS = [
                 },
                 effDesc: x => formatMult(x),
             },{
+                unl: ()=>!hasCentralized(27),
                 max: 100,
                 title: "Solar Powered II",
-                get desc() {return `Increase charge rate by <b class="green">${formatMult(1000)}</b> per level.`},
+                get desc() {return `Increase dark charge rate by <b class="green">${formatMult(1000)}</b> per level.`},
                 icon: ['Curr/DarkCharge'],
                 require() { return player.sn.tier.gte(3) },
                 req_txt: `T3`,
@@ -516,6 +517,38 @@ const SOLAR_UPGS = [
                     return x
                 },
                 effDesc: x => formatMult(x),
+            },{
+                unl: ()=>!hasCentralized(27),
+                max: 10,
+                title: "Solar Powered III",
+                desc: `Increase dark charge rate by <b class="green">^2</b> per level.`,
+                icon: ['Curr/DarkCharge'],
+                require() { return player.hsj>=10 },
+                req_txt: `HSJ10`,
+                cost: i => Decimal.pow('e7e9',i).mul('e1e11'),
+                bulk: i => i.div('e1e11').log('e7e9').floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(2,i)
+                        
+                    return x
+                },
+                effDesc: x => formatPow(x),
+            },{
+                unl: ()=>!hasCentralized(28),
+                max: 10,
+                title: "Solar Powered Stardust",
+                desc: `Increase stardust gain by <b class="green">^2</b> per level.`,
+                icon: ['Curr/Stardust'],
+                require() { return player.hsj>=10 },
+                req_txt: `HSJ10`,
+                cost: i => Decimal.pow('e7e9',i).mul('e1e11'),
+                bulk: i => i.div('e1e11').log('e7e9').floor().toNumber()+1,
+                effect(i) {
+                    let x = Decimal.pow(2,i)
+                        
+                    return x
+                },
+                effDesc: x => formatPow(x),
             },
         ],
     },{
@@ -1531,6 +1564,8 @@ const SOLAR_UPGS = [
                 cost: i => 1,
                 effect(i) {
                     let x = getStartingStats().damage.max(1).log10().div(4).add(1)
+
+                    if (hasSolarUpgrade(7,26)) x = x.pow(1.5)
                         
                     return x
                 },
@@ -1594,6 +1629,36 @@ const SOLAR_UPGS = [
                 title: "Squared Compressed Sol Effects",
                 desc: `<b class='green'>Square</b> the effects of first 6 Compressed Sol Tiers.`,
                 icon: ['Curr/SolCurrency1a'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,23) && hasSolarUpgrade(7,24),
+                title: "The Big One",
+                desc: `<b class='green'>Square</b> collecting and forming.`,
+                icon: ['Icons/Collect'],
+                cost: i => 2,
+            },{
+                unl: () => hasSolarUpgrade(7,25),
+                title: "Better Luanrian Offense",
+                desc: `Improve <b class='green'>'Luanrian Offense'</b> better.`,
+                icon: ['Icons/LunarSword'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,26),
+                title: "Better Bonuses",
+                desc: `Twilight bounses now provide exponential boosts to offense and souls/collect/form/restore.`,
+                icon: ['Curr/UnstableSoul'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,27),
+                title: "Forming Continuum",
+                get desc() { return `Forming Stats/Basic/Collection/Restoration/Darkness will automatically update the best level & rank each without spending any resources (starting only at level <b class="green">${format(1e9,0)}</b>), improving the level & rank formula.` },
+                icon: ['Icons/Form','Icons/Infinite'],
+                cost: i => 1,
+            },{
+                unl: () => hasSolarUpgrade(7,28),
+                title: "Collector is Collector",
+                desc: `Each collected material boosts the previous.`,
+                icon: ['Icons/Collect'],
                 cost: i => 1,
             },
         ],

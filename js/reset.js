@@ -120,8 +120,8 @@ el.update.reset = ()=> {
             let h = `
             Increase your twilight bonus by <b class="magenta">${tmp.twilightBonusIncrease.format(0)}</b> (next at stage ${SOLAR_OBELISK.twilight.nextBonus.format(0)})<br>
             Twilight Bonuses (${player.sol.twilightBonus.format(0)}):
-            <br><b class="green">${formatMult(b[0],0)}</b> Offense
-            <br><b class="green">${formatMult(b[1],0)}</b> Souls/Collect/Form/Restore
+            <br><b class="green">${formatMult(b[0],0)}</b>${b[3]?`, <b class="green">${formatPow(b[3])}</b>`:""} Offense
+            <br><b class="green">${formatMult(b[1],0)}</b>${b[4]?`, <b class="green">${formatPow(b[4])}</b>`:""} Souls/Collect/Form/Restore
             <br><b class="green">${formatMult(b[2],0)}</b> Divine Souls/Fund
             `
 

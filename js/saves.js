@@ -465,7 +465,7 @@ function loadGame(start=true, gotNaN=false) {
         setInterval(checkNaN,1000)
         setInterval(()=>{
             checkConstellationCosts()
-            updateConstellation()
+            if (player.sn.tier.lt(14)) updateConstellation()
         },1000)
         setupSolarianStage()
 

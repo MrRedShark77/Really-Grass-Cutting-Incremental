@@ -51,7 +51,7 @@ const SYNTHESIS = {
     },
 
     get speed() {
-        let x = Decimal.mul(solarUpgEffect(11,5),upgEffect('cs',2)).mul(solarUpgEffect(10,8)).mul(solarUpgEffect(12,1))
+        let x = Decimal.mul(solarUpgEffect(11,5),upgEffect('cs',2)).mul(solarUpgEffect(10,8)).mul(solarUpgEffect(12,1)).mul(getFormingBonus('fund',7))
 
         return x
     },
@@ -299,6 +299,7 @@ function calcSynthesis(dt) {
     var tspeed = tmp.synthesis.speed
     var t = []
     if (player.sn.tier.gte(14)) t.push(0,1)
+    if (player.sn.tier.gte(16)) t.push(2)
     SYNTHESIS.slot.forEach((x,i)=>{
         var S = player.synthesis.slot[i]
         if (S[0] > -1) {

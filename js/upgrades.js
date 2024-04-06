@@ -1117,6 +1117,8 @@ function updateUpgTemp(id) {
             if (player.sn.tier.gte(4)) tu.max[x] = EINF
         } else if (id == "constellation") {
             if (player.sn.tier.gte(14) && x == 7) tu.max[x] = EINF
+        } else if (id == "cs") {
+            if (player.sn.tier.gte(16) && x != 2 && x != 3) tu.max[x] = EINF
         }
 
         if (upg.unl?upg.unl():true) if (Decimal.lt(amt,tu.max[x])) ul++

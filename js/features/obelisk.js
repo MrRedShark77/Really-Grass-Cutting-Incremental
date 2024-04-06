@@ -412,6 +412,7 @@ const SOLAR_OBELISK = {
             let s = player.sol.stage.sub(130)
             if (s.lt(0)) return E(0)
             let x = s.div(player.sn.tier.gte(13)?10:15).scale(5,2,0,true).sub(player.sol.twilightBonus).add(1).max(0)
+            if (isNaN(x.mag)) return E(0)
             return x.floor()
         },
         get bonusEffect() {
@@ -419,6 +420,10 @@ const SOLAR_OBELISK = {
             x[0] = Decimal.pow(10,b.pow(2))
             x[1] = Decimal.pow(10,b.pow(1.5))
             x[2] = Decimal.pow(5,b)
+            if (hasSolarUpgrade(7,27)) {
+                x[3] = b.div(10).add(1).root(2)
+                x[4] = b.div(10).add(1).root(3)
+            }
             return x
         },
     },
@@ -552,6 +557,36 @@ const VOID_OBELISK = [
         get amount() { return player.constellation.arc },
         limit: E('e3e55'),
         icon: "Curr/Arcs",
+    },{ // 25
+        name: "Observatorium",
+        get amount() { return player.planetoid.observ },
+        limit: E('e1e90'),
+        icon: "Curr/Observatorium",
+    },{ // 26
+        name: "Reservatorium",
+        get amount() { return player.planetoid.reserv },
+        limit: E('e3e91'),
+        icon: "Curr/Res4",
+    },{ // 27
+        name: "Dark Charge",
+        get amount() { return player.darkCharge },
+        limit: E('e1e92'),
+        icon: "Curr/DarkCharge",
+    },{ // 28
+        name: "Stardust",
+        get amount() { return player.stardust },
+        limit: E('e8300000'),
+        icon: "Curr/Stardust",
+    },{ // 29
+        name: "Star Growth",
+        get amount() { return player.stargrowth },
+        limit: E('e1.5e9'),
+        icon: "Curr/StarGrow",
+    },{ // 30
+        name: "Solar Flare",
+        get amount() { return player.sn.solarFlare },
+        limit: E('e13e18'),
+        icon: "Curr/StarGrow",
     },
 ]
 

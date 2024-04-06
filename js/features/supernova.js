@@ -150,16 +150,24 @@ const SUPERNOVA = {
 
         x = x.pow(getStarBonus(9))
 
+        let o = hasCentralized(30) ? EINF : E('ee12')
+
+        if (x.gte(o)) {
+            let before = x
+            x = x.overflow(o,0.5)
+            tmp.sf_overflow = before.log10().div(x.log10())
+        } else tmp.sf_overflow = E(1)
+
         return x
     },
     eclipse: {
-        req(offest = 0) { return Decimal.pow(1.05,player.sn.eclipse.sub(offest).scale(1e12,3,3).scale(tmp.scale_eclipse,2,0).add(1)).sub(1).mul(2000) },
-        calcBulk(res = player.sn.sr) { return res.div(2000).add(1).log(1.05).sub(1).scale(tmp.scale_eclipse,2,0,true).scale(1e12,3,3,true).add(1).sub(player.sn.eclipse).floor() },
+        req(offest = 0) { return Decimal.pow(1.05,player.sn.eclipse.sub(offest).scale(tmp.distant_eclipse,3,3).scale(tmp.scale_eclipse,2,0).add(1)).sub(1).mul(2000) },
+        calcBulk(res = player.sn.sr) { return res.div(2000).add(1).log(1.05).sub(1).scale(tmp.scale_eclipse,2,0,true).scale(tmp.distant_eclipse,3,3,true).add(1).sub(player.sn.eclipse).floor() },
 
         get require() { return this.req() },
         get reqBase() {
             let e = player.sn.eclipse
-            return Decimal.pow(1.05,e.add(1).scale(1e12,3,3).scale(tmp.scale_eclipse,2,0)).sub(Decimal.pow(1.05,e.scale(1e12,3,3).scale(tmp.scale_eclipse,2,0))).mul(2000)
+            return Decimal.pow(1.05,e.add(1).scale(tmp.distant_eclipse,3,3).scale(tmp.scale_eclipse,2,0)).sub(Decimal.pow(1.05,e.scale(tmp.distant_eclipse,3,3).scale(tmp.scale_eclipse,2,0))).mul(2000)
         },
         get bulk() { return this.calcBulk() },
         get remnantGain() {
@@ -286,6 +294,20 @@ const SUPERNOVA = {
             - Passively generate corruption shards and flare shards you gained on yielding at <b class="green">1%</b> rate.<br>
             - Remove the level cap of <b class="green">Final Prism Upgrade</b> (constellation upgrade).<br>
             `,
+        },{
+            r: 15,
+            desc: `
+            - Update twilight bonus automatically without needing to do a twilight.<br>
+            - Passively generate unstable souls you gained on twilight at <b class="green">1%</b> rate.<br>
+            - Skipping stage's speed is INFINITELY increased.<br>
+            - Forming Ranks no longer increase the rank requirement.<br>
+            `,
+        },{
+            r: 16,
+            desc: `
+            - Corruption Shard Upgrades (except <b class="green">Synthesis Speed</b> & <b class="green">Distant Level</b>) will no longer have their caps.<br>
+            - Passively generate empty gems you gained on yielding at <b class="green">1%</b> rate.<br>
+            `,
         },
     ],
 }
@@ -294,6 +316,7 @@ tmp_update.push(()=>{
     tmp.sunriseEffect = SOLAR_OBELISK.sunriseEffect
 
     tmp.scale_eclipse = Decimal.add(300,getFormingBonus('dark',2,0))
+    tmp.distant_eclipse = Decimal.mul(1e12,getStageBonus('de',0))
 
     tmp.solarShardGain = SUPERNOVA.gain()
     tmp.maxSolarFlare = SUPERNOVA.maxFlare()
@@ -373,17 +396,23 @@ function calcSupernova(dt) {
     }
 
     if (player.sn.times > 0) {
-        player.sn.solarFlare = player.sn.solarFlare.add(tmp.flareGain.mul(dt)).min(tmp.maxSolarFlare)
+        var m = player.sn.solarFlare.add(tmp.flareGain.mul(dt))
+        if (player.hsj < 15) m = m.min(tmp.maxSolarFlare)
+        player.sn.solarFlare = m
     }
 
     if (hasSolarUpgrade(4,4)) {
-        let s = player.sn.triggerTime + dt * solarUpgEffect(6,7)
-        if (s >= 86400) {
-            let w = Math.floor(s / 86400)
-            player.sn.solarShard = player.sn.solarShard.add(player.sn.bestSSEarn.mul(w))
-            s -= w * 86400
-        }
-        player.sn.triggerTime = s
+        if (player.sn.tier.gte(15)) {
+            player.sn.solarShard = player.sn.solarShard.add(player.sn.bestSSEarn.mul(dt))
+        } else {
+            let s = player.sn.triggerTime + dt * solarUpgEffect(6,7)
+            if (s >= 86400) {
+                let w = Math.floor(s / 86400)
+                player.sn.solarShard = player.sn.solarShard.add(player.sn.bestSSEarn.mul(w))
+                s -= w * 86400
+            }
+            player.sn.triggerTime = s
+        }   
     }
 
     if (player.sn.tier.gte(2)) {
@@ -411,6 +440,13 @@ function calcSupernova(dt) {
 
     if (hasSolarUpgrade(2,11)) player.sn.bestSSEarn = player.sn.bestSSEarn.max(tmp.solarShardGain)
     if (hasSolarUpgrade(2,12)) player.sn.totalSFEarn = player.sn.totalSFEarn.add(SUPERNOVA.flareEarn.mul(dt))
+
+    if (player.sn.tier.gte(14)) updateConstellation()
+
+    if (player.sn.tier.gte(15)) {
+        player.sol.twilightBonus = player.sol.twilightBonus.add(tmp.twilightBonusIncrease)
+        player.sol.unstableSoul = player.sol.unstableSoul.add(tmp.unstableSoulGain.mul(dt/100))
+    }
 
     for (let [i,x] of Object.entries(tmp.lun.res_gen)) if (x) player.lun.res[i] = player.lun.res[i].add(x.mul(dt))
 }

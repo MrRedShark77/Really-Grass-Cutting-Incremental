@@ -164,6 +164,8 @@ const PLANETOID = {
         return x.floor()
     },
     observGain() {
+        if (hasCentralized(25)) return player.planetoid.pm.floor();
+
         let x = E(1)
 
         .mul(starTreeEff('ring',5))
