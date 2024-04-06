@@ -177,7 +177,7 @@ const SUPERNOVA = {
             if (hasSolarUpgrade(7,1)) x = x.mul(2)
             if (hasSolarUpgrade(7,11)) x = x.mul(solarUpgEffect(7,11))
 
-            return x
+            return x.max(0)
         },
 
         get SRgain() {
@@ -316,7 +316,7 @@ tmp_update.push(()=>{
     tmp.sunriseEffect = SOLAR_OBELISK.sunriseEffect
 
     tmp.scale_eclipse = Decimal.add(300,getFormingBonus('dark',2,0))
-    tmp.distant_eclipse = Decimal.mul(1e12,getStageBonus('de',0))
+    tmp.distant_eclipse = Decimal.mul(1e12,getStageBonus('de',1))
 
     tmp.solarShardGain = SUPERNOVA.gain()
     tmp.maxSolarFlare = SUPERNOVA.maxFlare()
