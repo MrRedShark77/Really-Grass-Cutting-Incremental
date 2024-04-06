@@ -54,7 +54,7 @@ function loadLunarian() {
         player.start_damage = E(data.start.damage)
         player.lunarians = player.start_lunarians = E(data.start.lunarian)
 
-        // localStorage.setItem("gci_lunarian",null)
+        localStorage.setItem("gci_lunarian",null)
     }
 
     if (cannot) {
