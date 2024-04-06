@@ -1651,7 +1651,7 @@ const SOLAR_UPGS = [
             },{
                 unl: () => hasSolarUpgrade(7,27),
                 title: "Forming Continuum",
-                get desc() { return `Forming Stats/Basic/Collection/Restoration/Darkness will automatically update the best level & rank each without spending any resources (starting only at level <b class="green">${format(1e9,0)}</b>), improving the level & rank formula.` },
+                get desc() { return `Forming Stats/Basic/Collection/Restoration/Darkness will automatically update the best level & rank each without spending any resources (starting only at rank <b class="green">${format(1e9,0)}</b>), improving the level & rank formula.` },
                 icon: ['Icons/Form','Icons/Infinite'],
                 cost: i => 1,
             },{

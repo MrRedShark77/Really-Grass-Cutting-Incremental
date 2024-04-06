@@ -931,6 +931,7 @@ function calcSolarians(dt) {
                         ...fc.materials.map(x=>SOL_FORMULAS.getLevelBulk(l,r,l0,getSMaterial(x[0]).amount,x[1],x[2],x[3],la)),
                         SOL_FORMULAS.getLevelBulk(l,r,l0,value,fc.req[0],fc.req[1],fc.req[2],la)
                     ).max(0)
+
                     if (bulk>0) {
                         got = true
                         ft.afford[i]=false
@@ -948,6 +949,7 @@ function calcSolarians(dt) {
                         ).max(0)
                         if (bulk.gt(r)) {
                             p[2] = bulk.min(fc.max??EINF)
+                            if (f_continuum) p[2] = p[2].min(1e9)
                             p[1] = SOL_FORMULAS.getSumLevelFromRank(bulk,l0,la)
                         } else p[2] = p[2].add(1).round()
                     }
