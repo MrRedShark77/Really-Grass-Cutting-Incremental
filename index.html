@@ -1,0 +1,59 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Really Grass Cutting Incremental</title>
+
+    <link rel="stylesheet" href="style/main.css">
+
+    <script src="js/break_eternity.js"></script>
+    <script src="js/format.js"></script>
+    <script src="js/formulas.js"></script>
+    <script src="js/main.js"></script>
+
+    <script src="js/module/currencies.js"></script>
+    <script src="js/module/upgrades.js"></script>
+    <script src="js/module/grid-element.js"></script>
+    <script src="js/module/sharky_helper.js"></script>
+    <script src="js/module/levels.js"></script>
+    <script src="js/module/resets.js"></script>
+
+    <script src="js/features/prestige.js"></script>
+    <script src="js/features/crystal.js"></script>
+
+    <script src="js/grass.js"></script>
+
+    <script src="js/temp.js"></script>
+    <script src="js/calc.js"></script>
+
+    <script src="js/element.js"></script>
+
+    <script src="js/save.js"></script>
+    <script src="js/load.js"></script>
+</head>
+<body onload="loadGame()">
+    <input id="copy" style="position: absolute; top: 0; left: 0; user-select: all; visibility: hidden;">
+    <div id="app">
+        <canvas id="canvas-path"></canvas>
+        <div id="grid-elements"></div>
+        <div id="pin-div">
+            <div id="tabs-div" class="table-left"></div>
+            <div id="infos-div" style="display: none;">
+                <button id="close-tab-button" onclick="switchTab(-1)">×</button>
+            </div>
+        </div>
+        <div id="bottom-pin-div" class="table-center">
+            <button class="bottom-pin-button" style="background-color: gray;">
+                <img src="images/Icons/Assemblerv2.png">
+                <div>Advanced Autobuy</div>
+            </button><button class="bottom-pin-button" style="background-color: red;">
+                <img src="images/Icons/RedAssemblerv2.png">
+                <div>Stats & Settings</div>
+            </button><button class="bottom-pin-button" style="background-color: cyan;">
+                <img src="images/Curr/Planet.png">
+                <div>Map</div>
+            </button>
+        </div>
+    </div>
+</body>
+</html>
