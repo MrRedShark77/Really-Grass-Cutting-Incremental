@@ -55,7 +55,7 @@ RESETS.crystal = {
 }
 
 UPGRADES.crystal = {
-    unl: () => true,
+    unl: () => player.prestige.times>0,
     pos: [3,2],
     size: [3,1],
     color: ['magenta','pink'],
