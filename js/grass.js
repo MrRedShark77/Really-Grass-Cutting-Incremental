@@ -22,7 +22,9 @@ const GRASS = {
         grass: {
             get mult() {
                 let x = E(5).mul(upgradeEffect('grass',1)).mul(getLevelBonus('xp')).mul(upgradeEffect("perks",1)).mul(getLevelBonus('tp'))
-                .mul(upgradeEffect('prestige',1)).mul(upgradeEffect('crystal',1)).mul(upgradeEffect('platinum',3))
+                .mul(upgradeEffect('prestige',1)).mul(upgradeEffect('crystal',1)).mul(upgradeEffect('platinum',3)).mul(getAccomplishmentBonus(0))
+                .mul(getAccomplishmentBonus(6)).mul(upgradeEffect('platinum',8))
+                if (player.grasshop.gte(1)) x = x.mul(getMilestoneEffect('grasshop',1));
                 return x
             },
         },
@@ -30,7 +32,8 @@ const GRASS = {
             get mult() {
                 let x = E(3).mul(upgradeEffect('grass',4)).mul(upgradeEffect("perks",'1a')).mul(getLevelBonus('tp'))
                 .mul(upgradeEffect('prestige',2)).mul(upgradeEffect('crystal',2)).mul(upgradeEffect('platinum',2))
-                .mul(upgradeEffect('perks',5))
+                .mul(upgradeEffect('perks',5)).mul(getAccomplishmentBonus(1))
+                if (player.grasshop.gte(2)) x = x.mul(getMilestoneEffect('grasshop',2));
                 return x
             },
         },
@@ -38,13 +41,22 @@ const GRASS = {
             get mult() {
                 if (player.prestige.times === 0) return E(0);
                 let x = E(1).mul(upgradeEffect('prestige',3)).mul(upgradeEffect('crystal',3))
-                .mul(upgradeEffect('perks',6))
+                .mul(upgradeEffect('perks',6)).mul(getAccomplishmentBonus(2))
+                if (player.grasshop.gte(3)) x = x.mul(getMilestoneEffect('grasshop',3));
                 return x
             },
         },
         platinum: {
-            get mult() { return E(3) },
-            get chance() { return player.prestige.times > 0 ? 0.005 : 0 },
+            get mult() {
+                let x = E(3)
+                if (player.grasshop.gte(4)) x = x.add(getMilestoneEffect('grasshop',4,0));
+                return x
+            },
+            get chance() {
+                if (player.prestige.times === 0) return E(0);
+                let x = E(.005).add(getAccomplishmentBonus(7))
+                return x
+            },
         },
     },
 }
@@ -110,7 +122,8 @@ function calcGrass(dt) {
 
                 for (let i = 0; i < f.chances.length; i++) {
                     let cn = f.chances[i], c = GRASS.resource[cn].chance
-                    let r = c > 0 ? Decimal.log(Math.random(),c).floor() : E(0)
+                    let r = c > 0 ? Decimal.div(Math.random(),s.mod(Decimal.pow(c,-1)).max(1)).log(c).floor().add(s.mul(c).floor()) : E(0)
+                    // console.log(r.format())
                     w = i == 0 ? r.min(s) : r.min(w)
                     d[cn] = d[cn].add(w)
                 }

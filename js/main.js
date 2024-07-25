@@ -49,7 +49,7 @@ function cameraEvent() {
         ge_el.style.top = yy + "px";
         ge_el.style.left = xx + "px";
 
-        updateGEsDisplay()
+        // updateGEsDisplay()
     }
 
     app.addEventListener("mousedown", function (event) {
@@ -70,7 +70,7 @@ function cameraEvent() {
             camera_pos.y = event.clientY - offset.y;
 
             updatePosition()
-            // drawCanvas()
+            drawCanvas()
         }
     });
 
@@ -114,6 +114,13 @@ function setupCanvas() {
     }
 }
 
+const PYLONS = [
+    {
+        unl: ()=>player.crystal.times>0,
+        dots: [[0,0],[0,10]],
+    },
+]
+
 function drawCanvas() {
     let cw = canvas.width, ch = canvas.height
 
@@ -121,6 +128,36 @@ function drawCanvas() {
 	canvas.height = canvas.clientHeight
 
     if (cw == 0 || ch == 0) resizeCanvas();
+
+    var dots = []
+
+    canvas_ctx.clearRect(0, 0, cw, ch);
+
+    canvas_ctx.lineWidth = 200
+    canvas_ctx.strokeStyle = "#0001"
+    canvas_ctx.fillStyle = "#0001"
+
+    var innerSize = { x: window.innerWidth, y: window.innerHeight };
+    var xx = innerSize.x/2 + camera_pos.x, yy = innerSize.y/2 + camera_pos.y;
+
+    PYLONS.forEach(p => {
+        if (p.unl()) {
+            // dots.push(...p.dots.filter(([a1,a2]) => !dots.map(([b1,b2]) => b1+"-"+b2).includes(a1+"-"+a2)))
+
+            let x0 = p.dots[0][0], y0 = p.dots[0][1], x1 = p.dots[1][0], y1 = p.dots[1][1];
+
+            canvas_ctx.beginPath();
+            canvas_ctx.moveTo(x0 * 250 + xx, y0 * 250 + yy);
+            canvas_ctx.lineTo(x1 * 250 + xx, y1 * 250 + yy);
+            canvas_ctx.stroke();
+        }
+    })
+
+    dots.forEach(([x,y]) => {
+        canvas_ctx.beginPath();
+        canvas_ctx.arc(x*250+xx, y*250+yy, 100, 0, 2 * Math.PI);
+        canvas_ctx.stroke();
+    })
 }
 
 const TABS = [
@@ -148,7 +185,7 @@ const TABS = [
             let h = `
             <p><h4>Really<sup>2</sup> Grass Cutting Incremental</h4></p>
             <div style="width: 100%; text-align: left;">
-                Created by <b>MrRedShark77</b> | Version <b>α1.0</b><br><br>
+                Created by <b>MrRedShark77</b> | Version <b>α1.1</b><br><br>
                 <a href="https://discord.gg/mrredshark77-club-710184682620190731"><b>Discord</b></a><br>
                 <a href="https://boosty.to/mrredshark77/donate"><b>Donate (Boosty)</b></a>
                 <br><br>
@@ -162,7 +199,7 @@ const TABS = [
 ]
 
 const TELEPORTS = [
-    [()=>true, "Timeless Space Breakdown", [0,0]],
+    // [()=>true, "Timeless Space Breakdown", [0,0]],
 ]
 
 function teleportTo(i) {

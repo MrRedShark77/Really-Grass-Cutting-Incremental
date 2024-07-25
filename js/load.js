@@ -18,6 +18,7 @@ function loadGame(start=true, gotNaN=false) {
 
             updateGEsDisplay()
             updateGEsHTML()
+            drawCanvas()
             
             autosave = setInterval(save, 60000, true)
             setInterval(loop, 1000/FPS)
@@ -144,4 +145,6 @@ function doCreateGridElements() {
     setupUpgrades()
     setupLevels()
     setupResetsHTML()
+    setupMilestones()
+    ACCOM.setup()
 }

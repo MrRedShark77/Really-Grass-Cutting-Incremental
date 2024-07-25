@@ -276,9 +276,9 @@ img {
 #bottom-pin-div {
 	position: absolute;
 	bottom: 0px;
-	left: 50%;
+	left: 0px;
+	width: 100%;
 	z-index: 1;
-	transform: translateX(-50%);
 }
 
 .bottom-pin-button {
@@ -405,6 +405,9 @@ img {
 }
 .img_desc:first-child:hover {
 	filter: brightness(0.75);
+}
+.upgrade-div.not-require > .img_desc:nth-child(n+2) {
+	filter: brightness(0);
 }
 
 .img_res {
@@ -588,10 +591,94 @@ img {
 	height: 40px;
 	font-size: 24px;
 }
+.reset-lock {
+	background-color: #333 !important;
+	color: red;
+	cursor: default;
+}
 .reset-img {
 	position: absolute;
 	bottom: -5px;
 	right: 0px;
 	pointer-events: none;
 	width: 100px;
+}
+
+.milestone-div {
+	width: calc(100% - 4px);
+	height: calc(100% - 4px);
+	border: solid 2px black;
+	position: relative;
+}
+.milestone-amount {
+	position: absolute;
+	top: 10px;
+	left: 5px;
+	width: calc(100% - 10px);
+	font-size: 20px;
+}
+.milestone-table {
+	position: absolute;
+	top: 40px;
+	left: 5px;
+	width: calc(100% - 14px);
+	height: calc(100% - 50px);
+	font-size: 14px;
+	border: solid 2px black;
+	background-color: #222;
+	box-shadow: inset 0px 0px 10px 2px #000;
+	overflow-y: scroll;
+}
+.milestone-table > div {
+	margin-left: 10px;
+	width: calc(100% - 14px);
+	min-height: 100px;
+	border: solid 2px black;
+	font-size: 16px;
+}
+
+.fill-div {
+	width: calc(100% - 4px);
+	height: calc(100% - 4px);
+	border: solid 2px black;
+	position: relative;
+}
+
+.accomplishments-table {
+	position: absolute;
+	top: 40px;
+	left: 5px;
+	width: calc(100% - 14px);
+	height: calc(100% - 50px);
+	border: solid 2px black;
+	background-color: #222;
+	box-shadow: inset 0px 0px 10px 2px #000;
+
+	overflow-x: scroll;
+	display: flex;
+	justify-content: left;
+}
+
+.accomplishment-div {
+	position: relative;
+	flex-shrink: 0;
+	width: 300px;
+	height: calc(100% - 4px);
+	border: solid 2px black;
+	background-color: #ccc;
+}
+.accomplishment-div > div {
+	position: absolute;
+	width: 100%;
+}
+.accomplishment-rest {
+	top: 40%;
+	transform: translateY(-50%);
+}
+.accomplishment-reward {
+	top: 65%;
+	transform: translateY(-50%);
+}
+.accomplishment-goal {
+	bottom: 0px;
 }

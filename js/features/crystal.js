@@ -8,8 +8,12 @@ CURRENCIES.crystal = {
 
     get gain() {
         if (!RESETS.crystal.req()) return E(0);
-        let x = player.tier.sub(1).pow_base(1.1).mul(player.tier).mul(5)
-        .mul(upgradeEffect('prestige',4)).mul(upgradeEffect('perks',8)).mul(upgradeEffect('platinum',5))
+        let b = E(1.1)
+        if (player.grasshop.gte(6)) b = b.add(getMilestoneEffect('grasshop',6,0));
+
+        let x = player.tier.sub(1).pow_base(b).mul(player.tier).mul(5)
+        .mul(upgradeEffect('prestige',4)).mul(upgradeEffect('perks',8)).mul(upgradeEffect('platinum',5)).mul(upgradeEffect('platinum',6)).mul(upgradeEffect('platinum',7))
+        .mul(getAccomplishmentBonus(5)).mul(getAccomplishmentBonus(8))
 
         return x.floor()
     },
@@ -34,6 +38,9 @@ RESETS.crystal = {
 
     success() {
         player.crystal.times++
+
+        ACCOM.check('prestige')
+        ACCOM.check('crystal')
     },
     doReset() {
         player.tp = E(0)
@@ -50,6 +57,8 @@ RESETS.crystal = {
 
         checkLevel('tp')
 
+        player.crystal.time = 0
+
         RESETS.prestige.doReset()
     },
 }
@@ -65,6 +74,7 @@ UPGRADES.crystal = {
         id: "crystal",
         // get text() { return "RAAAAAAAAAUGH" },
     },
+    autobuy: ()=>hasUpgrade('auto',10),
     ctn: {
         "1": {
             max: 1000,

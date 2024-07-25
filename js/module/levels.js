@@ -13,14 +13,24 @@ const LEVELS = {
         set level(v) { player.level = v },
 
         onCheck() {
-            let perk = this.level.sub(1)
+            let b = E(1).add(getAccomplishmentBonus(4))
+            if (player.grasshop.gte(7)) b = b.add(1)
+            let perk = this.level.sub(1).mul(b)
 
             gainCurrency('perks',perk.sub(player.best_perks).max(0))
             player.best_perks = player.best_perks.max(perk)
         },
 
-        req: a => a.sumBase(1.3).mul(50).ceil(),
-        bulk: a => a.div(50).sumBase(1.3,true).add(1).floor(),
+        req(a) {
+            let x = a.scale(200,2,"L").sumBase(1.3).mul(50)
+
+            return x.ceil()
+        },
+        bulk(a) {
+            let x = a.div(50).sumBase(1.3,true).scale(200,2,"L",true)
+
+            return x.add(1).floor()
+        },
 
         bonus(a) {
             let x = a.max(1)

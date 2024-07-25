@@ -35,17 +35,21 @@ function updateResetHTML(id) {
 
     el(`reset-${id}-req`).style.display = el_display(!req)
     if (req) {
+        let gain = tmp.currency_gain[id]
+
         el(`reset-${id}-desc`).innerHTML = r.reset_desc
-        el(`reset-${id}-button`).innerHTML = "+"+format(tmp.currency_gain[id],0)
+        el(`reset-${id}-button`).innerHTML = (gain?"+"+format(tmp.currency_gain[id],0):"")+" "+(r.gain_desc??"")
+
+        el(`reset-${id}-button`).className = el_classes({'reset-button': true, 'reset-lock': r.lock?.()})
     } else el(`reset-${id}-req`).innerHTML = `<div>${r.req_desc}</div>`
 }
 
 function doReset(id, force) {
     var reset = RESETS[id], curr = CURRENCIES[id]
 
-    if (force || reset.unl() && reset.req()) {
+    if (force || reset.unl() && reset.req() && !reset.lock?.()) {
         if (!force) {
-            curr.amount = curr.amount.add(tmp.currency_gain[id]).max(0)
+            if (curr) curr.amount = curr.amount.add(tmp.currency_gain[id]).max(0)
 
             if ("success" in reset) reset.success()
         }

@@ -266,8 +266,8 @@ const UPGRADES = {
     },
     auto: {
         unl: ()=>true,
-        pos: [-3,0],
-        size: [3,1],
+        pos: [-4,0],
+        size: [4,1],
         type: 'normal',
         color: ['#E71313','#C60B0B'],
         curr_dis: {
@@ -409,6 +409,36 @@ const UPGRADES = {
                 },
                 effDesc: x => "+"+formatPercent(x)+"/s",
             },
+            "9": {
+                unl: ()=>player.crystal.times>0,
+                req: ()=>player.grasshop.gte(1),
+                req_desc: "GH 1",
+
+                icons: ["Curr/Prestige","Icons/Automation"],
+                base: "Bases/CrystalBase",
+
+                name: `Prestige Upgrade Autobuy`,
+                desc: `Autobuys prestige upgrades every second.`,
+
+                noCostIncrease: true,
+                cost: ()=>1e5,
+                res: "crystal",
+            },
+            "10": {
+                unl: ()=>player.crystal.times>0,
+                req: ()=>player.grasshop.gte(5),
+                req_desc: "GH 5",
+
+                icons: ["Curr/Crystal","Icons/Automation"],
+                base: "Bases/PrestigeBase",
+
+                name: `Crystal Upgrade Autobuy`,
+                desc: `Autobuys crystal upgrades every second.`,
+
+                noCostIncrease: true,
+                cost: ()=>1e12,
+                res: "prestige",
+            },
         },
     },
 }
@@ -416,15 +446,18 @@ const UPGRADES = {
 var upg_choose = [null,null]
 
 function chooseUpgrade(i,j) {
-    updateUpgradesHTML(upg_choose[0],true);
-    upg_choose = [i,j]
-    updateUpgradesHTML(i);
+    let req = UPGRADES[i]?.ctn[j]?.req
+    if (!req || req()) {
+        updateUpgradesHTML(upg_choose[0],true);
+        upg_choose = [i,j]
+        updateUpgradesHTML(i);
+    }
 }
 
 function buyUpgrade(i,j,all=false,auto=false) {
-    let u = UPGRADES[i].ctn[j], unl = u.unl(), max = u.max ?? 1
+    let u = UPGRADES[i].ctn[j], max = u.max ?? 1, req = u.req
 
-    if (!unl || player.upgs[i][j].gte(max)) return;
+    if (!u.unl() || u.req && !u.req() || player.upgs[i][j].gte(max)) return;
 
     let lvl = player.upgs[i][j], curr = CURRENCIES[u.res], cost = u.cost(lvl), el = false;
     let amount = curr.amount;
@@ -467,9 +500,9 @@ function buyUpgrade(i,j,all=false,auto=false) {
 }
 
 function buyNextUpgrade(i,j) {
-    let u = UPGRADES[i].ctn[j], unl = u.unl(), max = u.max ?? 1
+    let u = UPGRADES[i].ctn[j], max = u.max ?? 1, req = u.req
 
-    if (!unl || player.upgs[i][j].gte(max)) return;
+    if (!u.unl() || u.req && !u.req() || player.upgs[i][j].gte(max)) return;
 
     let lvl = player.upgs[i][j], n = E(1), curr = CURRENCIES[u.res], el = false, cost = u.cost(lvl);
 
@@ -596,14 +629,18 @@ function updateUpgradesHTML(id,choosed) {
             let unl = uu.unl(), el_id = `upg-${id}-${ui}`
             el(el_id+"-div").style.display = el_display(unl)
             if (unl) {
+                let req = !uu.req || uu.req()
                 let lvl = player.upgs[id][ui], max = uu.max ?? 1, curr = CURRENCIES[uu.res], cost = uu.cost(lvl);
                 el(el_id+"-lvl").innerHTML = format(lvl,0)
-                el(el_id+"-cost").innerHTML = lvl.gte(max) ? "Maxed" : format(cost,0)
-                el(el_id+"-cost").className = el_classes({"upg-cost": true, locked: curr.amount.lt(cost), maxed: lvl.gte(max)})
+                el(el_id+"-cost").innerHTML = lvl.gte(max) ? "Maxed" : req ? format(cost,0) : uu.req_desc ?? "???"
+                el(el_id+"-cost").className = el_classes({"upg-cost": true, locked: !req || curr.amount.lt(cost), maxed: lvl.gte(max)})
                 el(el_id+"-auto").style.display = el_display(auto)
                 let s = player.auto_upgs[id][ui]
+
                 el(el_id+"-auto").innerHTML = s ? "I" : "O"
                 el(el_id+"-auto").style.backgroundColor = s ? "lime" : "red"
+
+                el(el_id+"-div").className = el_classes({'upgrade-div': true, 'not-require': !req})
             }
         }
         if ("bottom_text" in u) el(`upg-${id}-bottom`).innerHTML = u.bottom_text
@@ -634,4 +671,12 @@ function resetUpgrades(id, keep=[]) {
     for (let ui in UPGRADES[id].ctn) {
         if (!keep.includes(ui)) player.upgs[id][ui] = E(0)
     }
+}
+
+function calculateTotalUpgrades(id) {
+    let s = E(0)
+    for (let ui in UPGRADES[id].ctn) {
+        s = s.add(player.upgs[id][ui])
+    }
+    return s
 }

@@ -27,12 +27,18 @@ function getPlayerData() {
         prestige: {
             times: 0,
             points: E(0),
+            time: 0,
         },
 
         crystal: {
             times: 0,
             points: E(0),
+            time: 0,
         },
+
+        accomplishments: [],
+
+        grasshop: E(0),
     }
 
     for (let k in UPGRADES) {
@@ -45,6 +51,8 @@ function getPlayerData() {
             s.auto_upgs_ratio[k][k2] = .1
         }
     }
+
+    for (let i in ACCOM.ctn) s.accomplishments[i] = E(0);
 
     return s
 }

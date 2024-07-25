@@ -8,9 +8,13 @@ CURRENCIES.prestige = {
 
     get gain() {
         if (!RESETS.prestige.req()) return E(0);
-        let x = player.level.sub(31).pow_base(1.05).mul(player.grass.max(1).root(15)).mul(10)
+        let b = E(1.05)
+        if (player.grasshop.gte(5)) b = b.add(getMilestoneEffect('grasshop',5,0));
+
+        let x = player.level.sub(31).pow_base(b).mul(player.grass.max(1).root(15)).mul(10)
 
         x = x.mul(upgradeEffect("grass",5)).mul(upgradeEffect('crystal',4)).mul(upgradeEffect('perks',7)).mul(upgradeEffect('platinum',4))
+        .mul(getAccomplishmentBonus(3))
 
         return x.floor()
     },
@@ -36,6 +40,8 @@ RESETS.prestige = {
 
     success() {
         player.prestige.times++
+
+        ACCOM.check('prestige')
     },
     doReset() {
         player.grass = E(0)
@@ -52,6 +58,8 @@ RESETS.prestige = {
         resetGrass('normal')
         checkLevel('xp')
 
+        player.prestige.time = 0
+
         updateTemp()
     },
 }
@@ -67,6 +75,7 @@ UPGRADES.prestige = {
         id: "prestige",
         // get text() { return "RAAAAAAAAAUGH" },
     },
+    autobuy: ()=>hasUpgrade('auto',9),
     ctn: {
         "1": {
             max: 1000,
@@ -246,7 +255,7 @@ UPGRADES.platinum = {
             unl: ()=>player.crystal.times>0,
             icons: ["Curr/Crystal"],
 
-            name: `Starter Crystal`,
+            name: `Starter Crystals`,
             desc: `Increases crystals gained by <b class="green">+20%</b> per level.`,
 
             noCostIncrease: true,
@@ -255,6 +264,62 @@ UPGRADES.platinum = {
 
             effect(a) {
                 let x = a.mul(.2).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "6": {
+            max: 25,
+            unl: ()=>player.crystal.times>0,
+            icons: ["Curr/Crystal"],
+
+            name: `Plat Crystals`,
+            desc: `Increases crystals gained by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>250,
+            res: "platinum",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "7": {
+            max: 25,
+            unl: ()=>player.grasshop.gte(1),
+            icons: ["Curr/Crystal"],
+
+            name: `Plat Crystals II`,
+            tier: "II",
+            desc: `Increases crystals gained by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e3,
+            res: "platinum",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "8": {
+            max: 25,
+            unl: ()=>player.grasshop.gte(1),
+            icons: ["Curr/Grass"],
+
+            name: `Plat GV II`,
+            tier: "II",
+            desc: `Increases grass value by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e3,
+            res: "platinum",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
                 return x
             },
             effDesc: x => formatMult(x),

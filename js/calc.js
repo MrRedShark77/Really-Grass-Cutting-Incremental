@@ -16,11 +16,12 @@ function calc(dt) {
         for (let [id,u] of Object.entries(UPGRADES)) if (u.autobuy?.()) for (let i in u.ctn) if (player.auto_upgs[id][i]) buyUpgrade(id,i,true,true);
 
         updateHTMLSecond()
+        drawCanvas()
 
         second_time = 0
     }
 
     player.time += dt
-
-    // drawCanvas()
+    player.prestige.time += dt
+    player.crystal.time += dt
 }
