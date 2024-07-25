@@ -134,8 +134,8 @@ function drawCanvas() {
     canvas_ctx.clearRect(0, 0, cw, ch);
 
     canvas_ctx.lineWidth = 200
-    canvas_ctx.strokeStyle = "#0001"
-    canvas_ctx.fillStyle = "#0001"
+    canvas_ctx.strokeStyle = "#0003"
+    canvas_ctx.fillStyle = "#0003"
 
     var innerSize = { x: window.innerWidth, y: window.innerHeight };
     var xx = innerSize.x/2 + camera_pos.x, yy = innerSize.y/2 + camera_pos.y;
