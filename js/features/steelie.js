@@ -16,10 +16,10 @@ RESETS.grasshop = {
     get gain_desc() { return "+"+format(GH.bulk,0) },
 
     success() {
-        player.grasshop = player.grasshop.add(GH.bulk)
-
         ACCOM.check('prestige')
         ACCOM.check('crystal')
+
+        player.grasshop = player.grasshop.add(GH.bulk)
     },
     doReset() {
         player.crystal.points = E(0)
