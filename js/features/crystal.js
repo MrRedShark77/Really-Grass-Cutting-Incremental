@@ -9,7 +9,7 @@ CURRENCIES.crystal = {
     get gain() {
         if (!RESETS.crystal.req()) return E(0);
         let b = E(1.1)
-        if (player.grasshop.gte(6)) b = b.add(getMilestoneEffect('grasshop',6,0));
+        if (player.grasshop.gte(6)) b = b.add(getMilestoneEffect('grasshop',5,0));
 
         let x = player.tier.sub(1).pow_base(b).mul(player.tier).mul(5)
         .mul(upgradeEffect('prestige',4)).mul(upgradeEffect('perks',8)).mul(upgradeEffect('platinum',5)).mul(upgradeEffect('platinum',6)).mul(upgradeEffect('platinum',7))

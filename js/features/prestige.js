@@ -9,7 +9,7 @@ CURRENCIES.prestige = {
     get gain() {
         if (!RESETS.prestige.req()) return E(0);
         let b = E(1.05)
-        if (player.grasshop.gte(5)) b = b.add(getMilestoneEffect('grasshop',5,0));
+        if (player.grasshop.gte(5)) b = b.add(getMilestoneEffect('grasshop',4,0));
 
         let x = player.level.sub(31).pow_base(b).mul(player.grass.max(1).root(15)).mul(10)
 
