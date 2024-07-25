@@ -174,7 +174,7 @@ const ACCOM = {
     check(layer) {
         if (player.grasshop.gte(1)) for (let i = 0; i < this.ctn.length; i++) {
             let a = this.ctn[i], rest = a.restriction, amt = player.accomplishments[i], res = a.res
-            if (a.unl() && amt.lt(a.max) && a.layer === layer && (!rest || Decimal.lte(rest.value, rest.limit)) && res.gte(a.goal(amt))) player.accomplishments[i] = a.bulk(res).max(amt.add(1));
+            if (a.unl() && amt.lt(a.max) && a.layer === layer && (!rest || Decimal.lte(rest.value, rest.limit)) && res.gte(a.goal(amt))) player.accomplishments[i] = a.bulk(res).max(amt.add(1)).min(a.max);
         }
     },
 
