@@ -18,6 +18,7 @@
     <script src="js/module/levels.js"></script>
     <script src="js/module/resets.js"></script>
     <script src="js/module/milestones.js"></script>
+    <script src="js/module/lists.js"></script>
 
     <script src="js/features/prestige.js"></script>
     <script src="js/features/crystal.js"></script>
@@ -39,23 +40,107 @@
     <div id="app">
         <canvas id="canvas-path"></canvas>
         <div id="grid-elements"></div>
+        <!--
         <div id="pin-div">
             <div id="tabs-div" class="table-left"></div>
             <div id="infos-div" style="display: none;">
                 <button id="close-tab-button" onclick="switchTab(-1)">×</button>
             </div>
         </div>
-        <div id="bottom-pin-div" class="table-center">
-            <button class="bottom-pin-button" style="background-color: gray;">
-                <img src="images/Icons/Assemblerv2.png">
-                <div>Advanced Autobuy</div>
-            </button><button class="bottom-pin-button" style="background-color: red;">
-                <img src="images/Icons/RedAssemblerv2.png">
-                <div>Stats & Settings</div>
-            </button><button class="bottom-pin-button" style="background-color: cyan;">
-                <img src="images/Curr/Planet.png">
-                <div>Map</div>
-            </button>
+        -->
+        <div class="pinned-list" id="pinned-currencies">
+            <div>
+                <div class="P-list-div" style="background-color: green;">
+                    <div class="P-list-res">1e234,567</div>
+                </div>
+                <img class="P-img-res" src="images/Bases/GrassBase.png">
+                <img class="P-img-res" src="images/Curr/Grass.png">
+            </div>
+        </div><div class="pinned-list" id="pinned-levels">
+            <div>
+                <div class="P-list-div" style="background-color: darkcyan;">
+                    <div class="P-list-bar" style="width: 50%; background-color: cyan;"></div>
+                    <div class="P-list-res">1e234,567</div>
+                </div>
+                <img class="P-img-res" src="images/Bases/GrassBase.png">
+                <img class="P-img-res" src="images/Icons/XP.png">
+            </div>
+        </div>
+    </div>
+    <div id="bottom-pin-div" class="table-center">
+        <button class="bottom-pin-button" style="background-color: gray;">
+            <img src="images/Icons/Assemblerv2.png">
+            <div>Advanced Autobuy</div>
+        </button><button class="bottom-pin-button" style="background-color: red;" onclick="tabOpened = !tabOpened; if (tabOpened) {tabName = savedSSTab}">
+            <img src="images/Icons/RedAssemblerv2.png">
+            <div>Stats & Settings</div>
+        </button><button class="bottom-pin-button" style="background-color: cyan;"> <!-- onclick="tabOpened = !tabOpened; tabName = 'map'" -->
+            <img src="images/Curr/Planet.png">
+            <div>Map</div>
+        </button>
+    </div>
+    <div id="front-app" style="display: none;">
+        <div id="tab-name" style="height: 60px; font-size: 60px;">
+            Settings
+        </div><div style="width: 100%; height: calc(100% - 120px);" id="tabs">
+            <div id="tab-main">
+                <div id="tab-buttons">
+                    <button onclick="tabName = savedSSTab = 'display';">Main & Display</button>
+                    <button onclick="tabName = savedSSTab = 'currencies';" style="background-color: lime;">Currencies</button>
+                    <button onclick="tabName = savedSSTab = 'levels';" style="background-color: cyan;">Levels</button>
+                </div>
+            </div><div id="tab-currencies" style="display: none;">
+                <div class="CL-table" id="currencies-list">
+                    <div>
+                        <div class="C-list-div" style="background-color: green;">
+                            <div class="CL-list-name">
+                                <div>Grass</div>
+                            </div><div class="CL-list-name">
+                                <div>1e234,567</div>
+                            </div>
+                            <img src="images/Icons/GreenAutomation.png">
+                            <img src="images/Icons/Pin.png">
+                        </div>
+                        <img class="CL-img-res" src="images/Bases/GrassBase.png">
+                        <img class="CL-img-res" src="images/Curr/Grass.png">
+                    </div>
+                </div>
+            </div><div id="tab-levels" style="display: none;">
+                <div class="CL-table" id="levels-list">
+                    <div>
+                        <div class="L-list-div" style="background-color: darkcyan;">
+                            <div class="CL-list-name">
+                                <div>Normal Level<br>1e234,567</div>
+                            </div><div class="CL-list-name">
+                                <div>1e234,567 / 1e234,567</div>
+                            </div>
+                            <img src="images/Icons/Pin.png">
+                        </div>
+                        <img class="CL-img-res" src="images/Bases/GrassBase.png">
+                        <img class="CL-img-res" src="images/Icons/XP.png">
+                    </div>
+                </div>
+            </div><div id="tab-display" style="display: none;">
+                <div id="tab-display-list">
+                    <h2>Saving</h2>
+                    <div class="table-center">
+                        <button class="big-btn" onclick="save()">Save</button>
+                        <button class="big-btn" onclick="export_copy()">Export via clipboard</button>
+                        <button class="big-btn" onclick="exporty()">Export via file</button>
+                        <button class="big-btn" onclick="importy()">Import via prompt</button>
+                        <button class="big-btn" onclick="importy_file()">Import via file</button>
+                        <button class="big-btn" id="wipe" onclick="wipeConfirm()">WIPE!!!</button>
+                    </div><br class="line">
+                    <h2>Display</h2>
+                    <div class="table-center">
+                        <button class="big-btn" id="option-btn1" onclick="player.options.hideMaxed = !player.options.hideMaxed">Hide maxed upgrades bought: OFF</button>
+                        <button class="big-btn" id="option-btn2" onclick="player.options.scMode = !player.options.scMode">Scientific notation: OFF</button>
+                    </div>
+                </div>
+            </div>
+        </div><div>
+            <button onclick="if (tabName == 'main') {tabOpened = false}; tabName = savedSSTab = 'main';" style="font-size: 36px; width: 150px;">Back</button>
+            <button onclick="tabOpened = false" style="font-size: 36px; width: 150px; background-color: red;">Close</button>
         </div>
     </div>
 </body>

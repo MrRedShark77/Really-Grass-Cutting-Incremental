@@ -6,12 +6,14 @@ function updateHTML() {
         return
     }
     updateTabsHTML()
+    updateLists()
     for (let field in GRASS.field) updateGrass(field);
 }
 
 function setupHTML() {
     setupGridElements()
     setupTabsHTML()
+    setupLists()
 
     for (let [id, u] of Object.entries(UPGRADES)) {
         for (let ui in u.ctn) {
@@ -26,4 +28,5 @@ function setupHTML() {
 function updateHTMLSecond() {
     updateGEsDisplay()
     updateGEsHTML()
+    updateListsSecond()
 }

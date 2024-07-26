@@ -39,6 +39,25 @@ function getPlayerData() {
         accomplishments: [],
 
         grasshop: E(0),
+
+        steelie: {
+            times: 0,
+            points: E(0),
+            time: 0,
+
+            charge: E(0),
+            bestCharge: E(0),
+        },
+
+        lists: {
+            currencies: {},
+            levels: {},
+        },
+
+        options: {
+            hideMaxed: false,
+            scMode: false,
+        },
     }
 
     for (let k in UPGRADES) {
@@ -51,6 +70,9 @@ function getPlayerData() {
             s.auto_upgs_ratio[k][k2] = .1
         }
     }
+
+    for (let id in LISTS.currencies) s.lists.currencies[id] = [false,true];
+    for (let id in LISTS.levels) s.lists.levels[id] = false;
 
     for (let i in ACCOM.ctn) s.accomplishments[i] = E(0);
 

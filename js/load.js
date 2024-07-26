@@ -16,8 +16,7 @@ function loadGame(start=true, gotNaN=false) {
 
             el("app").style.display = ""
 
-            updateGEsDisplay()
-            updateGEsHTML()
+            updateHTMLSecond()
             drawCanvas()
             
             autosave = setInterval(save, 60000, true)
@@ -147,4 +146,5 @@ function doCreateGridElements() {
     setupResetsHTML()
     setupMilestones()
     ACCOM.setup()
+    CHARGER.setup()
 }

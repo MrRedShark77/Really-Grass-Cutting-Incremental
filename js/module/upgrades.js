@@ -11,7 +11,8 @@ const UPGRADES = {
             // get text() { return "RAAAAAAAAAUGH" },
         },
         autobuy: ()=>hasUpgrade('auto',3),
-        // bottom_text: "",
+        el: ()=>hasUpgrade('assembler',1),
+        cl: ()=>hasUpgrade('assembler',2),
         ctn: {
             "1": {
                 max: 1000,
@@ -21,8 +22,8 @@ const UPGRADES = {
                 name: `Grass Value`,
                 desc: `Increases grass value by <b class="green">+100%</b> per level.<br>This effect is <b class="green">doubled</b> every <b class="yellow">25</b> levels.`,
 
-                cost: a => a.simpleCost("EA", 10, 1, 1.15).ceil(),
-                bulk: a => a.simpleCost("EAI", 10, 1, 1.15).add(1).floor(),
+                cost: a => a.scale(1000-1,2,"P").simpleCost("EA", 10, 1, 1.15).ceil(),
+                bulk: a => a.simpleCost("EAI", 10, 1, 1.15).scale(1000-1,2,"P",true).add(1).floor(),
                 res: "grass",
 
                 effect(a) {
@@ -39,8 +40,8 @@ const UPGRADES = {
                 name: `More Grass`,
                 desc: `Increases grass cap by <b class="green">+1</b> per level.`,
 
-                cost: a => a.simpleCost("EA", 25, 1, 1.15).ceil(),
-                bulk: a => a.simpleCost("EAI", 25, 1, 1.15).add(1).floor(),
+                cost: a => a.scale(500-1,2,"P").simpleCost("EA", 25, 1, 1.15).ceil(),
+                bulk: a => a.simpleCost("EAI", 25, 1, 1.15).scale(500-1,2,"P",true).add(1).floor(),
                 res: "grass",
 
                 effect(a) {
@@ -57,8 +58,8 @@ const UPGRADES = {
                 name: `Grow Speed`,
                 desc: `Increases grass grow speed by <b class="green">+10%</b> per level.`,
 
-                cost: a => a.simpleCost("EA", 100, 1, 1.35).ceil(),
-                bulk: a => a.simpleCost("EAI", 100, 1, 1.35).add(1).floor(),
+                cost: a => a.scale(250-1,2,"P").simpleCost("EA", 100, 1, 1.35).ceil(),
+                bulk: a => a.simpleCost("EAI", 100, 1, 1.35).scale(250-1,2,"P",true).add(1).floor(),
                 res: "grass",
 
                 effect(a) {
@@ -75,8 +76,8 @@ const UPGRADES = {
                 name: `XP`,
                 desc: `Increases experience (XP) gained by <b class="green">+100%</b> per level.<br>This effect is <b class="green">doubled</b> every <b class="yellow">25</b> levels.`,
 
-                cost: a => a.simpleCost("EA", 1e3, 1, 1.15).ceil(),
-                bulk: a => a.simpleCost("EAI", 1e3, 1, 1.15).add(1).floor(),
+                cost: a => a.scale(1e3-1,2,"P").simpleCost("EA", 1e3, 1, 1.15).ceil(),
+                bulk: a => a.simpleCost("EAI", 1e3, 1, 1.15).scale(1e3-1,2,"P",true).add(1).floor(),
                 res: "grass",
 
                 effect(a) {
@@ -93,8 +94,8 @@ const UPGRADES = {
                 name: `PP`,
                 desc: `Increases prestige points gained by <b class="green">+10%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
 
-                cost: a => a.simpleCost("EA", 1e10, 1, 1.4).ceil(),
-                bulk: a => a.simpleCost("EAI", 1e10, 1, 1.4).add(1).floor(),
+                cost: a => a.scale(500-1,2,"P").simpleCost("EA", 1e10, 1, 1.4).ceil(),
+                bulk: a => a.simpleCost("EAI", 1e10, 1, 1.4).scale(500-1,2,"P",true).add(1).floor(),
                 res: "grass",
 
                 effect(a) {
@@ -258,6 +259,42 @@ const UPGRADES = {
 
                 effect(a) {
                     let x = a.mul(.1).add(1)
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },
+            "9": {
+                max: 100,
+                unl: ()=>player.grasshop.gte(9),
+                icons: ["Curr/Steel2"],
+
+                name: `Steel Perk`,
+                desc: `Increases steel gained by <b class="green">+20%</b> per level.`,
+
+                noCostIncrease: true,
+                cost: ()=>50,
+                res: "perks",
+
+                effect(a) {
+                    let x = a.mul(.2).add(1)
+                    return x
+                },
+                effDesc: x => formatMult(x),
+            },
+            "10": {
+                max: 100,
+                unl: ()=>player.grasshop.gte(9),
+                icons: ["Curr/Charge"],
+
+                name: `Charge Perk`,
+                desc: `Increases charge rate by <b class="green">+20%</b> per level.`,
+
+                noCostIncrease: true,
+                cost: ()=>50,
+                res: "perks",
+
+                effect(a) {
+                    let x = a.mul(.2).add(1)
                     return x
                 },
                 effDesc: x => formatMult(x),
@@ -436,7 +473,7 @@ const UPGRADES = {
                 desc: `Autobuys crystal upgrades every second.`,
 
                 noCostIncrease: true,
-                cost: ()=>1e12,
+                cost: ()=>1e14,
                 res: "prestige",
             },
         },
@@ -455,11 +492,11 @@ function chooseUpgrade(i,j) {
 }
 
 function buyUpgrade(i,j,all=false,auto=false) {
-    let u = UPGRADES[i].ctn[j], max = u.max ?? 1, req = u.req
+    let u = UPGRADES[i].ctn[j], max = tmp.upg_cl[i] && !(u.cl_exc ?? []).includes(j) ? EINF : (u.max ?? 1)
 
     if (!u.unl() || u.req && !u.req() || player.upgs[i][j].gte(max)) return;
 
-    let lvl = player.upgs[i][j], curr = CURRENCIES[u.res], cost = u.cost(lvl), el = false;
+    let lvl = player.upgs[i][j], curr = CURRENCIES[u.res], cost = u.cost(lvl), el = tmp.upg_el[i];
     let amount = curr.amount;
 
     if (!el && auto) amount = amount.mul(player.auto_upgs_ratio[i][j]??.1);
@@ -500,16 +537,16 @@ function buyUpgrade(i,j,all=false,auto=false) {
 }
 
 function buyNextUpgrade(i,j) {
-    let u = UPGRADES[i].ctn[j], max = u.max ?? 1, req = u.req
+    let u = UPGRADES[i].ctn[j], max = tmp.upg_cl[i] && !(u.cl_exc ?? []).includes(j) ? EINF : (u.max ?? 1)
 
     if (!u.unl() || u.req && !u.req() || player.upgs[i][j].gte(max)) return;
 
-    let lvl = player.upgs[i][j], n = E(1), curr = CURRENCIES[u.res], el = false, cost = u.cost(lvl);
+    let lvl = player.upgs[i][j], n = E(1), curr = CURRENCIES[u.res], el = tmp.upg_el[i], cost = u.cost(lvl);
 
     if (curr.amount.lt(cost)) return;
 
     if (el) {
-        n = u.noCostIncrease ? Decimal.sub(25, lvl.mod(25)).add(lvl).min(max).sub(lvl) : u.bulk(curr.amount).min(max).min(Decimal.sub(25, lvl.mod(25))).sub(lvl).max(1)
+        n = u.noCostIncrease ? Decimal.sub(25, lvl.mod(25)).add(lvl).min(max).sub(lvl) : u.bulk(curr.amount).min(max).sub(lvl).min(Decimal.sub(25, lvl.mod(25))).max(1)
     } else {
         if (u.noCostIncrease) {
             n = curr.amount.div(cost).floor().min(Decimal.sub(25,lvl.mod(25))).add(lvl).min(max).sub(lvl)
@@ -609,7 +646,7 @@ function updateUpgradesHTML(id,choosed) {
     let desc_visible = !choosed && upg_choose[0] === id && upg_choose[1] !== null
     el(`upg-desc-${id}-div`).style.display = el_display(desc_visible)
     if (desc_visible) {
-        let ui = upg_choose[1], uu = UPGRADES[id].ctn[ui], lvl = player.upgs[id][ui], max = uu.max ?? 1, curr = CURRENCIES[uu.res], cost = uu.cost(lvl);
+        let ui = upg_choose[1], uu = UPGRADES[id].ctn[ui], lvl = player.upgs[id][ui], max = tmp.upg_cl[id] && !(u.cl_exc ?? []).includes(ui) ? EINF : (uu.max ?? 1), curr = CURRENCIES[uu.res], cost = uu.cost(lvl);
         let h = `[#${ui}] <h2>${uu.name}</h2>`
         h += `<br>Level <b class="yellow">${format(lvl,0) + (Decimal.lt(max,EINF) ? ` / ${format(max,0)}` : "")}</b>`
         h += `<br><br>`+uu.desc
@@ -617,7 +654,7 @@ function updateUpgradesHTML(id,choosed) {
         if (lvl.lt(max)) {
             h += `<br><br><b class="${curr.amount.lt(cost) ? "red" : "green"}">Cost: ${format(cost,0)} ${curr.name}</b>`
             if (Decimal.gte(max,25)) {
-                let next = uu.noCostIncrease ? Decimal.sub(25,lvl.mod(25)).add(lvl).min(max).sub(lvl).mul(uu.cost()) : SH.advancedCostToNext25(lvl, max, uu.cost)
+                let next = uu.noCostIncrease ? tmp.upg_el[id] ? uu.cost() : Decimal.sub(25,lvl.mod(25)).add(lvl).min(max).sub(lvl).mul(uu.cost()) : tmp.upg_el[id] ? uu.cost(Decimal.sub(25,lvl.mod(25)).add(lvl).min(max).sub(1)) : SH.advancedCostToNext25(lvl, max, uu.cost)
                 h += `<br><b class="${curr.amount.lt(next) ? "red" : "green"}">Cost to next 25: ${format(next,0)} ${curr.name}</b>`
             }
             h += `<br>You have ${format(curr.amount,0)} ${curr.name}`
@@ -626,11 +663,12 @@ function updateUpgradesHTML(id,choosed) {
     } else {
         let auto = u.autobuy?.()
         for (let [ui,uu] of Object.entries(u.ctn)) {
-            let unl = uu.unl(), el_id = `upg-${id}-${ui}`
+            let lvl = player.upgs[id][ui], max = tmp.upg_cl[id] && !(u.cl_exc ?? []).includes(ui) ? EINF : (uu.max ?? 1)
+            let unl = uu.unl() && (!options.hideMaxed || lvl.lt(max)), el_id = `upg-${id}-${ui}`
             el(el_id+"-div").style.display = el_display(unl)
             if (unl) {
                 let req = !uu.req || uu.req()
-                let lvl = player.upgs[id][ui], max = uu.max ?? 1, curr = CURRENCIES[uu.res], cost = uu.cost(lvl);
+                let curr = CURRENCIES[uu.res], cost = uu.cost(lvl);
                 el(el_id+"-lvl").innerHTML = format(lvl,0)
                 el(el_id+"-cost").innerHTML = lvl.gte(max) ? "Maxed" : req ? format(cost,0) : uu.req_desc ?? "???"
                 el(el_id+"-cost").className = el_classes({"upg-cost": true, locked: !req || curr.amount.lt(cost), maxed: lvl.gte(max)})
@@ -659,12 +697,15 @@ function updateUpgradesTemp() {
 }
 
 function updateUpgradeTemp(id) {
+    let upg = UPGRADES[id]
     let tue = tmp.upg_effects[id]
-    for (let ui in UPGRADES[id].ctn) {
-        let u = UPGRADES[id].ctn[ui]
+    for (let ui in upg.ctn) {
+        let u = upg.ctn[ui]
 
-        if (u.effect) tue[ui] = u.effect(player.upgs[id][ui])
+        if (u.effect) tue[ui] = u.effect(player.upgs[id][ui]);
     }
+    tmp.upg_el[id] = upg.el?.()
+    tmp.upg_cl[id] = upg.cl?.()
 }
 
 function resetUpgrades(id, keep=[]) {

@@ -23,7 +23,7 @@ const GRASS = {
             get mult() {
                 let x = E(5).mul(upgradeEffect('grass',1)).mul(getLevelBonus('xp')).mul(upgradeEffect("perks",1)).mul(getLevelBonus('tp'))
                 .mul(upgradeEffect('prestige',1)).mul(upgradeEffect('crystal',1)).mul(upgradeEffect('platinum',3)).mul(getAccomplishmentBonus(0))
-                .mul(getAccomplishmentBonus(6)).mul(upgradeEffect('platinum',8))
+                .mul(getAccomplishmentBonus(6)).mul(upgradeEffect('platinum',8)).mul(tmp.charger_bonus[3]??1)
                 if (player.grasshop.gte(1)) x = x.mul(getMilestoneEffect('grasshop',0));
                 return x
             },
@@ -32,7 +32,8 @@ const GRASS = {
             get mult() {
                 let x = E(3).mul(upgradeEffect('grass',4)).mul(upgradeEffect("perks",'1a')).mul(getLevelBonus('tp'))
                 .mul(upgradeEffect('prestige',2)).mul(upgradeEffect('crystal',2)).mul(upgradeEffect('platinum',2))
-                .mul(upgradeEffect('perks',5)).mul(getAccomplishmentBonus(1))
+                .mul(upgradeEffect('perks',5)).mul(getAccomplishmentBonus(1)).mul(upgradeEffect('platinum',9))
+                .mul(tmp.charger_bonus[1]??1)
                 if (player.grasshop.gte(2)) x = x.mul(getMilestoneEffect('grasshop',1));
                 return x
             },
@@ -41,7 +42,7 @@ const GRASS = {
             get mult() {
                 if (player.prestige.times === 0) return E(0);
                 let x = E(1).mul(upgradeEffect('prestige',3)).mul(upgradeEffect('crystal',3))
-                .mul(upgradeEffect('perks',6)).mul(getAccomplishmentBonus(2))
+                .mul(upgradeEffect('perks',6)).mul(getAccomplishmentBonus(2)).mul(tmp.charger_bonus[2]??1)
                 if (player.grasshop.gte(3)) x = x.mul(getMilestoneEffect('grasshop',2));
                 return x
             },

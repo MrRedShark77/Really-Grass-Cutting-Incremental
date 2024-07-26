@@ -6,7 +6,7 @@ const ACCOM = {
             layer: "prestige",
             max: 10,
 
-            reward: a => a.pow_base(3),
+            reward: a => a.pow_base(4),
             rewardName: "Grass bonus",
             rewardDisplay: x => formatMult(x,0),
 
@@ -26,7 +26,7 @@ const ACCOM = {
                 name: "Grass upgrades bought:",
             },
 
-            reward: a => a.pow_base(2),
+            reward: a => a.pow_base(3),
             rewardName: "Experience bonus",
             rewardDisplay: x => formatMult(x,0),
 
@@ -46,7 +46,7 @@ const ACCOM = {
                 name: "Grass upgrades bought:",
             },
 
-            reward: a => a.pow_base(2),
+            reward: a => a.pow_base(3),
             rewardName: "Tier progress bonus",
             rewardDisplay: x => formatMult(x,0),
 
@@ -66,7 +66,7 @@ const ACCOM = {
                 name: "Time since last prestige:",
             },
 
-            reward: a => a.pow_base(1.5),
+            reward: a => a.pow_base(2),
             rewardName: "PP bonus",
             rewardDisplay: x => formatMult(x),
 
@@ -100,7 +100,7 @@ const ACCOM = {
                 name: "Prestige upgrades bought:",
             },
 
-            reward: a => a.pow_base(1.25),
+            reward: a => a.pow_base(1.5),
             rewardName: "Crystals bonus",
             rewardDisplay: x => formatMult(x),
 
@@ -120,7 +120,7 @@ const ACCOM = {
                 name: "Prestige upgrades bought:",
             },
 
-            reward: a => a.pow_base(1.5),
+            reward: a => a.pow_base(2),
             rewardName: "Grass bonus",
             rewardDisplay: x => formatMult(x),
 
@@ -160,7 +160,7 @@ const ACCOM = {
                 name: "Time since last crystallize:",
             },
 
-            reward: a => a.pow_base(1.25),
+            reward: a => a.pow_base(1.5),
             rewardName: "Crystals bonus",
             rewardDisplay: x => formatMult(x),
 
@@ -168,6 +168,26 @@ const ACCOM = {
             goal: a => a.mul(2).add(20),
             bulk: a => a.sub(18).div(2).floor(),
             goalDisplay: x => "Tier "+format(x,0),
+        },{
+            unl:()=>player.grasshop.gte(8),
+            name: "Empower",
+            layer: "steelie",
+            max: 10,
+
+            restriction: {
+                get value() { return player.steelie.time },
+                limit: 60,
+                name: "Time since last steelie:",
+            },
+
+            reward: a => a.pow_base(10),
+            rewardName: "Charge Rate bonus",
+            rewardDisplay: x => formatMult(x),
+
+            get res() { return LEVELS.xp.level },
+            goal: a => a.scale(4,2,"L").mul(10).add(271),
+            bulk: a => a.sub(271).div(10).scale(4,2,"L",true).add(1).floor(),
+            goalDisplay: x => "Level "+format(x,0),
         },
     ],
 
@@ -181,6 +201,7 @@ const ACCOM = {
     colors: {
         prestige: "#13BDE7",
         crystal: "magenta",
+        steelie: "#ccc",
     },
 
     setup() {

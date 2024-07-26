@@ -14,12 +14,12 @@ CURRENCIES.prestige = {
         let x = player.level.sub(31).pow_base(b).mul(player.grass.max(1).root(15)).mul(10)
 
         x = x.mul(upgradeEffect("grass",5)).mul(upgradeEffect('crystal',4)).mul(upgradeEffect('perks',7)).mul(upgradeEffect('platinum',4))
-        .mul(getAccomplishmentBonus(3))
+        .mul(getAccomplishmentBonus(3)).mul(tmp.charger_bonus[4]??1)
 
         return x.floor()
     },
 
-    get passive() { return upgradeEffect("auto",5,0) },
+    get passive() { return Decimal.add(upgradeEffect("auto",5,0),upgradeEffect('generator',3,0)).mul(upgradeEffect('factory',2)) },
 }
 
 RESETS.prestige = {
@@ -76,6 +76,7 @@ UPGRADES.prestige = {
         // get text() { return "RAAAAAAAAAUGH" },
     },
     autobuy: ()=>hasUpgrade('auto',9),
+    el: ()=>hasUpgrade('assembler',3),
     ctn: {
         "1": {
             max: 1000,
@@ -316,6 +317,63 @@ UPGRADES.platinum = {
 
             noCostIncrease: true,
             cost: ()=>1e3,
+            res: "platinum",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "9": {
+            max: 100,
+            unl: ()=>player.grasshop.gte(1),
+            req: ()=>player.grasshop.gte(4),
+            req_desc: "GH 4",
+            icons: ["Icons/XP"],
+
+            name: `Plat XP II`,
+            tier: "II",
+            desc: `Increases experience gained by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1000,
+            res: "platinum",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "10": {
+            max: 100,
+            unl: ()=>player.steelie.times>0,
+            icons: ["Curr/Steel2"],
+
+            name: `Platinum Steel`,
+            desc: `Increases steel gained by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>2e3,
+            res: "platinum",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "11": {
+            max: 100,
+            unl: ()=>player.steelie.times>0,
+            icons: ["Curr/Charge"],
+
+            name: `Platinum Charge`,
+            desc: `Increases charge rate by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>3e3,
             res: "platinum",
 
             effect(a) {

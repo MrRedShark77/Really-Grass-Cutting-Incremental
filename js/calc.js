@@ -13,7 +13,11 @@ function calc(dt) {
     if (second_time >= 1) {
         // Autobuyer
 
-        for (let [id,u] of Object.entries(UPGRADES)) if (u.autobuy?.()) for (let i in u.ctn) if (player.auto_upgs[id][i]) buyUpgrade(id,i,true,true);
+        for (let [id,u] of Object.entries(UPGRADES)) {
+            let a = player.lists.currencies[u.al ?? id]?.[1]
+            a ||= a === undefined
+            if (u.autobuy?.() && a) for (let i in u.ctn) if (player.auto_upgs[id][i]) buyUpgrade(id,i,true,true);
+        }
 
         updateHTMLSecond()
         drawCanvas()
@@ -24,4 +28,5 @@ function calc(dt) {
     player.time += dt
     player.prestige.time += dt
     player.crystal.time += dt
+    player.steelie.time += dt
 }

@@ -160,6 +160,7 @@ function drawCanvas() {
     })
 }
 
+/*
 const TABS = [
     {
         name: "Options",
@@ -197,6 +198,7 @@ const TABS = [
         },
     },
 ]
+*/
 
 const TELEPORTS = [
     // [()=>true, "Timeless Space Breakdown", [0,0]],
@@ -212,39 +214,55 @@ function teleportTo(i) {
         drawCanvas()
 
         updateHTML()
+        updateHTMLSecond()
     }
 }
 
-var tab = -1
+var savedSSTab = "main"
+var tabName = "main"
+var tabOpened = false
 
 function switchTab(i) {
-    if (i == -1) {
-        tab = -1
-        el("infos-div").style.display = "none"
-        return
-    }
-    var t = TABS[i]
-    if (t.unl()) {
-        tab = i
-
-        var info = el("infos-div")
-        info.style.display = "block"
-        info.style.width = t.width ?? "300px"
-        updateTabsHTML()
-    }
+    
 }
 
 function setupTabsHTML() {
-    el("tabs-div").innerHTML = TABS.map((t,i) => `<button id="tab-${i}" onclick="switchTab(${i})">${t.name ?? ""}</button>`).join("")
-    el("infos-div").innerHTML += TABS.map((t,i) => `<div id="info-${i}">${t.html ?? ""}</div>`).join("")
+    
+}
+
+const TABS = {
+    main: {
+        name: "Settings",
+        color: "#666",
+    },
+    currencies: {
+        name: "Currencies",
+        color: "#0f0",
+    },
+    levels: {
+        name: "Levels",
+        color: "#0ff",
+    },
+    display: {
+        name: "Main & Display",
+        color: "#666",
+    },
 }
 
 function updateTabsHTML() {
-    TABS.forEach((t,i) => {
-        el('tab-' + i).style.display = el_display(t.unl())
-        if (tab > -1) {
-            el("info-" + i).style.display = el_display(i === tab)
-            if (i === tab) t.updateHtml?.()
+    el('front-app').style.display = el_display(tabOpened)
+
+    if (tabOpened) {
+        for (let e of document.getElementById("tabs").children) {
+            e.style.display = el_display(e.id == 'tab-' + tabName)
         }
-    })
+
+        el('front-app').style.backgroundColor = TABS[tabName].color
+        el('tab-name').innerHTML = TABS[tabName].name
+
+        if (tabName == 'display') {
+            el('option-btn1').innerHTML = 'Hide maxed upgrades bought: '+(player.options.hideMaxed ? 'ON' : 'OFF')
+            el('option-btn2').innerHTML = 'Scientific notation: '+(player.options.scMode ? 'ON' : 'OFF')
+        }
+    }
 }

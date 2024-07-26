@@ -13,12 +13,12 @@ CURRENCIES.crystal = {
 
         let x = player.tier.sub(1).pow_base(b).mul(player.tier).mul(5)
         .mul(upgradeEffect('prestige',4)).mul(upgradeEffect('perks',8)).mul(upgradeEffect('platinum',5)).mul(upgradeEffect('platinum',6)).mul(upgradeEffect('platinum',7))
-        .mul(getAccomplishmentBonus(5)).mul(getAccomplishmentBonus(8))
+        .mul(getAccomplishmentBonus(5)).mul(getAccomplishmentBonus(8)).mul(tmp.charger_bonus[5]??1)
 
         return x.floor()
     },
 
-    get passive() { return upgradeEffect("auto",8,0) },
+    get passive() { return Decimal.add(upgradeEffect("auto",8,0),upgradeEffect('generator',4,0)).mul(upgradeEffect('factory',2)) },
 }
 
 RESETS.crystal = {
@@ -75,6 +75,7 @@ UPGRADES.crystal = {
         // get text() { return "RAAAAAAAAAUGH" },
     },
     autobuy: ()=>hasUpgrade('auto',10),
+    el: ()=>hasUpgrade('assembler',4),
     ctn: {
         "1": {
             max: 1000,

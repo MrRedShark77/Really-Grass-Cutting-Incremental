@@ -226,7 +226,7 @@ const FORMATS = {
         format(ex, acc, max) {
             ex = E(ex)
             let e = ex.log10().floor()
-            if (e.lt(63) && e.gte(max)) return format(ex,acc,max,"st")
+            if (e.lt(303) && e.gte(max)) return format(ex,acc,max,"st")
             else {
                 if (ex.gte("eeee10")) {
                     let slog = ex.slog()
@@ -305,7 +305,7 @@ function toSuperscript(value) {
       .join("");
 }
 
-function format(ex, acc=2, max=6, type='mixed_sc') {
+function format(ex, acc=2, max=6, type=options.notation) {
     ex = E(ex)
 
     neg = ex.lt(0)?"-":""

@@ -72,5 +72,6 @@ const CURR_GRIDS = ['energy','energy_r','star','energy_g','psi','meta']
 function gainCurrency(id,amt) {
     var curr = CURRENCIES[id]
     curr.amount = curr.amount.add(amt).max(0)
-    if ('total' in curr) curr.total = curr.total.add(amt).max(0)
+    if ('total' in curr) curr.total = curr.total.add(amt).max(0);
+    if ('best' in curr) curr.best = curr.best.max(curr.amount);
 }
