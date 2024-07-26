@@ -505,7 +505,7 @@ function buyUpgrade(i,j,all=false,auto=false) {
 
     if (all) {
         if (el) {
-            player.upgs[i][j] = u.noCostIncrease ? max : u.bulk(amount).min(max).max(lvl.add(1))
+            player.upgs[i][j] = u.noCostIncrease ? E(max) : u.bulk(amount).min(max).max(lvl.add(1))
         } else {
             let n = lvl.add(1)
 
