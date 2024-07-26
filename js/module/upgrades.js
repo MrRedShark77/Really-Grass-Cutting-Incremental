@@ -686,7 +686,7 @@ function updateUpgradesHTML(id,choosed) {
 }
 
 function switchAutoUpgrade(id,ui) { player.auto_upgs[id][ui] = !player.auto_upgs[id][ui] }
-function hasUpgrade(id,ui,lvl=1) { return player.upgs[id]?.[ui]?.gte(lvl) }
+function hasUpgrade(id,ui,lvl=1) { return player.upgs[id]?.[ui]?.gte?.(lvl) }
 function upgradeEffect(id,ui,def=1) { return tmp.upg_effects[id]?.[ui] ?? def }
 function simpleUpgradeEffect(id,ui,def=1) { return hasUpgrade(id,ui) ? upgradeEffect(id,ui,def) : def }
 
