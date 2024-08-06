@@ -3,6 +3,11 @@
 	src: url('ComicNeue-Angular-Bold.ttf');
 }
 
+:root {
+	--primary-background-color: #0052af;
+	--secondary-background-color: #00489b;
+}
+
 * {
 	font-family: MainFont;
     table-align: center;
@@ -20,14 +25,12 @@ body {
     overflow: hidden;
 	color: white;
 
-	background-color: #0052af;
+	background-color: var(--primary-background-color);
 	background-size: 250px 250px;
 	background-image:
-		linear-gradient(to right, #00489b 4px, transparent 1px),
-		linear-gradient(to bottom, #00489b 4px, transparent 1px);
+		linear-gradient(to right, var(--secondary-background-color) 4px, transparent 1px),
+		linear-gradient(to bottom, var(--secondary-background-color) 4px, transparent 1px);
 	background-position: calc(50% - 2px) calc(50% - 2px);
-
-	transition: background-color 10s;
 }
 
 table, tr {
@@ -280,6 +283,7 @@ img {
 	left: 0px;
 	width: 100%;
 	z-index: 1;
+	pointer-events: none;
 }
 
 .bottom-pin-button {
@@ -287,6 +291,7 @@ img {
 	width: 200px;
 	height: 100px;
 	overflow: hidden;
+	pointer-events: all;
 }
 .bottom-pin-button > * {
 	position: absolute;
@@ -712,7 +717,7 @@ img {
 	font-size: 2.5vw;
 }
 
-.CL-table, #tab-display-list {
+.CL-table, #tab-display-list, #tab-map-list {
 	width: calc(100% - 4px);
 	height: calc(100% - 4px);
 	overflow-y: scroll;
@@ -814,7 +819,7 @@ img {
 	right: 0px;
 	width: calc(100% - 1vw);
 	transform: translateY(-50%);
-	font-size: 1.5vw;
+	font-size: 1.3vw;
 }
 .P-list-bar {
 	position: absolute;
@@ -837,4 +842,52 @@ img {
 	background-color: #222;
 	box-shadow: inset 0px 0px 10px 2px #000;
 	overflow-y: scroll;
+}
+
+#position {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	font-size: 16px;
+	z-index: 1;
+}
+
+.map-button {
+	position: relative;
+	width: 125px; height: 125px;
+	margin: 2px;
+}
+.map-button * {
+	pointer-events: none;
+}
+
+.map-img {
+	position: absolute;
+	top: 0px; left: 0px;
+	width: 100%;
+}
+.map-img:first-child, .map-pin {
+	cursor: pointer;
+	pointer-events: all;
+}
+.map-button > img:first-child:hover {
+	filter: brightness(.75);
+}
+
+.map-text {
+	position: absolute;
+	bottom: 10px;
+	left: 0px;
+	width: 100%;
+	font-size: 18px;
+}
+
+.map-pin {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 50px;
+}
+.map-button-unpinned > .map-pin {
+	filter: grayscale(1);
 }

@@ -28,6 +28,18 @@ const LISTS = {
             unl: ()=>hasUpgrade('factory',3),
             color: "gold",
         },
+        'anti-grass': {
+            unl: ()=>tmp.anti_unl,
+            color: "#070064",
+        },
+        'anonymity': {
+            unl: ()=>player.anonymity.times>0,
+            color: "darkred",
+        },
+        'oil': {
+            unl: ()=>player.oil.times>0,
+            color: "#333",
+        },
     },
     levels: {
         level: {
@@ -35,6 +47,12 @@ const LISTS = {
             color: ["darkcyan","cyan"],
             name: "Normal Level",
             curr: "xp",
+        },
+        'anti-level': {
+            unl: ()=>tmp.anti_unl,
+            color: ["#060053","#1200ff"],
+            name: "Anti-Level",
+            curr: "anti-xp",
         },
         tier: {
             unl: ()=>player.prestige.times>0,

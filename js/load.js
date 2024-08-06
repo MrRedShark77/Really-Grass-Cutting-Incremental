@@ -147,4 +147,25 @@ function doCreateGridElements() {
     setupMilestones()
     ACCOM.setup()
     CHARGER.setup()
+
+    createGridElement('decel-teleport',{
+        unl: () => tmp.anti_unl,
+        pos: [4,12],
+
+        html: `
+        <button onclick="teleportTo(2)" class="grid-fill-btn">
+            Teleport to <b>Anti-realm</b>
+        </button>
+        `,
+    })
+    createGridElement('normal-teleport',{
+        unl: () => tmp.anti_unl,
+        pos: [20,-1],
+
+        html: `
+        <button onclick="teleportTo(0)" class="grid-fill-btn">
+            Teleport back to <b>normal realm</b>
+        </button>
+        `,
+    })
 }

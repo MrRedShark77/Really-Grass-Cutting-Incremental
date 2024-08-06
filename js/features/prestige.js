@@ -382,5 +382,41 @@ UPGRADES.platinum = {
             },
             effDesc: x => formatMult(x),
         },
+        "12": {
+            max: 100,
+            unl: ()=>tmp.anti_unl,
+            icons: ["Curr/Anonymity"],
+
+            name: `Platinum Anonymity`,
+            desc: `Increases anonymity points gained by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>4e3,
+            res: "platinum",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "13": {
+            max: 100,
+            unl: ()=>tmp.anti_unl,
+            icons: ["Curr/Oil"],
+
+            name: `Platinum Oil`,
+            desc: `Increases oil gained by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>5e3,
+            res: "platinum",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
     },
 }

@@ -51,7 +51,7 @@ MILESTONES.grasshop = {
     get amount_desc() { return `You have grasshopped <b class="green">${format(this.amount,0)}</b> times.` },
 
     ctn: [
-        {
+        { // 0
             r: 1,
             get desc() { return `Unlocks <b class="green">Accomplishments</b>.<br>
                 Unlocks more automation upgrades.<br>
@@ -74,7 +74,7 @@ MILESTONES.grasshop = {
             r: 5,
             get desc() { return `Increases prestige's level scaling by <b class="green">+2%</b> per grasshop, starting at 5 and ending at 9. (Base is 5%)` },
             effect: a => a.sub(4).max(0).min(5).mul(.02),
-        },{
+        },{ // 5
             r: 6,
             get desc() { return `Increases crystal's tier scaling by <b class="green">+2%</b> per grasshop, starting at 6 and ending at 15. (Base is 10%)` },
             effect: a => a.sub(5).max(0).min(10).mul(.02),
@@ -94,7 +94,7 @@ MILESTONES.grasshop = {
             r: 11,
             get desc() { return `Increases steel gained by <b class="green">+25%</b> per grasshop.<br>Unlocks two more generator upgrades related to charge.` },
             effect: a => a.mul(.25).add(1),
-        },{
+        },{ // 10
             r: 12,
             get desc() { return `Charge rate is <b class="green">doubled</b> per grasshop, starting at 12.` },
             effect: a => a.sub(11).max(0).pow_base(2),
@@ -102,6 +102,14 @@ MILESTONES.grasshop = {
             r: 13,
             get desc() { return `Charger charge bonuses increase <b class="green">1 OoM</b> (order of magnitude) sooner per grasshop, starting at 13.` },
             effect: a => a.sub(12).max(0),
+        },{
+            r: 16,
+            get desc() { return `Increases anti-grass value by <b class="green">+50%</b> per grasshop.` },
+            effect: a => a.mul(.5).add(1),
+        },{
+            r: 18,
+            get desc() { return `Increases anti-experience by <b class="green">x1.25</b> per grasshop.` },
+            effect: a => a.pow_base(1.25),
         },
     ],
 }
@@ -117,7 +125,7 @@ CURRENCIES.steelie = {
     get gain() {
         if (!RESETS.steelie.req()) return E(0);
         
-        let x = E(1).mul(upgradeEffect('perks',9)).mul(tmp.foundry_effect).mul(upgradeEffect('platinum',10)).mul(tmp.charger_bonus[0]??1)
+        let x = E(1).mul(upgradeEffect('perks',9)).mul(tmp.foundry_effect).mul(upgradeEffect('platinum',10)).mul(tmp.charger_bonus[0]??1).mul(upgradeEffect('oil',6))
 
         x = x.mul(upgradeEffect('foundry',1)).mul(upgradeEffect('foundry',2)).mul(upgradeEffect('foundry',3)).mul(upgradeEffect('foundry',4))
 
@@ -236,6 +244,24 @@ UPGRADES.factory = {
 
             cost: a => a.simpleCost("EA", 1e8, .2, 1.15).ceil(),
             bulk: a => a.simpleCost("EAI", 1e8, .2, 1.15).add(1).floor(),
+            res: "steelie",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "5": {
+            max: 100,
+            unl: ()=>true,
+            icons: ["Icons/Decelerator"],
+
+            name: `Decelerator`,
+            desc: `Unlocks a building where you can enter the anti-realm.<br>Increases charge rate by <b class="green">+10%</b> per level.`,
+
+            cost: a => a.simpleCost("EA", 1e12, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e12, .2, 1.15).add(1).floor(),
             res: "steelie",
 
             effect(a) {
@@ -434,7 +460,7 @@ UPGRADES.generator = {
 
 const CHARGER = {
     milestones: [
-        {
+        { // 0
             oom: 0,
             desc: x=>`Increase steel gained by ${formatMult(x)}`,
         },{
@@ -445,13 +471,21 @@ const CHARGER = {
             desc: x=>`Increase TP gained by ${formatMult(x)}`,
         },{
             oom: 9,
-            desc: x=>`Increase grass gained by ${formatMult(x)}`,
+            desc: x=>`Increase grass value by ${formatMult(x)}`,
         },{
             oom: 12,
             desc: x=>`Increase PP gained by ${formatMult(x)}`,
-        },{
+        },{ // 5
             oom: 15,
             desc: x=>`Increase crystals gained by ${formatMult(x)}`,
+        },{
+            unl: ()=>tmp.anti_unl,
+            oom: 16,
+            desc: x=>`Increase anti-grass value by ${formatMult(x)}`,
+        },{
+            unl: ()=>player.anonymity.times,
+            oom: 18,
+            desc: x=>`Increase Anti-XP/AP gained by ${formatMult(x)}`,
         },
     ],
 
@@ -461,7 +495,7 @@ const CHARGER = {
         for (let i in this.milestones) {
             let m = this.milestones[i], n = E(1)
 
-            if (best_oom.gte(m.oom)) {
+            if ((!m.unl || m.unl()) && best_oom.gte(m.oom)) {
                 n = charge_oom.sub(Decimal.sub(m.oom,oom_later).max(0)).max(0).pow_base(1.5)
             }
 
@@ -504,6 +538,8 @@ const CHARGER = {
                 for (let i in CHARGER.milestones) {
                     let m = CHARGER.milestones[i]
 
+                    el('charger-milestone-'+i).style.display = !m.unl || m.unl() ? "block" : "none"
+
                     el('charger-milestone-'+i).innerHTML = `${Decimal.pow(10,m.oom).format(0)} - ${m.desc(tmp.charger_bonus[i])}`
                     el('charger-milestone-'+i).className = best_oom.gte(m.oom) ? "green" : "gray"
                 }
@@ -528,7 +564,9 @@ CURRENCIES.charge = {
         
         let x = E(1).mul(upgradeEffect('perks',10)).mul(upgradeEffect('platinum',11)).mul(upgradeEffect('generator',1)).mul(upgradeEffect('generator',2))
 
-        x = x.mul(getAccomplishmentBonus(9)).mul(upgradeEffect('factory',3)).mul(upgradeEffect('factory',4)).mul(getMilestoneEffect('grasshop',10))
+        x = x.mul(getAccomplishmentBonus(9)).mul(upgradeEffect('factory',3)).mul(upgradeEffect('factory',4)).mul(upgradeEffect('factory',5)).mul(getMilestoneEffect('grasshop',10))
+
+        x = x.mul(getLevelBonus('anti-xp')).mul(upgradeEffect('anonymity',1))
 
         return x.floor()
     },

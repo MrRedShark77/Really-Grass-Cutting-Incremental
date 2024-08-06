@@ -114,10 +114,18 @@ function setupCanvas() {
     }
 }
 
+function isInsideCircle(x2,y2,r) {
+    let x = camera_pos.x/250+x2, y = camera_pos.y/250+y2
+    return x*x + y*y <= r*r
+}
+
 const PYLONS = [
     {
         unl: ()=>player.crystal.times>0,
         dots: [[0,0],[0,10]],
+    },{
+        unl: ()=>tmp.anti_unl,
+        dots: [[0,0],[20,0]],
     },
 ]
 
@@ -201,7 +209,9 @@ const TABS = [
 */
 
 const TELEPORTS = [
-    // [()=>true, "Timeless Space Breakdown", [0,0]],
+    [()=>true, "Grass Field", [0,0], "Bases/GrassBase", "Curr/Grass"],
+    [()=>player.grasshop.gte(1), "Factory", [0,12], "Bases/GrasshopBase", "Icons/Charger"],
+    [()=>tmp.anti_unl, "Anti-Grass Field", [20,0], "Bases/AntiGrassBase", "Curr/AntiGrass"],
 ]
 
 function teleportTo(i) {
@@ -246,6 +256,10 @@ const TABS = {
     display: {
         name: "Main & Display",
         color: "#666",
+    },
+    map: {
+        name: "Maps",
+        color: "#0ff",
     },
 }
 

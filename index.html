@@ -24,6 +24,7 @@
     <script src="js/features/crystal.js"></script>
     <script src="js/features/steelie.js"></script>
     <script src="js/features/accomplishments.js"></script>
+    <script src="js/features/anti.js"></script>
 
     <script src="js/grass.js"></script>
 
@@ -67,18 +68,27 @@
             </div>
         </div>
     </div>
-    <div id="bottom-pin-div" class="table-center">
-        <button class="bottom-pin-button" style="background-color: gray;">
-            <img src="images/Icons/Assemblerv2.png">
-            <div>Advanced Autobuy</div>
-        </button><button class="bottom-pin-button" style="background-color: red;" onclick="tabOpened = !tabOpened; if (tabOpened) {tabName = savedSSTab}">
-            <img src="images/Icons/RedAssemblerv2.png">
-            <div>Stats & Settings</div>
-        </button><button class="bottom-pin-button" style="background-color: cyan;"> <!-- onclick="tabOpened = !tabOpened; tabName = 'map'" -->
-            <img src="images/Curr/Planet.png">
-            <div>Map</div>
-        </button>
+    <div id="bottom-pin-div">
+        <div class="table-center" id="map-pins">
+            <div class="map-button">
+                <img src="images/Bases/GrassBase.png" draggable="false">
+                <img src="images/Curr/Grass.png" draggable="false">
+                <div class="map-text">Field</div>
+            </div>
+        </div><div class="table-center">
+            <button class="bottom-pin-button" style="background-color: gray;">
+                <img src="images/Icons/Assemblerv2.png">
+                <div>Advanced Autobuy</div>
+            </button><button class="bottom-pin-button" style="background-color: red;" onclick="tabOpened = !tabOpened; if (tabOpened) {tabName = savedSSTab}">
+                <img src="images/Icons/RedAssemblerv2.png">
+                <div>Stats & Settings</div>
+            </button><button class="bottom-pin-button" style="background-color: cyan;" onclick="tabOpened = !tabOpened; tabName = 'map'"> <!-- -->
+                <img src="images/Curr/Planet.png">
+                <div>Map</div>
+            </button>
+        </div>
     </div>
+    <div id="position"></div>
     <div id="front-app" style="display: none;">
         <div id="tab-name" style="height: 60px; font-size: 60px;">
             Settings
@@ -136,6 +146,10 @@
                         <button class="big-btn" id="option-btn1" onclick="player.options.hideMaxed = !player.options.hideMaxed">Hide maxed upgrades bought: OFF</button>
                         <button class="big-btn" id="option-btn2" onclick="player.options.scMode = !player.options.scMode">Scientific notation: OFF</button>
                     </div>
+                </div>
+            </div><div id="tab-map" style="display: none;">
+                <div id="tab-map-list" class="table-center">
+
                 </div>
             </div>
         </div><div>

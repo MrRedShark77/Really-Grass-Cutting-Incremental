@@ -16,6 +16,21 @@ const GRASS = {
             chances: ['platinum'],
             bonus: ['xp','tp'],
         },
+        anti: {
+            unl: ()=>tmp.anti_unl,
+            pos: [20,0],
+        
+            get grow_speed() { return upgradeEffect('anti-grass',5) },
+            get grow_amount() { return 1 },
+        
+            get cap() { return Decimal.add(10,upgradeEffect('anti-grass',3,0)).add(upgradeEffect("anonymity",5,0)) },
+        
+            get autocut_speed() { return upgradeEffect("anti-auto",1,0) },
+            get autocut_value() { return upgradeEffect("anti-auto",2) },
+        
+            res_base: 'anti-grass',
+            bonus: ['anti-xp'],
+        },
     },
 
     resource: {
@@ -23,7 +38,8 @@ const GRASS = {
             get mult() {
                 let x = E(5).mul(upgradeEffect('grass',1)).mul(getLevelBonus('xp')).mul(upgradeEffect("perks",1)).mul(getLevelBonus('tp'))
                 .mul(upgradeEffect('prestige',1)).mul(upgradeEffect('crystal',1)).mul(upgradeEffect('platinum',3)).mul(getAccomplishmentBonus(0))
-                .mul(getAccomplishmentBonus(6)).mul(upgradeEffect('platinum',8)).mul(tmp.charger_bonus[3]??1)
+                .mul(getAccomplishmentBonus(6)).mul(upgradeEffect('platinum',8)).mul(tmp.charger_bonus[3]??1).mul(upgradeEffect('anti-grass',6))
+                .mul(upgradeEffect('anonymity',3)).mul(upgradeEffect('oil',2))
                 if (player.grasshop.gte(1)) x = x.mul(getMilestoneEffect('grasshop',0));
                 return x
             },
@@ -33,7 +49,8 @@ const GRASS = {
                 let x = E(3).mul(upgradeEffect('grass',4)).mul(upgradeEffect("perks",'1a')).mul(getLevelBonus('tp'))
                 .mul(upgradeEffect('prestige',2)).mul(upgradeEffect('crystal',2)).mul(upgradeEffect('platinum',2))
                 .mul(upgradeEffect('perks',5)).mul(getAccomplishmentBonus(1)).mul(upgradeEffect('platinum',9))
-                .mul(tmp.charger_bonus[1]??1)
+                .mul(tmp.charger_bonus[1]??1).mul(upgradeEffect('anti-grass',7)).mul(upgradeEffect('anonymity',4))
+                .mul(upgradeEffect('oil',3))
                 if (player.grasshop.gte(2)) x = x.mul(getMilestoneEffect('grasshop',1));
                 return x
             },
@@ -41,7 +58,7 @@ const GRASS = {
         tp: {
             get mult() {
                 if (player.prestige.times === 0) return E(0);
-                let x = E(1).mul(upgradeEffect('prestige',3)).mul(upgradeEffect('crystal',3))
+                let x = E(1).mul(upgradeEffect('prestige',3)).mul(upgradeEffect('crystal',3)).mul(upgradeEffect('oil',5))
                 .mul(upgradeEffect('perks',6)).mul(getAccomplishmentBonus(2)).mul(tmp.charger_bonus[2]??1)
                 if (player.grasshop.gte(3)) x = x.mul(getMilestoneEffect('grasshop',2));
                 return x
@@ -59,12 +76,26 @@ const GRASS = {
                 return x
             },
         },
+        'anti-grass': {
+            get mult() {
+                let x = E(1).mul(upgradeEffect('anti-grass',1)).mul(getMilestoneEffect('grasshop',12)).mul(tmp.charger_bonus[6]??1)
+                .mul(upgradeEffect('anonymity',2)).mul(upgradeEffect('oil',1))
+                return x
+            },
+        },
+        'anti-xp': {
+            get mult() {
+                let x = E(1).mul(upgradeEffect('anti-grass',4)).mul(getMilestoneEffect('grasshop',13)).mul(tmp.charger_bonus[7]??1)
+                .mul(upgradeEffect('anonymity',6)).mul(upgradeEffect('oil',4))
+                return x
+            },
+        },
     },
 }
 
 for (let k in GRASS.field) {
     let v = GRASS.field[k]
-    v.resources = [v.res_base,...v.chances]
+    v.resources = [v.res_base,...(v.chances??[])]
 }
 
 var grass_data = (()=>{
@@ -121,7 +152,7 @@ function calcGrass(dt) {
 
                 let w = E(0)
 
-                for (let i = 0; i < f.chances.length; i++) {
+                if (f.chances) for (let i = 0; i < f.chances.length; i++) {
                     let cn = f.chances[i], c = GRASS.resource[cn].chance
                     let r = c > 0 ? Decimal.div(Math.random(),s.mod(Decimal.pow(c,-1)).max(1)).log(c).floor().add(s.mul(c).floor()) : E(0)
                     // console.log(r.format())

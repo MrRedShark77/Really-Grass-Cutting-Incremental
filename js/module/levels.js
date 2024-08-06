@@ -61,6 +61,36 @@ const LEVELS = {
         },
         bonusDesc: x => formatMult(x,0) + " Grass, XP",
     },
+    'anti-xp': {
+        unl: () => tmp.anti_unl,
+        pos: [21,-0.5],
+
+        name: "Anti-Level",
+        exp_name: "XP",
+        color: "#1200ff",
+
+        get exp() { return player.anti.xp },
+
+        get level() { return player.anti.level },
+        set level(v) { player.anti.level = v },
+
+        req(a) {
+            let x = a.scale(200,2,"L").sumBase(1.3).mul(50)
+
+            return x.ceil()
+        },
+        bulk(a) {
+            let x = a.div(50).sumBase(1.3,true).scale(200,2,"L",true)
+
+            return x.add(1).floor()
+        },
+
+        bonus(a) {
+            let x = Decimal.pow(1.1,a.sub(1).max(0))
+            return x
+        },
+        bonusDesc: x => formatMult(x) + " Charge Rate",
+    },
 }
 
 function checkLevel(id) {

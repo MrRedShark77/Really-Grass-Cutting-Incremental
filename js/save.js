@@ -49,6 +49,24 @@ function getPlayerData() {
             bestCharge: E(0),
         },
 
+        anti: {
+            grass: E(0),
+            xp: E(0),
+            level: E(1),
+        },
+
+        anonymity: {
+            times: 0,
+            points: E(0),
+            time: 0,
+        },
+
+        oil: {
+            times: 0,
+            points: E(0),
+            time: 0,
+        },
+
         lists: {
             currencies: {},
             levels: {},
@@ -58,6 +76,7 @@ function getPlayerData() {
             hideMaxed: false,
             scMode: false,
         },
+        map_pins: [],
     }
 
     for (let k in UPGRADES) {

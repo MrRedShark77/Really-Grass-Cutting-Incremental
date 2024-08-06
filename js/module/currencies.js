@@ -61,13 +61,34 @@ const CURRENCIES = {
         get amount() { return player.perks },
         set amount(v) { player.perks = v.max(0) },
     },
+    'anti-grass': {
+        name: "Anti-Grass",
+        icon: "Curr/AntiGrass",
+        base: "Bases/AntiGrassBase",
+
+        get amount() { return player.anti.grass },
+        set amount(v) { player.anti.grass = v.max(0) },
+
+        get gain() {
+            return calculatePassiveAutocut('anti','anti-grass')
+        },
+    },
+    'anti-xp': {
+        name: "Anti-XP",
+        icon: "Icons/AntiXP",
+        base: "Bases/AntiGrassBase",
+
+        get amount() { return player.anti.xp },
+        set amount(v) {
+            player.anti.xp = v.max(0)
+            checkLevel('anti-xp')
+        },
+
+        get gain() {
+            return calculatePassiveAutocut('anti','anti-xp')
+        },
+    },
 }
-
-const TAB_CURR_UNLOCKS = {
-
-}
-
-const CURR_GRIDS = ['energy','energy_r','star','energy_g','psi','meta']
 
 function gainCurrency(id,amt) {
     var curr = CURRENCIES[id]

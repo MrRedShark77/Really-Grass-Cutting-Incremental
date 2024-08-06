@@ -29,4 +29,5 @@ function calc(dt) {
     player.prestige.time += dt
     player.crystal.time += dt
     player.steelie.time += dt
+    player.anonymity.time += dt
 }

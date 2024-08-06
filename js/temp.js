@@ -34,6 +34,8 @@ function getFoundryEffect() {
 }
 
 function updateTemp() {
+    tmp.anti_unl = hasUpgrade('factory',5)
+
     updateLevelsTemp()
     updateUpgradesTemp()
 
