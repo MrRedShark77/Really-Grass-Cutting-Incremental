@@ -43,7 +43,7 @@ CURRENCIES['rocket-fuel'] = {
         }
 
         if (x.gt(1000)) {
-            console.log(r.format(), this.b(900).format())
+            // console.log(r.format(), this.b(900).format())
             r = r.sub(this.b(900)).div(10)
             x = F.solveQuadratic(1,19,r.mul(-20)).floor().add(1000)
         }
