@@ -67,6 +67,13 @@ function getPlayerData() {
             time: 0,
         },
 
+        rocket: {
+            fuel: E(0),
+            total: E(0),
+            part: E(0),
+            momentum: E(0),
+        },
+
         lists: {
             currencies: {},
             levels: {},

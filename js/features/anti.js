@@ -149,12 +149,12 @@ CURRENCIES.anonymity = {
 
         let x = player.anti.level.sub(31).pow_base(b).mul(player.anti.grass.max(1).root(15)).mul(10)
 
-        x = x.mul(upgradeEffect('platinum', 12)).mul(upgradeEffect('anti-grass', 8)).mul(tmp.charger_bonus[7]??1).mul(upgradeEffect('oil',7))
+        x = x.mul(upgradeEffect('platinum', 12)).mul(upgradeEffect('anti-grass', 8)).mul(tmp.charger_bonus[7]??1).mul(upgradeEffect('oil',7)).mul(upgradeEffect('momentum','1h'))
 
         return x.floor()
     },
 
-    get passive() { return 0 },
+    get passive() { return upgradeEffect('factory',8,0) },
 }
 
 RESETS.anonymity = {
@@ -388,12 +388,12 @@ CURRENCIES.oil = {
         if (!RESETS.oil.req()) return E(0);
         let b = E(1.1)
 
-        let x = b.pow(player.tier.sub(1)).mul(player.tier).mul(4).mul(upgradeEffect('platinum', 13))
+        let x = b.pow(player.tier.sub(1)).mul(player.tier).mul(4).mul(upgradeEffect('platinum', 13)).mul(upgradeEffect('refinery','1g')).mul(upgradeEffect('momentum','1c'))
 
         return x.floor()
     },
 
-    get passive() { return 0 },
+    get passive() { return upgradeEffect('factory',8,0) },
 }
 
 RESETS.oil = {

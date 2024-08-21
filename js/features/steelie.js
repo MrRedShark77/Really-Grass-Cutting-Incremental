@@ -127,7 +127,7 @@ CURRENCIES.steelie = {
         
         let x = E(1).mul(upgradeEffect('perks',9)).mul(tmp.foundry_effect).mul(upgradeEffect('platinum',10)).mul(tmp.charger_bonus[0]??1).mul(upgradeEffect('oil',6))
 
-        x = x.mul(upgradeEffect('foundry',1)).mul(upgradeEffect('foundry',2)).mul(upgradeEffect('foundry',3)).mul(upgradeEffect('foundry',4))
+        x = x.mul(upgradeEffect('foundry',1)).mul(upgradeEffect('foundry',2)).mul(upgradeEffect('foundry',3)).mul(upgradeEffect('foundry',4)).mul(upgradeEffect('refinery','1f')).mul(upgradeEffect('momentum','1j'))
 
         if (player.grasshop.gte(11)) x = x.mul(getMilestoneEffect('grasshop',9))
 
@@ -269,6 +269,62 @@ UPGRADES.factory = {
                 return x
             },
             effDesc: x => formatMult(x),
+        },
+        "6": {
+            max: 100,
+            unl: ()=>true,
+            icons: ["Icons/Refinery"],
+
+            name: `Refinery`,
+            desc: `Unlocks a building where you can convert charge and oil into rocket fuel.<br>Increases charge rate by <b class="green">+10%</b> per level.`,
+
+            cost: a => a.simpleCost("EA", 1e19, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e19, .2, 1.15).add(1).floor(),
+            res: "steelie",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "7": {
+            max: 100,
+            unl: ()=>true,
+            icons: ["Icons/LaunchPad"],
+
+            name: `Rocket Launch Pad`,
+            desc: `Unlocks a building where you can build a rocket.<br>Increases charge rate by <b class="green">+10%</b> per level.`,
+
+            cost: a => a.simpleCost("EA", 1e21, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e21, .2, 1.15).add(1).floor(),
+            res: "steelie",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "8": {
+            max: 100,
+            unl: ()=>true,
+            req: ()=>player.rocket.part.gte(1),
+            req_desc: "First Rocket Part",
+            icons: ["Icons/OilRigAlt"],
+
+            name: `Oil Drilling Rig`,
+            desc: `Passively generates <b class="green">+0.1%/s</b> of AP & oil you would earn per level.`,
+
+            cost: a => a.simpleCost("EA", 1e23, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e23, .2, 1.15).add(1).floor(),
+            res: "steelie",
+
+            effect(a) {
+                let x = a.mul(.001)
+                return x
+            },
+            effDesc: x => "+"+formatPercent(x)+"/s",
         },
     },
 }
@@ -564,9 +620,9 @@ CURRENCIES.charge = {
         
         let x = E(1).mul(upgradeEffect('perks',10)).mul(upgradeEffect('platinum',11)).mul(upgradeEffect('generator',1)).mul(upgradeEffect('generator',2))
 
-        x = x.mul(getAccomplishmentBonus(9)).mul(upgradeEffect('factory',3)).mul(upgradeEffect('factory',4)).mul(upgradeEffect('factory',5)).mul(getMilestoneEffect('grasshop',10))
+        x = x.mul(upgradeEffect('factory',3)).mul(upgradeEffect('factory',4)).mul(upgradeEffect('factory',5)).mul(upgradeEffect('factory',6)).mul(upgradeEffect('factory',7))
 
-        x = x.mul(getLevelBonus('anti-xp')).mul(upgradeEffect('anonymity',1))
+        x = x.mul(getAccomplishmentBonus(9)).mul(getMilestoneEffect('grasshop',10)).mul(getLevelBonus('anti-xp')).mul(upgradeEffect('anonymity',1)).mul(upgradeEffect('momentum','1d'))
 
         return x.floor()
     },

@@ -600,6 +600,8 @@ function setupUpgrades() {
 
                     uh += icon.map(x => `<img class="img_desc" draggable="false" src="images/${x}.png">`).join("")
 
+                    if ('req' in uu) uh += `<img class="img_desc img_lock" draggable="false" src="images/Icons/Lock.png" id="upg-${id}-${ui}-locked">`;
+
                     let curr = CURRENCIES[uu.res]
 
                     uh += `<div class="upg-cost" id="upg-${id}-${ui}-cost">???</div><img class="img_res" draggable="false" src="images/${curr.base}.png"><img class="img_res" draggable="false" src="images/${curr.icon}.png">`
@@ -647,7 +649,7 @@ function updateUpgradesHTML(id,choosed) {
     el(`upg-desc-${id}-div`).style.display = el_display(desc_visible)
     if (desc_visible) {
         let ui = upg_choose[1], uu = UPGRADES[id].ctn[ui], lvl = player.upgs[id][ui], max = tmp.upg_cl[id] && !(u.cl_exc ?? []).includes(ui) ? EINF : (uu.max ?? 1), curr = CURRENCIES[uu.res], cost = uu.cost(lvl);
-        let h = `[#${ui}] <h2>${uu.name}</h2>`
+        let h = `[#${ui}] <h2 class="lightblue">${uu.name}</h2>`
         h += `<br>Level <b class="yellow">${format(lvl,0) + (Decimal.lt(max,EINF) ? ` / ${format(max,0)}` : "")}</b>`
         h += `<br><br>`+uu.desc
         if (uu.effDesc) h += `<br>Effect: <b class='cyan'>${uu.effDesc(tmp.upg_effects[id][ui])}</b>`
@@ -669,7 +671,7 @@ function updateUpgradesHTML(id,choosed) {
             if (unl) {
                 let req = !uu.req || uu.req()
                 let curr = CURRENCIES[uu.res], cost = uu.cost(lvl);
-                el(el_id+"-lvl").innerHTML = format(lvl,0)
+                el(el_id+"-lvl").innerHTML = req ? format(lvl,0) : ""
                 el(el_id+"-cost").innerHTML = lvl.gte(max) ? "Maxed" : req ? format(cost,0) : uu.req_desc ?? "???"
                 el(el_id+"-cost").className = el_classes({"upg-cost": true, locked: !req || curr.amount.lt(cost), maxed: lvl.gte(max)})
                 el(el_id+"-auto").style.display = el_display(auto)

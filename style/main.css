@@ -96,6 +96,10 @@ h4 {
 	margin-bottom: 5px;
 }
 
+img {
+	vertical-align: middle;
+}
+
 *::-webkit-scrollbar {
     width: 10px;
 	height: 10px;
@@ -412,8 +416,11 @@ img {
 .img_desc:first-child:hover {
 	filter: brightness(0.75);
 }
-.upgrade-div.not-require > .img_desc:nth-child(n+2) {
+.upgrade-div.not-require > .img_desc:not(.img_lock):nth-child(n+2) {
 	filter: brightness(0);
+}
+.upgrade-div:not(.not-require) > .img_desc.img_lock {
+	display: none;
 }
 
 .img_res {

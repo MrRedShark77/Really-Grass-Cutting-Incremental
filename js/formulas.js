@@ -196,6 +196,12 @@ F.exponential_sum = (t, height) => {
     }
 }
 
+F.solveQuadratic = (a,b,c) => {
+    let d = Decimal.sqr(b).sub(Decimal.mul(a,c).mul(4))
+    if (d.lt(0)) return E(0);
+    return Decimal.sub(d.sqrt(),b).div(a).div(2)
+}
+
 function lerp(a,b,t) { return a+(b-a)*t; }
 
 function simpleCost(x,type,...arg) {

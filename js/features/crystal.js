@@ -13,7 +13,7 @@ CURRENCIES.crystal = {
 
         let x = player.tier.sub(1).pow_base(b).mul(player.tier).mul(5)
         .mul(upgradeEffect('prestige',4)).mul(upgradeEffect('perks',8)).mul(upgradeEffect('platinum',5)).mul(upgradeEffect('platinum',6)).mul(upgradeEffect('platinum',7))
-        .mul(getAccomplishmentBonus(5)).mul(getAccomplishmentBonus(8)).mul(tmp.charger_bonus[5]??1)
+        .mul(getAccomplishmentBonus(5)).mul(getAccomplishmentBonus(8)).mul(tmp.charger_bonus[5]??1).mul(upgradeEffect('refinery','1e')).mul(upgradeEffect('momentum','1f'))
 
         return x.floor()
     },

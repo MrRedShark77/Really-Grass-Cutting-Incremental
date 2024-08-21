@@ -30,7 +30,7 @@ function getFoundryEffect() {
     
     let t = Math.min(player.steelie.time,86400*3)
 
-    return Decimal.div(t,10).mul(upgradeEffect('factory',0)).add(1)
+    return Decimal.div(t,10).mul(upgradeEffect('factory',1)).add(1)
 }
 
 function updateTemp() {

@@ -45,11 +45,11 @@ function updateResetHTML(id) {
 }
 
 function doReset(id, force) {
-    var reset = RESETS[id], curr = CURRENCIES[id]
+    var reset = RESETS[id]
 
     if (force || reset.unl() && reset.req() && !reset.lock?.()) {
         if (!force) {
-            if (curr) curr.amount = curr.amount.add(tmp.currency_gain[id]).max(0)
+            if (id in CURRENCIES) gainCurrency(id,tmp.currency_gain[id])
 
             if ("success" in reset) reset.success()
         }

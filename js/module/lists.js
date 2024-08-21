@@ -40,6 +40,14 @@ const LISTS = {
             unl: ()=>player.oil.times>0,
             color: "#333",
         },
+        'rocket-fuel': {
+            unl: ()=>hasUpgrade('factory',6),
+            color: "#117e99",
+        },
+        'momentum': {
+            unl: ()=>hasUpgrade('factory',7),
+            color: "#dbb826",
+        },
     },
     levels: {
         level: {
