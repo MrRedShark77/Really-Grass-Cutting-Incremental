@@ -15,20 +15,26 @@ CURRENCIES['rocket-fuel'] = {
 
     b: x => Decimal.sqr(x).add(Decimal.mul(x,19)).div(20),
 
+    get base_inc() {
+        let p = player.rocket.part
+
+        return p.add(1)
+    },
+
     get_base(n) {
         let b = this.b;
 
         return b(n.min(100))
         .add(b(n.sub(100).max(0).min(900)).mul(100))
         .add(b(n.sub(1000).max(0).min(9000)).mul(1000))
-        .add(n.sub(10000).max(0).mul(1e15))
+        .add(n.sub(10000).max(0).mul(1e15)).mul(this.base_inc)
     },
 
     get gain() {
-        let y = this.total, x = E(0), base = this.get_base(y),
+        let y = this.total, x = E(0), base = this.get_base(y), inc = this.base_inc,
         oil = CURRENCIES.oil.amount.add(base.mul(100)), charge = CURRENCIES.charge.amount.add(base.mul(1e27));
 
-        let r = charge.div(1e25).min(oil).div(100)
+        let r = charge.div(1e25).min(oil).div(100).div(inc)
         x = F.solveQuadratic(1,19,r.mul(-20)).floor()
 
         if (x.gt(100)) {
@@ -62,8 +68,9 @@ RESETS['rocket-fuel'] = {
 
     name: "Refinery",
     get reset_desc() {
-        let t = player.rocket.total, oil = CURRENCIES.oil.amount, charge = CURRENCIES.charge.amount
+        let t = player.rocket.total, oil = CURRENCIES.oil.amount, charge = CURRENCIES.charge.amount, inc = CURRENCIES['rocket-fuel'].base_inc
         let b = t.gte(1e4) ? E(1e15) : t.gte(1000) ? t.sub(1000).div(10).add(1).mul(1000) : t.gte(100) ? t.sub(100).div(10).add(1).mul(100) : t.div(10).add(1)
+        b = b.mul(inc)
         return `Next Rocket Fuel
         <br><b class="yellow">Charge</b><br><b class="${charge.gte(b.mul(1e27)) ? 'green' : 'red'}">${charge.format(0)} / ${b.mul(1e27).format(0)}</b>
         <br><b class="black">Oil</b><br><b class="${oil.gte(b.mul(100)) ? 'green' : 'red'}">${oil.format(0)} / ${b.mul(100).format(0)}</b>`
@@ -264,6 +271,7 @@ RESETS['rocket-part'] = {
         CURRENCIES.oil.amount = E(0)
         resetUpgrades('oil')
         CURRENCIES.steelie.amount = E(0)
+        CURRENCIES["rocket-fuel"].total = E(0)
 
         RESETS.oil.doReset()
     },
