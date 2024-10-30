@@ -506,7 +506,7 @@ UPGS.cloud = {
 
 tmp_update.push(()=>{
     tmp.crystalGain = MAIN.crystal.gain()
-    tmp.crystalGainP = (upgEffect('auto',12,0)+upgEffect('gen',1,0))*upgEffect('factory',1,1)
+    tmp.crystalGainP = Decimal.add(upgEffect('auto',12,0),upgEffect('gen',1,0)).mul(upgEffect('factory',1,1))
 
     tmp.oilGain = MAIN.oil.gain()
 

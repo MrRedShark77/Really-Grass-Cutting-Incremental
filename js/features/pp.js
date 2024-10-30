@@ -495,7 +495,7 @@ UPGS.np = {
 
 tmp_update.push(()=>{
     tmp.ppGain = MAIN.pp.gain()
-    tmp.ppGainP = (upgEffect('auto',11,0)+upgEffect('gen',0,0))*upgEffect('factory',1,1)
+    tmp.ppGainP = Decimal.add(upgEffect('auto',11,0),upgEffect('gen',0,0)).mul(upgEffect('factory',1,1))
 
     tmp.apGain = MAIN.ap.gain()
 

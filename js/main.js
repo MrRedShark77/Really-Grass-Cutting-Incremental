@@ -80,7 +80,7 @@ const MAIN = {
         return x
     },
     grassCap() {
-        let x = 10+upgEffect('grass',1,0)+upgEffect('perk',1,0)+upgEffect('ap',4,0)+starTreeEff('progress',0,0)
+        let x = Decimal.add(10,upgEffect('grass',1,0)).add(upgEffect('perk',1,0)).add(upgEffect('ap',4,0)).add(starTreeEff('progress',0,0))
 
         x *= upgEffect('unGrass',1,1)
 

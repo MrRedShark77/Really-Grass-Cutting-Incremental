@@ -6,7 +6,7 @@ MAIN.gal = {
 
         if (tmp.minStats.gs>0) y += getGSEffect(0,0)
 
-        let x = Decimal.pow(1.5+upgEffect('dm',5,0),Math.max(player.rocket.part-10,0))
+        let x = Decimal.pow(Decimal.add(1.5,upgEffect('dm',5,0)),Math.max(player.rocket.part-10,0))
 
         tmp.starGainBase = x
 
