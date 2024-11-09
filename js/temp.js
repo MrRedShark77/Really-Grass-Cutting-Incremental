@@ -1,184 +1,50 @@
 var tmp = {}
-var tmp_update = []
+var options = {
+    notation: "mixed_sc",
+}
 
-function resetTemp() {
-    keep = []
+function reloadTemp() {
     tmp = {
-        outsideNormal: false,
+        currency_gain: {},
 
-        stats_tab: 'grass',
-        space: false,
+        upg_el: {},
+        upg_effects: {},
+        upg_el: {},
+        upg_cl: {},
 
-        sc_tab: 'auto',
-        sc_choosed: [null,null],
+        lvl_bonus: {},
 
-        spawn_time: 0,
-        rangeCut: 50,
-        autocut: 5,
-        autocutTime: 0,
-        autocutAmt: 1,
-        spawnAmt: 1,
+        foundry_effect: E(1),
 
-        compact: 1,
-
-        platChance: 0.005,
-        platGain: 1,
-
-        moonstoneGain: 1,
-        moonstoneChance: 0.005,
-
-        grasses: [],
-        level: {},
-        tier: {},
-        astral: {},
-
-        upgs: {},
-        upg_res: {},
-        upg_ch: {},
-
-        chal: {
-            bulk: 0,
-            amt: 0,
-            goal: [],
-            eff: [],
-        },
-
-        chargeEff: [],
-
-        perkUnspent: 0,
-        perks: 0,
-
-        ghRunning: false,
-        ghEffect: [],
-
-        aghEffect: [],
-        gsEffect: [],
-        gjEffect: [],
-        ptEffect: [],
-        hsjEffect: [],
-
-        star_chart: {
-            auto: {
-                max: [],
-                cost: [],
-                bulk: [],
-                eff: [],
-            },
-            speed: {
-                max: [],
-                cost: [],
-                bulk: [],
-                eff: [],
-            },
-            progress: {
-                max: [],
-                cost: [],
-                bulk: [],
-                eff: [],
-            },
-            ring: {
-                max: [],
-                cost: [],
-                bulk: [],
-                eff: [],
-            },
-            reserv: {
-                max: [],
-                cost: [],
-                bulk: [],
-                eff: [],
-            },
-        },
-
-        sc_unl: {
-            auto: [],
-            speed: [],
-            progress: [],
-            ring: [],
-            reserv: [],
-        },
-
-        sc_afford: {
-            auto: [],
-            speed: [],
-            progress: [],
-            ring: [],
-            reserv: [],
-        },
-
-        astral_eff: {},
-        total_astral: 0,
-
-        cosmicLevel: {
-
-        },
-
-        lunar_eff: [],
-        lunar_next: [],
-        lunar_max_active: 3,
-
-        darkChargeEffs: {},
-
-        pass: 0,
-
-        reservConvert: 0,
-
-        solar_upgs_effect: [],
-
-        minStats: {
-            gh: 0,
-            gs: 0,
-        },
-
-        sol: {
-            cm: {},
-            form: {},
-            comp_eff: [],
-        },
-
-        lun: {
-            res_gen: {},
-        },
-
-        starBonus: [],
-
-        synthesis: {
-            speed: E(1),
-            csMult: E(1),
-            base: [],
-        },
-
-        grass_overflow: E(1),
+        charger_bonus: [],
     }
 
-    for (let x in UPG_RES) tmp.upg_res[x] = E(0)
-
-    for (let x in UPGS) {
-        tmp.upg_ch[x] = -1
-        tmp.upgs[x] = {
-            unlLength: 0,
-            max: [],
-            cost: [],
-            bulk: [],
-            eff: [],
-        }
-    }
-
-    for (let x in SOLAR_UPGS) tmp.solar_upgs_effect[x] = []
-    for (let [fi,f] of Object.entries(FORMING)) tmp.sol.form[fi] = {
-        unls: [],
-        req: [],
-        afford: [],
-        bonus: [],
+    for (let id in UPGRADES) {
+        tmp.upg_el[id] = {}
+        tmp.upg_effects[id] = {}
     }
 }
 
-function updateTemp() {
-    tmp.lunarUnl = player.grassjump>=5
-    tmp.solarianUnl = hasSolarUpgrade(7,0)
-    tmp.lunarianUnl = hasSolarUpgrade(7,12)
+function getFoundryEffect() {
+    if (!hasUpgrade('factory',1)) return E(1)
+    
+    let t = Math.min(player.steelie.time,86400*3)
 
-    tmp.total_astral = player.astralPrestige.mul(100).add(player.astral)
-    tmp.oilRigBase = (player.upgs.factory[7]||0)/100
-    for (let x = 0; x < tmp_update.length; x++) tmp_update[x]()
+    return Decimal.div(t,10).mul(upgradeEffect('factory',1)).add(1)
+}
+
+function updateTemp() {
+    tmp.anti_unl = hasUpgrade('factory',5)
+
+    updateLevelsTemp()
+    updateUpgradesTemp()
+
+    tmp.foundry_effect = getFoundryEffect()
+
+    CHARGER.temp()
+
+    for (let [i,v] of Object.entries(CURRENCIES)) tmp.currency_gain[i] = preventNaNDecimal(v.gain??E(0));
+
+    options.notation = player.options.scMode ? "sc" : "mixed_sc";
+    options.hideMaxed = player.options.hideMaxed;
 }

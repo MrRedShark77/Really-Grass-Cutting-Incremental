@@ -1,514 +1,168 @@
-MAIN.crystal = {
-    gain() {
-        if (hasCentralized(1)) return player.grass.floor();
+CURRENCIES.crystal = {
+    name: "Crystals",
+    icon: "Curr/Crystal",
+    base: "Bases/CrystalBase",
 
-        let l = player.tier.add(1)
-        let x = Decimal.pow(1.1+getASEff('crystal'),l).mul(l).mul(player.bestPP.div(1e7).max(1).root(3))
+    get amount() { return player.crystal.points },
+    set amount(v) { player.crystal.points = v.max(0) },
 
-        tmp.crystalGainBase = x
+    get gain() {
+        if (!RESETS.crystal.req()) return E(0);
+        let b = E(1.1)
+        if (player.grasshop.gte(6)) b = b.add(getMilestoneEffect('grasshop',5,0));
 
-        x = x.mul(upgEffect('plat',4))
-        x = x.mul(upgEffect('perk',8))
-
-        x = x.mul(chalEff(6))
-
-        x = x.mul(tmp.chargeEff[7]||1)
-
-        x = x.mul(upgEffect('rocket',4))
-        x = x.mul(upgEffect('momentum',5))
-
-        x = x.mul(solarUpgEffect(1,2))
-
-        x = x.pow(upgEffect('plat',7))
-
-        if (inChal(5)) x = x.root(2)
+        let x = player.tier.sub(1).pow_base(b).mul(player.tier).mul(5)
+        .mul(upgradeEffect('prestige',4)).mul(upgradeEffect('perks',8)).mul(upgradeEffect('platinum',5)).mul(upgradeEffect('platinum',6)).mul(upgradeEffect('platinum',7))
+        .mul(getAccomplishmentBonus(5)).mul(getAccomplishmentBonus(8)).mul(tmp.charger_bonus[5]??1).mul(upgradeEffect('refinery','1e')).mul(upgradeEffect('momentum','1f'))
 
         return x.floor()
     },
+
+    get passive() { return Decimal.add(upgradeEffect("auto",8,0),upgradeEffect('generator',4,0)).mul(upgradeEffect('factory',2)) },
 }
 
-RESET.crystal = {
-    unl: ()=>player.pTimes>0 && !tmp.outsideNormal,
+RESETS.crystal = {
+    pos: [1,2],
+    unl: () => player.prestige.times>0,
 
-    req: ()=>player.level>=100,
-    reqDesc: ()=>`Reach Level 100 to Crystallize.`,
+    req: () => player.level.gte(101),
+    get req_desc() { return `Reach Level 101` },
 
-    resetDesc: `Crystallizing resets everything prestige as well except Platinum for Crystals.<br>Gain more Crystals based on your tier and PP.`,
-    resetGain: ()=> `Gain <b>${tmp.crystalGain.format(0)}</b> Crystals`,
-
-    title: `Crystallize`,
-    resetBtn: `Crystallize`,
-
-    reset(force=false) {
-        if (this.req()||force) {
-            if (!force) {
-                player.crystal = player.crystal.add(tmp.crystalGain)
-                player.cTimes++
-            }
-
-            updateTemp()
-
-            this.doReset()
-        }
+    name: "Crystallize",
+    get reset_desc() {
+        return `Resets everything prestige does as well as tier, prestige points, and prestige upgrades for crystals. Gain more crystals based on your tier.`
     },
+    color: ['magenta','pink'],
 
-    doReset(order="c") {
-        player.pp = E(0)
-        player.bestPP = E(0)
+    icon: "Curr/Crystal",
+
+    success() {
+        player.crystal.times++
+
+        ACCOM.check('prestige')
+        ACCOM.check('crystal')
+    },
+    doReset() {
         player.tp = E(0)
-        player.tier = E(0)
+        player.tier = E(1)
+        player.prestige.points = E(0)
 
-        resetUpgrades('pp')
-
-        RESET.pp.doReset(order)
-    },
-}
-
-UPGS.crystal = {
-    title: "Crystal Upgrades",
-
-    unl: ()=>player.pTimes > 0 && !tmp.outsideNormal,
-
-    req: ()=>player.cTimes > 0,
-    reqDesc: ()=>`Crystallize once to unlock.`,
-
-    underDesc: ()=>`You have ${format(player.crystal,0)} Crystal`+(tmp.crystalGainP > 0 ? " <span class='smallAmt'>"+formatGain(player.crystal,tmp.crystalGain.mul(tmp.crystalGainP))+"</span>" : ""),
-
-    autoUnl: ()=>hasUpgrade('auto',8),
-    noSpend: ()=>hasUpgrade('auto',10),
-
-    cannotBuy: ()=>inChal(6),
-
-    ctn: [
-        {
-            max: 1000,
-
-            title: "Grass Value III",
-            desc: `Increase grass gain by <b class="green">+50%</b> per level. This effect is increased by <b class="green">50%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "crystal",
-            icon: ["Curr/Grass"],
-                        
-            cost: i => Decimal.pow(1.2,scale(E(i),1e6,2,0)).mul(4).ceil(),
-            bulk: i => i.div(4).max(1).log(1.2).scale(1e6,2,0,true).add(1).floor(),
-        
-            effect(i) {
-                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
-        
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            title: "XP III",
-            desc: `Increase XP gain by <b class="green">+50%</b> per level. This effect is increased by <b class="green">50%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "crystal",
-            icon: ["Icons/XP"],
-                        
-            cost: i => Decimal.pow(1.25,scale(E(i),1e6,2,0)).mul(5).ceil(),
-            bulk: i => i.div(5).max(1).log(1.25).scale(1e6,2,0,true).add(1).floor(),
-        
-            effect(i) {
-                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
-        
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            title: "TP II",
-            desc: `Increase Tier Points (TP) gain by <b class="green">1</b> per level. This effect is <b class="green">doubled</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "crystal",
-            icon: ["Icons/TP"],
-                        
-            cost: i => Decimal.pow(1.3,scale(E(i),1e6,2,0)).mul(6).ceil(),
-            bulk: i => i.div(6).max(1).log(1.3).scale(1e6,2,0,true).add(1).floor(),
-        
-            effect(i) {
-                let x = Decimal.pow(2,i.div(25).floor()).mul(i.add(1))
-        
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            title: "PP",
-            desc: `Increase PP gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "crystal",
-            icon: ["Curr/Prestige"],
-                        
-            cost: i => Decimal.pow(1.5,scale(E(i),1e6,2,0)).mul(11).ceil(),
-            bulk: i => i.div(11).max(1).log(1.5).scale(1e6,2,0,true).add(1).floor(),
-        
-            effect(i) {
-                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
-        
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1,
-
-            title: "Grow Amount",
-            desc: `Increase grass grow amount by <b class="green">1</b>.`,
-        
-            res: "crystal",
-            icon: ["Icons/Speed"],
-                        
-            cost: i => E(20),
-            bulk: i => 1,
-        
-            effect(i) {
-                let x = i
-        
-                return x
-            },
-            effDesc: x => "+"+format(x,0),
-        },{
-            max: 8,
-
-            title: "Tier Base",
-            desc: `Increase multiplier's base from Tier by <b class="green">1</b> per level. Starting base is <b class="green">2</b>.`,
-        
-            res: "crystal",
-            icon: ["Icons/TP","Icons/Plus"],
-                        
-            cost: i => Decimal.pow(10,i.pow(1.25)).mul(100).ceil(),
-            bulk: i => i.div(100).max(1).log(10).root(1.25).add(1).floor(),
-        
-            effect(i) {
-                let x = i
-        
-                return x
-            },
-            effDesc: x => "+"+format(x,0),
-        },
-    ],
-}
-
-// Liquefy, Oil
-
-MAIN.oil = {
-    gain() {
-        if (hasCentralized(5)) return player.grass.floor();
-
-        let l = player.tier
-        let x = Decimal.pow(1.1,l).mul(l).mul(player.bestAP.div(1e12).max(1).root(3))
-
-        tmp.oilGainBase = x
-
-        x = x.mul(tmp.chargeEff[9]||1)
-        x = x.mul(upgEffect('plat',9))
-
-        x = x.mul(upgEffect('rocket',8))
-        x = x.mul(upgEffect('momentum',9))
-
-        x = x.mul(starTreeEff('speed',6)*starTreeEff('speed',13)*starTreeEff('speed',18))
-
-        x = x.mul(solarUpgEffect(1,7))
-
-        return x.floor()
-    },
-}
-
-RESET.oil = {
-    unl: ()=> player.decel && player.aTimes > 0,
-
-    req: ()=>player.level>=100,
-    reqDesc: ()=>`Reach Level 100 to Liquefy.`,
-
-    resetDesc: `Liquefy resets everything Anonymity as well as your AP, Anonymity upgrades & tier for Oil.<br>Gain more Oil based on your tier and AP.`,
-    resetGain: ()=> `Gain <b>${tmp.oilGain.format(0)}</b> Oil`,
-
-    title: `Liquefy`,
-    resetBtn: `Liquefy`,
-
-    reset(force=false) {
-        if (this.req()||force) {
-            if (!force) {
-                player.oil = player.oil.add(tmp.oilGain)
-                player.lTimes++
-
-                player.bestOil2 = player.bestOil2.max(tmp.oilGain)
-            }
-
-            updateTemp()
-
-            this.doReset()
+        if (!hasUpgrade("auto",7)) {
+            player.perks = E(0)
+            player.best_perks = E(0)
+            resetUpgrades('perks')
         }
-    },
 
-    doReset(order="l") {
-        player.tier = E(0)
-        player.tp = E(0)
-        player.ap = E(0)
-        player.bestAP = E(0)
+        resetUpgrades('prestige')
 
-        resetUpgrades('ap')
+        checkLevel('tp')
 
-        RESET.ap.doReset(order)
+        player.crystal.time = 0
+
+        RESETS.prestige.doReset()
     },
 }
 
-UPGS.oil = {
-    unl: ()=> player.decel && player.aTimes > 0,
-
-    title: "Oil Upgrades",
-
-    req: ()=>player.lTimes > 0,
-    reqDesc: ()=>`Liquefy once to unlock.`,
-
-    underDesc: ()=>`You have ${format(player.oil,0)} Oil`+(hasUpgrade('factory',7) ? " <span class='smallAmt'>"+formatGain(player.oil,player.bestOil2.mul(tmp.oilRigBase))+"</span>" : ""),
-
-    autoUnl: ()=>hasUpgrade('auto',17),
-    noSpend: ()=>hasUpgrade('auto',20),
-
-    ctn: [
-        {
+UPGRADES.crystal = {
+    unl: () => player.prestige.times>0,
+    pos: [3,2],
+    size: [3,1],
+    color: ['magenta','pink'],
+    type: "normal",
+    base: "Bases/CrystalBase",
+    curr_dis: {
+        id: "crystal",
+        // get text() { return "RAAAAAAAAAUGH" },
+    },
+    autobuy: ()=>hasUpgrade('auto',10),
+    el: ()=>hasUpgrade('assembler',4),
+    ctn: {
+        "1": {
             max: 1000,
+            unl: ()=>true,
+            icons: ["Curr/Grass"],
 
-            title: "Oily Grass Value",
-            desc: `Increase grass gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "oil",
-            icon: ["Curr/Grass"],
-                        
-            cost: i => Decimal.pow(1.2,scale(E(i),1e5,2,0)).mul(2).ceil(),
-            bulk: i => i.div(2).max(1).log(1.2).scale(1e5,2,0,true).add(1).floor(),
-        
-            effect(i) {
-                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
-        
+            name: `Grass Value III`,
+            tier: "III",
+            desc: `Increases grass value by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">+50%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 4, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 4, .2, 1.15).add(1).floor(),
+            res: "crystal",
+
+            effect(a) {
+                let x = Decimal.pow(1.5,a.div(25).floor()).mul(a).mul(.5).add(1)
                 return x
             },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            title: "Oily XP",
-            desc: `Increase XP gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "oil",
-            icon: ['Icons/XP'],
-            
-            cost: i => Decimal.pow(1.25,scale(E(i),1e5,2,0)).mul(3).ceil(),
-            bulk: i => i.div(3).max(1).log(1.25).scale(1e5,2,0,true).add(1).floor(),
-
-            effect(i) {
-                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
-
-                return x
-            },
-            effDesc: x => x.format()+"x",
-        },{
-            max: 1000,
-
-            title: "Oily TP",
-            desc: `Increase TP gain by <b class="green">+50%</b> per level. This effect is increased by <b class="green">50%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "oil",
-            icon: ['Icons/TP'],
-            
-            cost: i => Decimal.pow(1.3,scale(E(i),1e5,2,0)).mul(5).ceil(),
-            bulk: i => i.div(5).max(1).log(1.3).scale(1e5,2,0,true).add(1).floor(),
-
-            effect(i) {
-                let x = Decimal.pow(1.5,i.div(25).floor()).mul(i.div(2).add(1))
-
-                return x
-            },
-            effDesc: x => x.format()+"x",
-        },{
-            max: 1000,
-
-            title: "Oily AP",
-            desc: `Increase AP gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "oil",
-            icon: ['Curr/Anonymity'],
-            
-            cost: i => Decimal.pow(1.4,scale(E(i),1e5,2,0)).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.4).scale(1e5,2,0,true).add(1).floor(),
-
-            effect(i) {
-                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
-
-                return x
-            },
-            effDesc: x => x.format()+"x",
-        },{
-            max: 10,
-
-            title: "Oily Platinum",
-            desc: `Increase Platinum gain by <b class="green">50%</b> every level.`,
-        
-            res: "oil",
-            icon: ['Curr/Platinum'],
-            
-            cost: i => Decimal.pow(10,scale(E(i),1e3,2,0)).mul(1e3).ceil(),
-            bulk: i => i.div(1e3).max(1).log(10).scale(1e3,2,0,true).add(1).floor(),
-
-            effect(i) {
-                let x = Decimal.pow(1.5,i).softcap(100,0.25,0)
-
-                return x
-            },
-            effDesc: x => format(x)+"x"+x.softcapHTML(100),
-        },{
-            max: 1000,
-
-            title: "Oily Steel",
-            desc: `Increase steel gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "oil",
-            icon: ['Curr/Steel2'],
-            
-            cost: i => Decimal.pow(1.25,scale(E(i),1e5,2,0)).mul(1e4).ceil(),
-            bulk: i => i.div(1e4).max(1).log(1.25).scale(1e5,2,0,true).add(1).floor(),
-
-            effect(i) {
-                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
+            effDesc: x => formatMult(x),
         },
-    ],
-}
-
-MAIN.cloud = {
-    gain() {
-        if (hasCentralized(16)) return player.grass.floor();
-
-        let l = player.tier.sub(30).max(0)
-        let x = Decimal.pow(1.1,l).mul(l).mul(player.bestNP.div(1e24).max(1).root(3))
-
-        tmp.cloudGainBase = x
-
-        x = x.mul(solarUpgEffect(1,12))
-
-        return x.floor()
-    },
-}
-
-RESET.cloud = {
-    unl: ()=> player.recel && player.nTimes > 0,
-
-    req: ()=>player.level>=150,
-    reqDesc: ()=>`Reach Level 150 to Vaporize.`,
-
-    resetDesc: `Vaporizer passively generates cloud based on NP & tier. Click "Start Vaporizing" to generate.`,
-    resetGain: ()=> `Gain <b>+${tmp.cloudGain.format(0)}</b> Cloud per second`,
-
-    title: `Vaporizer`,
-    resetBtn: `Start Vaporizing`,
-
-    reset(force=false) {
-        player.cloudUnl = true
-    },
-}
-
-UPGS.cloud = {
-    unl: ()=> player.recel && player.nTimes > 0,
-
-    title: "Cloud Upgrades",
-
-    req: ()=>player.cloudUnl,
-    reqDesc: ()=>`Click "Start Vaporizing" once to unlock.`,
-
-    underDesc: ()=>`You have ${format(player.cloud,0)} Cloud`,
-
-    autoUnl: ()=>hasStarTree('reserv',17),
-    noSpend: ()=>hasStarTree('reserv',17),
-
-    ctn: [
-        {
+        "2": {
             max: 1000,
+            unl: ()=>true,
+            icons: ["Icons/XP"],
 
-            title: "Cloudy Dark Matter",
-            desc: `Increase dark matter gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "cloud",
-            icon: ["Curr/DarkMatter"],
-                        
-            cost: i => Decimal.pow(1.2,i).mul(2).ceil(),
-            bulk: i => i.div(2).max(1).log(1.2).add(1).floor(),
-        
-            effect(i) {
-                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
-        
+            name: `XP III`,
+            tier: "III",
+            desc: `Increases experience gained by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">+50%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 6, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 6, .2, 1.15).add(1).floor(),
+            res: "crystal",
+
+            effect(a) {
+                let x = Decimal.pow(1.5,a.div(25).floor()).mul(a).mul(.5).add(1)
                 return x
             },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            title: "Cloudy SP",
-            desc: `Increase SP gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "cloud",
-            icon: ["Icons/SP"],
-                        
-            cost: i => Decimal.pow(1.2,i).mul(2).ceil(),
-            bulk: i => i.div(2).max(1).log(1.2).add(1).floor(),
-        
-            effect(i) {
-                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
-        
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            title: "Cloudy Ring",
-            desc: `Increase ring gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "cloud",
-            icon: ["Curr/Ring"],
-                        
-            cost: i => Decimal.pow(1.25,i).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.25).add(1).floor(),
-        
-            effect(i) {
-                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
-        
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            title: "Cloudy NP",
-            desc: `Increase NP gain by <b class="green">+25%</b> per level. This effect is increased by <b class="green">25%</b> for every <b class="yellow">25</b> levels.`,
-        
-            res: "cloud",
-            icon: ["Curr/Normality"],
-                        
-            cost: i => Decimal.pow(1.25,i).mul(100).ceil(),
-            bulk: i => i.div(100).max(1).log(1.25).add(1).floor(),
-        
-            effect(i) {
-                let x = Decimal.pow(1.25,i.div(25).floor()).mul(i.div(4).add(1))
-        
-                return x
-            },
-            effDesc: x => format(x)+"x",
+            effDesc: x => formatMult(x),
         },
-    ],
+        "3": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Icons/TP"],
+
+            name: `TP II`,
+            tier: "II",
+            desc: `Increases tier progress (TP) gained by <b class="green">+100%</b> per level.<br>This effect is <b class="green">doubled</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 8, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 8, .2, 1.15).add(1).floor(),
+            res: "crystal",
+
+            effect(a) {
+                let x = Decimal.pow(2,a.div(25).floor()).mul(a).mul(1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "4": {
+            max: 500,
+            unl: ()=>true,
+            icons: ["Curr/Prestige"],
+
+            name: `PP II`,
+            tier: "II",
+            desc: `Increases prestige points gained by <b class="green">+25%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 12, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 12, .2, 1.15).add(1).floor(),
+            res: "crystal",
+
+            effect(a) {
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a).mul(.25).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "5": {
+            unl: ()=>true,
+            icons: ["Icons/Speed"],
+
+            name: `Grow Amount`,
+            desc: `Increases grass grow amount by <b class="green">+1</b>.`,
+
+            noCostIncrease: true,
+            cost: ()=>100,
+            res: "crystal",
+        },
+    },
 }
-
-tmp_update.push(()=>{
-    tmp.crystalGain = MAIN.crystal.gain()
-    tmp.crystalGainP = (upgEffect('auto',12,0)+upgEffect('gen',1,0))*upgEffect('factory',1,1)
-
-    tmp.oilGain = MAIN.oil.gain()
-
-    tmp.cloudGain = MAIN.cloud.gain()
-})

@@ -1,592 +1,161 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="images/grass.png">
     <title>Really Grass Cutting Incremental</title>
 
+    <link rel="stylesheet" href="style/main.css">
+
     <script src="js/break_eternity.js"></script>
-    <script src="js/elements.js"></script>
-    <script src="js/saves.js"></script>
-    <script src="js/canvas.js"></script>
     <script src="js/format.js"></script>
-
-    <script src="js/map.js"></script>
-
-    <script src="js/canvas.js"></script>
-    <script src="js/temp.js"></script>
-
-    <script src="js/upgrades.js"></script>
-    <script src="js/reset.js"></script>
-
-    <script src="js/calc.js"></script>
+    <script src="js/formulas.js"></script>
     <script src="js/main.js"></script>
 
-    <script src="js/drag_stats.js"></script>
+    <script src="js/module/currencies.js"></script>
+    <script src="js/module/upgrades.js"></script>
+    <script src="js/module/grid-element.js"></script>
+    <script src="js/module/sharky_helper.js"></script>
+    <script src="js/module/levels.js"></script>
+    <script src="js/module/resets.js"></script>
+    <script src="js/module/milestones.js"></script>
+    <script src="js/module/lists.js"></script>
 
-    <script src="js/features/grass.js"></script>
-    <script src="js/features/pp.js"></script>
+    <script src="js/features/prestige.js"></script>
     <script src="js/features/crystal.js"></script>
-    <script src="js/features/challenges.js"></script>
-    <script src="js/features/gh.js"></script>
     <script src="js/features/steelie.js"></script>
-    <script src="js/features/decel.js"></script>
+    <script src="js/features/accomplishments.js"></script>
+    <script src="js/features/anti.js"></script>
     <script src="js/features/rocket.js"></script>
-    <script src="js/features/galactic.js"></script>
-    <script src="js/features/star_chart.js"></script>
-    <script src="js/features/funify.js"></script>
-    <script src="js/features/sacrifice.js"></script>
-    <script src="js/features/recel.js"></script>
-    <script src="js/features/planetoid.js"></script>
-    <script src="js/features/obelisk.js"></script>
-    <script src="js/features/constellation.js"></script>
-    <script src="js/features/star.js"></script>
-    <script src="js/features/supernova.js"></script>
-    <script src="js/features/solar_upgs.js"></script>
-    <script src="js/features/solarians.js"></script>
-    <script src="js/features/sol_compression.js"></script>
-    <script src="js/lunarians/lunar_init.js"></script>
-    <script src="js/features/lunarian.js"></script>
-    <script src="js/features/synthesis.js"></script>
 
-    <link rel="stylesheet" href="style.css">
+    <script src="js/grass.js"></script>
+
+    <script src="js/temp.js"></script>
+    <script src="js/calc.js"></script>
+
+    <script src="js/element.js"></script>
+
+    <script src="js/save.js"></script>
+    <script src="js/load.js"></script>
 </head>
 <body onload="loadGame()">
     <input id="copy" style="position: absolute; top: 0; left: 0; user-select: all; visibility: hidden;">
-    <div id="fog"></div>
-    <div id="app" style="display: none;">
-        <div class="table_space">
-            <div id="grass_div" style="margin: 30px 0px">
-                <div class="table_between">
-                    <div id="grass-image"></div>
-                    <div>
-                        <span id="grassAmt"></span> <span id="grassGain"></span>
-                    </div>
-                    <div id="grassOverflow"></div>
-                </div>
+    <div id="app">
+        <canvas id="canvas-path"></canvas>
+        <div id="grid-elements"></div>
+        <!--
+        <div id="pin-div">
+            <div id="tabs-div" class="table-left"></div>
+            <div id="infos-div" style="display: none;">
+                <button id="close-tab-button" onclick="switchTab(-1)">×</button>
             </div>
         </div>
-        <div id="main_app">
-            <div id="map_div_g" class="table_center">
-                <div style="width: 50%; height: 100%;">
-                    <canvas id="grass_canvas"></canvas>
-                    <div id="grass_cap_div">
-                        <div class="table_between">
-                            <div id="grass_cap" style="width: 50%;"></div>
-                            <div id="grass_cut" style="width: 50%;"></div>
-                        </div>
-                    </div>
-                </div>
-                <div style="width: 50%; height: 100%;">
-                    <div style="height: 50%;">
-                        <div id="level_div">
-                            <div id="level_bar">
-    
-                            </div><div id="level_info">
-                                Level <b id="level_amt" class="cyan">0</b><br>
-                                <span id="level_progress" style="font-size: 18px;">0 / 0</span><br>
-                                <span id="level_cut" style="font-size: 18px;"></span>
-                            </div>
-                        </div><div id="tier_div">
-                            <div id="tier_bar"></div><div id="tier_info">
-                                Tier <b id="tier_amt" class="yellow">0</b><br>
-                                <span id="tier_progress" style="font-size: 18px;">0 / 0</span><br>
-                                <span id="tier_cut" style="font-size: 18px;"></span><br>
-                                <span id="tier_mult" style="font-size: 18px;"></span>
-                            </div>
-                        </div><div id="astral_div">
-                            <div id="astral_bar"></div><div id="astral_info">
-                                Astral <b id="astral_amt" class="magenta">0</b><br>
-                                <span id="astral_progress" style="font-size: 18px;">0 / 0</span><br>
-                                <span id="astral_cut" style="font-size: 18px;"></span>
-                            </div>
-                        </div>
-                    </div><div style="height: 50%;">
-                        <div class="upgs_div" id="upgs_div_grass"></div>
-                        <div class="upgs_div" id="upgs_div_aGrass"></div>
-                        <div class="upgs_div" id="upgs_div_unGrass"></div>
-                        <div class="upgs_div" id="upgs_div_planetarium"></div>
-                    </div>
-                </div>
-            </div><div id="map_div_opt">
-                <button onclick="if (confirm('Are you sure you want to wipe your save?')) {wipe(true)}">Hard Reset</button>
-                <button onclick="save()">Save</button>
-                <button onclick="importy()">Import</button>
-                <button onclick="export_copy()">Export to clipboard</button>
-                <button onclick="exporty()">Export</button>
-                <button onclick="window.open('https://discord.gg/Ekp8FsSwzR')">Join Discord Server</button><br>
-                <button onclick="hideUpgOption()">Hide upgrades which is maxed/purchased: <span id="hideUpgOption">OFF</span></button>
-                <button onclick="player.offline.enabled = !player.offline.enabled">Offline Progress: <span id="offlineOption">OFF</span></button>
-                <button onclick="changeGHMult()" id="multGHButton">Multi-Grasshop: <span id="multGHOption">OFF</span></button>
-                <button onclick="changeGSMult()" id="multGSButton">Multi-Grass-skip: <span id="multGSOption">OFF</span></button>
-                <br><br>
-                Really Grass Cutting Incremental - v0.5.3 - Made by MrRedShark77<br>
-                The game inspired by <a href="https://www.roblox.com/games/9292879820">Grass Cutting Incremental</a><br>
-                Artist(-s): Bézier<br>
-                <b class="red">Warning! Recommended size is 1920x1080! You may change zoom!</b><br><br>
-                <details>
-                    <summary>Endgame (Spoiler)</summary>
-                    Level 1e245+; Supernova Tier 16; Eclipse: 4 Qt+; Stage 2,200,000+; HSJ 16;
-                </details>
-            </div><div id="map_div_p">
-                <div style="width: 100%; height: 50%;">
-                    <div class="upgs_div" id="upgs_div_perk"></div>
-                    <div class="upgs_div" id="upgs_div_observ"></div>
-                </div><div style="width: 100%; height: 50%;">
-                    <div class="upgs_div" id="upgs_div_plat"></div>
-                    <div id="hsj_div" class="table_center" style="height: 100%;">
-                        <div style="width: 33%; height: 100%;">
-                            <div class="reset_div" id="reset_div_hsj2"></div>
-                        </div>
-                        <div style="width: 67%; height: 100%;">
-                            <div class="milestone_div" id="milestone_div_hsj"></div>
-                        </div>
-                    </div>
-                </div>
-            </div><div id="map_div_auto">
-                <div style="width: 100%; height: 50%;">
-                    <div class="upgs_div" id="upgs_div_auto"></div>
-                </div><div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_formRing"></div></div>
-                    <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_timewarp"></div></div>
-                </div>
-            </div><div id="map_div_pc">
-                <div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 33%; height: 100%;">
-                        <div class="reset_div" id="reset_div_pp"></div>
-                        <div class="reset_div" id="reset_div_ap"></div>
-                        <div class="reset_div" id="reset_div_np"></div>
-                        <div class="reset_div" id="reset_div_astro"></div>
-                    </div>
-                    <div style="width: 67%; height: 100%;">
-                        <div class="upgs_div" id="upgs_div_pp"></div>
-                        <div class="upgs_div" id="upgs_div_ap"></div>
-                        <div class="upgs_div" id="upgs_div_np"></div>
-                        <div class="upgs_div" id="upgs_div_astro"></div>
-                    </div>
-                </div><div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 33%; height: 100%;">
-                        <div class="reset_div" id="reset_div_crystal"></div>
-                        <div class="reset_div" id="reset_div_oil"></div>
-                        <div class="reset_div" id="reset_div_cloud"></div>
-                        <div class="reset_div" id="reset_div_quadrant"></div>
-                    </div>
-                    <div style="width: 67%; height: 100%;">
-                        <div class="upgs_div" id="upgs_div_crystal"></div>
-                        <div class="upgs_div" id="upgs_div_oil"></div>
-                        <div class="upgs_div" id="upgs_div_cloud"></div>
-                        <div class="upgs_div" id="upgs_div_measure"></div>
-                    </div>
-                </div>
-            </div><div id="map_div_chal" style="overflow-y: auto;">
-                <div id="chal_unl">
-                    Crystallize once to Unlock
-                </div><div id="chal_div">
-                    Click any challenge to start! Click again to exit.<br>
-                    <div id="chal_table" class="table_center"></div>
-                </div>
-            </div><div id="map_div_gh">
-                <div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 33%; height: 100%;">
-                        <div class="reset_div" id="reset_div_gh"></div>
-                        <div class="reset_div" id="reset_div_gs"></div>
-                        <div class="reset_div" id="reset_div_gj"></div>
-
-                        <div class="reset_div" id="reset_div_planetary"></div>
-                    </div>
-                    <div style="width: 67%; height: 100%;">
-                        <div class="milestone_div" id="milestone_div_gh"></div>
-                        <div class="milestone_div" id="milestone_div_gs"></div>
-                        <div class="milestone_div" id="milestone_div_gj"></div>
-
-                        <div class="milestone_div" id="milestone_div_planetary"></div>
-                    </div>
-                </div><div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 33%; height: 100%;">
-                        <div class="reset_div" id="reset_div_steel"></div>
-                        <div class="reset_div" id="reset_div_fun"></div>
-                        <div class="reset_div" id="reset_div_hsj"></div>
-
-                        <div class="reset_div" id="reset_div_constellation"></div>
-                    </div>
-                    <div style="width: 67%; height: 100%;">
-                        <div class="upgs_div" id="upgs_div_factory"></div>
-                        <div class="upgs_div" id="upgs_div_funnyMachine"></div>
-
-                        <div class="upgs_div" id="upgs_div_planet"></div>
-                    </div>
-                </div>
-            </div><div id="map_div_fd">
-                <div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 100%; height: 100%;"><div class="upgs_div" id="upgs_div_foundry"></div><div class="upgs_div" id="upgs_div_fundry"></div></div>
-                </div><div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 50%; height: 100%;"><div class="upgs_div" id="upgs_div_gen"></div><div class="upgs_div" id="upgs_div_sfrgt"></div></div>
-                    <div style="width: 50%; height: 100%;"><div id="charger_div">
-                        <div style="height: 40px;" id="charge_upper">
-                            
-                        </div><div id="charge_mil">
-                        </div><div style="height: 40px;" id="charge_under">
-                            
-                        </div>
-                    </div></div>
-                </div>
-            </div><div id="map_div_as">
-                <div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_decel"></div></div>
-                    <div style="width: 50%; height: 100%;"><div class="upgs_div" id="upgs_div_assembler"></div></div>
-                </div><div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 400px; height: 100%;"><div class="upgs_div rocket" id="refinery_div">
-                        <h3>Refinery</h3><br>
-                        Next Rocket Fuel:<br><br>
-                        <div style="font-size: 16px;">
-                            <b class="yellow">Charge</b><br>
-                            <span id="rf_cost0">0 / 0</span><br><br>
-                            <b class="black">Oil</b><br>
-                            <span id="rf_cost1">0 / 0</span>
-                        </div><div style="position: absolute; bottom: 5px; width: 100%;">
-                            <button id="rf_craft_bulk" onclick="ROCKET.create()">Craft to ??? Rocket Fuel</button>
-                        </div>
-                    </div></div>
-                    <div style="width: calc(100% - 400px); height: 100%;"><div class="upgs_div" id="upgs_div_rocket"></div></div>
-                </div>
-            </div><div id="map_div_rp">
-                <div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 500px; height: 100%;">
-                        <div class="reset_div" id="reset_div_rocket_part"></div>
-
-                        <div class="upgs_div star" id="star_div">
-                            <h3>The Star</h3><br>
-                            - Tier <b class="cyan" id="star_tier">0</b> Star -
-                            <div style="font-size: 16px;">
-                                (next tier at <span id="starnexttier">???</span>)<br><br>
-                                Your Star Growth is <b class="cyan" id="stargrowth">???</b><br>
-                                Grow Speed: <b id="growspeed">???</b>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="width: calc(100% - 500px); height: 100%;">
-                        <div class="upgs_div" id="upgs_div_momentum"></div>
-
-                        <div class="upgs_div" id="upgs_div_stardust"></div>
-                    </div>
-                </div><div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 50%; height: 100%;">
-                        <div class="reset_div" id="reset_div_gal"></div>
-
-                        <div class="reset_div" id="reset_div_supernova"></div>
-                    </div>
-                    <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_recel"></div></div>
-                </div>
-            </div><div id="map_div_sc" style="position: relative;">
-                <div id="star_chart_div">
-                    <div id="star_chart_table"></div>
-                    <div style="height: 100px;"></div>
-                </div><div style="position: absolute; bottom: 5px; width: 100%;">
-                    <div id="sc_desc_div">
-                        <div id="sc_title"></div>
-                        <div id="sc_desc"></div><br>
-                        <button onclick="tmp.sc_choosed = [null,null]">Cancel</button>
-                        <button onclick="buySCUpgrade(tmp.sc_choosed[0],tmp.sc_choosed[1])">Buy 1</button>
-                        <button onclick="buyNextSCUpgrade(tmp.sc_choosed[0],tmp.sc_choosed[1])">Buy Next</button>
-                        <button onclick="buyMaxSCUpgrade(tmp.sc_choosed[0],tmp.sc_choosed[1])">Buy Max</button>
-                    </div><div>
-                        <button onclick="tmp.sc_tab = 'auto'">Automation Tree</button>
-                        <button onclick="tmp.sc_tab = 'speed'">Speed Tree</button>
-                        <button onclick="tmp.sc_tab = 'progress'">Progession Tree</button>
-                        <span id="planetoidUnl">
-                            <button onclick="tmp.sc_tab = 'ring'">Ring Tree</button>
-                            <button onclick="tmp.sc_tab = 'reserv'">Reservatorium Tree</button>
-                        </span>
-                    </div>
-                </div><div style="position: absolute; right: 15px; top: 5px;">
-                    <button id="buy_all_sc" onclick="buyMaxSCs()">Buy All</button>
-                    <div id="starAmt" style="display: inline-block;"></div>
-                </div><canvas id="star_chart_canvas">
-
-                </canvas>
-            </div><div id="map_div_at">
-                <div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 50%; height: 100%; overflow-y: auto; font-size: 18px;">
-                        <h3>Astral <span class="magenta" id="astral2">0</span></h3>
-                        <div id="astral_eff"></div>
-                    </div>
-                    <div style="width: 50%; height: 100%;"><div class="milestone_div" id="milestone_div_agh"></div></div>
-                </div><div style="width: 100%; height: 50%;" class="table_center">
-                    <div class="upgs_div" id="upgs_div_moonstone"></div>
-                </div>
-            </div><div id="map_div_sac">
-                <div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 33%; height: 100%;"><div class="reset_div" id="reset_div_sac"></div></div>
-                    <div style="width: 67%; height: 100%;"><div class="upgs_div" id="upgs_div_dm" style="display: none;"></div></div>
-                </div><div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 50%; height: 100%;"><div class="reset_div" id="reset_div_enterPlanetoid"></div></div>
-                </div>
-            </div><div id="map_div_ap">
-                <div style="width: 100%; height: 100%;" class="table_center">
-                    <div style="width: 33.3%; height: 100%;"><div class="reset_div" id="reset_div_astralPrestige"></div></div>
-                    <div style="width: 33.4%; height: 100%;"><div id="lunar_obelisk_div">
-                        <div style="height: 80px;">
-                            Lunar Power: <b id="lp_gain">???/s</b><br>
-                            Active: <span id="lp_active">0 / 0</span>
-                        </div><div id="lop_table">
-                            
-                        </div><div>
-                            <i style="font-size: 14px; color: lightcoral">After level 200 of any lunar obelisk that includes only exponential boost, its effect will be softcapped!</i>
-                        </div>
-                    </div></div>
-                    <div style="width: 33.3%; height: 100%;"><div id="void_obelisk_div">
-                        <div id="void_table">
-                            
-                        </div><div>
-                            <i style="font-size: 14px; color: lightcoral">Centralizing currency makes its multiplier equals to grass/planetarium/solar shards/solar flares, except grass types (results that grass/planetarium is squared).</i>
-                        </div>
-                    </div></div>
-                </div>
-            </div><div id="map_div_cs">
-                <div style="width: 100%; height: 100%; display: none;" class="table_center" id="cs_div">
-                    <div style="width: calc(50% - 4px); height: calc(100% - 4px); background-color: #2d006166; border: solid 2px white;">
-                        <div style="width: 100%; height: 55px; background-color: #0006;" id="constellation_amt">
-                            0 Lines
-                        </div><div style="width: 100%; height: calc(100% - 175px); overflow: scroll;" id="constellation_grid">
-                            
-                        </div><div class="table_center" style="width: 100%; height: 80px; background-color: #0006;">
-                            <div style="width: 50%; font-size: 16px;" id="constellation_stab">Instability: 0 / 0</div><div style="width: 50%;" id="constellation_select"></div>
-                        </div><div style="height: 40px; background-color: #0006;">
-                            <button onclick="cs_sellMode = !cs_sellMode" style="font-size: 16px;" id="cs_sell">Delete Mode: OFF</button>
-                            <button onclick="sellAllGrids()" style="font-size: 16px;">Sell All</button>
-                        </div>
-                    </div><div style="width: 50%; height: 100%;">
-                        <div style="width: calc(100% - 4px); height: calc(60% - 4px); background-color: #2d006166; border: solid 2px white;">
-                            <div style="width: 100%; height: 40px; background-color: #0006;">
-                                <button onclick="cs_tab = 0" style="font-size: 16px;">Buildings</button>
-                                <button onclick="cs_tab = 1" style="font-size: 16px;">Bonuses</button>
-                                <button onclick="cs_tab = 2" style="font-size: 16px;">Presets</button>
-                                <button onclick="cs_tab = 3" id="dc_tab" style="font-size: 16px;">Dark Charger</button>
-                            </div><div style="width: 100%; height: calc(100% - 40px); font-size: 16px;">
-                                <div id="cs_tab0">
-                                    <div id="cs_btn_table"></div>
-                                    <div id="cs_build_table"></div>
-                                </div><div id="cs_tab1">
-                                    <div id="cs_effects"></div>
-                                </div><div id="cs_tab2">
-                                    <div id="cs_presets"></div>
-                                </div><div id="cs_tab3">
-                                    <div id="cs_dark"></div>
-                                </div>
-                            </div>
-                        </div><div style="width: 100%; height: 40%;">
-                            <div class="upgs_div" id="upgs_div_constellation" style="display: none;"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="map_div_star">
-                <div class="solar-upgs-bg">
-                    <div style="width: 90px; overflow-y: scroll; overflow-x: hidden;" id="solar_tabs"></div>
-                    <div style="width: calc(100% - 90px);">
-                        <div style="height: 100%; overflow-y: scroll;">
-                            <div id="solar_upgs_table"></div>
-                            <div style="height: 200px;"></div>
-                        </div>
-                        <div id="solar_upgs_res"></div>
-                        <div id="su_desc_div">
-                            <div id="su_title"></div>
-                            <div id="su_desc"></div><br>
-                            <button onclick="solar_upg = [null,null]">Cancel</button>
-                            <button onclick="buySolarUpgrade(solar_upg[0],solar_upg[1])">Buy 1</button>
-                            <button onclick="buyNextSolarUpgrade(solar_upg[0],solar_upg[1])">Buy Next</button>
-                            <button onclick="buyMaxSolarUpgrade(solar_upg[0],solar_upg[1])">Buy Max</button>
-                        </div>
-                    </div>
-                </div>
-            </div><div id="map_div_sm">
-                <div style="width: 100%; height: 50%;" class="solar-upgs-bg">
-                    <div id="sn_tier_div">
-                        <div>
-                            <h3>Supernova Tier</h3><br>
-                            <div id="sn_tier"><div>1</div></div>
-                        </div>
-                    </div><div id="sn_milestones"></div>
-                </div>
-                <div style="width: 100%; height: 50%;" class="table_center">
-                    <div style="width: 33.3%; height: 100%;"><div class="reset_div" id="reset_div_sunrise"></div></div>
-                    <div style="width: 33.4%; height: 100%;"><div class="reset_div" id="reset_div_sunset"></div></div>
-                    <div style="width: 33.3%; height: 100%;"><div class="reset_div" id="reset_div_twilight"></div></div>
-                </div>
-            </div><div id="map_div_stage">
-                <div class="solarian-div table_center">
-                    <div style="width: 50%; height: 100%; position: relative;">
-                        <div id="solarian_stage">
-                            <h2>Stage 1</h2>
-                        </div>
-                        <div id="stage_enemy">
-                            <h2>Enemy</h2>
-                            <div class="progress-bar" id="enemy_bar"><div></div></div>
-                            <div class="table_center">
-                                <div class="stage-stat"><img src="images/Curr/Soul.png"><div id="enemy_soul">???</div></div>
-                            </div>
-                        </div>
-                        <div id="stage_player">
-                            <div class="table_center">
-                                <div class="stage-stat"><img src="images/Icons/Sword.png"><div id="sol_offense">???</div></div>
-                            </div>
-                            <div class="progress-bar" id="attack_bar"><div></div></div>
-                        </div>
-                    </div><div style="width: 50%; height: 100%;">
-                        <h2>Stage Bonuses</h2>
-                        <div id="stage_bonus"></div>
-                    </div>
-                </div>
-            </div><div id="map_div_sol">
-                <div style="width: 100%; height: 100%;" class="table_center">
-                    <div style="width: 33%; height: 100%;"><div class="solarian-div">
-                        <div style="height: 50px;"><h2>Materials/Collecting</h2></div>
-                        <div class="solarian-list forming" id="materials_table">
-                            <div class="material-div">
-                                <img src="images/Curr/SolCurrency1.png">
-                                <div class="material-name">Sol</div>
-                                <div class="material-amount"><b>123,456</b><br><span>(+123)</span></div>
-                                <div class="progress-bar"><div>???</div></div>
-                            </div>
-                        </div>
-                        <div id="collecting_tab_table">
-                            <button onclick="collect_tab=0" style="background-color: gold;">Solarian</button>
-                            <button id="collect_tab_btn1" onclick="collect_tab=1" style="background-color: lightblue;">Lunarian</button>
-                        </div>
-                    </div></div><div style="width: 67%; height: 100%;"><div class="solarian-div">
-                        <div style="height: 50px;"><h2>Forming</h2></div>
-                        <div class="solarian-list forming" id="forming_table">
-                            <div class="forming-div">
-                                <div class="forming-title">Test</div>
-                                <img src="images/Icons/Sword.png">
-                                <div class="forming-boost">
-                                    <div>Level 0 : ???</div>
-                                    <div>Rank 0 : ???</div>
-                                </div>
-                                <button>Start</button>
-                                <div class="progress-bar f-level"><div>???</div></div>
-                                <div class="progress-bar f-rank"><div>???</div></div>
-                                <div class="forming-res"></div>
-                            </div>
-                        </div>
-                        <div id="forming_tab_table">
-                            <button>Stats</button>
-                        </div>
-                    </div></div>
-                </div>
-            </div><div id="map_div_solc">
-                <div class="solarian-div">
-                    <div style="height: 50px;"><h2>Sol Compression</h2></div>
-                    <div class="solarian-list forming table_center" id="solc_table">
-                        <div class="compression-div">
-                            <h3>[Tier 1]</h3> <span class="smallAmt">(x1)</span>
-                            <div>1.23e123,456,789 | 1.23e123,456,789 <span class="smallAmt">(+1.23e123,456,789/s)</span></div>
-                            <div>???</div>
-                        </div>
-                    </div>
-                    <div id='solc_req'></div>
-                </div>
-            </div><div id="map_div_adv">
-                <div class="solarian-div">
-                    <div style="height: 50px;"><h2>Advanced Star</h2></div>
-                    <div class="solarian-list forming table_left" id="adv_star_table">
-                        <div class="star-milestone">
-                            <div class="sm-tier">6</div>
-                            <div class="sm-bonus">x??? to something</div>
-                            <div class="sm-req">
-                                ??? Star Growth<br>
-                                ??? Eclipse<br>
-                                ??? Mana<br>
-                            </div>
-                        </div>
-                    </div>
-                    <button id="star_btn" onclick="increaseStar()">Increase The Star</button>
-                </div>
-            </div><div id="map_div_lun_map">
-                <div class="solarian-div table_center">
-                    <div style="width: 300px; height: 100%;" id="l_map_tabs">
-
-                    </div><div style="width: calc(100% - 300px); height: 100%; position: relative;">
-                        <img id="lunarian_map" src="images/LunarianMap.png">
-                        <div id="lunarian_map_desc">
-                            
-                        </div>
-                    </div>
-                </div>
-            </div><div id="map_div_lun_inv">
-                <div class="solarian-div">
-                    <div id="lunar_inventory">
-                        <div class="lunar-item">
-                            <img src="images/Items/RageEssence.png">
-                            <div class="item-level">Level 0</div>
-                            <div class="item-upgrade locked">Upgrade (0 / ???)</div>
-                            <div class="item-name">???</div>
-                            <div class="item-desc">???</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="map_div_synt">
-                <div style="width: 100%; height: 50%;">
-                    <div class="upgs_div cs table_center">
-                        <div id="synthesis_table" style="width: calc(75% - 20px); height: calc(100% - 20px); margin: 10px; background-color: #181818; overflow-y: auto; overflow-x: hidden;">
-                            <div class="synthesis-slot">
-                                <div class="ss-req">???</div><div style="display: none;">
-                                    <div class="ss-name">S1</div>
-                                    <img class="ss-icon" src="images/Curr/CorruptionShard.png">
-                                    <div class="ss-mid">
-                                        <div class="progress-bar ss-progress" id="ss_progress"><div></div></div>
-                                        <div class="ss-boost" id="ss_boost">???</div>
-                                    </div>
-                                    <div class="ss-level">0</div>
-                                    <button class="ss-btn">Begin</button>
-                                </div>
-                            </div>
-                        </div><div id="synthesis_types" style="width: calc(25% - 20px); height: calc(100% - 20px); margin: 10px; background-color: #181818; overflow-y: auto; overflow-x: hidden;">
-                            <div class="synthesis-insert">
-                                <img class="ss-icon" src="images/Curr/CorruptionShard.png">
-                                <div class="si-desc">
-                                    Corruption Shard<br>
-                                    [FREE]
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div><div style="width: 100%; height: 50%;">
-                    <div class="upgs_div" id="upgs_div_cs"></div>
-                </div>
-            </div>
-        </div>
-        <div id="map_name"></div>
-        <div id="map">
-            <table id="map_table"></table>
-        </div>
-        <div style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); z-index: 2;">
-            <button id="lMap" onclick="switchMap(-1,0)" class="locked">◀</button>
-            <button id="rMap" onclick="switchMap(1,0)" class="locked">▶</button>
-            <button id="uMap" onclick="switchMap(0,-1)" class="locked">▲</button>
-            <button id="dMap" onclick="switchMap(0,1)" class="locked">▼</button>
-            <button onclick="map_mode = !map_mode">Map</button>
-            <button onclick="player.world = 'ground'">Ground</button>
-            <button id="spaceButton" onclick="player.world = 'space'">Space</button>
-            <button id="starButton" onclick="player.world = 'star'">Star</button>
-        </div>
-        <div id="offline_box">
+        -->
+        <div class="pinned-list" id="pinned-currencies">
             <div>
-                <h2>Offline Progress!</h2><br>
-                You were gone offline for <b id="offline_time">???</b>!
-                <div id="offline_progress">
-                    <div id="offline_bar"></div>
+                <div class="P-list-div" style="background-color: green;">
+                    <div class="P-list-res">1e234,567</div>
                 </div>
-                <span id="offline_ticks">? / ?</span> Ticks<br><br>
-                <button id="offline_skip">Skip Offline Progress</button>
+                <img class="P-img-res" src="images/Bases/GrassBase.png">
+                <img class="P-img-res" src="images/Curr/Grass.png">
+            </div>
+        </div><div class="pinned-list" id="pinned-levels">
+            <div>
+                <div class="P-list-div" style="background-color: darkcyan;">
+                    <div class="P-list-bar" style="width: 50%; background-color: cyan;"></div>
+                    <div class="P-list-res">1e234,567</div>
+                </div>
+                <img class="P-img-res" src="images/Bases/GrassBase.png">
+                <img class="P-img-res" src="images/Icons/XP.png">
             </div>
         </div>
-        <div id="drag_stats">
-            
+    </div>
+    <div id="bottom-pin-div">
+        <div class="table-center" id="map-pins">
+            <div class="map-button">
+                <img src="images/Bases/GrassBase.png" draggable="false">
+                <img src="images/Curr/Grass.png" draggable="false">
+                <div class="map-text">Field</div>
+            </div>
+        </div><div class="table-center">
+            <button class="bottom-pin-button" style="background-color: gray; display: none;">
+                <img src="images/Icons/Assemblerv2.png">
+                <div>Advanced Autobuy</div>
+            </button><button class="bottom-pin-button" style="background-color: red;" onclick="tabOpened = !tabOpened; if (tabOpened) {tabName = savedSSTab}">
+                <img src="images/Icons/RedAssemblerv2.png">
+                <div>Stats & Settings</div>
+            </button><button class="bottom-pin-button" style="background-color: cyan;" onclick="tabOpened = !tabOpened; tabName = 'map'"> <!-- -->
+                <img src="images/Curr/Planet.png">
+                <div>Map</div>
+            </button>
+        </div>
+    </div>
+    <div id="position"></div>
+    <div id="front-app" style="display: none;">
+        <div id="tab-name" style="height: 60px; font-size: 60px;">
+            Settings
+        </div><div style="width: 100%; height: calc(100% - 120px);" id="tabs">
+            <div id="tab-main">
+                <div id="tab-buttons">
+                    <button onclick="tabName = savedSSTab = 'display';">Main & Display</button>
+                    <button onclick="tabName = savedSSTab = 'currencies';" style="background-color: lime;">Currencies</button>
+                    <button onclick="tabName = savedSSTab = 'levels';" style="background-color: cyan;">Levels</button>
+                </div>
+            </div><div id="tab-currencies" style="display: none;">
+                <div class="CL-table" id="currencies-list">
+                    <div>
+                        <div class="C-list-div" style="background-color: green;">
+                            <div class="CL-list-name">
+                                <div>Grass</div>
+                            </div><div class="CL-list-name">
+                                <div>1e234,567</div>
+                            </div>
+                            <img src="images/Icons/GreenAutomation.png">
+                            <img src="images/Icons/Pin.png">
+                        </div>
+                        <img class="CL-img-res" src="images/Bases/GrassBase.png">
+                        <img class="CL-img-res" src="images/Curr/Grass.png">
+                    </div>
+                </div>
+            </div><div id="tab-levels" style="display: none;">
+                <div class="CL-table" id="levels-list">
+                    <div>
+                        <div class="L-list-div" style="background-color: darkcyan;">
+                            <div class="CL-list-name">
+                                <div>Normal Level<br>1e234,567</div>
+                            </div><div class="CL-list-name">
+                                <div>1e234,567 / 1e234,567</div>
+                            </div>
+                            <img src="images/Icons/Pin.png">
+                        </div>
+                        <img class="CL-img-res" src="images/Bases/GrassBase.png">
+                        <img class="CL-img-res" src="images/Icons/XP.png">
+                    </div>
+                </div>
+            </div><div id="tab-display" style="display: none;">
+                <div id="tab-display-list">
+                    <h2>Saving</h2>
+                    <div class="table-center">
+                        <button class="big-btn" onclick="save()">Save</button>
+                        <button class="big-btn" onclick="export_copy()">Export via clipboard</button>
+                        <button class="big-btn" onclick="exporty()">Export via file</button>
+                        <button class="big-btn" onclick="importy()">Import via prompt</button>
+                        <button class="big-btn" onclick="importy_file()">Import via file</button>
+                        <button class="big-btn" id="wipe" onclick="wipeConfirm()">WIPE!!!</button>
+                    </div><br class="line">
+                    <h2>Display</h2>
+                    <div class="table-center">
+                        <button class="big-btn" id="option-btn1" onclick="player.options.hideMaxed = !player.options.hideMaxed">Hide maxed upgrades bought: OFF</button>
+                        <button class="big-btn" id="option-btn2" onclick="player.options.scMode = !player.options.scMode">Scientific notation: OFF</button>
+                    </div>
+                </div>
+            </div><div id="tab-map" style="display: none;">
+                <div id="tab-map-list" class="table-center">
+
+                </div>
+            </div>
+        </div><div>
+            <button onclick="if (tabName == 'main') {tabOpened = false}; tabName = savedSSTab = 'main';" style="font-size: 36px; width: 150px;">Back</button>
+            <button onclick="tabOpened = false" style="font-size: 36px; width: 150px; background-color: red;">Close</button>
         </div>
     </div>
 </body>

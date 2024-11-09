@@ -1,643 +1,481 @@
-const RF_COST_POW = 1.1
-
 const ROCKET = {
-    bulk(x,r,base) {
-        return x.mul(RF_COST_POW-1).div(base).div(tmp.rf_base_mult).add(hasSolarUpgrade(2,2) ? 1 : Decimal.pow(RF_COST_POW,r)).log(RF_COST_POW).mul(tmp.rf_cheap).floor()
+
+}
+
+CURRENCIES['rocket-fuel'] = {
+    name: "Rocket Fuel",
+    icon: "Curr/RocketFuel",
+    base: "Bases/RocketBase",
+
+    get amount() { return player.rocket.fuel },
+    set amount(v) { player.rocket.fuel = v.max(0) },
+
+    get total() { return player.rocket.total },
+    set total(v) { player.rocket.total = v.max(0) },
+
+    b: x => Decimal.sqr(x).add(Decimal.mul(x,19)).div(20),
+
+    get base_inc() {
+        let p = player.rocket.part
+
+        return p.add(1)
     },
-    create() {
-        if (hasSolarUpgrade(2,2)) return;
 
-        let rf = player.rocket.total_fp
-        let b = tmp.rf_bulk
+    get_base(n) {
+        let b = this.b;
 
-        if (b.gt(rf)) {
-            player.rocket.total_fp = b
+        return b(n.min(100))
+        .add(b(n.sub(100).max(0).min(900)).mul(100))
+        .add(b(n.sub(1000).max(0).min(9000)).mul(1000))
+        .add(n.sub(10000).max(0).mul(1e15)).mul(this.base_inc)
+    },
 
-            player.rocket.amount = player.rocket.amount.add(b.sub(rf))
+    get gain() {
+        let y = this.total, x = E(0), base = this.get_base(y), inc = this.base_inc,
+        oil = CURRENCIES.oil.amount.add(base.mul(100)), charge = CURRENCIES.charge.amount.add(base.mul(1e27));
 
-            if (!hasStarTree('auto',10)) {
-                let c = Decimal.pow(RF_COST_POW, Decimal.div(b,tmp.rf_cheap)).sub(Decimal.pow(RF_COST_POW, Decimal.div(rf,tmp.rf_cheap))).div(RF_COST_POW-1).mul(tmp.rf_base_mult)
+        let r = charge.div(1e25).min(oil).div(100).div(inc)
+        x = F.solveQuadratic(1,19,r.mul(-20)).floor()
 
-                player.chargeRate = player.chargeRate.sub(Decimal.mul(c,1e36)).max(0)
-                player.oil = player.oil.sub(Decimal.mul(c,1e9)).max(0)
-            }
-
-            updateRocketTemp()
+        if (x.gt(100)) {
+            r = r.sub(this.b(100)).div(100)
+            x = F.solveQuadratic(1,19,r.mul(-20)).floor().add(100)
         }
+
+        if (x.gt(1000)) {
+            // console.log(r.format(), this.b(900).format())
+            r = r.sub(this.b(900)).div(10)
+            x = F.solveQuadratic(1,19,r.mul(-20)).floor().add(1000)
+        }
+
+        if (x.gt(10000)) {
+            r = r.sub(this.b(9000)).div(1e12)
+            x = r.floor().add(10000)
+        }
+
+        return x.sub(y).max(0)
+    },
+
+    passive: 0,
+}
+
+RESETS['rocket-fuel'] = {
+    pos: [-2,12],
+    unl: () => hasUpgrade('factory',6),
+
+    req: () => true,
+    get req_desc() { return `???` },
+
+    name: "Refinery",
+    get reset_desc() {
+        let t = player.rocket.total, oil = CURRENCIES.oil.amount, charge = CURRENCIES.charge.amount, inc = CURRENCIES['rocket-fuel'].base_inc
+        let b = t.gte(1e4) ? E(1e15) : t.gte(1000) ? t.sub(1000).div(10).add(1).mul(1000) : t.gte(100) ? t.sub(100).div(10).add(1).mul(100) : t.div(10).add(1)
+        b = b.mul(inc)
+        return `Next Rocket Fuel
+        <br><b class="yellow">Charge</b><br><b class="${charge.gte(b.mul(1e27)) ? 'green' : 'red'}">${charge.format(0)} / ${b.mul(1e27).format(0)}</b>
+        <br><b class="black">Oil</b><br><b class="${oil.gte(b.mul(100)) ? 'green' : 'red'}">${oil.format(0)} / ${b.mul(100).format(0)}</b>`
+    },
+    color: ['#117e99','#1fa4c5'],
+
+    icon: "Curr/RocketFuel",
+
+    success() {
+        let c = CURRENCIES['rocket-fuel']
+        let g = tmp.currency_gain['rocket-fuel'], b = c.get_base(c.total).sub(c.get_base(c.total.sub(g)))
+
+        CURRENCIES.oil.amount = CURRENCIES.oil.amount.sub(b.mul(100))
+        CURRENCIES.charge.amount = CURRENCIES.charge.amount.sub(b.mul(1e30))
+    },
+    doReset() {
+        
     },
 }
 
-UPGS.rocket = {
-    title: "Rocket Fuel Upgrade",
+UPGRADES.refinery = {
+    unl: () => hasUpgrade('factory',6),
+    pos: [-2,13],
+    size: [2,2],
+    color: ['#117e99','#1fa4c5'],
+    type: "vertical",
+    base: "Bases/RocketBase",
+    curr_dis: {
+        id: "rocket-fuel",
+    },
+    bottom_text: ``,
+    // autobuy: ()=>hasUpgrade('auto',10),
+    ctn: {
+        "1a": {
+            max: 300,
+            unl: ()=>true,
+            icons: ["Curr/Grass"],
 
-    unl: ()=>!player.planetoid.active && hasUpgrade("factory",5),
+            name: `Rocket Fueled Grass`,
+            desc: `Increases grass value by <b class="green">+10%</b> per level.`,
 
-    underDesc: ()=>`You have ${format(player.rocket.amount,0)} Rocket Fuel`+(hasSolarUpgrade(2,2) ? gainHTML(player.rocket.amount,tmp.rf_bulk,1) : ""),
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "rocket-fuel",
 
-    ctn: [
-        {
-            max: 1000,
-
-            costOnce: true,
-
-            title: "Rocket Fueled Grass",
-            desc: `Increase grass gain by <b class="green">+10%</b> per level.`,
-
-            res: "rf",
-            icon: ['Curr/Grass'],
-            
-            cost: i => 1,
-            bulk: i => i,
-
-            effect(i) {
-                let x = E(i*0.1+1)
-
+            effect(a) {
+                let x = a.mul(.1).add(1)
                 return x
             },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            costOnce: true,
-
-            title: "Rocket Fueled Levels",
-            desc: `Increase XP gain by <b class="green">+10%</b> per level.`,
-
-            res: "rf",
-            icon: ['Icons/XP'],
-            
-            cost: i => 1,
-            bulk: i => i,
-
-            effect(i) {
-                let x = E(i*0.1+1)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            costOnce: true,
-
-            title: "Rocket Fueled Tiers",
-            desc: `Increase TP gain by <b class="green">+10%</b> per level.`,
-
-            res: "rf",
-            icon: ['Icons/TP'],
-            
-            cost: i => 1,
-            bulk: i => i,
-
-            effect(i) {
-                let x = E(i*0.1+1)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            costOnce: true,
-
-            title: "Rocket Fueled Prestiges",
-            desc: `Increase PP gain by <b class="green">+10%</b> per level.`,
-
-            res: "rf",
-            icon: ['Curr/Prestige'],
-            
-            cost: i => 1,
-            bulk: i => i,
-
-            effect(i) {
-                let x = E(i*0.1+1)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            costOnce: true,
-
-            title: "Rocket Fueled Crystallize",
-            desc: `Increase crystal gain by <b class="green">+10%</b> per level.`,
-
-            res: "rf",
-            icon: ['Curr/Crystal'],
-            
-            cost: i => 1,
-            bulk: i => i,
-
-            effect(i) {
-                let x = E(i*0.1+1)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            costOnce: true,
-
-            title: "Rocket Fueled Foundry",
-            desc: `Increase steel gain by <b class="green">+10%</b> per level.`,
-
-            res: "rf",
-            icon: ['Curr/Steel2'],
-            
-            cost: i => 1,
-            bulk: i => i,
-
-            effect(i) {
-                let x = E(i*0.1+1)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            costOnce: true,
-
-            title: "Rocket Fueled Charge",
-            desc: `Increase charge rate by <b class="green">+10%</b> per level.`,
-
-            res: "rf",
-            icon: ['Icons/Charge'],
-            
-            cost: i => 1,
-            bulk: i => i,
-
-            effect(i) {
-                let x = E(i*0.1+1)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            costOnce: true,
-
-            title: "Rocket Fueled Anonymity",
-            desc: `Increase AP gain by <b class="green">+10%</b> per level.`,
-
-            res: "rf",
-            icon: ['Curr/Anonymity'],
-            
-            cost: i => 1,
-            bulk: i => i,
-
-            effect(i) {
-                let x = E(i*0.1+1)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            costOnce: true,
-
-            title: "Rocket Fueled Pumpjacks",
-            desc: `Increase oil gain by <b class="green">+10%</b> per level.`,
-
-            res: "rf",
-            icon: ['Curr/Oil'],
-            
-            cost: i => 1,
-            bulk: i => i,
-
-            effect(i) {
-                let x = E(i*0.1+1)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 10000,
-
-            unl: ()=> player.bestGS>=10,
-
-            costOnce: true,
-
-            title: "The Funny Upgrade",
-            desc: `Increase fun gain by <b class="green">+1%</b> per level.`,
-
-            res: "rf",
-            icon: ['Curr/Fun'],
-            
-            cost: i => 5,
-            bulk: i => i.div(5).floor(),
-
-            effect(i) {
-                let x = E(i*0.01+1)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 10000,
-
-            unl: ()=> player.lowGH<=0,
-
-            costOnce: true,
-
-            title: "Rocket Fueled Celestal",
-            desc: `Increase star gain by <b class="green">+2.5%</b> per level.`,
-
-            res: "rf",
-            icon: ['Curr/Star'],
-            
-            cost: i => 100,
-            bulk: i => i.div(100).floor(),
-
-            effect(i) {
-                let x = E(i*0.025+1)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
+            effDesc: x => formatMult(x),
         },
-    ],
+        "1b": {
+            max: 300,
+            unl: ()=>true,
+            icons: ["Icons/XP"],
+
+            name: `Rocket Fueled XP`,
+            desc: `Increases experience gained by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "1c": {
+            max: 300,
+            unl: ()=>true,
+            icons: ["Icons/TP"],
+
+            name: `Rocket Fueled TP`,
+            desc: `Increases tier progress by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "1d": {
+            max: 300,
+            unl: ()=>true,
+            icons: ["Curr/Prestige"],
+
+            name: `Rocket Fueled Prestige`,
+            desc: `Increases prestige points earned by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "1e": {
+            max: 300,
+            unl: ()=>true,
+            icons: ["Curr/Crystal"],
+
+            name: `Rocket Fueled Crystal`,
+            desc: `Increases crystals earned by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "1f": {
+            max: 300,
+            unl: ()=>true,
+            icons: ["Curr/Steel2"],
+
+            name: `Rocket Fueled Steel`,
+            desc: `Increases steel earned by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "1g": {
+            max: 300,
+            unl: ()=>true,
+            icons: ["Curr/Oil"],
+
+            name: `Rocket Fueled Oil`,
+            desc: `Increases oil earned by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+    },
 }
 
-RESET.rocket_part = {
-    unl: ()=>!player.planetoid.active && hasUpgrade('factory',6),
+RESETS['rocket-part'] = {
+    pos: [-4,12],
+    unl: () => hasUpgrade('factory',7),
 
-    req: ()=>true,
-    reqDesc: ()=>``,
-
-    resetDesc: `<span style="font-size: 14px">Reset everything liquefy does as well as oil, oil upgrades, steel and total rocket fuel.
-    You will create a rocket part, earn <b class="green" id="momentumGain">1</b> momentum, and reset the cost to make rocket fuel.
-    You keep rocket fuel and rocket fuel upgrades.</span>`,
-    resetGain: ()=> `
-        <span style="font-size: 14px">
-        <b class="lightgray">Steel</b><br>
-        <span class="${player.steel.gte(tmp.rp_req[0])?"green":"red"}">${player.steel.format(0)} / ${tmp.rp_req[0].format(0)}</span><br><br>
-        <b class="lightblue">Total Rocket Fuel</b><br>
-        <span class="${player.rocket.total_fp.gte(tmp.rp_req[1])?"green":"red"}">${format(player.rocket.total_fp,0)} / ${format(tmp.rp_req[1],0)}</span><br><br>
-        You have created ${format(player.rocket.part,0)} Rocket Parts
-        </span>
-    `,
-
-    title: `Rocket Part`,
-    resetBtn: `Create Rocket Part`,
-
-    reset(force=false, auto=false) {
-        if (player.steel.gte(tmp.rp_req[0])&&player.rocket.total_fp.gte(tmp.rp_req[1])||force) {
-            if (tmp.rp_bulk <= 0) return;
-
-            const su = hasSolarUpgrade(2,2)
-
-            if (!force) {
-                player.rocket.part += tmp.rp_bulk
-                player.momentum = player.momentum.add(tmp.momentumGain.mul(tmp.rp_bulk))
-            }
-
-            updateTemp()
-
-            if (auto) {
-                if (!su) player.rocket.total_fp = E(0)
-            }
-            else this.doReset()
-        }
+    req: () => true,
+    get req_desc() { return `???` },
+    lock() {
+        let n = this.next_part
+        return CURRENCIES.steelie.amount.lt(n[0]) || player.rocket.total.lt(n[1])
     },
 
-    doReset(order="rp") {
-        player.rocket.total_fp = E(0)
-        player.oil = E(0)
-        player.bestOil = E(0)
-        player.steel = E(0)
-        player.chargeRate = E(0)
-        player.aRes.level = E(0)
-        player.aRes.tier = E(0)
-        player.aRes.xp = E(0)
-        player.aRes.tp = E(0)
+    get next_part() {
+        let p = player.rocket.part
+        if (p.gte(10)) return [EINF, EINF];
+        return [p.add(1).mul(1e21), p.mul(10)]
+    },
+
+    name: "Rocket Part",
+    get reset_desc() {
+        let t = player.rocket.total, steel = CURRENCIES.steelie.amount
+        let a = this.next_part;
+        return `Reset everything liquefy does as well as oil, oil upgrades, steel, and total rocket fuel for rocket part and momentum.
+        <br><b class="gray">Steel</b><br><b class="${steel.gte(a[0]) ? 'green' : 'red'}">${steel.format(0)} / ${a[0].format(0)}</b>
+        <br><b class="lightblue">Total Rocket Fuel</b><br><b class="${t.gte(a[1]) ? 'green' : 'red'}">${t.format(0)} / ${a[1].format(0)}</b>`
+    },
+    color: ['#7d5227','#ffd421'],
+
+    icon: "Curr/Momentum",
+    get gain_desc() { return "+1" },
+
+    success() {
+        player.rocket.part = player.rocket.part.add(1)
+        player.rocket.momentum = player.rocket.momentum.add(1)
+    },
+    doReset() {
+        CURRENCIES.oil.amount = E(0)
         resetUpgrades('oil')
-        RESET.oil.doReset(order)
-        RESET.steel.doReset(order)
+        CURRENCIES.steelie.amount = E(0)
+        CURRENCIES["rocket-fuel"].total = E(0)
+
+        RESETS.oil.doReset()
     },
 }
 
-UPGS.momentum = {
-    title: "Momentum Upgrades",
+CURRENCIES.momentum = {
+    name: "Momentum",
+    icon: "Curr/Momentum",
+    base: "Bases/RocketBase",
 
-    unl: ()=>!player.planetoid.active && player.rocket.part>0,
+    get amount() { return player.rocket.momentum },
+    set amount(v) { player.rocket.momentum = v.max(0) },
 
-    underDesc: ()=>`You have ${format(player.momentum,0)} Momentum`+gainHTML(E(player.momentum),tmp.momentumGain,tmp.momentumGen),
+    get gain() {
+        let x = E(1)
 
-    autoUnl: ()=>hasStarTree('auto',11),
-    noSpend: ()=>hasStarTree('auto',11),
+        return x
+    },
 
-    ctn: [
-        {
-            costOnce: true,
+    passive: 0,
+}
 
-            title: "Grass is Life",
-            desc: `Multiply grass gain by 10.`,
+UPGRADES.momentum = {
+    unl: () => hasUpgrade('factory',7),
+    pos: [-4,13],
+    size: [2,2],
+    color: ['#dbb826','#ffd421'],
+    type: "vertical",
+    base: "Bases/RocketBase",
+    curr_dis: {
+        id: "momentum",
+    },
+    bottom_text: `Earn momentum by creating rocket part`,
 
+    ctn: {
+        "1a": {
+            unl: ()=>true,
+            icons: ["Curr/Grass"],
+
+            name: `Grass is Life`,
+            desc: `Increases grass value by <b class="green">x10</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
             res: "momentum",
-            icon: ['Curr/Grass'],
-            
-            cost: i => 1,
-            bulk: i => 1,
 
-            effect(i) {
-                let x = i*9+1
-
+            effect(a) {
+                let x = a.mul(9).add(1)
                 return x
             },
-            effDesc: x => format(x)+"x",
-        },{
-            costOnce: true,
-
-            title: "Gotta Grow Fast",
-            desc: `Multiply grass grow speed by 5.`,
-
-            res: "momentum",
-            icon: ['Icons/Speed'],
-            
-            cost: i => 1,
-            bulk: i => 1,
-
-            effect(i) {
-                let x = i*4+1
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            costOnce: true,
-
-            title: "Gas Gas Gas",
-            desc: `Multiply XP gain by 10.`,
-
-            res: "momentum",
-            icon: ['Icons/XP'],
-            
-            cost: i => 1,
-            bulk: i => 1,
-
-            effect(i) {
-                let x = i*9+1
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            costOnce: true,
-
-            title: "In Tiers",
-            desc: `Multiply TP gain by 10.`,
-
-            res: "momentum",
-            icon: ['Icons/TP'],
-            
-            cost: i => 1,
-            bulk: i => 1,
-
-            effect(i) {
-                let x = i*9+1
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            costOnce: true,
-
-            title: "Popular",
-            desc: `Multiply PP gain by 10.`,
-
-            res: "momentum",
-            icon: ['Curr/Prestige'],
-            
-            cost: i => 1,
-            bulk: i => 1,
-
-            effect(i) {
-                let x = i*9+1
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            costOnce: true,
-
-            title: "Shine Bright",
-            desc: `Multiply Crystal gain by 10.`,
-
-            res: "momentum",
-            icon: ['Curr/Crystal'],
-            
-            cost: i => 1,
-            bulk: i => 1,
-
-            effect(i) {
-                let x = i*9+1
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            costOnce: true,
-
-            title: "Steel Going?",
-            desc: `Multiply steel gain by 10.`,
-
-            res: "momentum",
-            icon: ['Curr/Steel2'],
-            
-            cost: i => 1,
-            bulk: i => 1,
-
-            effect(i) {
-                let x = i*9+1
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            costOnce: true,
-
-            title: "Powerful",
-            desc: `Multiply charge rate by 10.`,
-
-            res: "momentum",
-            icon: ['Icons/Charge'],
-            
-            cost: i => 1,
-            bulk: i => 1,
-
-            effect(i) {
-                let x = i*9+1
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            costOnce: true,
-
-            title: "Quickly Forgettable",
-            desc: `Multiply AP gain by 10.`,
-
-            res: "momentum",
-            icon: ['Curr/Anonymity'],
-            
-            cost: i => 1,
-            bulk: i => 1,
-
-            effect(i) {
-                let x = i*9+1
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            costOnce: true,
-
-            title: "Fracking",
-            desc: `Multiply oil gain by 10.`,
-
-            res: "momentum",
-            icon: ['Curr/Oil'],
-            
-            cost: i => 1,
-            bulk: i => 1,
-
-            effect(i) {
-                let x = i*9+1
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            unl: ()=>player.lowGH<=-20,
-
-            title: "Great Grass",
-            desc: `Increase grass gain by 100% every level.`,
-
-            res: "momentum",
-            icon: ['Curr/Grass'],
-            
-            cost: i => Decimal.pow(1.1,i).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.1).add(1).floor(),
-
-            effect(i) {
-                let x = Decimal.pow(2,i)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            unl: ()=>player.lowGH<=-20,
-
-            title: "Great Level",
-            desc: `Increase XP gain by 100% every level.`,
-
-            res: "momentum",
-            icon: ['Icons/XP'],
-            
-            cost: i => Decimal.pow(1.1,i).mul(10).ceil(),
-            bulk: i => i.div(10).max(1).log(1.1).add(1).floor(),
-
-            effect(i) {
-                let x = Decimal.pow(2,i)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
-        },{
-            max: 1000,
-
-            unl: ()=>player.lowGH<=-20,
-
-            title: "Giga Charge",
-            desc: `Increase charge rate by 50% every level.`,
-
-            res: "momentum",
-            icon: ['Icons/Charge'],
-            
-            cost: i => Decimal.pow(1.25,i).mul(25).ceil(),
-            bulk: i => i.div(25).max(1).log(1.25).add(1).floor(),
-
-            effect(i) {
-                let x = Decimal.pow(1.5,i)
-
-                return x
-            },
-            effDesc: x => format(x)+"x",
+            effDesc: x => formatMult(x,0),
         },
-    ],
+        "1b": {
+            unl: ()=>true,
+            icons: ["Icons/XP"],
+
+            name: `Gas Gas Gas`,
+            desc: `Increases experience gained by <b class="green">x10</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.mul(9).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "1c": {
+            unl: ()=>true,
+            icons: ["Curr/Oil"],
+
+            name: `Fracking`,
+            desc: `Increases oil earned by <b class="green">x10</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.mul(9).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "1d": {
+            unl: ()=>true,
+            icons: ["Curr/Charge"],
+
+            name: `Powerful`,
+            desc: `Increases charge rate by <b class="green">x10</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.mul(9).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "1e": {
+            unl: ()=>true,
+            icons: ["Curr/Platinum"],
+
+            name: `I Like to Idle`,
+            desc: `Increases platinum earned by <b class="green">x10</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.mul(9).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "1f": {
+            unl: ()=>true,
+            icons: ["Curr/Crystal"],
+
+            name: `Shine Bright`,
+            desc: `Increases crystals earned by <b class="green">x10</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.mul(9).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "1g": {
+            unl: ()=>true,
+            icons: ["Curr/Prestige"],
+
+            name: `Popular`,
+            desc: `Increases prestige points earned by <b class="green">x10</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.mul(9).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "1h": {
+            unl: ()=>true,
+            icons: ["Curr/Anonymity"],
+
+            name: `Quickly Forgettable`,
+            desc: `Increases anonymity points earned by <b class="green">x10</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.mul(9).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "1i": {
+            unl: ()=>true,
+            icons: ["Icons/TP"],
+
+            name: `In Tiers`,
+            desc: `Increases tier progress by <b class="green">x10</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.mul(9).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "1j": {
+            unl: ()=>true,
+            icons: ["Curr/Steel2"],
+
+            name: `Steel Going?`,
+            desc: `Increases steel earned by <b class="green">x10</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.mul(9).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+    },
 }
-
-el.update.rocket = ()=>{
-    if (mapID == "as") {
-        for (let i = 0; i < 2; i++) {
-            let rc = tmp.el["rf_cost"+i]
-            let res = [player.chargeRate,player.oil][i]
-            let cost = tmp.rf_cost[i]
-
-            rc.setTxt(res.format(0)+" / "+cost.format(0))
-            rc.setClasses({[res.gte(cost)?"green":"red"]: true})
-        }
-
-        tmp.el.rf_craft_bulk.setDisplay(!hasSolarUpgrade(2,2))
-        tmp.el.rf_craft_bulk.setTxt("Craft to "+format(tmp.rf_bulk.sub(player.rocket.total_fp).max(0),0)+" Rocket Fuel")
-        tmp.el.rf_craft_bulk.setClasses({locked: tmp.rf_bulk.lte(player.rocket.total_fp) })
-    } else if (mapID == 'rp') {
-        tmp.el.reset_btn_rocket_part.setClasses({locked: player.rocket.total_fp.lt(tmp.rp_req[1]) || player.steel.lt(tmp.rp_req[0])})
-        tmp.el.momentumGain.setTxt(format(tmp.momentumGain,0))
-    }
-}
-
-function updateRocketTemp() {
-    let cheap = hasCentralized(7) ? player.grass.max(1).floor() : Decimal.mul(starTreeEff('progress',9,1),starTreeEff('progress',11,1)).mul(getLEffect(5))
-    
-    let rf = Decimal.div(player.rocket.total_fp,cheap)
-    let b = hasSolarUpgrade(2,2) ? E(1) : Decimal.pow(RF_COST_POW,rf).mul(tmp.rf_base_mult)
-    tmp.rf_cost = [b.mul(1e36),b.mul(1e9)]
-    tmp.rf_cheap = cheap
-
-    let bulk = E(0)
-    if (player.chargeRate.gte(tmp.rf_cost[0]) && player.oil.gte(tmp.rf_cost[1])) bulk = Decimal.min(ROCKET.bulk(player.chargeRate,rf,1e36),ROCKET.bulk(player.oil,rf,1e9))
-    tmp.rf_bulk = bulk
-}
-
-tmp_update.push(()=>{
-    let rp = player.rocket.part, req, mult = E(1), bulk = 1
-
-    if (hasSolarUpgrade(2,2)) {
-        req = [Decimal.pow(10, rp**1.5).mul(1e60), Decimal.mul(rp+1,10).scale(1e6,2,2).scale(100,3,3).pow(2)]
-        bulk = player.rocket.total_fp.root(2).scale(100,3,3,true).scale(1e6,2,2,true).div(10).min(player.steel.div(10).max(1).log10().pow(1.5).add(1)).sub(rp).max(0).floor().toNumber()
-    } else {
-        if (rp > 50) rp = (rp/50)**2.5*50
-        req = [Decimal.pow(4+rp/2,rp).mul(1e60),player.rocket.part>9&&player.gTimes==0?1/0:Math.ceil(15*rp)+15]
-        mult = Decimal.pow(1.5,rp)
-    }
-
-    tmp.rp_req = req
-    tmp.rf_base_mult = mult
-    tmp.rp_bulk = bulk
-
-    updateRocketTemp()
-
-    if (hasCentralized(13)) tmp.momentumGain = player.grass.floor()
-    else {
-        let m = E(1)
-        if (player.lowGH <= -28) m = m.add(getAGHEffect(14))
-    
-        m = m.mul(upgEffect('np',3)).mul(upgEffect('dm',7))
-    
-        if (player.lowGH <= -44) m = m.mul(getAGHEffect(18))
-    
-        if (player.grassjump>=2) m = m.mul(getGJEffect(1))
-    
-        tmp.momentumGain = Decimal.ceil(m)
-    }
-})

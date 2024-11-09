@@ -1,0 +1,900 @@
+@font-face {
+	font-family: MainFont;
+	src: url('ComicNeue-Angular-Bold.ttf');
+}
+
+:root {
+	--primary-background-color: #0052af;
+	--secondary-background-color: #00489b;
+}
+
+* {
+	font-family: MainFont;
+    table-align: center;
+	text-align: center;
+    user-select: none;
+
+	text-shadow: 0px 0px 1px black, 0px 0px 1px black, 0px 0px 2px black, 0px 0px 2px black, 0px 0px 3px black, 0px 0px 3px black,
+	0px 1px 0px black, 1px 0px 0px black, 0px -1px 0px black, -1px 0px 0px black,
+	1px 1px 0px black, 1px -1px 0px black, -1px -1px 0px black, -1px 1px 0px black;
+}
+
+body {
+    margin: 0px 10px;
+    font-size: 16px;
+    overflow: hidden;
+	color: white;
+
+	background-color: var(--primary-background-color);
+	background-size: 250px 250px;
+	background-image:
+		linear-gradient(to right, var(--secondary-background-color) 4px, transparent 1px),
+		linear-gradient(to bottom, var(--secondary-background-color) 4px, transparent 1px);
+	background-position: calc(50% - 2px) calc(50% - 2px);
+}
+
+table, tr {
+    display: flex;
+    justify-content: center;
+}
+
+h1 {
+    display: inline;
+	font-weight: normal;
+    font-size: 32px;
+}
+
+h2 {
+	display: inline;
+	font-weight: normal;
+    font-size: 28px;
+}
+
+h3 {
+	display: inline;
+	font-weight: bold;
+    font-size: 24px;
+}
+
+h4 {
+	display: inline;
+	font-weight: bold;
+    font-size: 20px;
+}
+
+.table-center {
+    display: flex;
+    justify-content: center;
+    flex-flow: row wrap;
+}
+
+.table-left {
+    display: flex;
+    justify-content: start;
+    flex-flow: row wrap;
+}
+
+.item-left {
+	width: 100%;
+	text-align: left;
+}
+
+.line {
+	content: '';
+	display: block;
+	width: calc(100% - 10px);
+	margin-top: 6px;
+	margin: 5px;
+	height: 6px;
+	border-top: solid 2px white;
+}
+
+.main-line {
+	width: 100%;
+	border-bottom: solid 2px #11857f;
+	height: 5px;
+	margin-bottom: 5px;
+}
+
+img {
+	vertical-align: middle;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+	height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background-color: #0000;
+}
+
+*::-webkit-scrollbar-thumb {
+	border: solid 1px black;
+    background-color: #888;
+    border-radius: 10px;
+}
+
+button {
+	border: solid 2px black;
+	border-radius: 5px;
+	box-shadow: inset 0px 0px 10px 2px #000;
+	background: #ccc;
+	color: white;
+	font-size: 16px;
+
+	cursor: pointer;
+
+	padding: 5px 10px;
+	margin: 3px;
+}
+button:hover {
+	background-image: linear-gradient(rgb(0 0 0/20%) 0 0);
+}
+button:active {
+	background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
+}
+button * {
+	pointer-events: none;
+}
+
+button.big-btn {
+	width: 180px;
+	height: 50px;
+}
+button.tiny-btn {
+	width: 120px;
+	height: 40px;
+	font-size: 14px;
+}
+
+button.locked {
+	border-color: #333;
+
+	cursor: default;
+}
+
+button.bought {
+	background-color: #010;
+	border-color: #0c0;
+
+	cursor: default;
+}
+
+#app {
+	width: 100%;
+	height: 100%;
+}
+
+#wipe {
+	border-color: #c00;
+	background-color: #100;
+	color: red;
+}
+
+#grid-elements {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transition: opacity 6s;
+}
+
+.grid-element {
+	position: absolute;
+	transform: translate(-50%,-50%);
+	width: 240px;
+	height: 240px;
+	z-index: 1;
+}
+
+.grid-element-info {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	text-align: left;
+	font-size: 14px;
+	color: #888;
+}
+
+.grid-element-content {
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	transform: translateY(-50%);
+}
+
+@keyframes currency-background {
+	from {
+		background-position-y: 0px;
+	}
+	to {
+		background-position-y: -240px;
+	}
+}
+
+.grid-button {
+	width: 235px;
+	height: 160px;
+
+	font-size: 14px;
+}
+
+.upgrade-grid-buy-max {
+	width: 235px;
+	height: 30px;
+}
+
+#canvas-path {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	transition: opacity 3s;
+}
+
+#pin-div {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 2;
+
+	transition: opacity 3s;
+}
+
+#tabs-div {
+	width: 300px;
+}
+
+#infos-div {
+	position: relative;
+	background-color: #111;
+	font-size: 14px;
+	padding: 5px;
+	padding-top: 30px;
+	margin: 5px;
+}
+
+#info-0 > * {
+	width: 100%;
+	text-align: left;
+}
+
+#close-tab-button {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	height: 20px;
+	line-height: 0%;
+}
+
+img {
+	vertical-align: middle;
+}
+
+.grid-fill-btn {
+	width: 235px;
+	height: 235px;
+}
+
+.field-amount {
+	width: 50px;
+}
+
+#bottom-pin-div {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+	z-index: 1;
+	pointer-events: none;
+}
+
+.bottom-pin-button {
+	position: relative;
+	width: 200px;
+	height: 100px;
+	overflow: hidden;
+	pointer-events: all;
+}
+.bottom-pin-button > * {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
+.bottom-pin-button > div {
+	font-size: 28px;
+	width: 100%;
+}
+.bottom-pin-button > img {
+	height: 100%;
+	transform: translate(-50%,-50%) scale(1.5);
+}
+
+.upgrades-div {
+	width: calc(100% - 4px);
+	height: calc(100% - 4px);
+	border: solid 2px black;
+	position: relative;
+}
+.upgrades-div,.upg-desc,.reset-req {
+	/* box-shadow: inset 0px 0px 10px 2px #000, inset 0px 50px 50px #0004, inset 0px -50px 50px #0004; */
+}
+
+.upg-curr-display {
+	position: absolute;
+	top: 10px;
+	left: 40px;
+	width: calc(100% - 64px);
+	height: 30px;
+	border: solid 2px black;
+	background-color: #161616;
+	box-shadow: inset 0px 0px 10px 2px #000;
+}
+.upg-curr-display > img {
+	position: absolute;
+	top: 0px;
+	left: -20px;
+	height: 100%;
+	transform: scale(3);
+	pointer-events: none;
+}
+.upg-curr-display > div {
+	position: absolute;
+	top: 50%;
+	left: 0px;
+	width: 100%;
+	transform: translateY(-50%);
+	font-size: 24px;
+}
+
+.upg-bottom-text {
+	position: absolute;
+	bottom: 5px;
+	left: 5px;
+	width: calc(100% - 10px);
+	height: 30px;
+	font-size: 16px;
+}
+
+.upgrades-grid {
+	position: absolute;
+	top: 55px;
+	left: 10px;
+	width: calc(100% - 24px);
+	height: calc(100% - 100px);
+	border: solid 2px black;
+	background-color: #222;
+	box-shadow: inset 0px 0px 10px 2px #000;
+	overflow: hidden;
+}
+.upgrades-grid.normal-mode {
+	overflow-x: scroll;
+	display: flex;
+	justify-content: left;
+}
+.upgrades-grid.vertical-mode {
+	overflow-y: scroll;
+	display: flex;
+	justify-content: left;
+	flex-wrap: wrap;
+	align-content: flex-start;
+}
+.upgrades-grid.large-size {
+	height: calc(100% - 70px);
+}
+.upgrades-grid > div {
+	flex-shrink: 0;
+}
+
+.upgrade-div {
+	position: relative;
+	width: 150px;
+	height: 125px;
+	/* cursor: pointer; */
+	/* background-color: #fff2; */
+}
+.upgrades-grid.large-size > .upgrade-div {
+	width: 180px;
+	height: 155px;
+}
+
+.upgrade-div *:not(.img_desc:first-child,.upg-auto) {
+	pointer-events: none;
+}
+
+.img_desc {
+	position: absolute;
+	top: 2px;
+	left: 18px;
+	width: calc(100% - 60px);
+}
+.img_desc:first-child {
+	cursor: pointer;
+}
+.img_desc:first-child:hover {
+	filter: brightness(0.75);
+}
+.upgrade-div.not-require > .img_desc:not(.img_lock):nth-child(n+2) {
+	filter: brightness(0);
+}
+.upgrade-div:not(.not-require) > .img_desc.img_lock {
+	display: none;
+}
+
+.img_res {
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	width: 40px;
+}
+.upg-cost {
+	position: absolute;
+	bottom: 12px;
+	left: 5px;
+	width: calc(100% - 40px);
+	border: solid 2px black;
+	background-color: #161616;
+	box-shadow: inset 0px 0px 10px 2px #000;
+	font-size: 14px;
+	color: lime;
+}
+.upg-cost:not(.maxed).locked {
+	color: red;
+}
+.upg-cost.maxed {
+	color: magenta;
+}
+.upg-lvl {
+	position: absolute;
+	bottom: 35px;
+	left: 5px;
+	width: calc(100% - 35px);
+	color: yellow;
+	font-size: 18px;
+}
+.upg-tier {
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	width: calc(100% - 35px);
+	font-size: 24px;
+}
+.upg-auto {
+	position: absolute;
+	bottom: 40px;
+	right: 2px;
+	width: 30px;
+	height: 30px;
+	padding: 0px;
+}
+
+.upg-desc {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: calc(100% - 10px);
+	height: calc(100% - 10px);
+	padding: 5px;
+}
+
+.red {
+    color: red;
+}
+
+.yellow {
+    color: gold;
+}
+
+.green {
+    color: lime;
+}
+
+.darkgreen {
+    color: green;
+}
+
+.lightgray {
+    color: lightgray;
+}
+
+.gray {
+    color: gray;
+}
+
+.lightblue {
+    color: lightblue;
+}
+
+.black {
+    color: #222;
+}
+
+.magenta {
+    color: magenta;
+}
+
+.cyan {
+    color: cyan;
+}
+
+.darkblue {
+    color: #7812ff;
+}
+
+.level-div {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+.level-bar {
+	position: absolute;
+	top: 50%;
+	left: 0px;
+	width: calc(100% - 8px);
+	height: 40px;
+	border: solid 4px black;
+	background-color: #161616;
+	transform: translateY(-50%);
+}
+.level-bar-fill {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 50%;
+	height: 100%;
+	background-image: linear-gradient(0deg, #0006, transparent, #0006);
+}
+.level-bar-text {
+	position: absolute;
+	top: 50%;
+	left: 0px;
+	width: 100%;
+	transform: translateY(-50%);
+	font-size: 30px;
+}
+.level-name {
+	position: absolute;
+	bottom: calc(50% + 26px);
+	left: 0px;
+	width: 100%;
+	font-size: 24px;
+}
+.level-bonus {
+	position: absolute;
+	top: calc(50% + 26px);
+	left: 0px;
+	width: 100%;
+	font-size: 20px;
+}
+
+.reset-req {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+}
+.reset-req > div {
+	position: absolute;
+	top: 50%;
+	left: 5px;
+	width: calc(100% - 10px);
+	transform: translateY(-50%);
+	font-size: 24px;
+}
+
+.reset-name {
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	width: calc(100% - 10px);
+	font-size: 32px;
+}
+.reset-desc {
+	position: absolute;
+	top: 40px;
+	left: 5px;
+	width: calc(100% - 10px);
+	font-size: 16px;
+}
+
+.reset-button {
+	position: absolute;
+	bottom: 20px;
+	left: 30px;
+	width: calc(100% - 80px);
+	height: 40px;
+	font-size: 24px;
+}
+.reset-lock {
+	background-color: #333 !important;
+	color: red;
+	cursor: default;
+}
+.reset-img {
+	position: absolute;
+	bottom: -5px;
+	right: 0px;
+	pointer-events: none;
+	width: 100px;
+}
+
+.milestone-div {
+	width: calc(100% - 4px);
+	height: calc(100% - 4px);
+	border: solid 2px black;
+	position: relative;
+}
+.milestone-amount {
+	position: absolute;
+	top: 10px;
+	left: 5px;
+	width: calc(100% - 10px);
+	font-size: 20px;
+}
+.milestone-table {
+	position: absolute;
+	top: 40px;
+	left: 5px;
+	width: calc(100% - 14px);
+	height: calc(100% - 50px);
+	font-size: 14px;
+	border: solid 2px black;
+	background-color: #222;
+	box-shadow: inset 0px 0px 10px 2px #000;
+	overflow-y: scroll;
+}
+.milestone-table > div {
+	margin-left: 10px;
+	width: calc(100% - 14px);
+	min-height: 100px;
+	border: solid 2px black;
+	font-size: 16px;
+}
+
+.fill-div {
+	width: calc(100% - 4px);
+	height: calc(100% - 4px);
+	border: solid 2px black;
+	position: relative;
+}
+
+.accomplishments-table {
+	position: absolute;
+	top: 40px;
+	left: 5px;
+	width: calc(100% - 14px);
+	height: calc(100% - 50px);
+	border: solid 2px black;
+	background-color: #222;
+	box-shadow: inset 0px 0px 10px 2px #000;
+
+	overflow-x: scroll;
+	display: flex;
+	justify-content: left;
+}
+
+.accomplishment-div {
+	position: relative;
+	flex-shrink: 0;
+	width: 300px;
+	height: calc(100% - 4px);
+	border: solid 2px black;
+	background-color: #ccc;
+}
+.accomplishment-div > div {
+	position: absolute;
+	width: 100%;
+}
+.accomplishment-rest {
+	top: 40%;
+	transform: translateY(-50%);
+}
+.accomplishment-reward {
+	top: 65%;
+	transform: translateY(-50%);
+}
+.accomplishment-goal {
+	bottom: 0px;
+}
+
+#front-app {
+	position: absolute;
+	top: 30px;
+	left: 30px;
+	width: calc(100% - 80px);
+	height: calc(100% - 170px);
+	border: solid 2px black;
+	box-shadow: inset 0px 0px 10px 2px #000;
+	z-index: 1;
+	padding: 10px;
+}
+
+#tab-buttons {
+	display: grid;
+	width: 100%;
+	height: 100%;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: repeat(3, 1fr);
+	gap: 20px;
+}
+#tab-buttons > button {
+	font-size: 2.5vw;
+}
+
+.CL-table, #tab-display-list, #tab-map-list {
+	width: calc(100% - 4px);
+	height: calc(100% - 4px);
+	overflow-y: scroll;
+	background-color: #222;
+	border: solid 2px black;
+	box-shadow: inset 0px 0px 10px 2px #000;
+}
+.CL-table > div {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 12 / 1;
+}
+
+.CL-list-name > div {
+	position: absolute;
+	top: 50%;
+	left: 0px;
+	width: 100%;
+	font-size: 2.4vw;
+	transform: translateY(-50%);
+}
+
+.C-list-div, .L-list-div {
+	position: absolute;
+	top: 1vw;
+	left: 1vw;
+	width: calc(100% - 9vw - 4px);
+	height: calc(100% - 2vw - 4px);
+	border: solid 2px black;
+	box-shadow: inset 0px 0px 10px 2px #000;
+	padding-right: 5vw;
+
+	display: grid;
+	grid-auto-rows: 100%;
+}
+.C-list-div {
+	grid-template-columns: 4fr 8fr 1fr 1fr;
+}
+.L-list-div {
+	grid-template-columns: 4fr 9fr 1fr;
+}
+
+.C-list-div > div,
+.L-list-div > div {
+	position: relative;
+}
+.C-list-div > img,
+.L-list-div > img {
+	margin: auto;
+	height: 100%;
+	cursor: pointer;
+
+	&.disabled {
+		filter: grayscale(1);
+	}
+}
+
+.CL-img-res {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	height: 100%;
+}
+
+.pinned-list {
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	width: 14vw;
+	z-index: 1;
+}
+#pinned-levels {
+	left: calc(14.5vw + 5px);
+}
+
+.pinned-list > div {
+	position: relative;
+	width: 100%;
+	height: 2.5vw;
+}
+
+.P-list-div {
+	position: absolute;
+	top: .3vw;
+	left: 1.5vw;
+	width: calc(100% - 1.5vw - 4px);
+	height: calc(100% - 0.6vw - 4px);
+	border: solid 2px black;
+	box-shadow: inset 0px 0px 10px 2px #000;
+}
+.P-img-res {
+	position: absolute;
+	top: 0px; left: 0px;
+	height: 100%;
+}
+.P-list-res {
+	position: absolute;
+	top: 50%;
+	right: 0px;
+	width: calc(100% - 1vw);
+	transform: translateY(-50%);
+	font-size: 1.3vw;
+}
+.P-list-bar {
+	position: absolute;
+	top: 0px; left: 0px;
+	height: 100%;
+	background-image: linear-gradient(0deg, #0006, transparent, #0006);
+}
+
+.small-text {
+	font-size: 16px;
+}
+
+.charger-table {
+	position: absolute;
+	top: 55px;
+	left: 10px;
+	width: calc(100% - 24px);
+	height: calc(100% - 100px);
+	border: solid 2px black;
+	background-color: #222;
+	box-shadow: inset 0px 0px 10px 2px #000;
+	overflow-y: scroll;
+}
+
+#position {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	font-size: 16px;
+	z-index: 1;
+}
+
+.map-button {
+	position: relative;
+	width: 125px; height: 125px;
+	margin: 2px;
+}
+.map-button * {
+	pointer-events: none;
+}
+
+.map-img {
+	position: absolute;
+	top: 0px; left: 0px;
+	width: 100%;
+}
+.map-img:first-child, .map-pin {
+	cursor: pointer;
+	pointer-events: all;
+}
+.map-button > img:first-child:hover {
+	filter: brightness(.75);
+}
+
+.map-text {
+	position: absolute;
+	bottom: 10px;
+	left: 0px;
+	width: 100%;
+	font-size: 18px;
+}
+
+.map-pin {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 50px;
+}
+.map-button-unpinned > .map-pin {
+	filter: grayscale(1);
+}

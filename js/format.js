@@ -1,4 +1,5 @@
-function E(x){return new Decimal(x)};
+var E = x => new Decimal(x);
+const EINF = Decimal.dInf
 
 const ST_NAMES = [
 	null, [
@@ -38,14 +39,15 @@ const FORMATS = {
             return `${omegas.join("^")}^${lastLetter}`;
             } else if (omegaAmount.gt(3) && omegaAmount.lt(10)) {
             return `ω(${omegaAmount.toFixed(0)})^${lastLetter}`;
-            } else if (omegaOrder < 3) {
+            } else if (omegaOrder.lt(3)) {
             return `ω(${this.format(omegaAmount)})^${lastLetter}`;
-            } else if (omegaOrder < 6) {
+            } else if (omegaOrder.lt(6)) {
             return `ω(${this.format(omegaAmount)})`;
             }
-            const val = Decimal.pow(8000, omegaOrder % 1);
-            const orderStr = omegaOrder < 100
-            ? Math.floor(omegaOrder).toFixed(0)
+            let val = Decimal.pow(8000, omegaOrder.toNumber() % 1);
+			      if(omegaOrder.gte(1e20))val = E(1)
+            const orderStr = omegaOrder.lt(100)
+            ? Math.floor(omegaOrder.toNumber()).toFixed(0)
             : this.format(Decimal.floor(omegaOrder));
             return `ω[${orderStr}](${this.format(val)})`;
         },
@@ -75,8 +77,9 @@ const FORMATS = {
             } else if (omegaAmount.gt(2) && omegaAmount.lt(10)) {
             return `ω(${omegaAmount.toFixed(0)})^${lastLetter}`;
             }
-            const val = Decimal.pow(8000, omegaOrder % 1);
-            const orderStr = omegaOrder < 100
+            let val = Decimal.pow(8000, omegaOrder.toNumber() % 1);
+			      if(omegaOrder.gte(1e20))val = E(1)
+            const orderStr = omegaOrder.lt(100)
             ? Math.floor(omegaOrder).toFixed(0)
             : this.format(Decimal.floor(omegaOrder));
             return `ω[${orderStr}](${this.format(val)})`;
@@ -220,12 +223,19 @@ const FORMATS = {
       },
     },
     mixed_sc: {
-      format(ex, acc, max) {
-        ex = E(ex)
-        let e = ex.log10().floor()
-        if (e.lt(63) && e.gte(max)) return format(ex,acc,max,"st")
-        else return format(ex,acc,max,"sc")
-      }
+        format(ex, acc, max) {
+            ex = E(ex)
+            let e = ex.log10().floor()
+            if (e.lt(303) && e.gte(max)) return format(ex,acc,max,"st")
+            else {
+                if (ex.gte("eeee10")) {
+                    let slog = ex.slog()
+                    return (slog.gte(1e9)?'':E(10).pow(slog.sub(slog.floor())).toFixed(4)) + "F" + format(slog.floor(),0,max)
+                }
+                let m = ex.div(E(10).pow(e))
+                return e.gte(1e3) ? (e.gte(1e9)?"":m.toFixed(2))+"e"+this.format(e,0,max) : format(ex,acc,max,"sc")
+            }
+        }
     },
     layer: {
       layers: ["infinity","eternity","reality","equality","affinity","celerity","identity","vitality","immunity","atrocity"],
@@ -295,10 +305,11 @@ function toSuperscript(value) {
       .join("");
 }
 
-function format(ex, acc=2, max=9, type="mixed_sc") {
+function format(ex, acc=2, max=6, type=options.notation) {
     ex = E(ex)
+
     neg = ex.lt(0)?"-":""
-    if (ex.mag == Infinity) return neg + 'Infinity'
+    if (ex.mag == Infinity) return neg + 'Infinite'
     if (Number.isNaN(ex.mag)) return neg + 'NaN'
     if (ex.lt(0)) ex = ex.mul(-1)
     if (ex.eq(0)) return ex.toFixed(acc)
@@ -307,145 +318,122 @@ function format(ex, acc=2, max=9, type="mixed_sc") {
         case "sc":
             if (ex.log10().lt(Math.min(-acc,0)) && acc > 1) {
                 let e = ex.log10().ceil()
-                let m = ex.div(e.eq(-1)?E(0.1):E(10).pow(e))
-                let be = e.mul(-1).max(1).log10().gte(9)
-                return neg+(be?'':m.toFixed(2))+'e'+format(e, 0, max, "mixed_sc")
+                let m = ex.div(e.eq(-1)?E(0.1):E(10).pow(e)).min(9.99)
+                let be = e.mul(-1).max(1).log10().gte(6)
+                return neg+(be?'':m.toFixed(2))+'e'+format(e, 0, max, "sc")
             } else if (e.lt(max)) {
                 let a = Math.max(Math.min(acc-e.toNumber(), acc), 0)
                 return neg+(a>0?ex.toFixed(a):ex.toFixed(a).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'))
             } else {
                 if (ex.gte("eeee10")) {
                     let slog = ex.slog()
-                    return (slog.gte(1e9)?'':E(10).pow(slog.sub(slog.floor())).toFixed(2)) + "F" + format(slog.floor(), 0)
+                    return neg+(slog.gte(1e9)?'':E(10).pow(slog.sub(slog.floor())).toFixed(4)) + "F" + format(slog.floor(), 0)
                 }
-                let m = ex.div(E(10).pow(e))
-                let be = e.log10().gte(9)
-                return neg+(be?'':m.toFixed(2))+'e'+format(e, 0, max, "mixed_sc")
+                let ee = e.log10().floor(), f = Decimal.sub(5, ee).max(0).min(2).toNumber()
+                let m = ex.div(E(10).pow(e)).min(10-10**-f)
+                let be = ee.gte(6)
+                return neg+(be?'':m.toFixed(f))+'e'+format(e, 0, max, "sc")
             }
         case "st":
             let e3 = ex.log(1e3).floor()
-            if (e3.lt(1)) {
-              return neg+ex.toFixed(Math.max(Math.min(acc-e.toNumber(), acc), 0))
-            } else {
-              let e3_mul = e3.mul(3)
-              let ee = e3.log10().floor()
-              if (ee.gte(3000)) return "e"+format(e, acc, max, "st")
+			if (e3.lt(1)) {
+				return neg+ex.toFixed(Math.max(Math.min(acc-e.toNumber(), acc), 0))
+			} else {
+				let e3_mul = e3.mul(3)
+				let ee = e3.log10().floor()
+				if (ee.gte(3000)) return "e"+format(e, acc, max, "st")
 
-              let final = ""
-              if (e3.lt(4)) final = ["", "K", "M", "B"][Math.round(e3.toNumber())]
-              else {
-                let ee3 = Math.floor(e3.log(1e3).toNumber())
-                if (ee3 < 100) ee3 = Math.max(ee3 - 1, 0)
-                e3 = e3.sub(1).div(E(10).pow(ee3*3))
-                while (e3.gt(0)) {
-                  let div1000 = e3.div(1e3).floor()
-                  let mod1000 = e3.sub(div1000.mul(1e3)).floor().toNumber()
-                  if (mod1000 > 0) {
-                    if (mod1000 == 1 && !ee3) final = "U"
-                    if (ee3) final = FORMATS.standard.tier2(ee3) + (final ? "-" + final : "")
-                    if (mod1000 > 1) final = FORMATS.standard.tier1(mod1000) + final
-                  }
-                  e3 = div1000
-                  ee3++
-                }
-              }
+				let final = ""
+				if (e3.lt(4)) final = ["", "K", "M", "B"][Math.round(e3.toNumber())]
+				else {
+					let ee3 = Math.floor(e3.log(1e3).toNumber())
+					if (ee3 < 100) ee3 = Math.max(ee3 - 1, 0)
+					e3 = e3.sub(1).div(E(10).pow(ee3*3))
+					while (e3.gt(0)) {
+						let div1000 = e3.div(1e3).floor()
+						let mod1000 = e3.sub(div1000.mul(1e3)).floor().toNumber()
+						if (mod1000 > 0) {
+							if (mod1000 == 1 && !ee3) final = "U"
+							if (ee3) final = FORMATS.standard.tier2(ee3) + (final ? "-" + final : "")
+							if (mod1000 > 1) final = FORMATS.standard.tier1(mod1000) + final
+						}
+						e3 = div1000
+						ee3++
+					}
+				}
 
-              let m = ex.div(E(10).pow(e3_mul))
-              return neg+(ee.gte(10)?'':(m.toFixed(E(2).sub(e.sub(e3_mul)).add(1).toNumber()))+' ')+final
-            }
+				let m = ex.div(E(10).pow(e3_mul))
+				return neg+(ee.gte(10)?'':(m.toFixed(E(3).sub(e.sub(e3_mul)).toNumber())))+final
+			}
         default:
             return neg+FORMATS[type].format(ex, acc, max)
     }
 }
 
-function formatGain(amt, gain) {
-    let next = amt.add(gain)
-    let rate
-    let ooms = next.div(amt)
-    if (ooms.gte(10) && amt.gte(1e100)) {
-        ooms = ooms.log10().mul(20)
-        rate = "(+"+format(ooms) + " OoMs/sec)"
+const DT = Decimal.tetrate(10,6)
+
+function formatGain(a,e) {
+    const g = Decimal.add(a,e.div(FPS))
+
+    if (g.neq(a)) {
+        if (a.gte(DT)) {
+            var oom = E(g).slog(10).sub(E(a).slog(10)).mul(FPS)
+            if (oom.gte(1e-3)) return "(+" + oom.format() + " OoMs^^2/s)"
+        }
+
+        if (a.gte('ee100')) {
+            var tower = Math.floor(E(a).slog(10).toNumber() - 1.3010299956639813);
+    
+            var oom = E(g).iteratedlog(10,tower).sub(E(a).iteratedlog(10,tower)).mul(FPS), rated = false;
+    
+            if (oom.gte(1)) rated = true
+            else if (tower > 2) {
+                tower--
+                oom = E(g).iteratedlog(10,tower).sub(E(a).iteratedlog(10,tower)).mul(FPS)
+                if (oom.gte(1)) rated = true
+            }
+    
+            if (rated) return "(+" + oom.format() + " OoMs^"+tower+"/s)"
+        }
+    
+        if (a.gte(1e100)) {
+            const oom = g.div(a).log10().mul(FPS)
+            if (oom.gte(1)) return "(+" + oom.format() + " OoMs/s)"
+        }
     }
-    else rate = "(+"+format(gain)+"/sec)"
-    return rate
+
+    return "(" + (e.lt(0) ? "" : "+") + format(e) + "/s)"
 }
 
 function formatTime(ex,acc=0,type="s") {
-    ex = E(ex)
-    if (ex.mag == Infinity) return 'Forever'
-    if (ex.gte(31536000)) return format(ex.div(31536000).floor(),0)+" years"+(ex.div(31536000).gte(1e9) ? "" : " " + formatTime(ex.mod(31536000),acc,'y'))
-    if (ex.gte(86400)) return format(ex.div(86400).floor(),0)+" days "+formatTime(ex.mod(86400),acc,'d')
-    if (ex.gte(3600)) return format(ex.div(3600).floor(),0)+":"+formatTime(ex.mod(3600),acc,'h')
-    if (ex.gte(60)||type=="h") return (ex.div(60).gte(10)||type!="h"?"":"0")+format(ex.div(60).floor(),0)+":"+formatTime(ex.mod(60),acc,'m')
-    return (ex.gte(10)||type!="m" ?"":"0")+format(ex,acc)+(type=='s'?"s":"")
+  ex = E(ex)
+  if (ex.mag == Infinity) return 'Forever'
+  if (ex.gte(31536000)) {
+    return format(ex.div(31536000).floor(),0)+"y"+(ex.div(31536000).gte(1e9) ? "" : " " + formatTime(ex.mod(31536000),acc,'y'))
+  }
+  if (ex.gte(86400)) {
+    var n = ex.div(86400).floor()
+    return (n.gt(0) || type == "d"?format(ex.div(86400).floor(),0)+"d ":"")+formatTime(ex.mod(86400),acc,'d')
+  }
+  if (ex.gte(3600)) {
+    var n = ex.div(3600).floor()
+    return (n.gt(0) || type == "h"?format(ex.div(3600).floor(),0)+"h ":"")+formatTime(ex.mod(3600),acc,'h')
+  }
+  if (ex.gte(60)) {
+    var n = ex.div(60).floor()
+    return (n.gt(0) || type == "m"?format(n,0)+"m ":"")+formatTime(ex.mod(60),acc,'m')
+  }
+  return ex.gt(0) || type == "s"?format(ex,acc)+"s":""
 }
 
-function formatReduction(ex,acc) { return Decimal.sub(1,ex).mul(100).format(acc)+"%" }
+function formatReduction(ex,acc) { return format(Decimal.sub(1,ex).mul(100),acc)+"%" }
 
-function formatPercent(ex,acc) { return Decimal.mul(ex,100).format(acc)+"%" }
+function formatPercent(ex,acc) { return format(Decimal.mul(ex,100),acc)+"%" }
 
-function formatMult(ex,acc) { return Decimal.gte(ex,1)?"×"+format(ex,acc):"/"+Decimal.pow(ex,-1).format(acc)}
+function formatMult(ex,acc) { return Decimal.gte(ex,1)?"x"+format(ex,acc):"/"+format(Decimal.pow(ex,-1),acc)} // ×
 
 function formatPow(ex,acc) { return "^"+format(ex,acc) }
 
-function expMult(a,b,base=10) { return Decimal.gte(a,10) ? Decimal.pow(base,Decimal.log(a,base).pow(b)) : E(a) }
-
-Decimal.prototype.clone = function() {
-  return this
-}
-
-Decimal.prototype.modular=Decimal.prototype.mod=function (other){
-  other=E(other);
-  if (other.eq(0)) return E(0);
-  if (this.sign*other.sign==-1) return this.abs().mod(other.abs()).neg();
-  if (this.sign==-1) return this.abs().mod(other.abs());
-  return this.sub(this.div(other).floor().mul(other));
-};
-
-function softcap(x,s,p,m) {
-  if (x >= s) {
-      if ([0, "pow"].includes(m)) x = (x/s)**p*s
-      if ([1, "mul"].includes(m)) x = (x-s)/p+s
-      if ([2, "pow2"].includes(m)) x = (x-s+1)**p+s-1
-  }
-  return x
-}
-
-function scale(x, s, p, mode, rev) {
-  return x.scale(s, p, mode, rev)
-}
-
-Decimal.prototype.softcap = function (start, power, mode, dis=false) {
-  var x = this.clone()
-  if (!dis&&x.gte(start)) {
-      if ([0, "pow"].includes(mode)) x = x.div(start).max(1).pow(power).mul(start)
-      if ([1, "mul"].includes(mode)) x = x.sub(start).div(power).add(start)
-      if ([2, "exp"].includes(mode)) x = expMult(x.div(start), power).mul(start)
-      if ([3, "log"].includes(mode)) x = x.div(start).log(power).add(1).mul(start)
-  }
-  return x
-}
-
-Decimal.prototype.scale = function (s, p, mode, rev=false) {
-  s = E(s)
-  p = E(p)
-  var x = this.clone()
-  if (x.gte(s)) {
-      if ([0, "pow"].includes(mode)) x = rev ? x.div(s).root(p).mul(s) : x.div(s).pow(p).mul(s)
-      if ([1, "exp"].includes(mode)) x = rev ? x.div(s).max(1).log(p).add(s) : Decimal.pow(p,x.sub(s)).mul(s)
-      if ([2, "dil"].includes(mode)) {
-          let s10 = s.log10()
-          x = rev ? Decimal.pow(10,x.log10().div(s10).root(p).mul(s10)) : Decimal.pow(10,x.log10().div(s10).pow(p).mul(s10))
-      }
-      if ([3, "alt_exp"].includes(mode)) x = rev ? x.div(s).max(1).log(p).add(1).mul(s) : Decimal.pow(p,x.div(s).sub(1)).mul(s)
-  }
-  return x
-}
-
-function softcapHTML(x, start) { return E(x).gte(start)?` <span class='soft'>(softcapped)</span>`:"" }
-
-Decimal.prototype.softcapHTML = function (start) { return softcapHTML(this.clone(), start) }
-
-Decimal.prototype.format = function (acc=2, max=9) { return format(this.clone(), acc, max) }
+Decimal.prototype.format = function (acc, max) { return format(this.clone(), acc, max) }
 
 Decimal.prototype.formatGain = function (gain, mass=false) { return formatGain(this.clone(), gain, mass) }
