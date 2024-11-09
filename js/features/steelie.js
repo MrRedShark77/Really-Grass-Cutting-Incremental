@@ -624,7 +624,7 @@ CURRENCIES.charge = {
 
         x = x.mul(getAccomplishmentBonus(9)).mul(getMilestoneEffect('grasshop',10)).mul(getLevelBonus('anti-xp')).mul(upgradeEffect('anonymity',1)).mul(upgradeEffect('momentum','1d'))
 
-        return x.floor()
+        return x
     },
 }
 

@@ -12,6 +12,7 @@ function loadGame(start=true, gotNaN=false) {
 
         setTimeout(() => {
             updateTemp()
+            calc((Date.now() - player.latest)/1000)
             loop()
 
             el("app").style.display = ""

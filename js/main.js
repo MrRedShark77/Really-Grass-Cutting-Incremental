@@ -11,6 +11,7 @@ function loop() {
     date = Date.now()
 
     player.saved_cam = camera_pos
+    player.latest = date
 }
 
 var camera_pos = {x: 0, y: 0}

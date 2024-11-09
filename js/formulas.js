@@ -91,22 +91,6 @@ Decimal.prototype.scale = function (s, p, mode, rev=false) {
             return rev ? Decimal.pow(10,x.log10().div(s10).root(p).mul(s10)) : Decimal.pow(10,x.log10().div(s10).pow(p).mul(s10))
         }
     }
-
-    /*
-    s = E(s)
-    p = E(p)
-    var x = this.clone()
-    if (x.gte(s)) {
-        if ([0, "pow"].includes(mode)) x = rev ? x.div(s).root(p).mul(s) : x.div(s).pow(p).mul(s)
-        if ([1, "exp"].includes(mode)) x = rev ? x.div(s).max(1).log(p).add(s) : Decimal.pow(p,x.sub(s)).mul(s)
-        if ([2, "dil"].includes(mode)) {
-        let s10 = s.log10()
-        x = rev ? Decimal.pow(10,x.log10().div(s10).root(p).mul(s10)) : Decimal.pow(10,x.log10().div(s10).pow(p).mul(s10))
-        }
-        if ([3, "alt_exp"].includes(mode)) x = rev ? x.div(s).max(1).log(p).add(1).mul(s) : Decimal.pow(p,x.div(s).sub(1)).mul(s)
-    }
-    return x
-    */
 }
 
 function overflow(number, start, power, meta=1){

@@ -10,7 +10,7 @@ function updateHTML() {
     for (let field in GRASS.field) updateGrass(field);
     el('position').innerHTML = `(X: ${Math.round(-camera_pos.x/250)}, Y: ${Math.round(-camera_pos.y/250)})`
 
-    if (isInsideCircle(20,0,10)) {
+    if (tmp.anti_unl && isInsideCircle(20,0,10)) {
         document.body.style.setProperty('--primary-background-color', '#070064')
         document.body.style.setProperty('--secondary-background-color', '#060053')
     } else {

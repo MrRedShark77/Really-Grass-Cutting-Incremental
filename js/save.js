@@ -5,6 +5,7 @@ var prevSave = "", autosave
 function getPlayerData() {
     let s = {
         time: 0,
+        latest: Date.now(),
 
         saved_cam: {x : 0, y : 0},
 
