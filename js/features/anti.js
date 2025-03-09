@@ -9,7 +9,7 @@ UPGRADES['anti-grass'] = {
         id: "anti-grass",
     },
     autobuy: ()=>hasUpgrade('anti-auto',3),
-    // el: ()=>hasUpgrade('assembler',1),
+    el: ()=>hasUpgrade('assembler',5),
     // cl: ()=>hasUpgrade('assembler',2),
     ctn: {
         '1': {
@@ -204,7 +204,7 @@ UPGRADES.anonymity = {
         id: "anonymity",
     },
     autobuy: ()=>hasUpgrade('anti-auto',4),
-    // el: ()=>hasUpgrade('assembler',3),
+    el: ()=>hasUpgrade('assembler',6),
     ctn: {
         '1': {
             max: 1000,
@@ -373,6 +373,21 @@ UPGRADES['anti-auto'] = {
             cost: ()=>1e5,
             res: "oil",
         },
+        "5": {
+            unl: ()=>player.galactic.times>0,
+            req: ()=>player.agh.lte(28),
+            req_desc: "AGH 28",
+
+            icons: ["Curr/Oil","Icons/Automation"],
+            base: "Bases/RocketBase",
+
+            name: `Oil Upgrade Autobuy`,
+            desc: `Autobuys oil upgrades every second.`,
+
+            noCostIncrease: true,
+            cost: ()=>100,
+            res: "rocket-fuel",
+        },
     },
 }
 
@@ -388,7 +403,8 @@ CURRENCIES.oil = {
         if (!RESETS.oil.req()) return E(0);
         let b = E(1.1)
 
-        let x = b.pow(player.tier.sub(1)).mul(player.tier).mul(4).mul(upgradeEffect('platinum', 13)).mul(upgradeEffect('refinery','1g')).mul(upgradeEffect('momentum','1c'))
+        let x = b.pow(player.tier.sub(1)).mul(player.tier).mul(4).mul(upgradeEffect('platinum', 13)).mul(upgradeEffect('refinery','1g')).mul(upgradeEffect('refinery','2g')).mul(upgradeEffect('momentum','1c'))
+        .mul(upgradeEffect('star','SC1f')).mul(tmp.charger_bonus[8]??1)
 
         return x.floor()
     },
@@ -440,8 +456,8 @@ UPGRADES.oil = {
     curr_dis: {
         id: "oil",
     },
-    // autobuy: ()=>hasUpgrade('auto',9),
-    // el: ()=>hasUpgrade('assembler',3),
+    autobuy: ()=>hasUpgrade('anti-auto',5),
+    el: ()=>hasUpgrade('assembler',7),
     ctn: {
         '1': {
             max: 1000,
@@ -544,6 +560,393 @@ UPGRADES.oil = {
             res: "oil",
             effect(a) {
                 let x = Decimal.pow(1.25,a.div(25).floor()).mul(a.mul(.25).add(1))
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+    },
+}
+
+const GS = {
+    get require() { return player.grassskip.mul(10).add(201) },
+    bulk(auto=false) {
+        let x = player.anti.level.sub(191).div(10).floor().sub(player.grassskip).max(1)
+        if (!auto && !(hasUpgrade('star','A13',1) && player.reset_options['grass-skip'][0])) x = x.min(1);
+        return x
+    },
+}
+
+RESETS['grass-skip'] = {
+    pos: [21,3],
+    unl: () => player.galactic.times>0,
+
+    req: () => player.anti.level.gte(201),
+    get req_desc() { return `Reach Anti-Level 201` },
+    lock: () => player.anti.level.lt(GS.require),
+
+    name: "Grass-Skip",
+    get reset_desc() {
+        return `Resets everything liquify does as well as oil.<br><br>Reach Anti-Level ${format(GS.require,0)} to grass-skip.`
+    },
+    color: ['#ef8','#ae6'],
+
+    icon: "Icons/GrassSkip",
+    get gain_desc() { return "+"+format(GS.bulk(),0) },
+
+    reset_options: [
+        ["Mult",()=>hasUpgrade('star','A13',1)],
+        ["Auto",()=>hasUpgrade('star','A13',2)],
+    ],
+
+    success() {
+        player.grassskip = player.grassskip.add(GS.bulk())
+    },
+    doReset() {
+        CURRENCIES.oil.amount = E(0)
+
+        RESETS.oil.doReset()
+    },
+}
+
+MILESTONES['grass-skip'] = {
+    unl: () => player.galactic.times>0,
+    pos: [23,3],
+    color: ['#ef8','#0c0'],
+
+    name: x => x + " Grass-Skip",
+    get amount() { return player.grassskip },
+    get amount_desc() { return `You have grass-skipped <b class="green">${format(this.amount,0)}</b> times.` },
+
+    ctn: [
+        { // 0
+            r: 1,
+            get desc() { return `Increases stars gained by <b class="green">+5</b> per grass-skip.` },
+            effect: a => a.mul(5),
+        },{
+            r: 2,
+            get desc() { return `Increases space power (SP) gained by <b class="green">+1</b> per grass-skip.` },
+            effect: a => a,
+        },{
+            r: 3,
+            get desc() { return `Multiplies anti grow speed by <b class="green">5</b>.` },
+        },{
+            r: 4,
+            get desc() { return `Increases platinum gained by <b class="green">+10</b>.` },
+        },{
+            r: 5,
+            get desc() { return `Multiplies anti autocut speed by <b class="green">3</b>.` },
+        },{
+            r: 6,
+            get desc() { return `Increases moonstone gained by <b class="green">+10</b>.` },
+        },{
+            r: 7,
+            get desc() { return `Increases anti autocut amount by <b class="green">+2</b>.` },
+        },{
+            r: 8,
+            get desc() { return `Unlocks <b class="green">Funify</b> reset and <b class="green">The Funny Upgrade</b> rocket fuel upgrade.` },
+        },
+    ],
+}
+
+RESETS.funify = {
+    pos: [21,4],
+    unl: () => player.funify.reached,
+
+    req: () => player.anti.level.gte(271),
+    get req_desc() { return `Reach Anti-Level 271` },
+    lock: () => player.anti.level.lt(271 + 10 * player.funify.gal_times),
+
+    name: "Funify",
+    get reset_desc() {
+        return `Resets everything grass-skip does for fun. Anti-Level requirement resets on galactic.<br><br>Reach Anti-Level ${format(271 + 10 * player.funify.gal_times,0)} to funify again.`
+    },
+    color: ['#ef8','#ae6'],
+
+    icon: "Curr/Fun",
+    curr: "fun",
+
+    success() {
+        player.funify.gal_times++
+        player.funify.times++
+    },
+    doReset() {
+        RESETS["grass-skip"].doReset()
+    },
+}
+
+CURRENCIES.fun = {
+    name: "Fun",
+    icon: "Curr/Fun",
+    base: "Bases/FunBase",
+
+    get amount() { return player.funify.fun },
+    set amount(v) { player.funify.fun = v.max(0) },
+
+    get gain() {
+        if (!RESETS.funify.req()) return E(0);
+
+        let x = E(1).mul(upgradeEffect('refinery','1h')).mul(upgradeEffect('refinery','2h')).mul(upgradeEffect('moonstone',13)).mul(upgradeEffect('moonstone',19))
+
+        for (let i = 1; i <= 4; i++) x = x.mul(upgradeEffect('fundry',i));
+
+        return x.floor()
+    },
+
+    get passive() { return 0 },
+}
+
+UPGRADES['funny-machine'] = {
+    unl: () => player.funify.reached,
+    pos: [21,5],
+    size: [4,1],
+    color: ['#ef8','#ae6'],
+    type: "normal",
+    base: "Bases/FunBase",
+    curr_dis: {
+        id: "fun",
+        // get text() { return "RAAAAAAAAAUGH" },
+    },
+    ctn: {
+        "1": {
+            max: 100,
+            unl: ()=>true,
+            icons: ["Icons/Fundry"],
+
+            name: `Fun-dry`,
+            desc: `Unlocks a building where you can upgrade fun production.<br>Increases charge rate by <b class="green">+10%</b> per level.`,
+
+            cost: a => a.simpleCost("EA", 1, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1, .2, 1.15).add(1).floor(),
+            res: "fun",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2": {
+            max: 100,
+            unl: ()=>true,
+            icons: ["Curr/SuperFun"],
+
+            name: `Super Fun Real Good Time Generator`,
+            desc: `Unlocks a building where you can generate SFRGT (Super Fun Real Good Time) and spend them on powerful upgrades.<br>Increases SFRGT generation by <b class="green">+10%</b> per level.`,
+
+            cost: a => a.simpleCost("EA", 1e5, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e5, .2, 1.15).add(1).floor(),
+            res: "fun",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "3": {
+            max: 100,
+            unl: ()=>true,
+            icons: ["Icons/Charger"],
+
+            name: `Charger Mk.II`,
+            desc: `Unlocks a new charge milestone.<br>Increases charge rate by <b class="green">+10%</b> per level.`,
+
+            cost: a => a.simpleCost("EA", 1e6, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e6, .2, 1.15).add(1).floor(),
+            res: "fun",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "4": {
+            max: 100,
+            unl: ()=>true,
+            icons: ["Icons/Assemblerv2"],
+
+            name: `Assembler Mk.II`,
+            desc: `Unlocks new assembler upgrades.<br>Increases charge rate by <b class="green">+10%</b> per level.`,
+
+            cost: a => a.simpleCost("EA", 1e8, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e8, .2, 1.15).add(1).floor(),
+            res: "fun",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+    },
+}
+
+UPGRADES.fundry = {
+    unl: () => hasUpgrade('funny-machine',1),
+    pos: [21,6],
+    size: [2,2],
+    color: ['#ef8','#ae6'],
+    type: "vertical",
+    base: "Bases/FunBase",
+    curr_dis: {
+        icon: "Icons/Fundry",
+        get text() { return "Fun-dry" },
+    },
+    ctn: {
+        "1": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Curr/Platinum"],
+
+            name: `Fun Platinum`,
+            desc: `Increases fun gained by <b class="green">+10%</b> per level.<br>This effect is increased by <b class="green">+5%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 100, .2, 1.05).ceil(),
+            bulk: a => a.simpleCost("EAI", 100, .2, 1.05).add(1).floor(),
+            res: "platinum",
+
+            effect(a) {
+                let x = Decimal.pow(1.05,a.div(25).floor()).mul(a).mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Curr/Star"],
+
+            name: `Fun Stars`,
+            desc: `Increases fun gained by <b class="green">+10%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 1, .2, 1.05).ceil(),
+            bulk: a => a.simpleCost("EAI", 1, .2, 1.05).add(1).floor(),
+            res: "star",
+
+            effect(a) {
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a).mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "3": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Curr/Fun"],
+
+            name: `Fun<sup>2</sup>`,
+            desc: `Increases fun gained by <b class="green">+10%</b> per level.<br>This effect is increased by <b class="green">+5%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 2, .2, 1.2).ceil(),
+            bulk: a => a.simpleCost("EAI", 2, .2, 1.2).add(1).floor(),
+            res: "fun",
+
+            effect(a) {
+                let x = Decimal.pow(1.05,a.div(25).floor()).mul(a).mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "4": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Curr/SuperFun"],
+
+            name: `Fun SFRGT`,
+            desc: `Increases fun gained by <b class="green">+10%</b> per level.<br>This effect is increased by <b class="green">+5%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 100, .2, 1.05).ceil(),
+            bulk: a => a.simpleCost("EAI", 100, .2, 1.05).add(1).floor(),
+            res: "sfrgt",
+
+            effect(a) {
+                let x = Decimal.pow(1.05,a.div(25).floor()).mul(a).mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+    },
+}
+
+CURRENCIES.sfrgt = {
+    name: "SFRGT",
+    icon: "Curr/SuperFun",
+    base: "Bases/FunBase",
+
+    get amount() { return player.funify.sfrgt },
+    set amount(v) { player.funify.sfrgt = v.max(0) },
+
+    get gain() {
+        if (!hasUpgrade('funny-machine',2)) return E(0);
+
+        let x = E(1).mul(upgradeEffect('moonstone',9)).mul(upgradeEffect('funny-machine',2)).mul(upgradeEffect('sfrgt',1)).mul(ASTRAL.bonus('sfrgt'))
+
+        return x.floor()
+    },
+}
+
+UPGRADES.sfrgt = {
+    unl: () => hasUpgrade('funny-machine',2),
+    pos: [23,6],
+    size: [2,2],
+    color: ['#ef8','#ae6'],
+    type: "vertical",
+    base: "Bases/FunBase",
+    curr_dis: {
+        id: "sfrgt",
+    },
+    ctn: {
+        "1": {
+            max: 25,
+            unl: ()=>true,
+            icons: ["Curr/SuperFun"],
+
+            name: `SFRGT Generation`,
+            desc: `Increases SFRGT generation by <b class="green">x2</b> per level.`,
+
+            cost: a => a.simpleCost("E", 1e5, 10).ceil(),
+            bulk: a => a.simpleCost("EI", 1e5, 10).add(1).floor(),
+            res: "fun",
+
+            effect(a) {
+                let x = a.pow_base(2)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Icons/SP"],
+
+            name: `SFRGT SP`,
+            desc: `Increases space power gained by <b class="green">+10%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 50, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 50, .2, 1.15).add(1).floor(),
+            res: "sfrgt",
+
+            effect(a) {
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a).mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "3": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Curr/Star"],
+
+            name: `SFRGT Stars`,
+            desc: `Increases stars gained by <b class="green">+10%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 500, .2, 1.17).ceil(),
+            bulk: a => a.simpleCost("EAI", 500, .2, 1.17).add(1).floor(),
+            res: "sfrgt",
+
+            effect(a) {
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a).mul(.1).add(1)
                 return x
             },
             effDesc: x => formatMult(x),

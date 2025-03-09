@@ -13,7 +13,8 @@ CURRENCIES.crystal = {
 
         let x = player.tier.sub(1).pow_base(b).mul(player.tier).mul(5)
         .mul(upgradeEffect('prestige',4)).mul(upgradeEffect('perks',8)).mul(upgradeEffect('platinum',5)).mul(upgradeEffect('platinum',6)).mul(upgradeEffect('platinum',7))
-        .mul(getAccomplishmentBonus(5)).mul(getAccomplishmentBonus(8)).mul(tmp.charger_bonus[5]??1).mul(upgradeEffect('refinery','1e')).mul(upgradeEffect('momentum','1f'))
+        .mul(getAccomplishmentBonus(5)).mul(getAccomplishmentBonus(8)).mul(tmp.charger_bonus[5]??1).mul(upgradeEffect('refinery','1e')).mul(upgradeEffect('refinery','2e')).mul(upgradeEffect('momentum','1f'))
+        .mul(ASTRAL.bonus('crystal')).mul(upgradeEffect('moonstone',3))
 
         return x.floor()
     },
@@ -76,6 +77,8 @@ UPGRADES.crystal = {
     },
     autobuy: ()=>hasUpgrade('auto',10),
     el: ()=>hasUpgrade('assembler',4),
+    cl: ()=>hasUpgrade('assembler',9),
+    cl_exc: ["5"],
     ctn: {
         "1": {
             max: 1000,
@@ -86,8 +89,8 @@ UPGRADES.crystal = {
             tier: "III",
             desc: `Increases grass value by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">+50%</b> every <b class="yellow">25</b> levels.`,
 
-            cost: a => a.simpleCost("EA", 4, .2, 1.15).ceil(),
-            bulk: a => a.simpleCost("EAI", 4, .2, 1.15).add(1).floor(),
+            cost: a => a.scale(1000-1,2,"P").simpleCost("EA", 4, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 4, .2, 1.15).scale(1000-1,2,"P",true).add(1).floor(),
             res: "crystal",
 
             effect(a) {
@@ -105,8 +108,8 @@ UPGRADES.crystal = {
             tier: "III",
             desc: `Increases experience gained by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">+50%</b> every <b class="yellow">25</b> levels.`,
 
-            cost: a => a.simpleCost("EA", 6, .2, 1.15).ceil(),
-            bulk: a => a.simpleCost("EAI", 6, .2, 1.15).add(1).floor(),
+            cost: a => a.scale(1000-1,2,"P").simpleCost("EA", 6, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 6, .2, 1.15).scale(1000-1,2,"P",true).add(1).floor(),
             res: "crystal",
 
             effect(a) {
@@ -124,8 +127,8 @@ UPGRADES.crystal = {
             tier: "II",
             desc: `Increases tier progress (TP) gained by <b class="green">+100%</b> per level.<br>This effect is <b class="green">doubled</b> every <b class="yellow">25</b> levels.`,
 
-            cost: a => a.simpleCost("EA", 8, .2, 1.15).ceil(),
-            bulk: a => a.simpleCost("EAI", 8, .2, 1.15).add(1).floor(),
+            cost: a => a.scale(1000-1,2,"P").simpleCost("EA", 8, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 8, .2, 1.15).scale(1000-1,2,"P",true).add(1).floor(),
             res: "crystal",
 
             effect(a) {
@@ -143,8 +146,8 @@ UPGRADES.crystal = {
             tier: "II",
             desc: `Increases prestige points gained by <b class="green">+25%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
 
-            cost: a => a.simpleCost("EA", 12, .2, 1.15).ceil(),
-            bulk: a => a.simpleCost("EAI", 12, .2, 1.15).add(1).floor(),
+            cost: a => a.scale(500-1,2,"P").simpleCost("EA", 12, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 12, .2, 1.15).scale(500-1,2,"P",true).add(1).floor(),
             res: "crystal",
 
             effect(a) {

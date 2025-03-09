@@ -7,26 +7,26 @@ const GRASS = {
             get grow_speed() { return Decimal.mul(upgradeEffect('grass',3),upgradeEffect("perks",2)) },
             get grow_amount() { return Decimal.add(hasUpgrade('crystal',5)?2:1,upgradeEffect("perks",4,0)) },
 
-            get cap() { return Decimal.add(10,upgradeEffect('grass',2,0)).add(upgradeEffect("perks",3,0)) },
+            get cap() { return Decimal.add(10,upgradeEffect('grass',2,0)).add(upgradeEffect("perks",3,0)).add(upgradeEffect("star","P1",0)) },
 
-            get autocut_speed() { return Decimal.mul(upgradeEffect("auto",1,0),upgradeEffect("platinum",1)) },
-            get autocut_value() { return Decimal.mul(upgradeEffect("auto",2),upgradeEffect("auto",6)) },
+            get autocut_speed() { return Decimal.add(upgradeEffect("auto",1,0),upgradeEffect('star',"P3",0)).mul(upgradeEffect("platinum",1)) },
+            get autocut_value() { return Decimal.add(1,upgradeEffect('star',"P2",0)).mul(upgradeEffect("auto",2)).mul(upgradeEffect("auto",6)).mul(upgradeEffect("moonstone",10)) },
 
             res_base: 'grass',
-            chances: ['platinum'],
-            bonus: ['xp','tp'],
+            chances: ['platinum','moonstone'],
+            bonus: ['xp','tp','sp'],
         },
         anti: {
             unl: ()=>tmp.anti_unl,
             pos: [20,0],
         
-            get grow_speed() { return upgradeEffect('anti-grass',5) },
+            get grow_speed() { return Decimal.mul(upgradeEffect('anti-grass',5),player.grassskip.gte(3)?5:1) },
             get grow_amount() { return 1 },
         
-            get cap() { return Decimal.add(10,upgradeEffect('anti-grass',3,0)).add(upgradeEffect("anonymity",5,0)) },
+            get cap() { return Decimal.add(10,upgradeEffect('anti-grass',3,0)).add(upgradeEffect("anonymity",5,0)).add(upgradeEffect("star","P1",0)) },
         
-            get autocut_speed() { return upgradeEffect("anti-auto",1,0) },
-            get autocut_value() { return upgradeEffect("anti-auto",2) },
+            get autocut_speed() { return Decimal.mul(upgradeEffect("anti-auto",1,0),player.grassskip.gte(5)?3:1) },
+            get autocut_value() { return Decimal.mul(upgradeEffect("anti-auto",2),player.grassskip.gte(7)?2:1) },
         
             res_base: 'anti-grass',
             bonus: ['anti-xp'],
@@ -36,21 +36,23 @@ const GRASS = {
     resource: {
         grass: {
             get mult() {
-                let x = E(5).mul(upgradeEffect('grass',1)).mul(getLevelBonus('xp')).mul(upgradeEffect("perks",1)).mul(getLevelBonus('tp'))
+                let x = E(5).mul(upgradeEffect('grass',1)).mul(getLevelBonus('xp')).mul(upgradeEffect("perks",1)).mul(getLevelBonus('tp')).mul(ASTRAL.bonus('grass'))
                 .mul(upgradeEffect('prestige',1)).mul(upgradeEffect('crystal',1)).mul(upgradeEffect('platinum',3)).mul(getAccomplishmentBonus(0))
                 .mul(getAccomplishmentBonus(6)).mul(upgradeEffect('platinum',8)).mul(tmp.charger_bonus[3]??1).mul(upgradeEffect('anti-grass',6))
-                .mul(upgradeEffect('anonymity',3)).mul(upgradeEffect('oil',2)).mul(upgradeEffect('refinery','1a')).mul(upgradeEffect('momentum','1a'))
+                .mul(upgradeEffect('anonymity',3)).mul(upgradeEffect('oil',2)).mul(upgradeEffect('refinery','1a')).mul(upgradeEffect('refinery','2a')).mul(upgradeEffect('momentum','1a'))
+                .mul(upgradeEffect('star','SC1b')).mul(upgradeEffect('star','SC2b')).mul(upgradeEffect('moonstone',1))
                 if (player.grasshop.gte(1)) x = x.mul(getMilestoneEffect('grasshop',0));
                 return x
             },
         },
         xp: {
             get mult() {
-                let x = E(3).mul(upgradeEffect('grass',4)).mul(upgradeEffect("perks",'1a')).mul(getLevelBonus('tp'))
+                let x = E(3).mul(upgradeEffect('grass',4)).mul(upgradeEffect("perks",'1a')).mul(getLevelBonus('tp')).mul(ASTRAL.bonus('xp'))
                 .mul(upgradeEffect('prestige',2)).mul(upgradeEffect('crystal',2)).mul(upgradeEffect('platinum',2))
                 .mul(upgradeEffect('perks',5)).mul(getAccomplishmentBonus(1)).mul(upgradeEffect('platinum',9))
                 .mul(tmp.charger_bonus[1]??1).mul(upgradeEffect('anti-grass',7)).mul(upgradeEffect('anonymity',4))
-                .mul(upgradeEffect('oil',3)).mul(upgradeEffect('refinery','1b')).mul(upgradeEffect('momentum','1b'))
+                .mul(upgradeEffect('oil',3)).mul(upgradeEffect('refinery','1b')).mul(upgradeEffect('refinery','2b')).mul(upgradeEffect('refinery','3b')).mul(upgradeEffect('momentum','1b'))
+                .mul(totalUpgradesEffectFromRange('star',[1,7],x=>`SC${x}c`,'mult')).mul(upgradeEffect('moonstone',4)).mul(upgradeEffect('moonstone',16))
                 if (player.grasshop.gte(2)) x = x.mul(getMilestoneEffect('grasshop',1));
                 return x
             },
@@ -58,23 +60,43 @@ const GRASS = {
         tp: {
             get mult() {
                 if (player.prestige.times === 0) return E(0);
-                let x = E(1).mul(upgradeEffect('prestige',3)).mul(upgradeEffect('crystal',3)).mul(upgradeEffect('oil',5))
+                let x = E(1).mul(upgradeEffect('prestige',3)).mul(upgradeEffect('crystal',3)).mul(upgradeEffect('oil',5)).mul(ASTRAL.bonus('tp'))
                 .mul(upgradeEffect('perks',6)).mul(getAccomplishmentBonus(2)).mul(tmp.charger_bonus[2]??1)
-                .mul(upgradeEffect('refinery','1c')).mul(upgradeEffect('momentum','1i'))
+                .mul(upgradeEffect('refinery','1c')).mul(upgradeEffect('refinery','2c')).mul(upgradeEffect('refinery','3c')).mul(upgradeEffect('momentum','1i'))
+                .mul(totalUpgradesEffectFromRange('star',[1,5],x=>`SC${x}d`,'mult')).mul(upgradeEffect('moonstone',5))
                 if (player.grasshop.gte(3)) x = x.mul(getMilestoneEffect('grasshop',2));
+                return x
+            },
+        },
+        sp: {
+            get mult() {
+                if (player.galactic.times === 0) return E(0);
+                let x = E(1).add(getMilestoneEffect('grass-skip',1,0))
+                x = x.mul(totalUpgradesEffectFromRange('star',[1,6],x=>'PS'+x,'mult')).mul(upgradeEffect('sfrgt',2)).mul(player.agh.lte(1)?10:1)
                 return x
             },
         },
         platinum: {
             get mult() {
-                let x = E(3)
+                let x = E(1).add(ASTRAL.bonus('platinum',0)).add(player.grassskip.gte(4)?10:0)
                 if (player.grasshop.gte(4)) x = x.add(getMilestoneEffect('grasshop',3,0));
-                x = x.mul(upgradeEffect('momentum','1e'))
+                x = x.mul(upgradeEffect('momentum','1e')).mul(upgradeEffect('moonstone',7)).mul(upgradeEffect("moonstone",11)).mul(upgradeEffect('moonstone',17))
                 return x
             },
             get chance() {
                 if (player.prestige.times === 0) return E(0);
                 let x = E(.005).add(getAccomplishmentBonus(7))
+                return x
+            },
+        },
+        moonstone: {
+            get mult() {
+                let x = E(3).add(player.grassskip.gte(6)?10:0).add(ASTRAL.bonus('moonstone',0))
+                return x
+            },
+            get chance() {
+                if (player.galactic.times === 0) return E(0);
+                let x = E(.03).add(getMilestoneEffect('agh',1,0))
                 return x
             },
         },
@@ -88,7 +110,8 @@ const GRASS = {
         'anti-xp': {
             get mult() {
                 let x = E(1).mul(upgradeEffect('anti-grass',4)).mul(getMilestoneEffect('grasshop',13)).mul(tmp.charger_bonus[7]??1)
-                .mul(upgradeEffect('anonymity',6)).mul(upgradeEffect('oil',4))
+                .mul(upgradeEffect('anonymity',6)).mul(upgradeEffect('oil',4)).mul(totalUpgradesEffectFromRange('star',[1,6],x=>`SC${x}e`,'mult')).mul(upgradeEffect('moonstone',6)).mul(upgradeEffect("moonstone",15))
+                if (player.agh.lte(22)) x = x.mul(player.tier.sub(1).max(0).pow_base(1.05));
                 return x
             },
         },
@@ -114,9 +137,20 @@ var grass_data = (()=>{
 })()
 
 function calculatePassiveAutocut(id, name) {
-    let f = GRASS.field[id], res = GRASS.resource[name]
+    let f = GRASS.field[id], res = GRASS.resource[name], chance = E(1)
 
-    return Decimal.mul(res.mult, res?.chance ?? 1).mul(f.autocut_value).mul(f.autocut_speed).round()
+    if (!f.unl()) return E(0);
+
+    if ('chances' in f && f.chances.includes(name)) {
+        let i = 0;
+        while (true) {
+            chance = chance.mul(GRASS.resource[f.chances[i]]?.chance ?? 1);
+            if (f.chances[i] === name) break;
+            i++;
+        }
+    }
+
+    return Decimal.mul(res.mult, chance).mul(f.autocut_value).mul(f.autocut_speed).round()
 }
 
 function cutGrass(field) {
@@ -152,17 +186,19 @@ function calcGrass(dt) {
 
                 d.total = d.total.add(s)
 
-                let w = E(0)
+                if (f.chances) {
+                    let w = E(s)
 
-                if (f.chances) for (let i = 0; i < f.chances.length; i++) {
-                    let cn = f.chances[i], c = GRASS.resource[cn].chance
-                    let r = c > 0 ? Decimal.div(Math.random(),s.mod(Decimal.pow(c,-1)).max(1)).log(c).floor().add(s.mul(c).floor()) : E(0)
-                    // console.log(r.format())
-                    w = i == 0 ? r.min(s) : r.min(w)
-                    d[cn] = d[cn].add(w)
+                    for (let i = 0; i < f.chances.length; i++) {
+                        let cn = f.chances[i], c = GRASS.resource[cn].chance
+                        let r = c > 0 ? Decimal.div(Math.random(),w.mod(Decimal.pow(c,-1)).max(1)).log(c).floor().add(w.mul(c).floor()) : E(0)
+                        // console.log(r.format())
+                        w = r.min(w)
+                        d[cn] = d[cn].add(w)
+                    }
                 }
 
-                d[f.res_base] = d[f.res_base].add(s.sub(w))
+                d[f.res_base] = d[f.res_base].add(s)
             }
 
             d.time = t.mod(1)
@@ -173,6 +209,7 @@ function calcGrass(dt) {
 function setupGrassField() {
     for (let [k,v] of Object.entries(GRASS.field)) {
         createGridElement(k+"-grass-field",{
+            unl: v.unl,
             pos: v.pos,
             get html() {
                 let h = ""

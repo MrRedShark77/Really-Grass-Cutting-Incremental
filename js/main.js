@@ -127,6 +127,9 @@ const PYLONS = [
     },{
         unl: ()=>tmp.anti_unl,
         dots: [[0,0],[20,0]],
+    },{
+        unl: ()=>tmp.star_unl,
+        dots: [[0,0],[0,-20]],
     },
 ]
 
@@ -211,14 +214,15 @@ const TABS = [
 
 const TELEPORTS = [
     [()=>true, "Grass Field", [0,0], "Bases/GrassBase", "Curr/Grass"],
-    [()=>player.grasshop.gte(1), "Factory", [0,12], "Bases/GrasshopBase", "Icons/Charger"],
+    [()=>tmp.star_unl || player.grasshop.gte(1), "Factory", [0,12], "Bases/GrasshopBase", "Icons/Charger"],
     [()=>tmp.anti_unl, "Anti-Grass Field", [20,0], "Bases/AntiGrassBase", "Curr/AntiGrass"],
+    [()=>tmp.star_unl, "Star Platform", [0,-20], "Bases/SpaceBase", "Curr/Star"],
 ]
 
-function teleportTo(i) {
+function teleportTo(i,force) {
     var tp = TELEPORTS[i]
 
-    if (tp[0]()) {
+    if (force || tp[0]()) {
         camera_pos = {x: -tp[2][0] * 250, y: -tp[2][1] * 250}
 
         updatePosition()

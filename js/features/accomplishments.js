@@ -1,6 +1,6 @@
 const ACCOM = {
     ctn: [
-        {
+        { // 0
             unl:()=>true,
             name: "Just Prestige",
             layer: "prestige",
@@ -88,7 +88,7 @@ const ACCOM = {
             goal: a => a.mul(2).add(20),
             bulk: a => a.sub(18).div(2).floor(),
             goalDisplay: x => "Tier "+format(x,0),
-        },{
+        },{ // 5
             unl:()=>true,
             name: "Less Prestige",
             layer: "crystal",
@@ -192,7 +192,7 @@ const ACCOM = {
     ],
 
     check(layer) {
-        if (player.grasshop.gte(1)) for (let i = 0; i < this.ctn.length; i++) {
+        if (player.galactic.times || player.grasshop.gte(1)) for (let i = 0; i < this.ctn.length; i++) {
             let a = this.ctn[i], rest = a.restriction, amt = player.accomplishments[i], res = a.res
             if (a.unl() && amt.lt(a.max) && a.layer === layer && (!rest || Decimal.lte(rest.value, rest.limit)) && res.gte(a.goal(amt))) player.accomplishments[i] = a.bulk(res).max(amt.add(1)).min(a.max);
         }
@@ -206,13 +206,13 @@ const ACCOM = {
 
     setup() {
         createGridElement('accomplishments',{
-            unl: ()=>player.grasshop.gte(1),
+            unl: ()=>tmp.star_unl || player.grasshop.gte(1),
             pos: [1,3],
             size: [5,1],
             class: 'fill-div',
             style: { backgroundColor: '#e20074' },
             get html() {
-                let h = `<div class='reset-name'>Accomplishments</div>`
+                let h = `<div class='reset-name'>Accomplishments <b id='auto-accomplishment' class="gray small-text">(Next auto-complete in ???)</b></div>`
                 
                 let hh = ""
 
@@ -258,6 +258,9 @@ const ACCOM = {
 
                         el(el_id+"-reward").innerHTML = a.rewardName+": <b class='green'>"+a.rewardDisplay(a.reward(amt))+"</b> ➜ <b class='yellow'>"+a.rewardDisplay(a.reward(amt.add(1)))+'</b>'
                         el(el_id+"-goal").innerHTML = "Goal: "+a.goalDisplay(goal)
+
+                        el('auto-accomplishment').style.display = el_display(player.galactic.times)
+                        el('auto-accomplishment').textContent = `(Next auto-complete in ${formatTime(Math.max(0, tmp.auto_accomplish_time - player.auto_accomplish),0)})`
                     }
                 }
             },

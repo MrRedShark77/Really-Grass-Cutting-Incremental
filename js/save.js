@@ -14,16 +14,22 @@ function getPlayerData() {
         auto_upgs: {},
         auto_upgs_ratio: {},
 
+        reset_options: {},
+
         xp: E(0),
         level: E(1),
 
         tp: E(0),
         tier: E(1),
 
+        sp: E(0),
+        astral: E(1),
+
         perks: E(0),
         best_perks: E(0),
 
         platinum: E(0),
+        moonstone: E(0),
 
         prestige: {
             times: 0,
@@ -38,8 +44,11 @@ function getPlayerData() {
         },
 
         accomplishments: [],
+        auto_accomplish: 0,
 
         grasshop: E(0),
+        grassskip: E(0),
+        agh: E(30),
 
         steelie: {
             times: 0,
@@ -75,6 +84,20 @@ function getPlayerData() {
             momentum: E(0),
         },
 
+        galactic: {
+            times: 0,
+            star: E(0),
+            time: 0,
+        },
+
+        funify: {
+            reached: false,
+            gal_times: 0,
+            times: 0,
+            fun: E(0),
+            sfrgt: E(0),
+        },
+
         lists: {
             currencies: {},
             levels: {},
@@ -97,6 +120,8 @@ function getPlayerData() {
             s.auto_upgs_ratio[k][k2] = .1
         }
     }
+
+    for (let r in RESETS) s.reset_options[r] = [false,false];
 
     for (let id in LISTS.currencies) s.lists.currencies[id] = [false,true];
     for (let id in LISTS.levels) s.lists.levels[id] = false;

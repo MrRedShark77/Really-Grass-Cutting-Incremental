@@ -15,6 +15,7 @@ function reloadTemp() {
         lvl_bonus: {},
 
         foundry_effect: E(1),
+        auto_accomplish_time: 14400,
 
         charger_bonus: [],
     }
@@ -28,18 +29,29 @@ function reloadTemp() {
 function getFoundryEffect() {
     if (!hasUpgrade('factory',1)) return E(1)
     
-    let t = Math.min(player.steelie.time,86400*3)
+    let t = Math.min(player.steelie.time*upgradeEffect('star','S1'),86400*3)
 
     return Decimal.div(t,10).mul(upgradeEffect('factory',1)).add(1)
 }
 
+function getStarAccumulatorEffect() {
+    if (!hasUpgrade('factory',9)) return E(1)
+    
+    let t = Math.min(player.galactic.time,86400*3)
+
+    return Decimal.div(t,1e3).add(1)
+}
+
 function updateTemp() {
     tmp.anti_unl = hasUpgrade('factory',5)
+    tmp.star_unl = player.galactic.times
 
     updateLevelsTemp()
     updateUpgradesTemp()
 
+    tmp.auto_accomplish_time = 14400 / upgradeEffect('star','S2')
     tmp.foundry_effect = getFoundryEffect()
+    tmp.star_acc_effect = getStarAccumulatorEffect()
 
     CHARGER.temp()
 

@@ -75,3 +75,20 @@ SH.advancedCostToNext25 = function(n, max, func, ...arg) {
 }
 
 Decimal.prototype.simpleCost = function(type, ...arg) { return SH.simpleCost(this, type, ...arg) }
+
+const totalUpgradesEffectFromRange = (id, range=[0,1], string_func, mode) => {
+    var x;
+    switch (mode) {
+        case "add": {
+            x = E(0)
+            for (let i = range[0]; i <= range[1]; i++) x = x.add(upgradeEffect(id,string_func(i),0));
+            break;
+        }
+        case "mult": {
+            x = E(1)
+            for (let i = range[0]; i <= range[1]; i++) x = x.mul(upgradeEffect(id,string_func(i),1));
+            break;
+        }
+    }
+    return x
+}

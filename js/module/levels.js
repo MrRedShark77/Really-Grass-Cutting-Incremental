@@ -61,6 +61,34 @@ const LEVELS = {
         },
         bonusDesc: x => formatMult(x,0) + " Grass, XP",
     },
+    sp: {
+        unl: () => player.galactic.times > 0,
+        pos: [1,-1.5],
+
+        name: "Astral",
+        exp_name: "SP",
+        color: "purple",
+
+        get exp() { return player.sp },
+
+        get level() { return player.astral },
+        set level(v) { player.astral = v },
+
+        req: a => a.sumBase(2).mul(100).ceil(),
+        bulk: a => a.div(100).sumBase(2,true).add(1).floor(),
+
+        bonus(a) {
+            let x = {}
+
+            for (let k in ASTRAL.effects) {
+                let v = ASTRAL.effects[k]
+
+                if (v.unl?.() ?? true) x[k] = v.effect(a);
+            }
+
+            return x
+        },
+    },
     'anti-xp': {
         unl: () => tmp.anti_unl,
         pos: [21,-0.5],
@@ -75,12 +103,12 @@ const LEVELS = {
         set level(v) { player.anti.level = v },
 
         req(a) {
-            let x = a.scale(200,2,"L").sumBase(1.3).mul(50)
+            let x = a.scale(270,2,"L").sumBase(1.3).mul(50)
 
             return x.ceil()
         },
         bulk(a) {
-            let x = a.div(50).sumBase(1.3,true).scale(200,2,"L",true)
+            let x = a.div(50).sumBase(1.3,true).scale(270,2,"L",true)
 
             return x.add(1).floor()
         },

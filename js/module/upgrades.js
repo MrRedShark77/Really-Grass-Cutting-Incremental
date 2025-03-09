@@ -118,7 +118,8 @@ const UPGRADES = {
             // get text() { return "RAAAAAAAAAUGH" },
         },
         bottom_text: "Gain perks from leveling up.",
-        //order: [1,'1a',2,3,4],
+        autobuy: ()=>hasUpgrade("star","A8"),
+        el: ()=>hasUpgrade("star","A8"),
         ctn: {
             "1": {
                 max: 99,
@@ -492,7 +493,8 @@ function chooseUpgrade(i,j) {
 }
 
 function buyUpgrade(i,j,all=false,auto=false) {
-    let u = UPGRADES[i].ctn[j], max = tmp.upg_cl[i] && !(u.cl_exc ?? []).includes(j) ? EINF : (u.max ?? 1)
+    const U = UPGRADES[i];
+    let u = UPGRADES[i].ctn[j], max = tmp.upg_cl[i] && !(U.cl_exc ?? []).includes(j) ? EINF : (u.max ?? 1)
 
     if (!u.unl() || u.req && !u.req() || player.upgs[i][j].gte(max)) return;
 
@@ -537,7 +539,8 @@ function buyUpgrade(i,j,all=false,auto=false) {
 }
 
 function buyNextUpgrade(i,j) {
-    let u = UPGRADES[i].ctn[j], max = tmp.upg_cl[i] && !(u.cl_exc ?? []).includes(j) ? EINF : (u.max ?? 1)
+    const U = UPGRADES[i];
+    let u = UPGRADES[i].ctn[j], max = tmp.upg_cl[i] && !(U.cl_exc ?? []).includes(j) ? EINF : (u.max ?? 1)
 
     if (!u.unl() || u.req && !u.req() || player.upgs[i][j].gte(max)) return;
 
@@ -588,7 +591,24 @@ function setupUpgrades() {
 
                 if (bt) h += `<div class="upg-bottom-text" id="upg-${id}-bottom"></div>`;
 
-                for (let ui of u.order ?? Object.keys(u.ctn)) {
+                let o = []
+
+                if ('map' in u) {
+                    for (let m of u.map) {
+                        o.push(...m)
+                        o.push(null)
+                    }
+                } else o = u.order ?? Object.keys(u.ctn)
+
+                for (let ui of o) {
+                    if (ui === '') {
+                        html += `<div class="upgrade-div"></div>`
+                        continue
+                    } else if (ui === null) {
+                        html += `<div class="break-column"></div>`
+                        continue
+                    }
+
                     uu = u.ctn[ui]
                     let uh = ""
 
@@ -663,11 +683,12 @@ function updateUpgradesHTML(id,choosed) {
         }
         el(`upg-desc-${id}`).innerHTML = h
     } else {
-        let auto = u.autobuy?.()
+        let auto = u.autobuy?.(), no_hide = u.cannot_hide || !options.hideMaxed;
         for (let [ui,uu] of Object.entries(u.ctn)) {
             let lvl = player.upgs[id][ui], max = tmp.upg_cl[id] && !(u.cl_exc ?? []).includes(ui) ? EINF : (uu.max ?? 1)
-            let unl = uu.unl() && (!options.hideMaxed || lvl.lt(max)), el_id = `upg-${id}-${ui}`
-            el(el_id+"-div").style.display = el_display(unl)
+            let unl = (uu.unl?.() ?? true) && (no_hide || lvl.lt(max)), el_id = `upg-${id}-${ui}`
+            if (u.type === 'vertical-center') el(el_id+"-div").className = el_classes({'upgrade-div': true, 'hidden': !unl});
+            else el(el_id+"-div").style.display = el_display(unl);
             if (unl) {
                 let req = !uu.req || uu.req()
                 let curr = CURRENCIES[uu.res], cost = uu.cost(lvl);

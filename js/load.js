@@ -148,6 +148,7 @@ function doCreateGridElements() {
     setupMilestones()
     ACCOM.setup()
     CHARGER.setup()
+    ASTRAL.setup()
 
     createGridElement('decel-teleport',{
         unl: () => tmp.anti_unl,

@@ -13,7 +13,8 @@ CURRENCIES['rocket-fuel'] = {
     get total() { return player.rocket.total },
     set total(v) { player.rocket.total = v.max(0) },
 
-    b: x => Decimal.sqr(x).add(Decimal.mul(x,19)).div(20),
+    b: (x,y) => Decimal.sqr(x).add(Decimal.mul(x,y-1)).div(y),
+    ib: (x,y) => F.solveQuadratic(1,y-1,Decimal.mul(x,-y)),
 
     get base_inc() {
         let p = player.rocket.part
@@ -24,33 +25,33 @@ CURRENCIES['rocket-fuel'] = {
     get_base(n) {
         let b = this.b;
 
-        return b(n.min(100))
-        .add(b(n.sub(100).max(0).min(900)).mul(100))
-        .add(b(n.sub(1000).max(0).min(9000)).mul(1000))
-        .add(n.sub(10000).max(0).mul(1e15)).mul(this.base_inc)
+        return b(n.min(100),20)
+        .add(b(n.sub(100).max(0).min(900),20).mul(100))
+        .add(b(n.sub(1000).max(0).min(9000),20).mul(1000))
+        .add(b(n.sub(10000).max(0),2000).mul(1e15)).mul(this.base_inc)
     },
 
     get gain() {
-        let y = this.total, x = E(0), base = this.get_base(y), inc = this.base_inc,
+        let y = this.total, x = E(0), base = this.get_base(y), inc = this.base_inc, b = this.b, ib = this.ib,
         oil = CURRENCIES.oil.amount.add(base.mul(100)), charge = CURRENCIES.charge.amount.add(base.mul(1e27));
 
         let r = charge.div(1e25).min(oil).div(100).div(inc)
-        x = F.solveQuadratic(1,19,r.mul(-20)).floor()
+        x = ib(r,20).floor()
 
         if (x.gt(100)) {
-            r = r.sub(this.b(100)).div(100)
-            x = F.solveQuadratic(1,19,r.mul(-20)).floor().add(100)
+            r = r.sub(b(100,20)).div(100)
+            x = ib(r,20).floor().add(100)
         }
 
         if (x.gt(1000)) {
-            // console.log(r.format(), this.b(900).format())
-            r = r.sub(this.b(900)).div(10)
-            x = F.solveQuadratic(1,19,r.mul(-20)).floor().add(1000)
+            // console.log(r.format(), b(900).format())
+            r = r.sub(b(900,20)).div(10)
+            x = ib(r,20).floor().add(1000)
         }
 
         if (x.gt(10000)) {
-            r = r.sub(this.b(9000)).div(1e12)
-            x = r.floor().add(10000)
+            r = r.sub(b(9000,2000)).div(1e12)
+            x = ib(r,2000).floor().add(10000)
         }
 
         return x.sub(y).max(0)
@@ -69,7 +70,7 @@ RESETS['rocket-fuel'] = {
     name: "Refinery",
     get reset_desc() {
         let t = player.rocket.total, oil = CURRENCIES.oil.amount, charge = CURRENCIES.charge.amount, inc = CURRENCIES['rocket-fuel'].base_inc
-        let b = t.gte(1e4) ? E(1e15) : t.gte(1000) ? t.sub(1000).div(10).add(1).mul(1000) : t.gte(100) ? t.sub(100).div(10).add(1).mul(100) : t.div(10).add(1)
+        let b = t.gte(1e4) ? t.sub(1e4).div(1e3).add(1).mul(1e15) : t.gte(1000) ? t.sub(1000).div(10).add(1).mul(1000) : t.gte(100) ? t.sub(100).div(10).add(1).mul(100) : t.div(10).add(1)
         b = b.mul(inc)
         return `Next Rocket Fuel
         <br><b class="yellow">Charge</b><br><b class="${charge.gte(b.mul(1e27)) ? 'green' : 'red'}">${charge.format(0)} / ${b.mul(1e27).format(0)}</b>
@@ -78,6 +79,11 @@ RESETS['rocket-fuel'] = {
     color: ['#117e99','#1fa4c5'],
 
     icon: "Curr/RocketFuel",
+
+    reset_options: [
+        null,
+        ["Auto"],
+    ],
 
     success() {
         let c = CURRENCIES['rocket-fuel']
@@ -92,7 +98,7 @@ RESETS['rocket-fuel'] = {
 }
 
 UPGRADES.refinery = {
-    unl: () => hasUpgrade('factory',6),
+    unl: () => player.galactic.times > 0 || hasUpgrade('factory',6),
     pos: [-2,13],
     size: [2,2],
     color: ['#117e99','#1fa4c5'],
@@ -226,6 +232,237 @@ UPGRADES.refinery = {
 
             effect(a) {
                 let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "1h": {
+            max: 1e6,
+            unl: ()=>player.funify.reached,
+            icons: ["Curr/Fun"],
+
+            name: `The Funny Upgrade`,
+            desc: `Increases fun earned by <b class="green">+1%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.01).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+
+        "2a": {
+            max: 1e5,
+            unl: ()=>player.galactic.times>0,
+            icons: ["Curr/Grass"],
+
+            name: `Rocket Fueled Grass II`,
+            desc: `Increases grass value by <b class="green">+10%</b> per level.`,
+            tier: "II",
+
+            noCostIncrease: true,
+            cost: ()=>10,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2b": {
+            max: 1e5,
+            unl: ()=>player.galactic.times>0,
+            icons: ["Icons/XP"],
+
+            name: `Rocket Fueled XP II`,
+            desc: `Increases experience gained by <b class="green">+10%</b> per level.`,
+            tier: "II",
+
+            noCostIncrease: true,
+            cost: ()=>10,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2c": {
+            max: 1e5,
+            unl: ()=>player.galactic.times>0,
+            icons: ["Icons/TP"],
+            tier: "II",
+
+            name: `Rocket Fueled TP II`,
+            desc: `Increases tier progress by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>10,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2d": {
+            max: 1e5,
+            unl: ()=>player.galactic.times>0,
+            icons: ["Curr/Prestige"],
+
+            name: `Rocket Fueled Prestige II`,
+            desc: `Increases prestige points earned by <b class="green">+10%</b> per level.`,
+            tier: "II",
+
+            noCostIncrease: true,
+            cost: ()=>10,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2e": {
+            max: 1e5,
+            unl: ()=>player.galactic.times>0,
+            icons: ["Curr/Crystal"],
+
+            name: `Rocket Fueled Crystal II`,
+            desc: `Increases crystals earned by <b class="green">+10%</b> per level.`,
+            tier: "II",
+
+            noCostIncrease: true,
+            cost: ()=>10,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2f": {
+            max: 1e5,
+            unl: ()=>player.galactic.times>0,
+            icons: ["Curr/Steel2"],
+
+            name: `Rocket Fueled Steel II`,
+            desc: `Increases steel earned by <b class="green">+10%</b> per level.`,
+            tier: "II",
+
+            noCostIncrease: true,
+            cost: ()=>10,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2g": {
+            max: 1e5,
+            unl: ()=>player.galactic.times>0,
+            icons: ["Curr/Oil"],
+
+            name: `Rocket Fueled Oil II`,
+            desc: `Increases oil earned by <b class="green">+10%</b> per level.`,
+            tier: "II",
+
+            noCostIncrease: true,
+            cost: ()=>10,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2h": {
+            max: 1e6,
+            unl: ()=>hasUpgrade('refinery','1h',1e6),
+            icons: ["Curr/Fun"],
+            tier: "II",
+
+            name: `The Funny Upgrade II`,
+            desc: `Increases fun earned by <b class="green">+1%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e3,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.01).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+
+        "3b": {
+            max: 1e6,
+            unl: ()=>hasUpgrade('refinery','2b',1e5),
+            icons: ["Icons/XP"],
+
+            name: `Rocket Fueled XP III`,
+            desc: `Increases experience gained by <b class="green">+1%</b> per level.`,
+            tier: "III",
+
+            noCostIncrease: true,
+            cost: ()=>1e3,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.01).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "3c": {
+            max: 1e6,
+            unl: ()=>hasUpgrade('refinery','2c',1e5),
+            icons: ["Icons/TP"],
+            tier: "III",
+
+            name: `Rocket Fueled TP III`,
+            desc: `Increases tier progress by <b class="green">+1%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e3,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.01).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+
+        "1i": {
+            max: 1e6,
+            unl: ()=>true,
+            req: ()=>player.agh.lte(0),
+            req_desc: "AGH 0",
+            icons: ["Curr/Star"],
+
+            name: `Mega Rocket Fueled Galactics`,
+            desc: `Increases stars earned by <b class="green">+1%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e6,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.01).add(1)
                 return x
             },
             effDesc: x => formatMult(x),

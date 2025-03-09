@@ -13,13 +13,18 @@ RESETS.grasshop = {
     color: ['#ccc','#aaa'],
 
     icon: "Icons/Grasshop2",
-    get gain_desc() { return "+"+format(GH.bulk,0) },
+    get gain_desc() { return "+"+format(GH.bulk(),0) },
+
+    reset_options: [
+        ["Mult",()=>hasUpgrade('star','A12',1)],
+        ["Auto",()=>hasUpgrade('star','A12',2)],
+    ],
 
     success() {
         ACCOM.check('prestige')
         ACCOM.check('crystal')
 
-        player.grasshop = player.grasshop.add(GH.bulk)
+        player.grasshop = player.grasshop.add(GH.bulk())
     },
     doReset() {
         player.crystal.points = E(0)
@@ -38,7 +43,11 @@ RESETS.grasshop = {
 
 const GH = {
     get require() { return player.grasshop.mul(10).add(201) },
-    get bulk() { return player.level.sub(191).div(10).floor().sub(player.grasshop).max(1).min(1) },
+    bulk(auto=false) {
+        let x = player.level.sub(191).div(10).floor().sub(player.grasshop).max(1)
+        if (!auto && !(hasUpgrade('star','A12',1) && player.reset_options.grasshop[0])) x = x.min(1);
+        return x
+    },
 }
 
 MILESTONES.grasshop = {
@@ -46,14 +55,14 @@ MILESTONES.grasshop = {
     pos: [2,10],
     color: ['#ccc','#0c0'],
 
-    name: "Grasshop",
+    name: x => x + " Grasshop",
     get amount() { return player.grasshop },
     get amount_desc() { return `You have grasshopped <b class="green">${format(this.amount,0)}</b> times.` },
 
     ctn: [
         { // 0
             r: 1,
-            get desc() { return `Unlocks <b class="green">Accomplishments</b>.<br>
+            get desc() { return `Permanently unlocks <b class="green">Accomplishments</b>.<br>
                 Unlocks more automation upgrades.<br>
                 Increases grass value by <b class="green">+300%</b> per grasshop.`
             },
@@ -96,8 +105,8 @@ MILESTONES.grasshop = {
             effect: a => a.mul(.25).add(1),
         },{ // 10
             r: 12,
-            get desc() { return `Charge rate is <b class="green">doubled</b> per grasshop, starting at 12.` },
-            effect: a => a.sub(11).max(0).pow_base(2),
+            get desc() { return `Charge rate is <b class="green">doubled</b> per grasshop, starting at 12 and ending at 32.` },
+            effect: a => a.max(11).min(32).sub(11).pow_base(2),
         },{
             r: 13,
             get desc() { return `Charger charge bonuses increase <b class="green">1 OoM</b> (order of magnitude) sooner per grasshop, starting at 13.` },
@@ -110,6 +119,10 @@ MILESTONES.grasshop = {
             r: 18,
             get desc() { return `Increases anti-experience by <b class="green">x1.25</b> per grasshop.` },
             effect: a => a.pow_base(1.25),
+        },{
+            r: 30,
+            get desc() { return `Charger charge bonuses are increased by <b class="green">x1.15</b> per grasshop, starting at 30 and ending at 60.` },
+            effect: a => a.max(29).min(60).sub(29).pow_base(1.15),
         },
     ],
 }
@@ -127,19 +140,20 @@ CURRENCIES.steelie = {
         
         let x = E(1).mul(upgradeEffect('perks',9)).mul(tmp.foundry_effect).mul(upgradeEffect('platinum',10)).mul(tmp.charger_bonus[0]??1).mul(upgradeEffect('oil',6))
 
-        x = x.mul(upgradeEffect('foundry',1)).mul(upgradeEffect('foundry',2)).mul(upgradeEffect('foundry',3)).mul(upgradeEffect('foundry',4)).mul(upgradeEffect('refinery','1f')).mul(upgradeEffect('momentum','1j'))
+        x = x.mul(upgradeEffect('foundry',1)).mul(upgradeEffect('foundry',2)).mul(upgradeEffect('foundry',3)).mul(upgradeEffect('foundry',4)).mul(upgradeEffect('refinery','1f')).mul(upgradeEffect('refinery','2f')).mul(upgradeEffect('momentum','1j'))
+        .mul(ASTRAL.bonus('steel')).mul(upgradeEffect("moonstone",12))
 
         if (player.grasshop.gte(11)) x = x.mul(getMilestoneEffect('grasshop',9))
 
         return x.floor()
     },
 
-    get passive() { return 0 },
+    get passive() { return Decimal.add(upgradeEffect('star',"S3",0),upgradeEffect('star',"S4",0)) },
 }
 
 RESETS.steelie = {
     pos: [0,11],
-    unl: () => player.grasshop.gte(8),
+    unl: () => tmp.star_unl || player.grasshop.gte(8),
 
     req: () => player.level.gte(271),
     get req_desc() { return `Reach Level 271` },
@@ -168,7 +182,7 @@ RESETS.steelie = {
 }
 
 UPGRADES.factory = {
-    unl: () => player.grasshop.gte(8),
+    unl: () => tmp.star_unl || player.grasshop.gte(8),
     pos: [0,12],
     size: [4,1],
     color: ['#ccc','#aaa'],
@@ -178,7 +192,8 @@ UPGRADES.factory = {
         id: "steelie",
         // get text() { return "RAAAAAAAAAUGH" },
     },
-    // autobuy: ()=>hasUpgrade('auto',10),
+    autobuy: ()=>hasUpgrade("star","A6"),
+    el: ()=>hasUpgrade("star","A6"),
     ctn: {
         "1": {
             max: 100,
@@ -309,7 +324,7 @@ UPGRADES.factory = {
         "8": {
             max: 100,
             unl: ()=>true,
-            req: ()=>player.rocket.part.gte(1),
+            req: ()=>player.agh.lte(4) || player.rocket.part.gte(1),
             req_desc: "First Rocket Part",
             icons: ["Icons/OilRigAlt"],
 
@@ -326,6 +341,26 @@ UPGRADES.factory = {
             },
             effDesc: x => "+"+formatPercent(x)+"/s",
         },
+        "9": {
+            max: 100,
+            unl: ()=>player.galactic.times>0,
+            req: ()=>player.agh.lte(19),
+            req_desc: "AGH 19",
+            icons: ["Icons/StarAccumulator"],
+
+            name: `Star Accumulator`,
+            desc: `Unlocks a building that increases how many stars you earn on galactic based on time in galactic.<br>Increases charge rate by <b class="green">+10%</b> per level.`,
+
+            cost: a => a.simpleCost("EA", 1e36, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e36, .2, 1.15).add(1).floor(),
+            res: "steelie",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
     },
 }
 
@@ -340,7 +375,8 @@ UPGRADES.foundry = {
         icon: "Icons/Foundry",
         get text() { return `<b class="green">${formatMult(tmp.foundry_effect)}</b> / ${formatMult(Decimal.mul(86400*.3,upgradeEffect('factory', 1)).add(1))}` },
     },
-    // autobuy: ()=>hasUpgrade('auto',10),
+    autobuy: ()=>hasUpgrade("star","A6"),
+    el: ()=>hasUpgrade("star","A6"),
     ctn: {
         "1": {
             max: 1000,
@@ -431,7 +467,8 @@ UPGRADES.generator = {
         icon: "Icons/Generator",
         get text() { return `<b class="green">${formatMult(upgradeEffect('factory',2))}</b><b class="small-text"> to PP & Crystal generation</b>` },
     },
-    // autobuy: ()=>hasUpgrade('auto',10),
+    autobuy: ()=>hasUpgrade("star","A6"),
+    el: ()=>hasUpgrade("star","A6"),
     ctn: {
         "1": {
             max: 1000,
@@ -542,17 +579,22 @@ const CHARGER = {
             unl: ()=>player.anonymity.times,
             oom: 18,
             desc: x=>`Increase Anti-XP/AP gained by ${formatMult(x)}`,
+        },{
+            unl: ()=>hasUpgrade('funny-machine',3),
+            oom: 54,
+            desc: x=>`Increase oil gained by ${formatMult(x)}`,
         },
     ],
 
     temp() {
         let oom_later = getMilestoneEffect('grasshop',11,0), charge_oom = player.steelie.charge.max(1).log10(), best_oom = player.steelie.bestCharge.max(1).log10()
+        let bonus_mult = getMilestoneEffect('grasshop',14)
 
         for (let i in this.milestones) {
             let m = this.milestones[i], n = E(1)
 
             if ((!m.unl || m.unl()) && best_oom.gte(m.oom)) {
-                n = charge_oom.sub(Decimal.sub(m.oom,oom_later).max(0)).max(0).pow_base(1.5)
+                n = charge_oom.sub(Decimal.sub(m.oom,oom_later).max(0)).max(0).pow_base(1.5).mul(bonus_mult)
             }
 
             tmp.charger_bonus[i] = n
@@ -620,9 +662,11 @@ CURRENCIES.charge = {
         
         let x = E(1).mul(upgradeEffect('perks',10)).mul(upgradeEffect('platinum',11)).mul(upgradeEffect('generator',1)).mul(upgradeEffect('generator',2))
 
-        x = x.mul(upgradeEffect('factory',3)).mul(upgradeEffect('factory',4)).mul(upgradeEffect('factory',5)).mul(upgradeEffect('factory',6)).mul(upgradeEffect('factory',7))
+        x = x.mul(upgradeEffect('factory',3)).mul(upgradeEffect('factory',4)).mul(upgradeEffect('factory',5)).mul(upgradeEffect('factory',6)).mul(upgradeEffect('factory',7)).mul(upgradeEffect('factory',9))
 
         x = x.mul(getAccomplishmentBonus(9)).mul(getMilestoneEffect('grasshop',10)).mul(getLevelBonus('anti-xp')).mul(upgradeEffect('anonymity',1)).mul(upgradeEffect('momentum','1d'))
+
+        x = x.mul(totalUpgradesEffectFromRange('star',[1,9],x=>`SC${x}a`,'mult')).mul(ASTRAL.bonus('charge')).mul(upgradeEffect('funny-machine',1)).mul(upgradeEffect('funny-machine',3)).mul(upgradeEffect('funny-machine',4))
 
         return x
     },
@@ -639,7 +683,8 @@ UPGRADES.assembler = {
         icon: "Icons/Assemblerv2",
         get text() { return `Assembler Upgrades` },
     },
-    // autobuy: ()=>hasUpgrade('auto',10),
+    autobuy: ()=>hasUpgrade("star","A6"),
+    el: ()=>hasUpgrade("star","A6"),
     ctn: {
         '1': {
             unl: ()=>true,
@@ -684,6 +729,132 @@ UPGRADES.assembler = {
             noCostIncrease: true,
             cost: ()=>1e10,
             res: "steelie",
+        },
+        '5': {
+            unl: ()=>hasUpgrade('funny-machine',4),
+            icons: ["Curr/AntiGrass","Icons/Infinite"],
+
+            name: `Anti-Grass Upgrades EL`,
+            desc: `Buying anti-grass upgrades no longer take away anti-grass.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e21,
+            res: "steelie",
+        },
+        '6': {
+            unl: ()=>hasUpgrade('funny-machine',4),
+            icons: ["Curr/Anonymity","Icons/Infinite"],
+
+            name: `Anonymity Upgrades EL`,
+            desc: `Buying anonymity upgrades no longer take away anonymity points.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e24,
+            res: "steelie",
+        },
+        '7': {
+            unl: ()=>hasUpgrade('funny-machine',4),
+            icons: ["Curr/Oil","Icons/Infinite"],
+
+            name: `Oil Upgrades EL`,
+            desc: `Buying oil upgrades no longer take away oil.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e27,
+            res: "steelie",
+        },
+        '8': {
+            unl: ()=>hasUpgrade('funny-machine',4),
+            icons: ["Curr/Prestige","Icons/Automation2"],
+
+            name: `Prestige Upgrades CL`,
+            desc: `Most prestige upgrades are no longer capped.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e36,
+            res: "steelie",
+        },
+        '9': {
+            unl: ()=>hasUpgrade('funny-machine',4),
+            icons: ["Curr/Crystal","Icons/Automation2"],
+
+            name: `Crystal Upgrades CL`,
+            desc: `Most crystal upgrades are no longer capped.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e45,
+            res: "steelie",
+        },
+    },
+}
+
+UPGRADES.accumulator = {
+    unl: () => hasUpgrade('factory',9),
+    pos: [-2,10],
+    size: [2,2],
+    color: ['#111','#aaa'],
+    type: "vertical",
+    base: "Bases/GrasshopBase",
+    curr_dis: {
+        icon: "Curr/Star",
+        get text() { return `<b class="green">${formatMult(tmp.star_acc_effect)}</b> / ${formatMult(86400*.003+1)}` },
+    },
+    ctn: {
+        "1": {
+            max: 100,
+            unl: ()=>true,
+            icons: ["Curr/Star"],
+            base: "Bases/PlatBase",
+
+            name: `Platinum Stars`,
+            desc: `Increases stars gained by <b class="green">+5%</b> compounding per level.`,
+
+            cost: a => a.simpleCost("EA", 1e9, .2, 2).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e9, .2, 2).add(1).floor(),
+            res: "platinum",
+
+            effect(a) {
+                let x = a.pow_base(1.05)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2": {
+            max: 100,
+            unl: ()=>true,
+            icons: ["Curr/Star"],
+
+            name: `Steel Stars`,
+            desc: `Increases stars gained by <b class="green">+10%</b> compounding per level.`,
+
+            cost: a => a.simpleCost("EA", 1e36, .2, 9).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e36, .2, 9).add(1).floor(),
+            res: "steelie",
+
+            effect(a) {
+                let x = a.pow_base(1.1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "3": {
+            max: 100,
+            unl: ()=>true,
+            icons: ["Curr/Star"],
+            base: "Bases/MoonBase",
+
+            name: `Platinum Moonstone`,
+            desc: `Increases stars gained by <b class="green">+5%</b> compounding per level.`,
+
+            cost: a => a.simpleCost("EA", 1e5, .2, 2).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e5, .2, 2).add(1).floor(),
+            res: "moonstone",
+
+            effect(a) {
+                let x = a.pow_base(1.05)
+                return x
+            },
+            effDesc: x => formatMult(x),
         },
     },
 }

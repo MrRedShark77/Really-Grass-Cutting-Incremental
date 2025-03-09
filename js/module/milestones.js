@@ -14,7 +14,7 @@ function setupMilestones() {
             get html() {
                 let h = `<div class='milestone-amount' id='milestone-${id}-amount'>???</div>`
 
-                let t = m.ctn.map((x,i)=>`<div style='background-color: ${m.color[0]}' id='milestone-${id}-${i}-div'><h2>${m.name} ${x.r}</h2><div id='milestone-${id}-${i}-desc'>???</div></div>`).join("")
+                let t = m.ctn.map((x,i)=>`<div style='background-color: ${m.color[0]}' id='milestone-${id}-${i}-div'><h2>${m.name(x.r)}</h2><div id='milestone-${id}-${i}-desc'>???</div></div>`).join("")
 
                 h += `<div class='milestone-table'>${t}</div>`
 
@@ -28,12 +28,12 @@ function setupMilestones() {
 
                 let left = 2
                 for (let i = 0; i < m.ctn.length; i++) {
-                    let x = m.ctn[i], unl = left > 0
-                    if (amount.lt(x.r)) left--;
+                    let x = m.ctn[i], unl = left > 0, cond = m.condition?.(x.r) ?? amount.gte(x.r)
+                    if (!cond) left--;
                     el(el_id+"-"+i+"-div").style.display = el_display(unl)
                     if (unl) {
                         el(el_id+"-"+i+"-desc").innerHTML = x.desc
-                        el(el_id+"-"+i+"-div").style.backgroundColor = m.color[+amount.gte(x.r)]
+                        el(el_id+"-"+i+"-div").style.backgroundColor = m.color[+cond]
                     }
                 }
             },

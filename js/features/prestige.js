@@ -14,7 +14,8 @@ CURRENCIES.prestige = {
         let x = player.level.sub(31).pow_base(b).mul(player.grass.max(1).root(15)).mul(10)
 
         x = x.mul(upgradeEffect("grass",5)).mul(upgradeEffect('crystal',4)).mul(upgradeEffect('perks',7)).mul(upgradeEffect('platinum',4))
-        .mul(getAccomplishmentBonus(3)).mul(tmp.charger_bonus[4]??1).mul(upgradeEffect('refinery','1d')).mul(upgradeEffect('momentum','1g'))
+        .mul(getAccomplishmentBonus(3)).mul(tmp.charger_bonus[4]??1).mul(upgradeEffect('refinery','1d')).mul(upgradeEffect('refinery','2d')).mul(upgradeEffect('momentum','1g'))
+        .mul(ASTRAL.bonus('prestige')).mul(upgradeEffect('moonstone',2))
 
         return x.floor()
     },
@@ -77,6 +78,8 @@ UPGRADES.prestige = {
     },
     autobuy: ()=>hasUpgrade('auto',9),
     el: ()=>hasUpgrade('assembler',3),
+    cl: ()=>hasUpgrade('assembler',8),
+    cl_exc: ['5'],
     ctn: {
         "1": {
             max: 1000,
@@ -87,8 +90,8 @@ UPGRADES.prestige = {
             tier: "II",
             desc: `Increases grass value by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">+50%</b> every <b class="yellow">25</b> levels.`,
 
-            cost: a => a.simpleCost("EA", 1, .2, 1.15).ceil(),
-            bulk: a => a.simpleCost("EAI", 1, .2, 1.15).add(1).floor(),
+            cost: a => a.scale(1000-1,2,"P").simpleCost("EA", 1, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1, .2, 1.15).scale(1000-1,2,"P",true).add(1).floor(),
             res: "prestige",
 
             effect(a) {
@@ -106,8 +109,8 @@ UPGRADES.prestige = {
             tier: "II",
             desc: `Increases experience gained by <b class="green">+50%</b> per level.<br>This effect is increased by <b class="green">+50%</b> every <b class="yellow">25</b> levels.`,
 
-            cost: a => a.simpleCost("EA", 3, .2, 1.15).ceil(),
-            bulk: a => a.simpleCost("EAI", 3, .2, 1.15).add(1).floor(),
+            cost: a => a.scale(1000-1,2,"P").simpleCost("EA", 3, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 3, .2, 1.15).scale(1000-1,2,"P",true).add(1).floor(),
             res: "prestige",
 
             effect(a) {
@@ -124,8 +127,8 @@ UPGRADES.prestige = {
             name: `TP`,
             desc: `Increases tier progress (TP) gained by <b class="green">+100%</b> per level.<br>This effect is <b class="green">doubled</b> every <b class="yellow">25</b> levels.`,
 
-            cost: a => a.simpleCost("EA", 50, .2, 1.15).ceil(),
-            bulk: a => a.simpleCost("EAI", 50, .2, 1.15).add(1).floor(),
+            cost: a => a.scale(1000-1,2,"P").simpleCost("EA", 50, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 50, .2, 1.15).scale(1000-1,2,"P",true).add(1).floor(),
             res: "prestige",
 
             effect(a) {
@@ -142,8 +145,8 @@ UPGRADES.prestige = {
             name: `Crystals`,
             desc: `Increases crystals gained by <b class="green">+25%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
 
-            cost: a => a.simpleCost("EA", 150, .2, 1.15).ceil(),
-            bulk: a => a.simpleCost("EAI", 150, .2, 1.15).add(1).floor(),
+            cost: a => a.scale(500-1,2,"P").simpleCost("EA", 150, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 150, .2, 1.15).scale(500-1,2,"P",true).add(1).floor(),
             res: "prestige",
 
             effect(a) {
@@ -178,6 +181,7 @@ UPGRADES.platinum = {
         // get text() { return "RAAAAAAAAAUGH" },
     },
     get bottom_text() { return `Platinum grow chance: <b class='green'>${formatPercent(GRASS.resource.platinum.chance)}</b>` },
+    autobuy: ()=>hasUpgrade("star","A10"),
     ctn: {
         "1": {
             max: 5,
@@ -185,17 +189,17 @@ UPGRADES.platinum = {
             icons: ["Curr/Grass","Icons/Automation"],
 
             name: `Starter AC`,
-            desc: `Increases grass autocut speed by <b class="green">+100%</b> per level.`,
+            desc: `Increases grass autocut speed by <b class="green">+20%</b> per level.`,
 
             noCostIncrease: true,
             cost: ()=>5,
             res: "platinum",
 
             effect(a) {
-                let x = a.add(1)
+                let x = a.mul(.2).add(1)
                 return x
             },
-            effDesc: x => formatMult(x,0),
+            effDesc: x => formatMult(x),
         },
         "2": {
             max: 100,

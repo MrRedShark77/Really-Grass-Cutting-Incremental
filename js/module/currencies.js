@@ -23,6 +23,18 @@ const CURRENCIES = {
             return calculatePassiveAutocut('normal','platinum')
         },
     },
+    moonstone: {
+        name: "Moonstone",
+        icon: "Curr/Moonstone",
+        base: "Bases/MoonBase",
+
+        get amount() { return player.moonstone },
+        set amount(v) { player.moonstone = v.max(0) },
+
+        get gain() {
+            return calculatePassiveAutocut('normal','moonstone')
+        },
+    },
     xp: {
         name: "XP",
         icon: "Icons/XP",
@@ -51,6 +63,21 @@ const CURRENCIES = {
 
         get gain() {
             return calculatePassiveAutocut('normal','tp')
+        },
+    },
+    sp: {
+        name: "SP",
+        icon: "Icons/SP",
+        base: "Bases/SpaceBase",
+
+        get amount() { return player.sp },
+        set amount(v) {
+            player.sp = v.max(0)
+            checkLevel('sp')
+        },
+
+        get gain() {
+            return calculatePassiveAutocut('normal','sp')
         },
     },
     perks: {

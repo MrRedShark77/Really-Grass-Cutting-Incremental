@@ -1,6 +1,38 @@
 function el_display(bool) { return bool ? "" : "none" }
 function el_classes(data) { return Object.keys(data).filter(x => data[x]).join(" ") }
 
+/**
+ * @param {Element} elem - Element
+ */
+function makeContainerScrollHorizontally(elem) {
+    let j_elem = $(elem);
+    elem.addEventListener('wheel', e => {
+        let width = elem.scrollWidth - elem.clientWidth, more = false, less = false;
+        if (e.deltaY > 0) {
+            if (elem.scrollLeft === width) more = true;
+            j_elem.stop();
+            j_elem.animate({scrollLeft: elem.scrollLeft + 200}, 200);
+        }
+        else {
+            if (elem.scrollLeft === 0) less = true;
+            j_elem.stop();
+            j_elem.animate({scrollLeft: elem.scrollLeft - 200}, 200);
+        }
+        if (!(more || less)) e.preventDefault();
+    })
+
+    /*
+    elem.addEventListener('wheel', (event) => {
+        event.preventDefault();
+
+        elem.scrollBy({
+            left: event.deltaY * 2,
+            behavior: 'smooth'
+        });
+    });
+    */
+}
+
 function updateHTML() {
     if (tmp.the_end) {
         return
@@ -13,6 +45,9 @@ function updateHTML() {
     if (tmp.anti_unl && isInsideCircle(20,0,10)) {
         document.body.style.setProperty('--primary-background-color', '#070064')
         document.body.style.setProperty('--secondary-background-color', '#060053')
+    } else if (tmp.star_unl && isInsideCircle(0,-20,10)) {
+        document.body.style.setProperty('--primary-background-color', '#02001d')
+        document.body.style.setProperty('--secondary-background-color', '#fff1')
     } else {
         document.body.style.setProperty('--primary-background-color', '#0052af')
         document.body.style.setProperty('--secondary-background-color', '#00489b')
@@ -34,6 +69,9 @@ function setupHTML() {
             })
         }
     }
+
+    document.querySelectorAll(".upgrades-grid.normal-mode").forEach(x => {makeContainerScrollHorizontally(x)})
+    document.querySelectorAll(".accomplishments-table").forEach(x => {makeContainerScrollHorizontally(x)})
 
     setupMaps()
 }

@@ -48,6 +48,22 @@ const LISTS = {
             unl: ()=>hasUpgrade('factory',7),
             color: "#dbb826",
         },
+        'star': {
+            unl: ()=>player.galactic.times>0,
+            color: "#34006e",
+        },
+        'moonstone': {
+            unl: ()=>player.galactic.times>0,
+            color: "#5368C3",
+        },
+        'fun': {
+            unl: ()=>player.funify.times>0,
+            color: "#ef8",
+        },
+        'sfrgt': {
+            unl: ()=>hasUpgrade('funny-machine',2),
+            color: "#ef8",
+        },
     },
     levels: {
         level: {
@@ -67,6 +83,12 @@ const LISTS = {
             color: ["#aa0","yellow"],
             name: "Tier",
             curr: "tp",
+        },
+        astral: {
+            unl: ()=>player.galactic.times>0,
+            color: ["#404","purple"],
+            name: "Astral",
+            curr: "sp",
         },
     },
 }

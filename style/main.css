@@ -322,6 +322,13 @@ img {
 	/* box-shadow: inset 0px 0px 10px 2px #000, inset 0px 50px 50px #0004, inset 0px -50px 50px #0004; */
 }
 
+#grid-element-star-upgrades .upgrades-div,
+#grid-element-moonstone-upgrades .upgrades-div,
+#grid-element-milestone-agh .milestone-div,
+#grid-element-content-astral-bonus {
+	border-color: #ccc;
+}
+
 .upg-curr-display {
 	position: absolute;
 	top: 10px;
@@ -381,11 +388,23 @@ img {
 	flex-wrap: wrap;
 	align-content: flex-start;
 }
+.upgrades-grid.vertical-center-mode {
+	overflow-y: scroll;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	align-content: flex-start;
+}
 .upgrades-grid.large-size {
 	height: calc(100% - 70px);
 }
 .upgrades-grid > div {
 	flex-shrink: 0;
+}
+
+.break-column {
+	flex-basis: 100%;
+	width: 0;
 }
 
 .upgrade-div {
@@ -398,6 +417,11 @@ img {
 .upgrades-grid.large-size > .upgrade-div {
 	width: 180px;
 	height: 155px;
+}
+
+.upgrade-div.hidden * {
+	display: none;
+	pointer-events: none;
 }
 
 .upgrade-div *:not(.img_desc:first-child,.upg-auto) {
@@ -597,7 +621,7 @@ img {
 	top: 40px;
 	left: 5px;
 	width: calc(100% - 10px);
-	font-size: 16px;
+	font-size: 14px;
 }
 
 .reset-button {
@@ -619,6 +643,37 @@ img {
 	right: 0px;
 	pointer-events: none;
 	width: 100px;
+}
+
+.reset-option {
+	position: absolute;
+	bottom: 70px;
+	width: 200px;
+	height: 36px;
+
+	display: grid;
+	grid-template-columns: auto 36px;
+	align-items: center;
+	justify-content: center;
+}
+
+.reset-option.left {
+	left: 30px;
+}
+.reset-option.right {
+	right: 44px;
+}
+
+.reset-option > div {
+	text-align: right;
+	font-size: 20px;
+	padding: 0px 10px;
+}
+.reset-option > button {
+	width: 36px;
+	height: 100%;
+	padding: 0px;
+	font-size: 24px;
 }
 
 .milestone-div {
@@ -845,6 +900,18 @@ img {
 	left: 10px;
 	width: calc(100% - 24px);
 	height: calc(100% - 100px);
+	border: solid 2px black;
+	background-color: #222;
+	box-shadow: inset 0px 0px 10px 2px #000;
+	overflow-y: scroll;
+}
+
+.astral-table {
+	position: absolute;
+	top: 55px;
+	left: 10px;
+	width: calc(100% - 24px);
+	height: calc(100% - 70px);
 	border: solid 2px black;
 	background-color: #222;
 	box-shadow: inset 0px 0px 10px 2px #000;
