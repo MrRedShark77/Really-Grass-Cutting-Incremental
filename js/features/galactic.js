@@ -1461,7 +1461,7 @@ UPGRADES.moonstone = {
             icons: ["Curr/Steel2"],
 
             name: `Moon Steel`,
-            desc: `Increases platinum gained by <b class="green">+25%</b> per level.`,
+            desc: `Increases steel gained by <b class="green">+25%</b> per level.`,
 
             noCostIncrease: true,
             cost: ()=>1e3,
