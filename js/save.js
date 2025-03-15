@@ -98,6 +98,22 @@ function getPlayerData() {
             sfrgt: E(0),
         },
 
+        sacrifice: {
+            times: 0,
+            points: E(0),
+        },
+
+        unnatural: {
+            grass: E(0),
+            xp: E(0),
+            level: E(1),
+        },
+
+        normality: {
+            times: 0,
+            points: E(0),
+        },
+
         lists: {
             currencies: {},
             levels: {},
@@ -108,6 +124,8 @@ function getPlayerData() {
             scMode: false,
         },
         map_pins: [],
+
+        version: VERSION,
     }
 
     for (let k in UPGRADES) {
@@ -142,9 +160,14 @@ function wipe(reload) {
 
 function loadPlayer(load) {
     const DATA = getPlayerData()
+    var version = load.version
     player = deepNaN(load, DATA)
     player = deepUndefinedAndDecimal(player, DATA)
     camera_pos = player.saved_cam
+
+    if (version === undefined && player.map_pins[2]) player.map_pins[2] = false;
+
+    player.version = VERSION
 }
 
 function clonePlayer(obj,data) {

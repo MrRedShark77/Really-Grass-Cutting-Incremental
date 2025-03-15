@@ -64,6 +64,18 @@ const LISTS = {
             unl: ()=>hasUpgrade('funny-machine',2),
             color: "#ef8",
         },
+        'dark-matter': {
+            unl: ()=>player.sacrifice.times>0,
+            color: "#34006e",
+        },
+        'unnatural-grass': {
+            unl: ()=>tmp.anti_unl,
+            color: "#c7ff26",
+        },
+        'normality': {
+            unl: ()=>player.normality.times>0,
+            color: "#c7ff26",
+        },
     },
     levels: {
         level: {
@@ -77,6 +89,12 @@ const LISTS = {
             color: ["#060053","#1200ff"],
             name: "Anti-Level",
             curr: "anti-xp",
+        },
+        'unnatural-level': {
+            unl: ()=>tmp.unnatural_unl,
+            color: ["#618300","#c7ff26"],
+            name: "Unnatural Level",
+            curr: "unnatural-xp",
         },
         tier: {
             unl: ()=>player.prestige.times>0,

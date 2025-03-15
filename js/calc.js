@@ -33,7 +33,7 @@ function calc(dt) {
         if (player.auto_accomplish >= tmp.auto_accomplish_time) {
             let w = Math.floor(player.auto_accomplish / tmp.auto_accomplish_time)
 
-            for (let i = 0; i < ACCOM.ctn.length; i++) if (i !== 9) player.accomplishments[i] = player.accomplishments[i].add(w).min(ACCOM.ctn[i].max);
+            for (let i = 0; i < ACCOM.ctn.length; i++) if (player.agh.lte(-12) || i !== 9) player.accomplishments[i] = player.accomplishments[i].add(w).min(ACCOM.ctn[i].max);
 
             player.auto_accomplish %= tmp.auto_accomplish_time;
         }

@@ -27,7 +27,7 @@ const UPGRADES = {
                 res: "grass",
 
                 effect(a) {
-                    let x = Decimal.pow(2,a.div(25).floor()).mul(a).add(1)
+                    let x = Decimal.pow(2,a.div(25).floor()).mul(a.add(1))
                     return x
                 },
                 effDesc: x => formatMult(x,0),
@@ -81,7 +81,7 @@ const UPGRADES = {
                 res: "grass",
 
                 effect(a) {
-                    let x = Decimal.pow(2,a.div(25).floor()).mul(a).add(1)
+                    let x = Decimal.pow(2,a.div(25).floor()).mul(a.add(1))
                     return x
                 },
                 effDesc: x => formatMult(x,0),
@@ -99,7 +99,7 @@ const UPGRADES = {
                 res: "grass",
 
                 effect(a) {
-                    let x = Decimal.pow(1.25,a.div(25).floor()).mul(a).mul(.1).add(1)
+                    let x = Decimal.pow(1.25,a.div(25).floor()).mul(a.mul(.1).add(1))
                     return x
                 },
                 effDesc: x => formatMult(x),

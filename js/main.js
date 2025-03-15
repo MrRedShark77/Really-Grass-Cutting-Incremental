@@ -130,6 +130,9 @@ const PYLONS = [
     },{
         unl: ()=>tmp.star_unl,
         dots: [[0,0],[0,-20]],
+    },{
+        unl: ()=>tmp.unnatural_unl,
+        dots: [[20,0],[40,0]],
     },
 ]
 
@@ -214,8 +217,9 @@ const TABS = [
 
 const TELEPORTS = [
     [()=>true, "Grass Field", [0,0], "Bases/GrassBase", "Curr/Grass"],
-    [()=>tmp.star_unl || player.grasshop.gte(1), "Factory", [0,12], "Bases/GrasshopBase", "Icons/Charger"],
     [()=>tmp.anti_unl, "Anti-Grass Field", [20,0], "Bases/AntiGrassBase", "Curr/AntiGrass"],
+    [()=>tmp.unnatural_unl, "Unnatural-Grass Field", [40,0], "Bases/UnnaturalBase", "Curr/UGrass"],
+    [()=>tmp.star_unl || player.grasshop.gte(1), "Factory", [0,12], "Bases/GrasshopBase", "Icons/Charger"],
     [()=>tmp.star_unl, "Star Platform", [0,-20], "Bases/SpaceBase", "Curr/Star"],
 ]
 

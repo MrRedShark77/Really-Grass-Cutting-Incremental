@@ -169,7 +169,7 @@ const ACCOM = {
             bulk: a => a.sub(18).div(2).floor(),
             goalDisplay: x => "Tier "+format(x,0),
         },{
-            unl:()=>player.grasshop.gte(8),
+            unl:()=>player.galactic.times>0 || player.grasshop.gte(8),
             name: "Empower",
             layer: "steelie",
             max: 10,

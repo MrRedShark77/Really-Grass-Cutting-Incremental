@@ -94,7 +94,7 @@ UPGRADES.crystal = {
             res: "crystal",
 
             effect(a) {
-                let x = Decimal.pow(1.5,a.div(25).floor()).mul(a).mul(.5).add(1)
+                let x = Decimal.pow(1.5,a.div(25).floor()).mul(a.mul(.5).add(1))
                 return x
             },
             effDesc: x => formatMult(x),
@@ -113,7 +113,7 @@ UPGRADES.crystal = {
             res: "crystal",
 
             effect(a) {
-                let x = Decimal.pow(1.5,a.div(25).floor()).mul(a).mul(.5).add(1)
+                let x = Decimal.pow(1.5,a.div(25).floor()).mul(a.mul(.5).add(1))
                 return x
             },
             effDesc: x => formatMult(x),
@@ -132,7 +132,7 @@ UPGRADES.crystal = {
             res: "crystal",
 
             effect(a) {
-                let x = Decimal.pow(2,a.div(25).floor()).mul(a).mul(1).add(1)
+                let x = Decimal.pow(2,a.div(25).floor()).mul(a.add(1))
                 return x
             },
             effDesc: x => formatMult(x,0),
@@ -151,7 +151,7 @@ UPGRADES.crystal = {
             res: "crystal",
 
             effect(a) {
-                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a).mul(.25).add(1)
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a.mul(.25).add(1))
                 return x
             },
             effDesc: x => formatMult(x),

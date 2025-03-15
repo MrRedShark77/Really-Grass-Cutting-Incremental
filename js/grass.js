@@ -40,7 +40,7 @@ const GRASS = {
                 .mul(upgradeEffect('prestige',1)).mul(upgradeEffect('crystal',1)).mul(upgradeEffect('platinum',3)).mul(getAccomplishmentBonus(0))
                 .mul(getAccomplishmentBonus(6)).mul(upgradeEffect('platinum',8)).mul(tmp.charger_bonus[3]??1).mul(upgradeEffect('anti-grass',6))
                 .mul(upgradeEffect('anonymity',3)).mul(upgradeEffect('oil',2)).mul(upgradeEffect('refinery','1a')).mul(upgradeEffect('refinery','2a')).mul(upgradeEffect('momentum','1a'))
-                .mul(upgradeEffect('star','SC1b')).mul(upgradeEffect('star','SC2b')).mul(upgradeEffect('moonstone',1))
+                .mul(upgradeEffect('star','SC1b')).mul(upgradeEffect('star','SC2b')).mul(upgradeEffect('moonstone',1)).mul(upgradeEffect('momentum','2c')).mul(upgradeEffect('momentum','3a'))
                 if (player.grasshop.gte(1)) x = x.mul(getMilestoneEffect('grasshop',0));
                 return x
             },
@@ -52,7 +52,8 @@ const GRASS = {
                 .mul(upgradeEffect('perks',5)).mul(getAccomplishmentBonus(1)).mul(upgradeEffect('platinum',9))
                 .mul(tmp.charger_bonus[1]??1).mul(upgradeEffect('anti-grass',7)).mul(upgradeEffect('anonymity',4))
                 .mul(upgradeEffect('oil',3)).mul(upgradeEffect('refinery','1b')).mul(upgradeEffect('refinery','2b')).mul(upgradeEffect('refinery','3b')).mul(upgradeEffect('momentum','1b'))
-                .mul(totalUpgradesEffectFromRange('star',[1,7],x=>`SC${x}c`,'mult')).mul(upgradeEffect('moonstone',4)).mul(upgradeEffect('moonstone',16))
+                .mul(totalUpgradesEffectFromRange('star',[1,7],x=>`SC${x}c`,'mult')).mul(upgradeEffect('moonstone',4)).mul(upgradeEffect('moonstone',16)).mul(upgradeEffect('dark-matter',1))
+                .mul(upgradeEffect('momentum','2d')).mul(upgradeEffect('momentum','3b')).mul(upgradeEffect('star-ultimate',2))
                 if (player.grasshop.gte(2)) x = x.mul(getMilestoneEffect('grasshop',1));
                 return x
             },
@@ -63,7 +64,7 @@ const GRASS = {
                 let x = E(1).mul(upgradeEffect('prestige',3)).mul(upgradeEffect('crystal',3)).mul(upgradeEffect('oil',5)).mul(ASTRAL.bonus('tp'))
                 .mul(upgradeEffect('perks',6)).mul(getAccomplishmentBonus(2)).mul(tmp.charger_bonus[2]??1)
                 .mul(upgradeEffect('refinery','1c')).mul(upgradeEffect('refinery','2c')).mul(upgradeEffect('refinery','3c')).mul(upgradeEffect('momentum','1i'))
-                .mul(totalUpgradesEffectFromRange('star',[1,5],x=>`SC${x}d`,'mult')).mul(upgradeEffect('moonstone',5))
+                .mul(totalUpgradesEffectFromRange('star',[1,5],x=>`SC${x}d`,'mult')).mul(upgradeEffect('moonstone',5)).mul(upgradeEffect('dark-matter',2))
                 if (player.grasshop.gte(3)) x = x.mul(getMilestoneEffect('grasshop',2));
                 return x
             },
@@ -72,7 +73,8 @@ const GRASS = {
             get mult() {
                 if (player.galactic.times === 0) return E(0);
                 let x = E(1).add(getMilestoneEffect('grass-skip',1,0))
-                x = x.mul(totalUpgradesEffectFromRange('star',[1,6],x=>'PS'+x,'mult')).mul(upgradeEffect('sfrgt',2)).mul(player.agh.lte(1)?10:1)
+                x = x.mul(totalUpgradesEffectFromRange('star',[1,6],x=>'PS'+x,'mult')).mul(upgradeEffect('sfrgt',2)).mul(player.agh.lte(1)?10:1).mul(player.agh.lte(-6)?getMilestoneEffect('agh',12):1)
+                .mul(upgradeEffect('dark-matter',3)).mul(upgradeEffect('unnatural-grass',5)).mul(upgradeEffect('normality',2)).mul(upgradeEffect('star-ultimate',3))
                 return x
             },
         },
@@ -80,7 +82,7 @@ const GRASS = {
             get mult() {
                 let x = E(1).add(ASTRAL.bonus('platinum',0)).add(player.grassskip.gte(4)?10:0)
                 if (player.grasshop.gte(4)) x = x.add(getMilestoneEffect('grasshop',3,0));
-                x = x.mul(upgradeEffect('momentum','1e')).mul(upgradeEffect('moonstone',7)).mul(upgradeEffect("moonstone",11)).mul(upgradeEffect('moonstone',17))
+                x = x.mul(upgradeEffect('momentum','1e')).mul(upgradeEffect('moonstone',7)).mul(upgradeEffect("moonstone",11)).mul(upgradeEffect('moonstone',17)).mul(upgradeEffect('momentum','2a'))
                 return x
             },
             get chance() {
@@ -92,6 +94,8 @@ const GRASS = {
         moonstone: {
             get mult() {
                 let x = E(3).add(player.grassskip.gte(6)?10:0).add(ASTRAL.bonus('moonstone',0))
+                if (player.grassskip.gte(20)) x = x.add(getMilestoneEffect('grass-skip',10,0));
+                if (player.agh.lte(-9)) x = x.mul(2);
                 return x
             },
             get chance() {
@@ -104,37 +108,29 @@ const GRASS = {
             get mult() {
                 let x = E(1).mul(upgradeEffect('anti-grass',1)).mul(getMilestoneEffect('grasshop',12)).mul(tmp.charger_bonus[6]??1)
                 .mul(upgradeEffect('anonymity',2)).mul(upgradeEffect('oil',1))
+                if (player.agh.lte(-30)) x = x.mul(player.anti.level.pow_base(1.1));
                 return x
             },
         },
         'anti-xp': {
             get mult() {
                 let x = E(1).mul(upgradeEffect('anti-grass',4)).mul(getMilestoneEffect('grasshop',13)).mul(tmp.charger_bonus[7]??1)
-                .mul(upgradeEffect('anonymity',6)).mul(upgradeEffect('oil',4)).mul(totalUpgradesEffectFromRange('star',[1,6],x=>`SC${x}e`,'mult')).mul(upgradeEffect('moonstone',6)).mul(upgradeEffect("moonstone",15))
+                .mul(upgradeEffect('anonymity',6)).mul(upgradeEffect('oil',4)).mul(totalUpgradesEffectFromRange('star',[1,7],x=>`SC${x}e`,'mult')).mul(upgradeEffect('moonstone',6)).mul(upgradeEffect("moonstone",15))
+                .mul(upgradeEffect('momentum','2d')).mul(upgradeEffect('star-ultimate',2))
                 if (player.agh.lte(22)) x = x.mul(player.tier.sub(1).max(0).pow_base(1.05));
+                if (player.agh.lte(-3)) {
+                    let exp = E(.5)
+                    if (player.agh.lte(-9)) exp = exp.mul(getMilestoneEffect('agh',13));
+
+                    x = x.mul(tmp.aghgs3eff = expPow(tmp.mults.xp ?? 1,exp))
+                }
                 return x
             },
         },
     },
 }
 
-for (let k in GRASS.field) {
-    let v = GRASS.field[k]
-    v.resources = [v.res_base,...(v.chances??[])]
-}
-
-var grass_data = (()=>{
-    let data = {}
-    for (let [k,v] of Object.entries(GRASS.field)) {
-        let data2 = {
-            time: E(0),
-            total: E(0),
-        }
-        for (let k2 of v.resources) data2[k2] = E(0)
-        data[k] = data2
-    }
-    return data
-})()
+var grass_data;
 
 function calculatePassiveAutocut(id, name) {
     let f = GRASS.field[id], res = GRASS.resource[name], chance = E(1)
@@ -150,7 +146,7 @@ function calculatePassiveAutocut(id, name) {
         }
     }
 
-    return Decimal.mul(res.mult, chance).mul(f.autocut_value).mul(f.autocut_speed).round()
+    return Decimal.mul(tmp.mults[id] ?? res.mult, chance).mul(f.autocut_value).mul(f.autocut_speed).mul(tmp.compaction).round()
 }
 
 function cutGrass(field) {
@@ -160,9 +156,9 @@ function cutGrass(field) {
         if (k === 'total') {
             let total = grass_data[field][k]
             got_one = total.gt(0)
-            for (s of GRASS.field[field].bonus) gainCurrency(s,total.mul(GRASS.resource[s].mult.round()));
+            for (s of GRASS.field[field].bonus) gainCurrency(s,total.mul(GRASS.resource[s].mult.mul(tmp.compaction).round()));
         }
-        else gainCurrency(k,grass_data[field][k].mul(GRASS.resource[k].mult.round()));
+        else gainCurrency(k,grass_data[field][k].mul(GRASS.resource[k].mult.mul(tmp.compaction).round()));
         grass_data[field][k] = E(0);
     }
 

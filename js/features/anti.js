@@ -146,6 +146,7 @@ CURRENCIES.anonymity = {
     get gain() {
         if (!RESETS.anonymity.req()) return E(0);
         let b = E(1.05)
+        if (player.grassskip.gte(22)) b = b.add(getMilestoneEffect('grass-skip',11,0));
 
         let x = player.anti.level.sub(31).pow_base(b).mul(player.anti.grass.max(1).root(15)).mul(10)
 
@@ -402,9 +403,10 @@ CURRENCIES.oil = {
     get gain() {
         if (!RESETS.oil.req()) return E(0);
         let b = E(1.1)
+        if (player.grassskip.gte(24)) b = b.add(getMilestoneEffect('grass-skip',12,0));
 
         let x = b.pow(player.tier.sub(1)).mul(player.tier).mul(4).mul(upgradeEffect('platinum', 13)).mul(upgradeEffect('refinery','1g')).mul(upgradeEffect('refinery','2g')).mul(upgradeEffect('momentum','1c'))
-        .mul(upgradeEffect('star','SC1f')).mul(tmp.charger_bonus[8]??1)
+        .mul(upgradeEffect('star','SC1f')).mul(tmp.charger_bonus[8]??1).mul(upgradeEffect('star-ultimate',4))
 
         return x.floor()
     },
@@ -564,6 +566,22 @@ UPGRADES.oil = {
             },
             effDesc: x => formatMult(x),
         },
+        '8': {
+            max: 15,
+            unl: ()=>hasUpgrade('star','S5'),
+            icons: ["Curr/Steel2"],
+            name: `Oily Steel II`,
+            tier: "II",
+            desc: `Increases steel gained by <b class="green">x2</b> per level.`,
+            cost: a => a.simpleCost("EA", 1e15, .2, 25).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e15, .2, 25).add(1).floor(),
+            res: "oil",
+            effect(a) {
+                let x = Decimal.pow(2,a)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
     },
 }
 
@@ -621,7 +639,7 @@ MILESTONES['grass-skip'] = {
         { // 0
             r: 1,
             get desc() { return `Increases stars gained by <b class="green">+5</b> per grass-skip.` },
-            effect: a => a.mul(5),
+            effect: a => a.mul(player.agh.lte(-3) ? 10 : 5),
         },{
             r: 2,
             get desc() { return `Increases space power (SP) gained by <b class="green">+1</b> per grass-skip.` },
@@ -635,7 +653,7 @@ MILESTONES['grass-skip'] = {
         },{
             r: 5,
             get desc() { return `Multiplies anti autocut speed by <b class="green">3</b>.` },
-        },{
+        },{ // 5
             r: 6,
             get desc() { return `Increases moonstone gained by <b class="green">+10</b>.` },
         },{
@@ -644,6 +662,26 @@ MILESTONES['grass-skip'] = {
         },{
             r: 8,
             get desc() { return `Unlocks <b class="green">Funify</b> reset and <b class="green">The Funny Upgrade</b> rocket fuel upgrade.` },
+        },{
+            r: 12,
+            get desc() { return `Increases steel gained by <b class="green">+25%</b> per grass-skip.` },
+            effect: a => a.mul(.25).add(1),
+        },{
+            r: 16,
+            get desc() { return `Increases fun gained by <b class="green">+25%</b> per grass-skip.` },
+            effect: a => a.mul(.25).add(1),
+        },{ // 10
+            r: 20,
+            get desc() { return `Increases moonstone worth by <b class="green">+10</b> per grass-skip, starting at 15.` },
+            effect: a => a.sub(14).max(0).mul(10),
+        },{
+            r: 22,
+            get desc() { return `Increases anonymity's anti-level scaling by <b class="green">+2%</b> per grass-skip, starting at 22 and ending at 26. (Base is 5%)` },
+            effect: a => a.sub(21).max(0).min(5).mul(.02),
+        },{
+            r: 24,
+            get desc() { return `Increases oil's tier scaling by <b class="green">+2%</b> per grass-skip, starting at 24 and ending at 33. (Base is 10%)` },
+            effect: a => a.sub(23).max(0).min(10).mul(.02),
         },
     ],
 }
@@ -685,9 +723,11 @@ CURRENCIES.fun = {
     get gain() {
         if (!RESETS.funify.req()) return E(0);
 
-        let x = E(1).mul(upgradeEffect('refinery','1h')).mul(upgradeEffect('refinery','2h')).mul(upgradeEffect('moonstone',13)).mul(upgradeEffect('moonstone',19))
+        let x = E(1).mul(upgradeEffect('refinery','1h')).mul(upgradeEffect('refinery','2h')).mul(upgradeEffect('moonstone',13)).mul(upgradeEffect('moonstone',19)).mul(upgradeEffect('unnatural-grass',6))
 
         for (let i = 1; i <= 4; i++) x = x.mul(upgradeEffect('fundry',i));
+
+        if (player.grassskip.gte(16)) x = x.mul(getMilestoneEffect('grass-skip',9));
 
         return x.floor()
     },
@@ -771,6 +811,26 @@ UPGRADES['funny-machine'] = {
 
             cost: a => a.simpleCost("EA", 1e8, .2, 1.15).ceil(),
             bulk: a => a.simpleCost("EAI", 1e8, .2, 1.15).add(1).floor(),
+            res: "fun",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "5": {
+            max: 100,
+            unl: ()=>true,
+            req: ()=>player.sacrifice.times>0,
+            req_desc: "???",
+            icons: ["Icons/Recelerator"],
+
+            name: `Recelerator`,
+            desc: `Unlocks a building where you can ???.`,
+
+            cost: a => a.simpleCost("EA", 1e23, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e23, .2, 1.15).add(1).floor(),
             res: "fun",
 
             effect(a) {

@@ -323,10 +323,16 @@ img {
 }
 
 #grid-element-star-upgrades .upgrades-div,
+#grid-element-star-ultimate-upgrades .upgrades-div,
 #grid-element-moonstone-upgrades .upgrades-div,
 #grid-element-milestone-agh .milestone-div,
 #grid-element-content-astral-bonus {
 	border-color: #ccc;
+}
+
+#grid-element-reset-sacrifice .upgrades-div,
+#grid-element-dark-matter-upgrades .upgrades-div {
+	border-color: #f8f;
 }
 
 .upg-curr-display {
@@ -944,7 +950,11 @@ img {
 	cursor: pointer;
 	pointer-events: all;
 }
-.map-button > img:first-child:hover {
+.map-button:not(.inactive) > img:first-child:hover {
+	filter: brightness(.75);
+}
+.map-button.inactive {
+	opacity: 0.75;
 	filter: brightness(.75);
 }
 

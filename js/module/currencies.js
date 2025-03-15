@@ -115,6 +115,33 @@ const CURRENCIES = {
             return calculatePassiveAutocut('anti','anti-xp')
         },
     },
+    'unnatural-grass': {
+        name: "Unnatural Grass",
+        icon: "Curr/UGrass",
+        base: "Bases/UnnaturalBase",
+
+        get amount() { return player.unnatural.grass },
+        set amount(v) { player.unnatural.grass = v.max(0) },
+
+        get gain() {
+            return calculatePassiveAutocut('unnatural','unnatural-grass')
+        },
+    },
+    'unnatural-xp': {
+        name: "Unnatural XP",
+        icon: "Icons/UnnaturalXP",
+        base: "Bases/UnnaturalBase",
+
+        get amount() { return player.unnatural.xp },
+        set amount(v) {
+            player.unnatural.xp = v.max(0)
+            checkLevel('unnatural-xp')
+        },
+
+        get gain() {
+            return calculatePassiveAutocut('unnatural','unnatural-xp')
+        },
+    },
 }
 
 function gainCurrency(id,amt) {

@@ -467,6 +467,24 @@ UPGRADES.refinery = {
             },
             effDesc: x => formatMult(x),
         },
+        "2i": {
+            max: 1e5,
+            unl: ()=>hasUpgrade('refinery','1i',1e6),
+            icons: ["Curr/Star"],
+
+            name: `Giga Rocket Fueled Galactics`,
+            desc: `Increases stars earned by <b class="green">+1%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e12,
+            res: "rocket-fuel",
+
+            effect(a) {
+                let x = a.mul(.01).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
     },
 }
 
@@ -481,10 +499,12 @@ RESETS['rocket-part'] = {
         return CURRENCIES.steelie.amount.lt(n[0]) || player.rocket.total.lt(n[1])
     },
 
+    get cap() { return player.agh.lte(-24) ? 100 : 10 },
+
     get next_part() {
         let p = player.rocket.part
-        if (p.gte(10)) return [EINF, EINF];
-        return [p.add(1).mul(1e21), p.mul(10)]
+        if (p.gte(this.cap)) return [EINF, EINF];
+        return player.agh.lte(-24) ? [p.pow_base(1e3).mul(1e36), p.add(1).pow_base(100)] : [p.add(1).mul(1e21), p.mul(10)]
     },
 
     name: "Rocket Part",
@@ -493,16 +513,16 @@ RESETS['rocket-part'] = {
         let a = this.next_part;
         return `Reset everything liquefy does as well as oil, oil upgrades, steel, and total rocket fuel for rocket part and momentum.
         <br><b class="gray">Steel</b><br><b class="${steel.gte(a[0]) ? 'green' : 'red'}">${steel.format(0)} / ${a[0].format(0)}</b>
-        <br><b class="lightblue">Total Rocket Fuel</b><br><b class="${t.gte(a[1]) ? 'green' : 'red'}">${t.format(0)} / ${a[1].format(0)}</b>`
+        <br><b class="lightblue">Total Rocket Fuel</b><br><b class="${t.gte(a[1]) ? 'green' : 'red'}">${t.format(0)} / ${a[1].format(0)}</b>
+        <br><br>You have created <b class="green">${player.rocket.part.format(0)} / ${format(this.cap,0)}</b> rocket parts.`
     },
     color: ['#7d5227','#ffd421'],
 
     icon: "Curr/Momentum",
-    get gain_desc() { return "+1" },
+    curr: "momentum",
 
     success() {
         player.rocket.part = player.rocket.part.add(1)
-        player.rocket.momentum = player.rocket.momentum.add(1)
     },
     doReset() {
         CURRENCIES.oil.amount = E(0)
@@ -523,9 +543,11 @@ CURRENCIES.momentum = {
     set amount(v) { player.rocket.momentum = v.max(0) },
 
     get gain() {
-        let x = E(1)
+        let x = E(1).mul(upgradeEffect('normality',5)).mul(upgradeEffect('dark-matter',7))
 
-        return x
+        if (player.agh.lte(-24)) x = x.mul(player.rocket.part.pow10());
+
+        return x.floor()
     },
 
     passive: 0,
@@ -713,6 +735,152 @@ UPGRADES.momentum = {
                 return x
             },
             effDesc: x => formatMult(x,0),
+        },
+
+        "2a": {
+            unl: ()=>player.agh.lte(-21),
+            icons: ["Curr/Platinum"],
+
+            name: `I Hate Waiting`,
+            desc: `Increases platinum earned by <b class="green">x2</b> per level.`,
+
+            max: 5,
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.pow_base(2)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "2b": {
+            unl: ()=>player.agh.lte(-21),
+            icons: ["Curr/Charge"],
+
+            name: `Gigacharged`,
+            desc: `Increases charge rate by <b class="green">x10</b> per level.`,
+
+            max: 5,
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.pow_base(10)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "2c": {
+            unl: ()=>player.agh.lte(-21),
+            icons: ["Curr/Grass"],
+
+            name: `Grass is Better Than Life`,
+            desc: `Increases grass value by <b class="green">x10</b> per level.`,
+
+            max: 5,
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.pow_base(10)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "2d": {
+            unl: ()=>player.agh.lte(-21),
+            icons: ["Icons/XP"],
+
+            name: `Real Grasshops`,
+            desc: `Increases normal and anti experience gained by <b class="green">x10</b> per level.`,
+
+            max: 5,
+            noCostIncrease: true,
+            cost: ()=>1,
+            res: "momentum",
+
+            effect(a) {
+                let x = a.pow_base(10)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+
+        "3a": {
+            max: 1000,
+            unl: ()=>player.agh.lte(-24),
+            icons: ["Curr/Grass"],
+
+            name: `Grass is Greater Than Life`,
+            desc: `Increases grass value by <b class="green">x2</b> per level.`,
+
+            cost: a => a.scale(1e3-1,2,"P").simpleCost("EA", 100, .2, 2).ceil(),
+            bulk: a => a.simpleCost("EAI", 100, .2, 2).scale(1e3-1,2,"P",true).add(1).floor(),
+            res: "momentum",
+
+            effect(a) {
+                let x = a.pow_base(2)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "3b": {
+            max: 1000,
+            unl: ()=>player.agh.lte(-24),
+            icons: ["Icons/XP"],
+
+            name: `Yet Another XP Upgrade`,
+            desc: `Increases experience gained by <b class="green">x2</b> per level.`,
+
+            cost: a => a.scale(1e3-1,2,"P").simpleCost("EA", 400, .2, 2.5).ceil(),
+            bulk: a => a.simpleCost("EAI", 400, .2, 2.5).scale(1e3-1,2,"P",true).add(1).floor(),
+            res: "momentum",
+
+            effect(a) {
+                let x = a.pow_base(2)
+                return x
+            },
+            effDesc: x => formatMult(x,0),
+        },
+        "3c": {
+            max: 1000,
+            unl: ()=>player.agh.lte(-24),
+            icons: ["Curr/DarkMatter"],
+
+            name: `It Does Matter`,
+            desc: `Increases dark matter gained by <b class="green">x1.5</b> per level.`,
+
+            cost: a => a.scale(1e3-1,2,"P").simpleCost("EA", 1e3, .2, 3).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e3, .2, 3).scale(1e3-1,2,"P",true).add(1).floor(),
+            res: "momentum",
+
+            effect(a) {
+                let x = a.pow_base(1.5)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "3d": {
+            max: 1000,
+            unl: ()=>player.agh.lte(-24),
+            icons: ["Curr/Normality"],
+
+            name: `No Problem`,
+            desc: `Increases normality points gained by <b class="green">x1.5</b> per level.`,
+
+            cost: a => a.scale(1e3-1,2,"P").simpleCost("EA", 3e3, .2, 2.8).ceil(),
+            bulk: a => a.simpleCost("EAI", 3e3, .2, 2.8).scale(1e3-1,2,"P",true).add(1).floor(),
+            res: "momentum",
+
+            effect(a) {
+                let x = a.pow_base(1.5)
+                return x
+            },
+            effDesc: x => formatMult(x),
         },
     },
 }

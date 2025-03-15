@@ -7,11 +7,11 @@ CURRENCIES.star = {
     set amount(v) { player.galactic.star = v.max(0) },
 
     get gain() {
-        if (player.rocket.part.lt(10)) return E(0);
+        if (!RESETS.galactic.unl()) return E(0);
 
         let x = E(10).add(getMilestoneEffect('grass-skip',0,0))
 
-        x = x.mul(ASTRAL.bonus('stars')).mul(upgradeEffect('moonstone',8)).mul(tmp.star_acc_effect??1).mul(upgradeEffect('accumulator',1)).mul(upgradeEffect('accumulator',2)).mul(upgradeEffect('accumulator',3)).mul(upgradeEffect("moonstone",14)).mul(upgradeEffect("moonstone",18)).mul(upgradeEffect('sfrgt',3)).mul(upgradeEffect('refinery','1i'))
+        x = x.mul(ASTRAL.bonus('stars')).mul(upgradeEffect('moonstone',8)).mul(tmp.star_acc_effect??1).mul(upgradeEffect('accumulator',1)).mul(upgradeEffect('accumulator',2)).mul(upgradeEffect('accumulator',3)).mul(upgradeEffect("moonstone",14)).mul(upgradeEffect("moonstone",18)).mul(upgradeEffect('sfrgt',3)).mul(upgradeEffect('refinery','1i')).mul(upgradeEffect('refinery','2i')).mul(upgradeEffect('dark-matter',5))
 
         return x.floor()
     },
@@ -21,7 +21,7 @@ CURRENCIES.star = {
 
 RESETS.galactic = {
     pos: [-4,11],
-    unl: () => player.rocket.part.gte(10),
+    unl: () => player.rocket.part.gte(player.agh.lte(-24) ? 1 : 10),
 
     req: () => true,
     req_desc: "???",
@@ -41,14 +41,13 @@ RESETS.galactic = {
 
         updateTemp()
 
-        teleportTo(3,true)
+        teleportTo(4,true)
     },
     doReset() {
         resetUpgrades('factory')
         resetUpgrades('foundry')
         resetUpgrades('generator')
         resetUpgrades('assembler')
-        resetUpgrades('momentum')
 
         let k = []
 
@@ -69,16 +68,19 @@ RESETS.galactic = {
         resetUpgrades('anti-auto',k)
         resetUpgrades('platinum')
 
-        player.sp = E(0)
-        player.astral = E(1)
-
         player.grasshop = E(0)
         player.grassskip = E(0)
         player.rocket.part = E(0)
 
         CURRENCIES['rocket-fuel'].amount = E(0)
-        CURRENCIES.momentum.amount = E(0)
-        CURRENCIES.platinum.amount = E(0)
+
+        if (player.agh.gt(-21)) {
+            CURRENCIES.momentum.amount = E(0)
+            resetUpgrades('momentum')
+        }
+
+        if (player.agh.gt(-15)) CURRENCIES.platinum.amount = E(0);
+
         CURRENCIES.charge.best=E(0)
 
         for (let i = 0; i < ACCOM.ctn.length; i++) if (player.agh.gt(7) || i === 9) player.accomplishments[i] = E(0);
@@ -107,14 +109,14 @@ UPGRADES.star = {
     cannot_hide: true,
     map: [
         ["","A1","","S4","S3","S1","","","","P1",""],
-        ["A13","A2","A3","","S2","SC1a","SC1f","","P2","PS1","P3"],
+        ["A13","A2","A3","S5","S2","SC1a","SC1f","","P2","PS1","P3"],
         ["A12","A4","A5","SC1b","SC1c","SC2a","SC1d","SC1e","PS2","PS3","PS4"],
         ["A6","A7","A8","SC2b","SC2c","SC3a","SC2d","SC2e","PS5","PS6",""],
         ["","A9","","","SC3c","SC4a","SC3d","SC3e","","",""],
         ["A10","A11","","","SC4c","SC5a","SC4d","SC4e","","",""],
         ["","SC5c","SC6a","SC5d","SC5e"],
         ["SC6c","SC7a","SC6e"],
-        ["SC7c","SC8a",""],
+        ["SC7c","SC8a","SC7e"],
         ["SC9a"],
     ],
     ctn: {
@@ -332,6 +334,17 @@ UPGRADES.star = {
                 return x
             },
             effDesc: x => "+"+formatPercent(x),
+        },
+        "S5": {
+            unl: ()=>hasUpgrade('star','S3'),
+            icons: ["Curr/Oil","Icons/StarSpeed"],
+
+            name: `Unlock Oily Steel II`,
+            desc: `Unlocks a second oily steel upgrade.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e7,
+            res: "star",
         },
 
         "SC1a": {
@@ -899,6 +912,25 @@ UPGRADES.star = {
             },
             effDesc: x => formatMult(x),
         },
+        "SC7e": {
+            max: 100,
+            unl: ()=>hasUpgrade('star','SC7a',100),
+            icons: ["Icons/AntiXP","Icons/StarSpeed"],
+
+            name: `Stellar Anti XP VII`,
+            tier: "VII",
+            desc: `Increases anti experience gained by <b class="green">+10%</b> per level.`,
+
+            noCostIncrease: true,
+            cost: ()=>1e13,
+            res: "star",
+
+            effect(a) {
+                let x = a.mul(.1).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
 
         // SCa - 9
         // SCb - 2
@@ -1075,6 +1107,93 @@ UPGRADES.star = {
     },
 }
 
+UPGRADES['star-ultimate'] = {
+    unl: () => player.agh.lte(-27),
+    pos: [-3, -22],
+    size: [3, 1],
+    color: ['#02001d','#ccc'],
+    type: "normal",
+    base: "Bases/SpaceBase",
+    curr_dis: {
+        get text() { return "Ultimate Star Chart" },
+        icon: "Curr/Star",
+    },
+    ctn: {
+        "1": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Curr/Charge"],
+
+            name: `Stellar Charger U`,
+            desc: `Increases charge rate by <b class="green">+5%</b> compounding per level.`,
+
+            cost: a => a.simpleCost("EA", 1e15, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e15, .2, 1.15).add(1).floor(),
+            res: "star",
+
+            effect(a) {
+                let x = a.pow_base(1.05)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Icons/XP"],
+
+            name: `Stellar XP U`,
+            desc: `Increases normal and anti experience gained by <b class="green">+5%</b> compounding per level.`,
+
+            cost: a => a.simpleCost("EA", 1e15, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e15, .2, 1.15).add(1).floor(),
+            res: "star",
+
+            effect(a) {
+                let x = a.pow_base(1.05)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "3": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Icons/SP"],
+
+            name: `Stellar Power U`,
+            desc: `Increases space power gained by <b class="green">+5%</b> compounding per level.`,
+
+            cost: a => a.simpleCost("EA", 1e15, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e15, .2, 1.15).add(1).floor(),
+            res: "star",
+
+            effect(a) {
+                let x = a.pow_base(1.05)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "4": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Curr/Oil"],
+
+            name: `Stellar Oil U`,
+            desc: `Increases oil gained by <b class="green">+5%</b> compounding per level.`,
+
+            cost: a => a.simpleCost("EA", 1e15, .2, 1.15).ceil(),
+            bulk: a => a.simpleCost("EAI", 1e15, .2, 1.15).add(1).floor(),
+            res: "star",
+
+            effect(a) {
+                let x = a.pow_base(1.05)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+    },
+}
+
 MILESTONES.agh = {
     unl: () => tmp.star_unl,
     pos: [4,-21],
@@ -1112,7 +1231,7 @@ MILESTONES.agh = {
         },{
             r: 16,
             get desc() { return `Earns <b class="green">+1</b> more moonstones per astral.` },
-        },{
+        },{ // 5
             r: 13,
             get desc() { return `Earns <b class="green">x1.25</b> more charge per astral.` },
         },{
@@ -1127,9 +1246,46 @@ MILESTONES.agh = {
         },{
             r: 1,
             get desc() { return `Earns <b class="green">x10</b> more SP.` },
-        },{
+        },{ // 10
             r: 0,
-            get desc() { return `Unlocks a new rocket fuel and moonstone upgrade for stars. <b class="gray">(More AGHGS, Coming Soon)</b>` },
+            get desc() { return `Unlocks a new rocket fuel and moonstone upgrade for stars.` },
+        },{
+            r: -3,
+            get desc() { return `Normal realm XP multiplier boosts anti realm XP multiplier by <b class="green">x10<sup>lg(XP)<sup>${format(getMilestoneEffect('agh',13).mul(.5),3)}</sup></sup></b>. <b class="gray">(${formatMult(tmp.aghgs3eff ?? 1)})</b><br>
+                Earns <b class="green">+5</b> more stars per grass-skip.` },
+        },{
+            r: -6,
+            get desc() { return `Doubles SP gained for every 3 zero grasshop grass-skips (ends at 60).` },
+            effect: a => a.neg().max(0).div(3).floor().pow_base(2),
+        },{
+            r: -9,
+            get desc() { return `Increases the exponent of AGHGS3's boost to Anti-XP by <b class="green">+2.5%</b> for every 3 zero grasshop grass-skips (ends at 30).<br>
+                Doubles moonstone worth.` },
+                effect: a => a.neg().max(0).div(3).floor().mul(.025).add(1).min(1.25),
+        },{
+            r: -12,
+            get desc() { return `Auto accomplish applies to Empower.` },
+        },{
+            r: -15,
+            get desc() { return `You don't lose platinum on galactic.` },
+        },{
+            r: -18,
+            get desc() { return `Unlocks <b class="green">Sacrifice</b>.` },
+        },{
+            r: -21,
+            get desc() { return `Keeps momentum and momentum upgrades on galactic.<br>
+                Unlock more momentum upgrades.` },
+        },{
+            r: -24,
+            get desc() { return `Galactic only requires one part which is the same cost as the 10th part normally.<br>
+                Rocket part cap is increased and requirements scale significantly, but you earn more momentum.` },
+        },{
+            r: -27,
+            get desc() { return `Unlock more dark matter upgrades and star chart Ultimate Tree.` },
+        },{
+            r: -30,
+            get desc() { return `Unlocks the <b class="green">Planetoid</b>. <b class="gray">(Not yet implemented!)</b><br>
+                Earns <b class="green">10%</b> more anti-grass compounding per each anti-level.` },
         },
     ],
 }
@@ -1461,7 +1617,7 @@ UPGRADES.moonstone = {
             icons: ["Curr/Steel2"],
 
             name: `Moon Steel`,
-            desc: `Increases platinum gained by <b class="green">+25%</b> per level.`,
+            desc: `Increases steel gained by <b class="green">+25%</b> per level.`,
 
             noCostIncrease: true,
             cost: ()=>1e3,
@@ -1603,6 +1759,210 @@ UPGRADES.moonstone = {
 
             effect(a) {
                 let x = a.add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+    },
+}
+
+CURRENCIES['dark-matter'] = {
+    name: "Dark Matter",
+    icon: "Curr/DarkMatter",
+    base: "Bases/DarkMatterBase",
+
+    get amount() { return player.sacrifice.points },
+    set amount(v) { player.sacrifice.points = v.max(0) },
+
+    get gain() {
+        let s = player.galactic.star, x = s.div(1e15)
+
+        if (player.agh.gt(-18) || x.lt(1)) return E(0);
+
+        x = s.add(1).log(1.05).sub(700).mul(x.root(5))
+
+        x = x.mul(upgradeEffect('normality',4)).mul(upgradeEffect('momentum','3c'))
+
+        return x.floor()
+    },
+
+    get passive() { return 0 },
+}
+
+RESETS.sacrifice = {
+    pos: [4,-22],
+    unl: () => player.agh.lte(-18),
+
+    req: () => true,
+    req_desc: "???",
+
+    name: "Sacrifice",
+    get reset_desc() {
+        return `Resets everything galactic does, as well as astral, stars, fun, fun upgrades (except ones in the funny machine) and SFRGT. Gain more dark matter based on stars.`
+        +(player.sacrifice.times > 0 ? "" : `<br><b class="yellow">First Sacrifice unlocks a new building in the Funny Machine!</b>`)
+    },
+    color: ["#280643", "#5e005f"],
+
+    icon: "Curr/DarkMatter",
+    curr: "dark-matter",
+
+    success() {
+        player.sacrifice.times++
+    },
+    doReset() {
+        player.galactic.star = E(0)
+
+        player.sp = E(0)
+        player.astral = E(1)
+
+        player.funify.fun = E(0)
+        player.funify.sfrgt = E(0)
+
+        resetUpgrades('fundry')
+        resetUpgrades('sfrgt')
+
+        RESETS.galactic.doReset()
+    },
+}
+
+UPGRADES['dark-matter'] = {
+    unl: () => player.agh.lte(-18),
+    pos: [0,-22],
+    size: [4,1],
+    color: ["#280643", "#5e005f"],
+    type: "normal",
+    base: "Bases/DarkMatterBase",
+    curr_dis: {
+        id: "dark-matter",
+        // get text() { return "RAAAAAAAAAUGH" },
+    },
+    ctn: {
+        "1": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Icons/XP"],
+
+            name: `Dark XP`,
+            desc: `Increases experience gained by <b class="green">+100%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 1, .2, 1.2).ceil(),
+            bulk: a => a.simpleCost("EAI", 1, .2, 1.2).add(1).floor(),
+            res: "dark-matter",
+
+            effect(a) {
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a.add(1))
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "2": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Icons/TP"],
+
+            name: `Dark TP`,
+            desc: `Increases tier progress gained by <b class="green">+100%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 1, .2, 1.2).ceil(),
+            bulk: a => a.simpleCost("EAI", 1, .2, 1.2).add(1).floor(),
+            res: "dark-matter",
+
+            effect(a) {
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a.add(1))
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "3": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Icons/SP"],
+
+            name: `Dark SP`,
+            desc: `Increases space power gained by <b class="green">+100%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 1, .2, 1.2).ceil(),
+            bulk: a => a.simpleCost("EAI", 1, .2, 1.2).add(1).floor(),
+            res: "dark-matter",
+
+            effect(a) {
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a.add(1))
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "4": {
+            max: 1000,
+            unl: ()=>true,
+            icons: ["Curr/Charge"],
+
+            name: `Dark Charge`,
+            desc: `Increases charge rate by <b class="green">+100%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 1, .2, 1.2).ceil(),
+            bulk: a => a.simpleCost("EAI", 1, .2, 1.2).add(1).floor(),
+            res: "dark-matter",
+
+            effect(a) {
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a.add(1))
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "5": {
+            max: 100,
+            unl: ()=>true,
+            icons: ["Curr/Star"],
+
+            name: `Dark Stars`,
+            desc: `Increases stars gained by <b class="green">+50%</b> per level.`,
+
+            cost: a => a.simpleCost("EA", 10, .2, 1.2).ceil(),
+            bulk: a => a.simpleCost("EAI", 10, .2, 1.2).add(1).floor(),
+            res: "dark-matter",
+
+            effect(a) {
+                let x = a.mul(.5).add(1)
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "6": {
+            max: 1000,
+            unl: ()=>true,
+            req: ()=>player.agh.lte(-27),
+            req_desc: "AGHGS 27",
+            icons: ["Curr/Normality"],
+
+            name: `Dark NP`,
+            desc: `Increases normality points gained by <b class="green">+25%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 100, .2, 1.2).ceil(),
+            bulk: a => a.simpleCost("EAI", 100, .2, 1.2).add(1).floor(),
+            res: "dark-matter",
+
+            effect(a) {
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a.mul(.25).add(1))
+                return x
+            },
+            effDesc: x => formatMult(x),
+        },
+        "7": {
+            max: 1000,
+            unl: ()=>true,
+            req: ()=>player.agh.lte(-27),
+            req_desc: "AGHGS 27",
+            icons: ["Curr/Momentum"],
+
+            name: `Dark Momentum`,
+            desc: `Increases momentum gained by <b class="green">+25%</b> per level.<br>This effect is increased by <b class="green">+25%</b> every <b class="yellow">25</b> levels.`,
+
+            cost: a => a.simpleCost("EA", 1000, .2, 1.18).ceil(),
+            bulk: a => a.simpleCost("EAI", 1000, .2, 1.18).add(1).floor(),
+            res: "dark-matter",
+
+            effect(a) {
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a.mul(.25).add(1))
                 return x
             },
             effDesc: x => formatMult(x),

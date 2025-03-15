@@ -45,6 +45,9 @@ function updateHTML() {
     if (tmp.anti_unl && isInsideCircle(20,0,10)) {
         document.body.style.setProperty('--primary-background-color', '#070064')
         document.body.style.setProperty('--secondary-background-color', '#060053')
+    } else if (tmp.unnatural_unl && isInsideCircle(40,0,10)) {
+        document.body.style.setProperty('--primary-background-color', '#b4f300')
+        document.body.style.setProperty('--secondary-background-color', '#a6e000')
     } else if (tmp.star_unl && isInsideCircle(0,-20,10)) {
         document.body.style.setProperty('--primary-background-color', '#02001d')
         document.body.style.setProperty('--secondary-background-color', '#fff1')
@@ -113,7 +116,8 @@ function updateMaps() {
     let o = tabOpened && tabName == 'map'
     
     for (let i in TELEPORTS) {
-        el(`map-pin-${i}`).style.display = el_display(TELEPORTS[i][0]() && player.map_pins[i])
+        el(`map-pin-${i}`).style.display = el_display(player.map_pins[i])
+        el(`map-pin-${i}`).className = el_classes({ 'map-button': true, 'inactive': !TELEPORTS[i][0]() })
 
         if (o) {
             el(`map-button-${i}`).style.display = el_display(TELEPORTS[i][0]())

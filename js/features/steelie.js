@@ -138,12 +138,13 @@ CURRENCIES.steelie = {
     get gain() {
         if (!RESETS.steelie.req()) return E(0);
         
-        let x = E(1).mul(upgradeEffect('perks',9)).mul(tmp.foundry_effect).mul(upgradeEffect('platinum',10)).mul(tmp.charger_bonus[0]??1).mul(upgradeEffect('oil',6))
+        let x = E(1).mul(upgradeEffect('perks',9)).mul(tmp.foundry_effect).mul(upgradeEffect('platinum',10)).mul(tmp.charger_bonus[0]??1).mul(upgradeEffect('oil',6)).mul(upgradeEffect('oil',8))
 
         x = x.mul(upgradeEffect('foundry',1)).mul(upgradeEffect('foundry',2)).mul(upgradeEffect('foundry',3)).mul(upgradeEffect('foundry',4)).mul(upgradeEffect('refinery','1f')).mul(upgradeEffect('refinery','2f')).mul(upgradeEffect('momentum','1j'))
         .mul(ASTRAL.bonus('steel')).mul(upgradeEffect("moonstone",12))
 
-        if (player.grasshop.gte(11)) x = x.mul(getMilestoneEffect('grasshop',9))
+        if (player.grasshop.gte(11)) x = x.mul(getMilestoneEffect('grasshop',9));
+        if (player.grassskip.gte(12)) x = x.mul(getMilestoneEffect('grass-skip',8));
 
         return x.floor()
     },
@@ -392,7 +393,7 @@ UPGRADES.foundry = {
             res: "prestige",
 
             effect(a) {
-                let x = Decimal.pow(1.05,a.div(25).floor()).mul(a).mul(.1).add(1)
+                let x = Decimal.pow(1.05,a.div(25).floor()).mul(a.mul(.1).add(1))
                 return x
             },
             effDesc: x => formatMult(x),
@@ -411,7 +412,7 @@ UPGRADES.foundry = {
             res: "grass",
 
             effect(a) {
-                let x = Decimal.pow(1.05,a.div(25).floor()).mul(a).mul(.1).add(1)
+                let x = Decimal.pow(1.05,a.div(25).floor()).mul(a.mul(.1).add(1))
                 return x
             },
             effDesc: x => formatMult(x),
@@ -430,7 +431,7 @@ UPGRADES.foundry = {
             res: "crystal",
 
             effect(a) {
-                let x = Decimal.pow(1.05,a.div(25).floor()).mul(a).mul(.1).add(1)
+                let x = Decimal.pow(1.05,a.div(25).floor()).mul(a.mul(.1).add(1))
                 return x
             },
             effDesc: x => formatMult(x),
@@ -448,7 +449,7 @@ UPGRADES.foundry = {
             res: "steelie",
 
             effect(a) {
-                let x = Decimal.pow(1.05,a.div(25).floor()).mul(a).mul(.1).add(1)
+                let x = Decimal.pow(1.05,a.div(25).floor()).mul(a.mul(.1).add(1))
                 return x
             },
             effDesc: x => formatMult(x),
@@ -486,7 +487,7 @@ UPGRADES.generator = {
             res: "prestige",
 
             effect(a) {
-                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a).mul(.01).add(1)
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a.mul(.01).add(1))
                 return x
             },
             effDesc: x => formatMult(x),
@@ -507,7 +508,7 @@ UPGRADES.generator = {
             res: "crystal",
 
             effect(a) {
-                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a).mul(.01).add(1)
+                let x = Decimal.pow(1.25,a.div(25).floor()).mul(a.mul(.01).add(1))
                 return x
             },
             effDesc: x => formatMult(x),
@@ -666,7 +667,9 @@ CURRENCIES.charge = {
 
         x = x.mul(getAccomplishmentBonus(9)).mul(getMilestoneEffect('grasshop',10)).mul(getLevelBonus('anti-xp')).mul(upgradeEffect('anonymity',1)).mul(upgradeEffect('momentum','1d'))
 
-        x = x.mul(totalUpgradesEffectFromRange('star',[1,9],x=>`SC${x}a`,'mult')).mul(ASTRAL.bonus('charge')).mul(upgradeEffect('funny-machine',1)).mul(upgradeEffect('funny-machine',3)).mul(upgradeEffect('funny-machine',4))
+        x = x.mul(totalUpgradesEffectFromRange('star',[1,9],x=>`SC${x}a`,'mult')).mul(ASTRAL.bonus('charge')).mul(upgradeEffect('funny-machine',1)).mul(upgradeEffect('funny-machine',3)).mul(upgradeEffect('funny-machine',4)).mul(upgradeEffect('funny-machine',5)).mul(upgradeEffect('momentum','2b')).mul(upgradeEffect('star-ultimate',1))
+
+        x = x.mul(upgradeEffect('dark-matter',4))
 
         return x
     },

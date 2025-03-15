@@ -5,6 +5,24 @@ function loadGame(start=true, gotNaN=false) {
     reloadTemp()
 
     if (start) {
+        for (let k in GRASS.field) {
+            let v = GRASS.field[k]
+            v.resources = [v.res_base,...(v.chances??[])]
+        }
+
+        grass_data = (()=>{
+            let data = {}
+            for (let [k,v] of Object.entries(GRASS.field)) {
+                let data2 = {
+                    time: E(0),
+                    total: E(0),
+                }
+                for (let k2 of v.resources) data2[k2] = E(0)
+                data[k] = data2
+            }
+            return data
+        })()
+
         doCreateGridElements()
         setupHTML()
         setupCanvas()
@@ -155,7 +173,7 @@ function doCreateGridElements() {
         pos: [4,12],
 
         html: `
-        <button onclick="teleportTo(2)" class="grid-fill-btn">
+        <button onclick="teleportTo(1)" class="grid-fill-btn">
             Teleport to <b>Anti-realm</b>
         </button>
         `,
@@ -167,6 +185,17 @@ function doCreateGridElements() {
         html: `
         <button onclick="teleportTo(0)" class="grid-fill-btn">
             Teleport back to <b>normal realm</b>
+        </button>
+        `,
+    })
+
+    createGridElement('recel-teleport',{
+        unl: () => tmp.unnatural_unl,
+        pos: [20,5],
+
+        html: `
+        <button onclick="teleportTo(2)" class="grid-fill-btn">
+            Teleport to <b>unnatural realm</b>
         </button>
         `,
     })

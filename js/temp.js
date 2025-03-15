@@ -12,12 +12,16 @@ function reloadTemp() {
         upg_el: {},
         upg_cl: {},
 
+        mults: {},
+
         lvl_bonus: {},
 
         foundry_effect: E(1),
         auto_accomplish_time: 14400,
 
         charger_bonus: [],
+
+        compaction: E(1),
     }
 
     for (let id in UPGRADES) {
@@ -42,18 +46,31 @@ function getStarAccumulatorEffect() {
     return Decimal.div(t,1e3).add(1)
 }
 
+function getCompaction() {
+    let x = getLevelBonus('unnatural-xp').mul(upgradeEffect('unnatural-grass',7))
+
+    return x
+}
+
 function updateTemp() {
     tmp.anti_unl = hasUpgrade('factory',5)
+    tmp.unnatural_unl = hasUpgrade('funny-machine',5)
     tmp.star_unl = player.galactic.times
 
     updateLevelsTemp()
     updateUpgradesTemp()
+
+    tmp.compaction = getCompaction()
 
     tmp.auto_accomplish_time = 14400 / upgradeEffect('star','S2')
     tmp.foundry_effect = getFoundryEffect()
     tmp.star_acc_effect = getStarAccumulatorEffect()
 
     CHARGER.temp()
+
+    for (let id in GRASS.resource) {
+        tmp.mults[id] = GRASS.resource[id].mult;
+    }
 
     for (let [i,v] of Object.entries(CURRENCIES)) tmp.currency_gain[i] = preventNaNDecimal(v.gain??E(0));
 

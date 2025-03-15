@@ -55,12 +55,10 @@ function updateResetHTML(id) {
 }
 
 function doReset(id, force) {
-    var reset = RESETS[id]
+    var reset = RESETS[id], curr = reset.curr ?? id
 
-    if (force || reset.unl() && reset.req() && !reset.lock?.()) {
+    if (force || reset.unl() && reset.req() && !reset.lock?.() && (!(curr in CURRENCIES) || tmp.currency_gain[curr].gt(0))) {
         if (!force) {
-            let curr = reset.curr ?? id
-
             if (curr in CURRENCIES) gainCurrency(curr,tmp.currency_gain[curr])
 
             if ("success" in reset) reset.success()
